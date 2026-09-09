@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Emprunteur;
-import com.lacouf.rsbjwt.model.UserApp;
+import com.lacouf.rsbjwt.model.Employer;
+import com.lacouf.rsbjwt.model.User;
 import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class UserDTO {
         this.role = role;
     }
 
-    public UserDTO(UserApp user) {
+    public UserDTO(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

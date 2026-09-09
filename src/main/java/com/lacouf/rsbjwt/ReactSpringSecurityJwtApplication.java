@@ -38,7 +38,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         gestionnaireRepository.save(
-                Gestionnaire.builder()
+                SystemManager.builder()
                         .firstName("Gerard")
                         .lastName("Biblio")
                         .email("l@l.com")
@@ -48,7 +48,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .build()
         );
         emprunteurRepository.save(
-                Emprunteur.builder()
+                Employer.builder()
                         .firstName("Isidor")
                         .lastName("Teurteur")
                         .email("ll@l.com")
@@ -57,7 +57,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .build()
         );
         preposeRepository.save(
-                Prepose.builder()
+                Professor.builder()
                         .firstName("Chandeuse")
                         .lastName("Lixor")
                         .email("lll@l.com")
@@ -65,7 +65,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .passeKey("12345")
                         .build()
         );
-        final Optional<UserApp> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");
+        final Optional<User> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");
         userAppByEmail.ifPresent(userApp -> System.out.println("user " + userAppByEmail));
 
     }

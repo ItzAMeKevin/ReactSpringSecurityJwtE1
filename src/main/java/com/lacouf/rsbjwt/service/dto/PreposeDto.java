@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Prepose;
+import com.lacouf.rsbjwt.model.Professor;
 import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.Builder;
 
@@ -15,7 +15,7 @@ public class PreposeDto extends UserDTO {
 
     public PreposeDto() {}
 
-    public static PreposeDto create(Prepose prepose) {
+    public static PreposeDto create(Professor prepose) {
         return PreposeDto.builder()
                 .id(prepose.getId())
                 .firstName(prepose.getFirstName())

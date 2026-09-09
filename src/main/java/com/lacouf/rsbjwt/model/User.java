@@ -15,7 +15,7 @@ import java.util.Collection;
 @Getter
 @Setter
 @ToString
-public abstract class UserApp  {
+public abstract class User  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

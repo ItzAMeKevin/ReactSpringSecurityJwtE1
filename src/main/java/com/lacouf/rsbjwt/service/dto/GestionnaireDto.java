@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Gestionnaire;
+import com.lacouf.rsbjwt.model.SystemManager;
 import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.Builder;
 
@@ -18,7 +18,7 @@ public class GestionnaireDto extends UserDTO {
 
     public GestionnaireDto() {}
 
-    public static GestionnaireDto create(Gestionnaire gestionnaire) {
+    public static GestionnaireDto create(SystemManager gestionnaire) {
         return GestionnaireDto.builder()
                 .id(gestionnaire.getId())
                 .firstName(gestionnaire.getFirstName())

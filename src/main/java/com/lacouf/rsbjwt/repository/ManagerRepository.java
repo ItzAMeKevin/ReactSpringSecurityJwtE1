@@ -1,13 +1,13 @@
 package com.lacouf.rsbjwt.repository;
 
-import com.lacouf.rsbjwt.model.Gestionnaire;
+import com.lacouf.rsbjwt.model.SystemManager;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ManagerRepository extends JpaRepository<Gestionnaire, Long> {
+public interface ManagerRepository extends JpaRepository<SystemManager, Long> {
 
-    Optional<Gestionnaire> findFirstByFirstNameAndLastName(String firstName, String lastName);
+    Optional<SystemManager> findFirstByFirstNameAndLastName(String firstName, String lastName);
 }
