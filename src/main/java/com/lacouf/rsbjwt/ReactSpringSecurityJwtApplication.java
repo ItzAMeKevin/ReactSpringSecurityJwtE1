@@ -43,8 +43,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .lastName("Biblio")
                         .email("l@l.com")
                         .password(passwordEncoder.encode("bib"))
-                        .matricule("0000001")
-                        .phoneNumber("123-456-7890")
                         .build()
         );
         emprunteurRepository.save(
@@ -53,7 +51,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .lastName("Teurteur")
                         .email("ll@l.com")
                         .password(passwordEncoder.encode("bib"))
-                        .since(LocalDate.of(2020, 10,20))
                         .build()
         );
         preposeRepository.save(
@@ -62,7 +59,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .lastName("Lixor")
                         .email("lll@l.com")
                         .password(passwordEncoder.encode("bib"))
-                        .passeKey("12345")
                         .build()
         );
         final Optional<User> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");

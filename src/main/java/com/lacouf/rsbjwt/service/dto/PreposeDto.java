@@ -5,12 +5,10 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.Builder;
 
 public class PreposeDto extends UserDTO {
-    private String passeKey;
-
+    
     @Builder
-    public PreposeDto(Long id, String firstName, String lastname, String email, Role role, String passeKey) {
+    public PreposeDto(Long id, String firstName, String lastname, String email, Role role) {
         super(id, firstName, lastname, email, role);
-        this.passeKey = passeKey;
     }
 
     public PreposeDto() {}
@@ -22,7 +20,6 @@ public class PreposeDto extends UserDTO {
                 .lastname(prepose.getLastName())
                 .email(prepose.getEmail())
                 .role(prepose.getRole())
-                .passeKey(prepose.getPasseKey())
                 .build();
     }
 
