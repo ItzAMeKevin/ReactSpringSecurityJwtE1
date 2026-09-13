@@ -1,13 +1,11 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.User;
 import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
