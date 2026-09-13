@@ -1,36 +1,14 @@
 import {useState} from "react";
+import {validateInscription} from "../../utils/validation.js";
 
 const Inscription = () => {
 
     const [errors, setErrors] = useState({});
 
-    const validate = (data) => {
-        const errs = {};
-
-        //pour que les fields soient biens respectés
-
-        // Nom / Prénom: lettres, espaces, accents, tirets, apostrophes — pas de chiffres
-        const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
-        if (!nameRegex.test(data.nom)) errs.nom = "Lettres seulement";
-        if (!nameRegex.test(data.prenom)) errs.prenom = "Lettres seulement";
-
-        // Courriel: doit finir en @...ca ou @...com
-        const emailRegex = /^[\w.-]+@[\w.-]+\.(ca|com)$/;
-        if (!emailRegex.test(data.courriel)) errs.courriel = "Doit être @domain.ca ou @domain.com";
-
-        // Mot de passe: correspondance sensible à la casse
-        if (data.motDePasse !== data.confirmation) {
-            errs.confirmation = "Les mots de passe ne correspondent pas";
-        }
-
-        return errs;
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault()
-        // ici tu récupères les données du formulaire
         const data = Object.fromEntries(new FormData(e.currentTarget));
-        const errs = validate(data);
+        const errs = validateInscription(data);
         setErrors(errs);
         if (Object.keys(errs).length === 0) {
             console.log("Inscription valide:", data);
@@ -111,12 +89,8 @@ const Inscription = () => {
                     </div>
                 </form>
                 )}
-
             </div>
-
         </>
-
-
     )
 }
 
