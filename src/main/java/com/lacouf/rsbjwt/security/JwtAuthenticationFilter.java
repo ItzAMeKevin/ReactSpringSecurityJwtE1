@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.security;
 
-import com.lacouf.rsbjwt.model.UserApp;
+import com.lacouf.rsbjwt.model.User;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import jakarta.servlet.FilterChain;
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 tokenProvider.validateToken(token);
                 String email = tokenProvider.getEmailFromJWT(token);
-                UserApp user = userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
+                User user = userRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         user.getEmail(), null, user.getAuthorities()
                 );

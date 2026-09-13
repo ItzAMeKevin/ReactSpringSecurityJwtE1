@@ -10,7 +10,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @SpringBootApplication
@@ -37,35 +36,38 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        gestionnaireRepository.save(
-                Gestionnaire.builder()
-                        .firstName("Gerard")
-                        .lastName("Biblio")
-                        .email("l@l.com")
-                        .password(passwordEncoder.encode("bib"))
-                        .matricule("0000001")
-                        .phoneNumber("123-456-7890")
-                        .build()
-        );
-        emprunteurRepository.save(
-                Emprunteur.builder()
-                        .firstName("Isidor")
-                        .lastName("Teurteur")
-                        .email("ll@l.com")
-                        .password(passwordEncoder.encode("bib"))
-                        .since(LocalDate.of(2020, 10,20))
-                        .build()
-        );
-        preposeRepository.save(
-                Prepose.builder()
-                        .firstName("Chandeuse")
-                        .lastName("Lixor")
-                        .email("lll@l.com")
-                        .password(passwordEncoder.encode("bib"))
-                        .passeKey("12345")
-                        .build()
-        );
-        final Optional<UserApp> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");
+        if (userAppRepository.findUserAppByEmail("l@l.com").isEmpty()) {
+            gestionnaireRepository.save(
+                SystemManager.builder()
+                    .firstName("Gerard")
+                    .lastName("Biblio")
+                    .email("l@l.com")
+                    .password(passwordEncoder.encode("bib"))
+                    .build()
+            );
+        }
+        if (userAppRepository.findUserAppByEmail("ll@l.com").isEmpty()) {
+            emprunteurRepository.save(
+                Employer.builder()
+                    .firstName("Isidor")
+                    .lastName("Teurteur")
+                    .email("ll@l.com")
+                    .password(passwordEncoder.encode("bib"))
+                    .build()
+            );
+        }
+        if (userAppRepository.findUserAppByEmail("lll@l.com").isEmpty()) {
+            preposeRepository.save(
+                Professor.builder()
+                    .firstName("Chandeuse")
+                    .lastName("Lixor")
+                    .matricule("PROF-001")
+                    .email("lll@l.com")
+                    .password(passwordEncoder.encode("bib"))
+                    .build()
+            );
+        }
+        final Optional<User> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");
         userAppByEmail.ifPresent(userApp -> System.out.println("user " + userAppByEmail));
 
     }

@@ -9,13 +9,14 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 @Entity
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @ToString
-public abstract class UserApp  {
+public abstract class User  {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

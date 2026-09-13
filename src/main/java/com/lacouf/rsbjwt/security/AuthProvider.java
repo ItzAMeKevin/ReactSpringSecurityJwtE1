@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.security;
 
 import com.lacouf.rsbjwt.repository.UserAppRepository;
-import com.lacouf.rsbjwt.model.UserApp;
+import com.lacouf.rsbjwt.model.User;
 import com.lacouf.rsbjwt.security.exception.AuthenticationException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class AuthProvider implements AuthenticationProvider{
 
 	@Override
 	public Authentication authenticate(Authentication authentication) {
-		UserApp user = loadUserByEmail(authentication.getPrincipal().toString());
+		User user = loadUserByEmail(authentication.getPrincipal().toString());
 		validateAuthentication(authentication, user);
 		return new UsernamePasswordAuthenticationToken(
 			user.getEmail(),
@@ -35,12 +35,12 @@ public class AuthProvider implements AuthenticationProvider{
 		return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 
-	private UserApp loadUserByEmail(String email) throws UsernameNotFoundException{
+	private User loadUserByEmail(String email) throws UsernameNotFoundException{
 		return userAppRepository.findUserAppByEmail(email)
 			.orElseThrow(UserNotFoundException::new);
 	}
 
-	private void validateAuthentication(Authentication authentication, UserApp user){
+	private void validateAuthentication(Authentication authentication, User user){
 		if(!passwordEncoder.matches(authentication.getCredentials().toString(), user.getPassword()))
 			throw new AuthenticationException(HttpStatus.FORBIDDEN, "Incorrect username or password");
 	}

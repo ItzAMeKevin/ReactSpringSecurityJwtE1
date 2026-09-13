@@ -8,19 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Entity
 @DiscriminatorValue("E")
 @Getter
 @NoArgsConstructor
-public class Emprunteur extends UserApp {
-    private LocalDate since;
+public class Employer extends User {
     @Builder
-    public Emprunteur(
-            Long id, String firstName, String lastName, String email, String password,
-            LocalDate since){
+    public Employer(
+            Long id, String firstName, String lastName, String email, String password){
         super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.EMPRUNTEUR).build());
-        this.since = since;
     }
 }

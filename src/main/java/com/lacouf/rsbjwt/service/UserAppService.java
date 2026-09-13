@@ -37,7 +37,7 @@ public class UserAppService {
     public UserDTO getMe(String token) {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
-        UserApp user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
+        User user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
         return switch(user.getRole()){
             case EMPRUNTEUR -> getEmprunteurDto(user.getId());
             case PREPOSE -> getPreposeDto(user.getId());
@@ -46,21 +46,21 @@ public class UserAppService {
     }
 
     private GestionnaireDto getGestionnaireDto(Long id) {
-        final Optional<Gestionnaire> gestionnaireOptional = gestionnaireRepository.findById(id);
+        final Optional<SystemManager> gestionnaireOptional = gestionnaireRepository.findById(id);
         return gestionnaireOptional.isPresent() ?
                 GestionnaireDto.create(gestionnaireOptional.get()) :
                 GestionnaireDto.empty();
     }
 
     private PreposeDto getPreposeDto(Long id) {
-        final Optional<Prepose> preposeOptional = preposeRepository.findById(id);
+        final Optional<Professor> preposeOptional = preposeRepository.findById(id);
         return preposeOptional.isPresent() ?
                 PreposeDto.create(preposeOptional.get()) :
                 PreposeDto.empty();
     }
 
     private EmprunteurDto getEmprunteurDto(Long id) {
-        final Optional<Emprunteur> emprunteurOptional = emprunteurRepository.findById(id);
+        final Optional<Employer> emprunteurOptional = emprunteurRepository.findById(id);
         return emprunteurOptional.isPresent() ?
                 EmprunteurDto.create(emprunteurOptional.get()) :
                 EmprunteurDto.empty();
