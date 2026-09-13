@@ -1,3 +1,5 @@
+import {useState} from "react";
+
 const Inscription = () => {
 
     const handleSubmit = (e) => {
@@ -8,12 +10,14 @@ const Inscription = () => {
 
     const programmes = ["1","2","3"]
 
+    const [role, setRole] = useState(null)
+
     return (
         <>
         <h1 style={{ textAlign: "center" }}> Inscription</h1>
             <div>
                 <label> Qui êtes-vous ?</label>
-                <select id={'role'} value={role ?? ""}>
+                <select id={'role'} value={role ?? ""} onChange={(e) => setRole(e.target.value)}>
                     <option value={"student"}> Étudiant </option>
                     <option value={"professor"}> Professeur </option>
                     <option value={"employer"}> Employeur </option>
