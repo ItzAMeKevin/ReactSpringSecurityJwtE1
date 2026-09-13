@@ -5,7 +5,8 @@ const Inscription = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
         // ici tu récupères les données du formulaire
-        console.log("Formulaire soumis !")
+        const data = new FormData(e.target)
+        console.log("Formulaire soumis !", Object.fromEntries(data))
     }
 
     const programmes = ["1","2","3"]
@@ -32,23 +33,23 @@ const Inscription = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                         <div className="flex flex-col">
                             <label>Nom</label>
-                            <input type="text"/>
+                            <input type="text" name="nom"/>
                         </div>
                         <div className="flex flex-col">
                             <label>Prenom</label>
-                            <input type="text"/>
+                            <input type="text" name="prenom"/>
                         </div>
 
                         <div>
                             <label>Courriel</label>
-                            <input type="email"/>
+                            <input type="email" name="courriel" />
                         </div>
                         <div>
                             {role === "student" &&(
                                 <div>
                                     <div>
                                         <label>Matricule</label>
-                                        <input type="text"/>
+                                        <input type="text" name="matricule"/>
                                     </div>
                                     <div>
                                         <label>Progame d'étude</label>
@@ -56,7 +57,6 @@ const Inscription = () => {
                                             {programmes.map((programe) => (
                                                 <option value={programe} key={programe}></option>
                                             ))}
-
                                         </select>
                                     </div>
                                 </div>
@@ -65,16 +65,18 @@ const Inscription = () => {
 
                         <div>
                             <label>Mot de passe</label>
-                            <input type="password"/>
+                            <input type="password" name="MDP"/>
                         </div>
 
                         <div>
                             <label>Confirmation de mot de passe</label>
-                            <input type="password"/>
+                            <input type="password" name="Confirmation MDP"/>
                         </div>
                     </div>
 
-
+                    <div>
+                        <button className="btn btn-primary" onClick={handleSubmit}>S'inscrire</button>
+                    </div>
                 </form>
                 )}
 
