@@ -1,5 +1,8 @@
 import {useState} from "react";
 import {validateInscription} from "../../utils/validation.js";
+import StudentFields from "./StudentFields.jsx";
+import ProfessorFields from "./ProfessorFields.jsx";
+import EmployerFields from "./EmployerFields.jsx";
 
 const Inscription = () => {
 
@@ -53,24 +56,9 @@ const Inscription = () => {
                             <input type="email" name="courriel" />
                             {errors.courriel && <span className="text-red-500 text-sm">{errors.courriel}</span>}
                         </div>
-                        <div>
-                            {role === "student" &&(
-                                <div>
-                                    <div>
-                                        <label>Matricule</label>
-                                        <input type="text" name="matricule"/>
-                                    </div>
-                                    <div>
-                                        <label>Progame d'étude</label>
-                                        <select id={'programmes'}>
-                                            {programmes.map((programe) => (
-                                                <option value={programe} key={programe}></option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                )}
-                        </div>
+                        {role === "student" && <StudentFields errors={errors} programmes={programmes} />}
+                        {role === "professor" && <ProfessorFields errors={errors} />}
+                        {role === "employer" && <EmployerFields errors={errors} />}
 
                         <div>
                             <label>Mot de passe</label>
