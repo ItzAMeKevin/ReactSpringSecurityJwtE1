@@ -31,13 +31,14 @@ const Inscription = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                         <div className="flex flex-col">
-                            <label>Prenom</label>
-                            <input type="text"/>
-                        </div>
-                        <div className="flex flex-col">
                             <label>Nom</label>
                             <input type="text"/>
                         </div>
+                        <div className="flex flex-col">
+                            <label>Prenom</label>
+                            <input type="text"/>
+                        </div>
+
                         <div>
                             <label>Courriel</label>
                             <input type="email"/>
@@ -46,7 +47,7 @@ const Inscription = () => {
                             {role === "student" &&(
                                 <div>
                                     <div>
-                                        <label>Mtricule</label>
+                                        <label>Matricule</label>
                                         <input type="text"/>
                                     </div>
                                     <div>
@@ -60,6 +61,16 @@ const Inscription = () => {
                                     </div>
                                 </div>
                                 )}
+                        </div>
+
+                        <div>
+                            <label>Mot de passe</label>
+                            <input type="password"/>
+                        </div>
+
+                        <div>
+                            <label>Confirmation de mot de passe</label>
+                            <input type="password"/>
                         </div>
                     </div>
 
