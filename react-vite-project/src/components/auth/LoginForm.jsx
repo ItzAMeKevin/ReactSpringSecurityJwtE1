@@ -173,6 +173,9 @@ const LoginForm = ({user, setUser, setError}) => {
                     <button type="submit" className="btn btn-outline-ose my-5 mx-auto">loginSubmit</button>
                   </div>
                 </form>
+                <div className="text-center mt-3">
+                  <p>Première fois? <button type="button" className="btn btn-link p-0" onClick={() => navigate("/inscription")}>Inscrivez-vous</button></p>
+                </div>
               </div>
             </div>
 
