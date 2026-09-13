@@ -1,8 +1,6 @@
 import {useState} from "react";
 import {validateInscription} from "../../utils/validation.js";
 import StudentFields from "./StudentFields.jsx";
-import ProfessorFields from "./ProfessorFields.jsx";
-import EmployerFields from "./EmployerFields.jsx";
 
 const Inscription = () => {
 
@@ -57,8 +55,6 @@ const Inscription = () => {
                             {errors.courriel && <span className="text-red-500 text-sm">{errors.courriel}</span>}
                         </div>
                         {role === "student" && <StudentFields errors={errors} programmes={programmes} />}
-                        {role === "professor" && <ProfessorFields errors={errors} />}
-                        {role === "employer" && <EmployerFields errors={errors} />}
 
                         <div>
                             <label>Mot de passe</label>
