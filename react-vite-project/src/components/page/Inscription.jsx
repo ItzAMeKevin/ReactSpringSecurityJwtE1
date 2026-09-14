@@ -1,77 +1,37 @@
-import {useState} from "react";
-import {validateInscription} from "../../utils/validation.js";
-import StudentFields from "./StudentFields.jsx";
+import { useState } from "react";
+import { validateInscription } from "../../utils/validation.js";
+import RoleSelector from "./inscription/RoleSelector";
+import InscriptionForm from "./inscription/InscriptionForm";
 
 const Inscription = () => {
+  const [errors, setErrors] = useState({});
+  const [role, setRole] = useState(null);
+  const programmes = ["1", "2", "3"];
 
-    const [errors, setErrors] = useState({});
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        const data = Object.fromEntries(new FormData(e.currentTarget));
-        const errs = validateInscription(data);
-        setErrors(errs);
-        if (Object.keys(errs).length === 0) {
-            console.log("Inscription valide:", data);
-        }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.currentTarget));
+    const errs = validateInscription(data);
+    setErrors(errs);
+    if (Object.keys(errs).length === 0) {
+      console.log("Inscription valide:", data);
     }
+  };
 
-    const programmes = ["1","2","3"]
-
-    const [role, setRole] = useState(null)
-
-    return (
-        <>
-        <h1 className="text-center mb-6">Inscription</h1>
-            <div>
-                <label> S'inscrire en tant que </label>
-                <select id="role" value={role ?? ""} onChange={(e) => setRole(e.target.value)}>
-                    <option value="student">Étudiant</option>
-                    <option value="professor">Professeur</option>
-                    <option value="employer">Employeur</option>
-                </select>
-            </div>
-
-            {role != null && (
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="flex flex-col">
-                            <label>Nom</label>
-                            <input type="text" name="nom"/>
-                            {errors.nom && <span className="text-red-500 text-sm">{errors.nom}</span>}
-                        </div>
-                        <div className="flex flex-col">
-                            <label>Prenom</label>
-                            <input type="text" name="prenom"/>
-                            {errors.prenom && <span className="text-red-500 text-sm">{errors.prenom}</span>}
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label>Courriel</label>
-                            <input type="email" name="courriel"/>
-                            {errors.courriel && <span className="text-red-500 text-sm">{errors.courriel}</span>}
-                        </div>
-                        {role === "student" && <StudentFields errors={errors} programmes={programmes} />}
-
-                        <div className="flex flex-col">
-                            <label>Mot de passe</label>
-                            <input type="password" name="motDePasse"/>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label>Confirmation de mot de passe</label>
-                            <input type="password" name="confirmation"/>
-                            {errors.confirmation && <span className="text-red-500 text-sm">{errors.confirmation}</span>}
-                        </div>
-                    </div>
-
-                    <div>
-                        <button type="submit" className="btn btn-primary">S'inscrire</button>
-                    </div>
-                </form>
-            )}
-        </>
-    )
+  return (
+    <>
+      <h1 className="text-center mb-6">Inscription</h1>
+      <RoleSelector role={role} setRole={setRole} />
+      {role != null && (
+        <InscriptionForm
+          role={role}
+          errors={errors}
+          programmes={programmes}
+          handleSubmit={handleSubmit}
+        />
+      )}
+    </>
+  );
 }
 
 export default Inscription
