@@ -22,22 +22,19 @@ const Inscription = () => {
 
     return (
         <>
-        <h1 style={{ textAlign: "center" }}> Inscription</h1>
+        <h1 className="text-center mb-6">Inscription</h1>
             <div>
                 <label> S'inscrire en tant que </label>
-                <select id={'role'} value={role ?? ""} onChange={(e) => setRole(e.target.value)}>
-                    <option value={"student"}> Étudiant </option>
-                    <option value={"professor"}> Professeur </option>
-                    <option value={"employer"}> Employeur </option>
+                <select id="role" value={role ?? ""} onChange={(e) => setRole(e.target.value)}>
+                    <option value="student">Étudiant</option>
+                    <option value="professor">Professeur</option>
+                    <option value="employer">Employeur</option>
                 </select>
             </div>
 
-            <div >
-                {role != null &&(
-
+            {role != null && (
                 <form onSubmit={handleSubmit}>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col">
                             <label>Nom</label>
                             <input type="text" name="nom"/>
@@ -49,19 +46,19 @@ const Inscription = () => {
                             {errors.prenom && <span className="text-red-500 text-sm">{errors.prenom}</span>}
                         </div>
 
-                        <div>
+                        <div className="flex flex-col">
                             <label>Courriel</label>
-                            <input type="email" name="courriel" />
+                            <input type="email" name="courriel"/>
                             {errors.courriel && <span className="text-red-500 text-sm">{errors.courriel}</span>}
                         </div>
                         {role === "student" && <StudentFields errors={errors} programmes={programmes} />}
 
-                        <div>
+                        <div className="flex flex-col">
                             <label>Mot de passe</label>
                             <input type="password" name="motDePasse"/>
                         </div>
 
-                        <div>
+                        <div className="flex flex-col">
                             <label>Confirmation de mot de passe</label>
                             <input type="password" name="confirmation"/>
                             {errors.confirmation && <span className="text-red-500 text-sm">{errors.confirmation}</span>}
@@ -72,8 +69,7 @@ const Inscription = () => {
                         <button type="submit" className="btn btn-primary">S'inscrire</button>
                     </div>
                 </form>
-                )}
-            </div>
+            )}
         </>
     )
 }
