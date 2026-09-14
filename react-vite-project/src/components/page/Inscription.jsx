@@ -58,12 +58,12 @@ const Inscription = () => {
 
                         <div>
                             <label>Mot de passe</label>
-                            <input type="password" name="MDP"/>
+                            <input type="password" name="motDePasse"/>
                         </div>
 
                         <div>
                             <label>Confirmation de mot de passe</label>
-                            <input type="password" name="Confirmation"/>
+                            <input type="password" name="confirmation"/>
                             {errors.confirmation && <span className="text-red-500 text-sm">{errors.confirmation}</span>}
                         </div>
                     </div>
