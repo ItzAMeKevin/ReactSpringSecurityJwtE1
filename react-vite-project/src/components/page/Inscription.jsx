@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { validateInscription } from "../../utils/validation.js";
+import { validateField, validateInscription } from "../../utils/validation.js";
 import RoleSelector from "./inscription/RoleSelector";
 import InscriptionForm from "./inscription/InscriptionForm";
 
@@ -18,6 +18,37 @@ const Inscription = () => {
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value, form } = e.target;
+    const data = Object.fromEntries(new FormData(form));
+
+    setErrors((prev) => {
+      const next = { ...prev };
+
+      const setOrClear = (field, fieldValue) => {
+        if (fieldValue === "") {
+          delete next[field];
+          return;
+        }
+        const error = validateField(field, fieldValue, data);
+        if (error) {
+          next[field] = error;
+        } else {
+          delete next[field];
+        }
+      };
+
+      setOrClear(name, value);
+
+      // Keep confirmation's error in sync when motDePasse changes
+      if (name === "motDePasse") {
+        setOrClear("confirmation", data.confirmation ?? "");
+      }
+
+      return next;
+    });
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#4b1113] px-4 py-10">
       <div className="w-full max-w-2xl bg-[#8b6f52] rounded-xl shadow-lg p-8">
@@ -29,6 +60,7 @@ const Inscription = () => {
             errors={errors}
             programmes={programmes}
             handleSubmit={handleSubmit}
+            handleChange={handleChange}
           />
         )}
       </div>

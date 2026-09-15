@@ -1,7 +1,7 @@
 import UserFields from "./UserFields";
 
-const InscriptionForm = ({ role, errors, programmes, handleSubmit }) => (
-  <form onSubmit={handleSubmit}>
+const InscriptionForm = ({ role, errors, programmes, handleSubmit, handleChange }) => (
+  <form onSubmit={handleSubmit} onChange={handleChange}>
     <div className="flex flex-col gap-4">
       <UserFields role={role} errors={errors} programmes={programmes} />
     </div>
