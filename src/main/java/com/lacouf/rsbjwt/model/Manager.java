@@ -12,20 +12,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@DiscriminatorValue("P")
+@DiscriminatorValue("MANAGER")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Professor extends User {
+public class Manager extends User {
 
     @Column (unique = true, nullable = false)
     private String matricule;
     
     @Builder
-    public Professor(
+    public Manager(
             Long id, String firstName, String lastName, String email, String password,
             String matricule){
-        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.PREPOSE).build());
+        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.MANAGER).build());
         this.matricule = matricule;
     }
 }

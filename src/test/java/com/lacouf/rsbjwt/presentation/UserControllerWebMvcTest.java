@@ -35,13 +35,10 @@ class UserControllerWebMvcTest {
     private UserAppService userService;
 
     @MockitoBean
-    private GestionnaireRepository gestionnaireRepository;
+    private StudentRepository emprunteurRepository;
 
     @MockitoBean
-    private EmprunteurRepository emprunteurRepository;
-
-    @MockitoBean
-    private PreposeRepository preposeRepository;
+    private EmployerRepository preposeRepository;
 
     @MockitoBean
     private ManagerRepository managerRepository;
