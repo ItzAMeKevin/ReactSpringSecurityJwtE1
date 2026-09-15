@@ -1,6 +1,7 @@
 import { useState } from "react";
 import fetcher from "../../utils/fetcher.js";
 
+//nous le guardon, exemple de fetch
 const EmprunteurHome = () => {
   const [message, setMessage] = useState("");
 
