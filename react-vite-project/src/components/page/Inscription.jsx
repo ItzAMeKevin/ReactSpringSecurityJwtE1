@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { validateField, validateInscription } from "../../utils/validation.js";
+import BASE_URL from "../config/Config.jsx";
 import RoleSelector from "./inscription/RoleSelector";
 import InscriptionForm from "./inscription/InscriptionForm";
 
@@ -8,14 +9,29 @@ const Inscription = () => {
   const [role, setRole] = useState(null);
   const programmes = ["1", "2", "3"];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const errs = validateInscription(data);
     setErrors(errs);
-    if (Object.keys(errs).length === 0) {
-      console.log("Inscription valide:", data);
+    if (Object.keys(errs).length > 0) return;
+
+    const { confirmation, ...params } = data;
+
+    switch (role) {
+      case "student":
+        params.role = "STUDENT";
+        params.matricule = data.matricule;
+        params.programme = data.programme;
+        break;
     }
+
+    const res = await fetch(`${BASE_URL}inscription/${RoleSelector.value}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+    return res.json();
   };
 
   const handleChange = (e) => {
