@@ -1,27 +1,34 @@
+// Nom / Prénom: lettres, espaces, accents, tirets, apostrophes — pas de chiffres
+const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
+// Courriel: doit finir en @...ca ou @...com
+const emailRegex = /^[\w.-]+@[\w.-]+\.(ca|com)$/;
+// Matricule (étudiant): exactement 7 chiffres
+const matriculeRegex = /^\d{7}$/;
+
+export const validateField = (name, value, data = {}) => {
+    switch (name) {
+        case "nom":
+        case "prenom":
+            return nameRegex.test(value) ? undefined : "Lettres seulement";
+        case "courriel":
+            return emailRegex.test(value) ? undefined : "Doit être @domain.ca ou @domain.com";
+        case "confirmation":
+            return value === data.motDePasse ? undefined : "Les mots de passe ne correspondent pas";
+        case "matricule":
+            return matriculeRegex.test(value) ? undefined : "Doit être 7 chiffres";
+        default:
+            return undefined;
+    }
+};
+
 export const validateInscription = (data) => {
     const errs = {};
 
-    // Nom / Prénom: lettres, espaces, accents, tirets, apostrophes — pas de chiffres
-    const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
-    if (!nameRegex.test(data.nom)) errs.nom = "Lettres seulement";
-    if (!nameRegex.test(data.prenom)) errs.prenom = "Lettres seulement";
-
-    // Courriel: doit finir en @...ca ou @...com
-    const emailRegex = /^[\w.-]+@[\w.-]+\.(ca|com)$/;
-    if (!emailRegex.test(data.courriel)) errs.courriel = "Doit être @domain.ca ou @domain.com";
-
-    // Mot de passe: correspondance sensible à la casse
-    if (data.motDePasse !== data.confirmation) {
-        errs.confirmation = "Les mots de passe ne correspondent pas";
-    }
-
-    // Matricule (étudiant): exactement 7 chiffres
-    if (data.matricule !== undefined) {
-        const matriculeRegex = /^\d{7}$/;
-        if (!matriculeRegex.test(data.matricule)) {
-            errs.matricule = "Doit être 7 chiffres";
-        }
-    }
+    ["nom", "prenom", "courriel", "confirmation", "matricule"].forEach((field) => {
+        if (data[field] === undefined) return;
+        const error = validateField(field, data[field], data);
+        if (error) errs[field] = error;
+    });
 
     return errs;
 };
