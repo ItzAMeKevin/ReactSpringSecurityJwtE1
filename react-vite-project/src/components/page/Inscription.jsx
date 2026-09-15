@@ -19,18 +19,20 @@ const Inscription = () => {
   };
 
   return (
-    <>
-      <h1 className="text-center mb-6">Inscription</h1>
-      <RoleSelector role={role} setRole={setRole} />
-      {role != null && (
-        <InscriptionForm
-          role={role}
-          errors={errors}
-          programmes={programmes}
-          handleSubmit={handleSubmit}
-        />
-      )}
-    </>
+    <div className="min-h-screen flex items-center justify-center bg-[#4b1113] px-4 py-10">
+      <div className="w-full max-w-2xl bg-[#8b6f52] rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-6 text-[#2b1a12]">Inscription</h1>
+        <RoleSelector role={role} setRole={setRole} />
+        {role != null && (
+          <InscriptionForm
+            role={role}
+            errors={errors}
+            programmes={programmes}
+            handleSubmit={handleSubmit}
+          />
+        )}
+      </div>
+    </div>
   );
 }
 

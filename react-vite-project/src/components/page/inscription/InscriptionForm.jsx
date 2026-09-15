@@ -6,7 +6,20 @@ const InscriptionForm = ({ role, errors, programmes, handleSubmit }) => (
       <UserFields role={role} errors={errors} programmes={programmes} />
     </div>
     <div>
-      <button type="submit" className="btn btn-primary">S'inscrire</button>
+      <button
+        type="submit"
+        className="
+        w-full mt-6
+        bg-[#4b1113]
+        text-white
+        font-medium
+        py-2
+        rounded-md
+        hover:bg-[#3a0d0f]
+        transition-colors"
+      >
+        S'inscrire
+      </button>
     </div>
   </form>
 );
