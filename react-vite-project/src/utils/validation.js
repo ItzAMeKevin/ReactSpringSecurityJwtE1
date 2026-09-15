@@ -15,5 +15,13 @@ export const validateInscription = (data) => {
         errs.confirmation = "Les mots de passe ne correspondent pas";
     }
 
+    // Matricule (étudiant): exactement 7 chiffres
+    if (data.matricule !== undefined) {
+        const matriculeRegex = /^\d{7}$/;
+        if (!matriculeRegex.test(data.matricule)) {
+            errs.matricule = "Doit être 7 chiffres";
+        }
+    }
+
     return errs;
 };
