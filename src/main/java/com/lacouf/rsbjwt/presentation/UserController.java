@@ -13,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
@@ -51,7 +49,7 @@ public class UserController {
 
 	@PostMapping("/inscription")
 	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
-		if (userDTO.getEmail() == userService.getMe(userDTO.getEmail()).getEmail()) {
+		if (userDTO.getEmail() == userService.getUserByEmail(userDTO.getEmail()).getEmail()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}else {
 			userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
