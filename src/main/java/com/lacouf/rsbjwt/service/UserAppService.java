@@ -51,6 +51,13 @@ public class UserAppService {
         return UserDTO.toUserDTO(savedUser);
     }
 
+    public UserDTO getUserByEmail(String email) {
+        final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
+        return userOptional.isPresent() ?
+                UserDTO.toUserDTO(userOptional.get()) :
+                null;
+    }
+
     private ManagerDto getManagerDto(Long id) {
         final Optional<Manager> managerOptional = managerRepository.findById(id);
         return managerOptional.isPresent() ?

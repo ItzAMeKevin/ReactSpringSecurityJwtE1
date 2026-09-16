@@ -8,8 +8,8 @@ public class ManagerDto extends UserDTO {
 
     @Builder
     public ManagerDto(Long id, String firstName, String lastname,
-                           String email, Role role, String matricule) {
-        super(id, firstName, lastname, email, role, matricule);
+                           String email, String password, Role role, String matricule) {
+        super(id, firstName, lastname, email, password, role, matricule);
     }
 
     public ManagerDto() {}
@@ -20,6 +20,8 @@ public class ManagerDto extends UserDTO {
                 .firstName(manager.getFirstName())
                 .lastname(manager.getLastName())
                 .email(manager.getEmail())
+                .password(manager.getPassword())
+                .matricule(manager.getMatricule())
                 .role(manager.getRole())
                 .build();
     }

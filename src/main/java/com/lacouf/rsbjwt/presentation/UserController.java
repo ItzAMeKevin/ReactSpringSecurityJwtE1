@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,9 +19,10 @@ import java.util.List;
 public class UserController {
 
 	private final UserAppService userService;
+	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto){
+	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto) {
 		try {
 			String accessToken = userService.authenticateUser(loginDto);
 			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
@@ -35,9 +35,9 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<UserDTO> getMe(HttpServletRequest request){
+	public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-			userService.getMe(request.getHeader("Authorization")));
+				userService.getMe(request.getHeader("Authorization")));
 	}
 
 	@GetMapping("/gestionnaire/demo")
@@ -49,8 +49,13 @@ public class UserController {
 
 	@PostMapping("/inscription")
 	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
-		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-			userService.inscription(userDTO));
-	}
+		UserDTO existingUser = userService.getUserByEmail(userDTO.getEmail());
+		if (existingUser != null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}
 
+		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+				userService.inscription(userDTO));
+	}
 }

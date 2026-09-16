@@ -22,20 +22,20 @@ const Inscription = () => {
       firstName: data.prenom,
       lastname: data.nom,
       email: data.courriel,
-      motDePasse: data.motDePasse,
+      password: data.motDePasse,
     };
 
     switch (role) {
       case "student":
-        params.role = "STUDENT";
+        params.role = "ROLE_STUDENT";
         params.matricule = data.matricule;
         params.programme = data.programme;
         break;
       case "professor":
-        params.role = "MANAGER";
+        params.role = "ROLE_MANAGER";
         break;
       case "employer":
-        params.role = "EMPLOYER";
+        params.role = "ROLE_EMPLOYER";
         break;
       default:
         break;
