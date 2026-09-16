@@ -22,7 +22,7 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto){
+	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto) {
 		try {
 			String accessToken = userService.authenticateUser(loginDto);
 			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
@@ -35,9 +35,9 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<UserDTO> getMe(HttpServletRequest request){
+	public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-			userService.getMe(request.getHeader("Authorization")));
+				userService.getMe(request.getHeader("Authorization")));
 	}
 
 	@GetMapping("/gestionnaire/demo")
@@ -49,13 +49,13 @@ public class UserController {
 
 	@PostMapping("/inscription")
 	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
-		if (userDTO.getEmail() == userService.getUserByEmail(userDTO.getEmail()).getEmail()) {
+		UserDTO existingUser = userService.getUserByEmail(userDTO.getEmail());
+		if (existingUser != null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-		}else {
-			userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-			return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-					userService.inscription(userDTO));
 		}
-	}
 
+		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+				userService.inscription(userDTO));
+	}
 }
