@@ -51,6 +51,11 @@ public class UserAppService {
         return UserDTO.toUserDTO(savedUser);
     }
 
+    public boolean matriculeExists(String matricule) {
+        return studentRepository.findByMatricule(matricule).isPresent()
+                || managerRepository.findByMatricule(matricule).isPresent();
+    }
+
     public UserDTO getUserByEmail(String email) {
         final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
         return userOptional.isPresent() ?
