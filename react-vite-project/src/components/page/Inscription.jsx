@@ -18,7 +18,12 @@ const Inscription = () => {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    const { confirmation, ...params } = data;
+    const params = {
+      firstName: data.prenom,
+      lastname: data.nom,
+      email: data.courriel,
+      motDePasse: data.motDePasse,
+    };
 
     switch (role) {
       case "student":
@@ -26,9 +31,17 @@ const Inscription = () => {
         params.matricule = data.matricule;
         params.programme = data.programme;
         break;
+      case "professor":
+        params.role = "MANAGER";
+        break;
+      case "employer":
+        params.role = "EMPLOYER";
+        break;
+      default:
+        break;
     }
 
-    const res = await fetch(`${BASE_URL}inscription/${RoleSelector.value}`, {
+    const res = await fetch(`${BASE_URL}user/inscription`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
