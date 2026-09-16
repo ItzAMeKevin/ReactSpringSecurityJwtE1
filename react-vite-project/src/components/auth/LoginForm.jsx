@@ -153,33 +153,97 @@ const LoginForm = ({user, setUser, setError}) => {
             user.role === "ROLE_GESTIONNAIRE" ? navigate("/gestionnaire") :
               navigate("/")
       ) : (
-        <div className="container mt-5">
-          <h1 className="display-6 text-center mb-3">Projet Etudiant</h1>
+          <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
+            <div
+                className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
+                style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
+            >
+              <div className="absolute inset-0 bg-[#4b1113]" />
+              <div
+                  className="absolute -inset-[50%] opacity-25"
+                  style={{
+                    backgroundImage: "radial-gradient(#e8d5b5 1.6px, transparent 1.7px)",
+                    backgroundSize: "18px 18px",
+                    transform: "rotate(32deg)",
+                  }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#4b1113] via-transparent to-[#4b1113]/40" />
+            </div>
 
-            <div className="row">
-              <div className="col-9 mx-auto">
-                <form id="login-form" className="form-group" onSubmit={handleSubmit}>
-                  <label htmlFor="email" className="mt-3">email</label>
-                  <input id="email" type="email"
-                         className={`form-control ${warnings.email ? "is-invalid" : ""} `}
-                         placeholder="placeHolderEmail" name="email" onChange={handleChanges} required/>
-                  <div className="text-danger">{warnings.email}</div>
-                  <label htmlFor="password" className="mt-3">password</label>
-                  <input id="password" type="password"
-                         className={`form-control ${warnings.password ? "is-invalid" : ""} `}
-                         placeholder="placeHolderPassword" name="password" onChange={handleChanges} required/>
-                  <div className="text-danger">{warnings.password}</div>
-                  <div className="row col-6 mx-auto">
-                    <button type="submit" className="btn btn-outline-ose my-5 mx-auto">loginSubmit</button>
-                  </div>
-                </form>
-                <div className="text-center mt-3">
-                  <p>Première fois? <button type="button" className="btn btn-link p-0" onClick={() => navigate("/inscription")}>Inscrivez-vous</button></p>
+            <div className="relative z-10 grid min-h-screen md:grid-cols-2">
+              <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-[#f3ebe3]">
+                <h2 className="text-4xl lg:text-5xl font-semibold leading-tight mb-4">
+                  Bienvenue
+                </h2>
+                <p className="max-w-sm text-[#f3ebe3]/80 text-sm leading-relaxed">
+                  Connectez-vous pour accéder à votre espace et poursuivre vos démarches.
+                </p>
+                <div className="mt-8 h-px w-24 bg-[#e8d5b5]/50" />
+              </div>
+
+              <div className="flex items-center justify-center px-4 py-12">
+                <div className="w-full max-w-md rounded-2xl border border-[#8b6f52]/30 bg-[#8b6f52] p-8 shadow-2xl shadow-[#4b1113]/30">
+                  <h1 className="text-2xl font-bold text-center mb-2 text-[#2b1a12]">Connexion</h1>
+
+                  <form id="login-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    <div className="flex flex-col">
+                      <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">Courriel</label>
+                      <input
+                          id="email"
+                          type="email"
+                          name="email"
+                          onChange={handleChanges}
+                          required
+                          placeholder="prenom.nom@domain.com"
+                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
+                              warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
+                          }`}
+                      />
+                      {warnings.email && (
+                          <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.email}</span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label htmlFor="password" className="mb-1 font-medium text-[#2b1a12]">Mot de passe</label>
+                      <input
+                          id="password"
+                          type="password"
+                          name="password"
+                          onChange={handleChanges}
+                          required
+                          placeholder="Votre mot de passe"
+                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
+                              warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
+                          }`}
+                      />
+                      {warnings.password && (
+                          <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.password}</span>
+                      )}
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="w-full mt-2 bg-[#4b1113] text-white font-medium py-2.5 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                    >
+                      Se connecter
+                    </button>
+                  </form>
+
+                  <p className="text-center mt-6 text-[#2b1a12]">
+                    Première fois ?{" "}
+                    <button
+                        type="button"
+                        onClick={() => navigate("/inscription")}
+                        className="font-semibold underline hover:text-[#3a0d0f]"
+                    >
+                      Inscrivez-vous
+                    </button>
+                  </p>
                 </div>
               </div>
             </div>
-
-        </div>
+          </div>
       )}
     </>
   )
