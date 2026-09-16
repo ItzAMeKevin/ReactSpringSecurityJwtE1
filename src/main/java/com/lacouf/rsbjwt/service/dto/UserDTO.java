@@ -23,6 +23,7 @@ public class UserDTO {
     private String firstName;
     private String lastname;
     private String email;
+    private String password;
     private Role role;
     private String matricule;
 
@@ -31,15 +32,18 @@ public class UserDTO {
             case MANAGER -> Manager.builder()
                     .id(userDTO.getId())
                     .firstName(userDTO.getFirstName())
+                    .password(userDTO.getPassword())
                     .matricule(userDTO.getMatricule())
                     .lastName(userDTO.getLastname())
                     .email(userDTO.getEmail())
+                    .password(userDTO.getPassword())
                     .build();
             case EMPLOYER -> Employer.builder()
                     .id(userDTO.getId())
                     .firstName(userDTO.getFirstName())
                     .lastName(userDTO.getLastname())
                     .email(userDTO.getEmail())
+                    .password(userDTO.getPassword())
                     .build();
             case STUDENT -> Student.builder()
                     .id(userDTO.getId())
@@ -47,6 +51,7 @@ public class UserDTO {
                     .lastName(userDTO.getLastname())
                     .matricule(userDTO.getMatricule())
                     .email(userDTO.getEmail())
+                    .password(userDTO.getPassword())
                     .build();
             default -> throw new IllegalArgumentException("Unknown role: " + userDTO.getRole());
         };

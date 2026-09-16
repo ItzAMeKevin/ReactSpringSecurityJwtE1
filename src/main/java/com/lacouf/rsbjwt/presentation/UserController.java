@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserController {
 
 	private final UserAppService userService;
+	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
 	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto){
@@ -49,8 +51,13 @@ public class UserController {
 
 	@PostMapping("/inscription")
 	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
-		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-			userService.inscription(userDTO));
+		if (userDTO.getEmail() == userService.getMe(userDTO.getEmail()).getEmail()) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}else {
+			userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+			return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+					userService.inscription(userDTO));
+		}
 	}
 
 }
