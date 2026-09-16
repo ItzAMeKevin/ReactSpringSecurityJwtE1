@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { validateField, validateInscription } from "../../utils/validation.js";
 import BASE_URL from "../config/Config.jsx";
 import RoleSelector from "./inscription/RoleSelector";
 import InscriptionForm from "./inscription/InscriptionForm";
 
 const Inscription = () => {
+  const { t, i18n } = useTranslation();
   const [errors, setErrors] = useState({});
   const [role, setRole] = useState(null);
   const programmes = ["1", "2", "3"];
@@ -68,7 +70,19 @@ const Inscription = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#4b1113] px-4 py-10">
       <div className="w-full max-w-2xl bg-[#8b6f52] rounded-xl shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-center mb-6 text-[#2b1a12]">Inscription</h1>
+        <div className="flex justify-end gap-2 mb-2">
+          {["fr", "en"].map((lang) => (
+            <button
+              key={lang}
+              type="button"
+              onClick={() => i18n.changeLanguage(lang)}
+              className={`text-sm px-2 py-1 rounded text-[#2b1a12] ${i18n.language === lang ? "font-bold underline" : ""}`}
+            >
+              {lang.toUpperCase()}
+            </button>
+          ))}
+        </div>
+        <h1 className="text-2xl font-bold text-center mb-6 text-[#2b1a12]">{t("inscription.title")}</h1>
         <RoleSelector role={role} setRole={setRole} />
         {role != null && (
           <InscriptionForm

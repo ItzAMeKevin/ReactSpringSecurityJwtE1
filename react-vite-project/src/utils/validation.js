@@ -11,15 +11,15 @@ export const validateField = (name, value, data = {}) => {
     switch (name) {
         case "nom":
         case "prenom":
-            return nameRegex.test(value) ? undefined : "Lettres seulement";
+            return nameRegex.test(value) ? undefined : "errors.lettersOnly";
         case "courriel":
-            return emailRegex.test(value) ? undefined : "Doit être @domain.ca ou @domain.com";
+            return emailRegex.test(value) ? undefined : "errors.emailFormat";
         case "motDePasse":
-            return passwordRegex.test(value) ? undefined : "8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre";
+            return passwordRegex.test(value) ? undefined : "errors.passwordComplexity";
         case "confirmation":
-            return value === data.motDePasse ? undefined : "Les mots de passe ne correspondent pas";
+            return value === data.motDePasse ? undefined : "errors.passwordMismatch";
         case "matricule":
-            return matriculeRegex.test(value) ? undefined : "Doit être 7 chiffres";
+            return matriculeRegex.test(value) ? undefined : "errors.matriculeFormat";
         default:
             return undefined;
     }
