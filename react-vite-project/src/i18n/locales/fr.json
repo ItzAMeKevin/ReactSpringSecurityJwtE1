@@ -27,18 +27,15 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "matriculeFormat": "Doit être 7 chiffres"
   },
-  "login": {
-    "welcome": "Bienvenue",
-    "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",
-    "title": "Connexion",
-    "email": "Courriel",
-    "emailPlaceholder": "prenom.nom@domain.com",
-    "password": "Mot de passe",
-    "passwordPlaceholder": "Votre mot de passe",
-    "submit": "Se connecter",
-    "firstTime": "Première fois ?",
-    "signUp": "Inscrivez-vous",
-    "invalidEmail": "Courriel invalide",
-    "invalidPassword": "Mot de passe invalide"
+  "header": {
+    "title": "My App",
+    "accueil": "Accueil",
+    "about": "À propos",
+    "emprunteur": "Emprunteur",
+    "prepose": "Prepose",
+    "gestionnaire": "Gestionnaire",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "greeting": "Bonjour"
   }
 }

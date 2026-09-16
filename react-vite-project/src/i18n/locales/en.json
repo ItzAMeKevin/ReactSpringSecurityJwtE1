@@ -27,18 +27,15 @@
     "passwordMismatch": "Passwords do not match",
     "matriculeFormat": "Must be 7 digits"
   },
-  "login": {
-    "welcome": "Welcome",
-    "subtitle": "Sign in to access your space and continue your process.",
-    "title": "Sign in",
-    "email": "Email",
-    "emailPlaceholder": "first.last@domain.com",
-    "password": "Password",
-    "passwordPlaceholder": "Your password",
-    "submit": "Sign in",
-    "firstTime": "First time?",
-    "signUp": "Sign up",
-    "invalidEmail": "Invalid email",
-    "invalidPassword": "Invalid password"
+  "header": {
+    "title": "My App",
+    "accueil": "Home",
+    "about": "About",
+    "emprunteur": "Employer",
+    "prepose": "Manager",
+    "gestionnaire": "Admin",
+    "logout": "Logout",
+    "login": "Login",
+    "greeting": "Hello"
   }
 }
