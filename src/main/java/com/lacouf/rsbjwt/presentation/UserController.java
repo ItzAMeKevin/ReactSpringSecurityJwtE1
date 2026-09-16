@@ -46,4 +46,11 @@ public class UserController {
 		return ResponseEntity.ok("tout est beau");
 	}
 
+
+	@PostMapping("/inscription")
+	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
+		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
+			userService.inscription(userDTO));
+	}
+
 }
