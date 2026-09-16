@@ -37,5 +37,19 @@
     "logout": "Déconnexion",
     "login": "Connexion",
     "greeting": "Bonjour"
+  },
+  "login": {
+    "welcome": "Bienvenue",
+    "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",
+    "title": "Connexion",
+    "email": "Courriel",
+    "emailPlaceholder": "prenom.nom@domain.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "submit": "Se connecter",
+    "firstTime": "Première fois ?",
+    "signUp": "Inscrivez-vous",
+    "invalidEmail": "Courriel invalide",
+    "invalidPassword": "Mot de passe invalide"
   }
 }

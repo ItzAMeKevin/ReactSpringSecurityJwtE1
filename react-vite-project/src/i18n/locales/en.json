@@ -37,5 +37,19 @@
     "logout": "Logout",
     "login": "Login",
     "greeting": "Hello"
+  },
+  "login": {
+    "welcome": "Welcome",
+    "subtitle": "Sign in to access your space and continue your process.",
+    "title": "Sign in",
+    "email": "Email",
+    "emailPlaceholder": "first.last@domain.com",
+    "password": "Password",
+    "passwordPlaceholder": "Your password",
+    "submit": "Sign in",
+    "firstTime": "First time?",
+    "signUp": "Sign up",
+    "invalidEmail": "Invalid email",
+    "invalidPassword": "Invalid password"
   }
 }
