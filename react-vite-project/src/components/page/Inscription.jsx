@@ -22,7 +22,7 @@ const Inscription = () => {
       firstName: data.prenom,
       lastname: data.nom,
       email: data.courriel,
-      motDePasse: data.motDePasse,
+      password: data.motDePasse,
     };
 
     switch (role) {
