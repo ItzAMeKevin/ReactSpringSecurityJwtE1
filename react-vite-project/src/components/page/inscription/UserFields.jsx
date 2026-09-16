@@ -12,6 +12,9 @@ const UserFields = ({ role, errors, programmes }) => {
       <Field label={t("inscription.fields.courriel")} name="courriel" type="email" error={errors.courriel} />
       <Field label={t("inscription.fields.motDePasse")} name="motDePasse" type="password" error={errors.motDePasse} />
       <Field label={t("inscription.fields.confirmation")} name="confirmation" type="password" error={errors.confirmation} />
+      {(role === "student" || role === "professor") && (
+        <Field label={t("inscription.fields.matricule")} name="matricule" error={errors.matricule} />
+      )}
       {role === "student" && <StudentFields errors={errors} programmes={programmes} />}
     </>
   );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { validateField, validateInscription } from "../../utils/validation.js";
 import BASE_URL from "../config/Config.jsx";
@@ -7,7 +8,9 @@ import InscriptionForm from "./inscription/InscriptionForm";
 
 const Inscription = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState(null);
   const [role, setRole] = useState(null);
   const programmes = ["1", "2", "3"];
 
@@ -16,6 +19,7 @@ const Inscription = () => {
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const errs = validateInscription(data);
     setErrors(errs);
+    setSubmitError(null);
     if (Object.keys(errs).length > 0) return;
 
     const params = {
@@ -33,6 +37,7 @@ const Inscription = () => {
         break;
       case "professor":
         params.role = "ROLE_MANAGER";
+        params.matricule = data.matricule;
         break;
       case "employer":
         params.role = "ROLE_EMPLOYER";
@@ -41,12 +46,34 @@ const Inscription = () => {
         break;
     }
 
-    const res = await fetch(`${BASE_URL}user/inscription`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
-    });
-    return res.json();
+    try {
+      const res = await fetch(`${BASE_URL}user/inscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+
+      if (res.ok) {
+        navigate("/");
+        return;
+      }
+
+      if (res.status === 409) {
+        const { field } = await res.json();
+        if (field === "email") {
+          setErrors((prev) => ({ ...prev, courriel: "errors.emailTaken" }));
+        } else if (field === "matricule") {
+          setErrors((prev) => ({ ...prev, matricule: "errors.matriculeTaken" }));
+        } else {
+          setSubmitError("errors.generic");
+        }
+        return;
+      }
+
+      setSubmitError("errors.generic");
+    } catch {
+      setSubmitError("errors.generic");
+    }
   };
 
   const handleChange = (e) => {
@@ -104,6 +131,9 @@ const Inscription = () => {
           ))}
         </div>
         <h1 className="text-2xl font-bold text-center mb-2 text-[#2b1a12]">{t("inscription.title")}</h1>
+        {submitError && (
+          <p className="mb-3 text-center text-red-800 text-sm font-semibold">{t(submitError)}</p>
+        )}
         <RoleSelector role={role} setRole={setRole} />
         {role != null && (
           <InscriptionForm
