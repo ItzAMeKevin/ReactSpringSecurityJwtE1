@@ -42,6 +42,8 @@ public class SecurityConfiguration {
 
     private static final String H2_CONSOLE_PATH = "/h2-console/**";
     private static final String USER_LOGIN_PATH = "/user/login";
+    private static final String USER_INSCRIPTION_PATH = "/user/inscription";
+    private static final String ERROR_PATH = "/error";
     private static final String EMPRUNTEUR_REGISTER_PATH = "/emprunteur/register";
     private static final String PREPOSE_REGISTER_PATH = "/prepose/register";
     private static final String USER_PATH = "/user/**";
@@ -58,10 +60,12 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(POST, USER_LOGIN_PATH).permitAll()
+                        .requestMatchers(POST, USER_INSCRIPTION_PATH).permitAll()
                         .requestMatchers(POST, EMPRUNTEUR_REGISTER_PATH).permitAll()
                         .requestMatchers(POST, PREPOSE_REGISTER_PATH).permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Allow CORS preflight requests
                         .requestMatchers(H2_CONSOLE_PATH).permitAll() // Allow H2 console access
+                        .requestMatchers(ERROR_PATH).permitAll() // Let Spring's error handler show the real status code instead of 401
 
                         // Use Role enum names for authorities
                         .requestMatchers(GET, USER_PATH).hasAnyAuthority(Role.STUDENT.name(), Role.EMPLOYER.name(), Role.MANAGER.name())

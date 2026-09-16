@@ -1,0 +1,30 @@
+{
+  "inscription": {
+    "title": "Registration",
+    "roleLabel": "Register as",
+    "rolePlaceholder": "Select a role",
+    "roles": {
+      "student": "Student",
+      "professor": "Professor",
+      "employer": "Employer"
+    },
+    "fields": {
+      "nom": "Last name",
+      "prenom": "First name",
+      "courriel": "Email",
+      "motDePasse": "Password",
+      "confirmation": "Confirm password",
+      "matricule": "Student ID",
+      "programme": "Program of study",
+      "programmePlaceholder": "Select a program"
+    },
+    "submit": "Register"
+  },
+  "errors": {
+    "lettersOnly": "Letters only",
+    "emailFormat": "Must be @domain.ca or @domain.com",
+    "passwordComplexity": "8+ characters, 1 uppercase, 1 lowercase, 1 digit",
+    "passwordMismatch": "Passwords do not match",
+    "matriculeFormat": "Must be 7 digits"
+  }
+}

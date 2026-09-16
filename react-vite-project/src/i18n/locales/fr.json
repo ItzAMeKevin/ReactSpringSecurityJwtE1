@@ -1,0 +1,30 @@
+{
+  "inscription": {
+    "title": "Inscription",
+    "roleLabel": "S'inscrire en tant que",
+    "rolePlaceholder": "Sélectionnez un rôle",
+    "roles": {
+      "student": "Étudiant",
+      "professor": "Professeur",
+      "employer": "Employeur"
+    },
+    "fields": {
+      "nom": "Nom",
+      "prenom": "Prenom",
+      "courriel": "Courriel",
+      "motDePasse": "Mot de passe",
+      "confirmation": "Confirmation de mot de passe",
+      "matricule": "Matricule",
+      "programme": "Programme d'étude",
+      "programmePlaceholder": "Sélectionnez un programme"
+    },
+    "submit": "S'inscrire"
+  },
+  "errors": {
+    "lettersOnly": "Lettres seulement",
+    "emailFormat": "Doit être @domain.ca ou @domain.com",
+    "passwordComplexity": "8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "matriculeFormat": "Doit être 7 chiffres"
+  }
+}
