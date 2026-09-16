@@ -81,8 +81,16 @@ const Inscription = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#4b1113] px-4 py-10">
-      <div className="w-full max-w-2xl bg-[#8b6f52] rounded-xl shadow-lg p-8">
+    <div className="relative min-h-screen overflow-hidden bg-[#4b1113] flex items-center justify-center px-4 py-10">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-25"
+        style={{
+          backgroundImage: "radial-gradient(#e8d5b5 1.6px, transparent 1.7px)",
+          backgroundSize: "18px 18px",
+        }}
+      />
+
+      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-[#8b6f52]/30 bg-[#8b6f52] p-8 shadow-2xl shadow-[#4b1113]/30">
         <div className="flex justify-end gap-2 mb-2">
           {["fr", "en"].map((lang) => (
             <button
@@ -95,7 +103,7 @@ const Inscription = () => {
             </button>
           ))}
         </div>
-        <h1 className="text-2xl font-bold text-center mb-6 text-[#2b1a12]">{t("inscription.title")}</h1>
+        <h1 className="text-2xl font-bold text-center mb-2 text-[#2b1a12]">{t("inscription.title")}</h1>
         <RoleSelector role={role} setRole={setRole} />
         {role != null && (
           <InscriptionForm
