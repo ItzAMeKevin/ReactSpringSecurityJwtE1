@@ -26,5 +26,16 @@
     "passwordComplexity": "8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "matriculeFormat": "Doit être 7 chiffres"
+  },
+  "header": {
+    "title": "My App",
+    "accueil": "Accueil",
+    "about": "À propos",
+    "emprunteur": "Emprunteur",
+    "prepose": "Prepose",
+    "gestionnaire": "Gestionnaire",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "greeting": "Bonjour"
   }
 }

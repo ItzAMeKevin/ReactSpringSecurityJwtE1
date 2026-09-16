@@ -26,5 +26,16 @@
     "passwordComplexity": "8+ characters, 1 uppercase, 1 lowercase, 1 digit",
     "passwordMismatch": "Passwords do not match",
     "matriculeFormat": "Must be 7 digits"
+  },
+  "header": {
+    "title": "My App",
+    "accueil": "Home",
+    "about": "About",
+    "emprunteur": "Employer",
+    "prepose": "Manager",
+    "gestionnaire": "Admin",
+    "logout": "Logout",
+    "login": "Login",
+    "greeting": "Hello"
   }
 }
