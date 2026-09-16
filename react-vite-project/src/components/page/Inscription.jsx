@@ -27,15 +27,15 @@ const Inscription = () => {
 
     switch (role) {
       case "student":
-        params.role = "STUDENT";
+        params.role = "ROLE_STUDENT";
         params.matricule = data.matricule;
         params.programme = data.programme;
         break;
       case "professor":
-        params.role = "MANAGER";
+        params.role = "ROLE_MANAGER";
         break;
       case "employer":
-        params.role = "EMPLOYER";
+        params.role = "ROLE_EMPLOYER";
         break;
       default:
         break;
