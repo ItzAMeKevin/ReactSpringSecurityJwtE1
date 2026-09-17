@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
-import { labelClass } from "./Field";
+import Field, { labelClass } from "./Field";
 
 const StudentFields = ({ errors, programmes }) => {
     const { t } = useTranslation();
 
     return (
         <>
+            <Field label={t("inscription.fields.matricule")} name="matricule" error={errors.matricule} />
             <div className="flex flex-col">
                 <label className={labelClass}>{t("inscription.fields.programme")}</label>
                 <div className="relative">
