@@ -5,7 +5,7 @@
     "rolePlaceholder": "Sélectionnez un rôle",
     "roles": {
       "student": "Étudiant",
-      "professor": "Professeur",
+      "manager": "Professeur",
       "employer": "Employeur"
     },
     "fields": {

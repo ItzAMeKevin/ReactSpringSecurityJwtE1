@@ -27,23 +27,14 @@ const Inscription = () => {
       lastname: data.nom,
       email: data.courriel,
       password: data.motDePasse,
+      role: `ROLE_${role.toUpperCase()}`,
     };
 
-    switch (role) {
-      case "student":
-        params.role = "ROLE_STUDENT";
-        params.matricule = data.matricule;
-        params.programme = data.programme;
-        break;
-      case "professor":
-        params.role = "ROLE_MANAGER";
-        params.matricule = data.matricule;
-        break;
-      case "employer":
-        params.role = "ROLE_EMPLOYER";
-        break;
-      default:
-        break;
+    if (role === "student" || role === "manager") {
+      params.matricule = data.matricule;
+    }
+    if (role === "student") {
+      params.programme = data.programme;
     }
 
     try {
