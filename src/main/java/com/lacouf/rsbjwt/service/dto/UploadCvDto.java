@@ -14,8 +14,6 @@ public class UploadCvDto {
 
     @NotBlank(message = "Le nom du fichier est obligatoire.")
     @Size(max = 255, message = "Le nom du fichier est trop long.")
-    @Pattern(regexp = ".*\\.pdf", flags = Pattern.Flag.CASE_INSENSITIVE,
-            message = "Le fichier doit être un PDF.")
     private String fileName;
 
     @NotBlank(message = "Le type de fichier est requis.")

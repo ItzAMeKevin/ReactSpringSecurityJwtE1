@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -27,49 +28,61 @@ public class StudentCvService {
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, UploadCvDto request) {
-        if (!PDF_CONTENT_TYPE.equalsIgnoreCase(request.getContentType())) {
+        validatePdfContentType(request.getContentType());
+        byte[] decodedContent = decodeBase64AndValidatePdf(request.getContent());
+        Student student = findStudentByEmail(authenticatedEmail);
+        StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
+        return CvMetaDataDto.toCvMetaDataDto(savedCv);
+    }
+
+    private Student findStudentByEmail(String email) {
+        return studentRepository.findByCredentialsEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private void validatePdfContentType(String contentType) {
+        if (!PDF_CONTENT_TYPE.equalsIgnoreCase(contentType)) {
             throw new InvalidCvException("Seuls les PDF sont acceptés.");
         }
+    }
 
+    private byte[] decodeBase64AndValidatePdf(String base64Content) {
         byte[] content;
         try {
-            content = Base64.getDecoder().decode(request.getContent());
+            content = Base64.getDecoder().decode(base64Content);
         } catch (IllegalArgumentException e) {
             throw new InvalidCvException("Le contenu Base64 est invalide.");
         }
+        validatePdfContent(content);
+        return content;
+    }
 
-        if (content.length == 0 || content.length > MAX_CV_SIZE_BYTES) {
-            throw new InvalidCvException("Le fichier doit faire entre 1 octet et 5 Mo.");
-        }
-
-        if (!hasPdfSignature(content)) {
-            throw new InvalidCvException("Le contenu fourni n'est pas un PDF.");
-        }
-
-        Student student = studentRepository.findByCredentialsEmail(authenticatedEmail)
-                .orElseThrow(UserNotFoundException::new);
-
+        private StudentCv createAndSaveStudentCv(Student student, String fileName, byte[] content) {
         StudentCv cv = new StudentCv();
-        cv.setFileName(sanitizeFileName(request.getFileName()));
+        cv.setFileName(sanitizeFileName(fileName));
         cv.setContentType(PDF_CONTENT_TYPE);
         cv.setContent(content);
         cv.setSize(content.length);
         cv.setStatus(CvStatus.PENDING);
         cv.setStudent(student);
 
-        return CvMetaDataDto.toCvMetaDataDto(studentCvRepository.save(cv));
+        return studentCvRepository.save(cv);
     }
 
-    private static boolean hasPdfSignature(byte[] content) {
+    private static boolean isPdfSignatureValid(byte[] content) {
         if (content.length < PDF_SIGNATURE.length) {
             return false;
         }
-        for (int i = 0; i < PDF_SIGNATURE.length; i++) {
-            if (content[i] != PDF_SIGNATURE[i]) {
-                return false;
-            }
+        return Arrays.equals(content, 0 , PDF_SIGNATURE.length, PDF_SIGNATURE, 0, PDF_SIGNATURE.length);
+    }
+
+    private void validatePdfContent(byte[] content){
+        if (content.length == 0 || content.length > MAX_CV_SIZE_BYTES) {
+            throw new InvalidCvException("Le fichier doit faire entre 1 octet et 5 Mo.");
         }
-        return true;
+        if (!isPdfSignatureValid(content)) {
+            throw new InvalidCvException("Le contenu fourni n'est pas un PDF.");
+        }
     }
 
     private static String sanitizeFileName(String fileName) {
