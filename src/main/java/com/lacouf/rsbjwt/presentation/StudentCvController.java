@@ -1,5 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.UploadCvDto;
@@ -24,7 +26,13 @@ public class StudentCvController {
     @PostMapping
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<CvMetaDataDto> upload(Authentication authentication, @Valid @RequestBody UploadCvDto request){
-        CvMetaDataDto response = studentCvService.upload(authentication.getName(), request);
-        return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
+        try {
+            CvMetaDataDto response = studentCvService.upload(authentication.getName(), request);
+            return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
+        } catch (InvalidCvException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
