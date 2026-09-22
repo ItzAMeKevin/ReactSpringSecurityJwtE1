@@ -38,7 +38,7 @@ const Inscription = () => {
     }
     if (role === "employer") {
       params.companyName = data.nomEntreprise;
-      params.adress = data.adresse;
+      params.address = data.adresse;
       params.postalCode = data.codePostal;
       params.city = data.ville;
       params.phoneNumber = data.telephone;

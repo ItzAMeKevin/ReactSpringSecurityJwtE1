@@ -10,10 +10,11 @@ public class StudentDto extends UserDTO {
 
     @Builder
     public StudentDto(Long id, String firstName, String lastname, String email, String password, Role role, String matricule) {
-        super(id, firstName, lastname, email, password, role, matricule);
+        super(id, firstName, lastname, email, password, role, matricule, null, null, null, null, null, null);
     }
 
-    public StudentDto() {}
+    public StudentDto() {
+    }
 
     public static StudentDto toStudentDto(Student student) {
         return StudentDto.builder()

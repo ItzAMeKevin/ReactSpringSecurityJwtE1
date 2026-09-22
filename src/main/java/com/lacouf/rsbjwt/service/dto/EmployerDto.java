@@ -5,10 +5,13 @@ import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.Builder;
 
 public class EmployerDto extends UserDTO {
-    
+
     @Builder
-    public EmployerDto(Long id, String firstName, String lastname, String email, String password, Role role) {
-        super(id, firstName, lastname, email, password, role, null);  
+    public EmployerDto(Long id, String firstName, String lastName, String email, String password, Role role,
+                       String companyName, String address, String postalCode, String city,
+                       String phoneNumber, String employerId) {
+        super(id, firstName, lastName, email, password, role, null,
+                companyName, address, postalCode, city, phoneNumber, employerId);
     }
 
     public EmployerDto() {}
@@ -17,10 +20,16 @@ public class EmployerDto extends UserDTO {
         return EmployerDto.builder()
                 .id(employer.getId())
                 .firstName(employer.getFirstName())
-                .lastname(employer.getLastName())
+                .lastName(employer.getLastName())
                 .email(employer.getEmail())
                 .password(employer.getPassword())
                 .role(employer.getRole())
+                .companyName(employer.getCompanyName())
+                .address(employer.getAddress())
+                .postalCode(employer.getPostalCode())
+                .city(employer.getCity())
+                .phoneNumber(employer.getPhoneNumber())
+                .employerId(employer.getEmployerId())
                 .build();
     }
 

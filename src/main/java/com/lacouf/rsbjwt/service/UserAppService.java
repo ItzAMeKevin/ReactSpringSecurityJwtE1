@@ -56,6 +56,10 @@ public class UserAppService {
                 || managerRepository.findByMatricule(matricule).isPresent();
     }
 
+    public boolean employerIdExists(String employerId) {
+        return employerRepository.findByEmployerId(employerId).isPresent();
+    }
+
     public UserDTO getUserByEmail(String email) {
         final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
         return userOptional.isPresent() ?

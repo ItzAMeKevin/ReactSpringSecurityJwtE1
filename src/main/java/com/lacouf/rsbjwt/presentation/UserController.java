@@ -60,6 +60,10 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "matricule"));
 		}
 
+		if (userDTO.getEmployerId() != null && userService.employerIdExists(userDTO.getEmployerId())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "identifiant"));
+		}
+
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
 				userService.inscription(userDTO));
