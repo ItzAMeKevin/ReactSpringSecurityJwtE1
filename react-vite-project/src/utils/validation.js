@@ -44,12 +44,11 @@ export const validateField = (name, value, data = {}) => {
 
 export const validateInscription = (data) => {
     const errs = {};
-
-    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule", "telephone", "codePostal", "identifiant", "nomEntreprise", "adresse", "ville"].forEach((field) => {
+    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule",
+        "telephone", "codePostal", "identifiant", "nomEntreprise", "adresse", "ville"].forEach((field) => {
         if (data[field] === undefined) return;
         const error = validateField(field, data[field], data);
-        if (error) errs[field] = error;
+        if (error) errs[field] = error;``
     });
-
     return errs;
 };
