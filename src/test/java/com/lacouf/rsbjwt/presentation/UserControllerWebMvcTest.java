@@ -206,6 +206,33 @@ class UserControllerWebMvcTest {
     }
 
     @Test
+    @DisplayName("POST /user/inscription returns 202 and the created professor")
+    void inscription_professor_success_returnsAcceptedAndManager() throws Exception {
+        UserDTO request = new UserDTO(null, "Alice", "Tremblay", "alice@school.com", "password",
+                Role.MANAGER, "1234567", null, null, null, null, null, null);
+        UserDTO createdManager = new UserDTO(3L, "Alice", "Tremblay", "alice@school.com", null,
+                Role.MANAGER, "1234567", null, null, null, null, null, null);
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.matriculeExists("1234567")).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("encoded-password");
+        when(userService.inscription(any(UserDTO.class))).thenReturn(createdManager);
+
+        mockMvc.perform(post("/user/inscription")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.firstName").value("Alice"))
+                .andExpect(jsonPath("$.email").value("alice@school.com"))
+                .andExpect(jsonPath("$.matricule").value("1234567"));
+
+        verify(passwordEncoder).encode("password");
+        verify(userService).inscription(any(UserDTO.class));
+    }
+
+    @Test
     @DisplayName("POST /user/inscription returns 409 when the employer ID already exists")
     void inscription_duplicateEmployerId_returnsConflict() throws Exception {
         UserDTO request = new UserDTO(null, "Bob", "Smith", "bob@company.com", "password",
