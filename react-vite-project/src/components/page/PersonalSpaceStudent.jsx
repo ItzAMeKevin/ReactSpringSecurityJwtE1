@@ -1,18 +1,25 @@
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
-    const handleFileUpload = (event) => {
-        console.log("File uploaded");
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const handleInputChange = (event) => {
+        const file = event.target.file?.[0];
+        setSelectedFile(file ?? null);
     };
 
     return (
         <>
             <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
-                <div className="flex h-screen items-center justify-center">
-                    <button onClick={handleFileUpload} className="bg-[#4b1113] text-white font-medium py-2 px-4 rounded-md hover:bg-[#3a0d0f] transition-colors">
-                        {t("televerser")}
-                    </button>
+                <div className="flex flex-col items-center justify-center gap-4 pt-20">
+                    <input type="file" accept=".pdf" onChange={handleInputChange} />
+                    {selectedFile && (
+                        <p className="text-[#4b1113]">
+                            Fichier sélectionné : {selectedFile.name}
+                        </p>
+                    )}
                 </div>
             </div>
         </>
