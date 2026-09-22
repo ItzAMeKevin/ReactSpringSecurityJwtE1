@@ -51,5 +51,6 @@
     "logout": "Logout",
     "login": "Login",
     "greeting": "Hello"
-  }
+  },
+  "televerser": "Upload a file"
 }
