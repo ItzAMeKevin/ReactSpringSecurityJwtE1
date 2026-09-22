@@ -22,7 +22,7 @@
       "codePostal": "Postal code",
       "ville": "City",
       "telephone": "Phone number",
-      "identifiant": "Employer ID"
+      "identifiant": "NEQ"
     },
     "submit": "Register"
   },
@@ -34,7 +34,7 @@
     "matriculeFormat": "Must be 7 digits",
     "telephoneFormat": "Must be 10 digits",
     "postalCodeFormat": "Must be in the format A1A1A1",
-    "enterpriseIdFormat": "Alphanumeric, 3-20 characters",
+    "enterpriseIdFormat": "NEQ must be exactly 10 digits",
     "emailTaken": "This email is already in use.",
     "matriculeTaken": "This ID is already assigned.",
     "generic": "An error occurred, please try again later.",
