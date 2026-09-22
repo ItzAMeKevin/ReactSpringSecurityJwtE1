@@ -7,11 +7,31 @@ import lombok.Builder;
 public class EmployerDto extends UserDTO {
 
     @Builder
-    public EmployerDto(Long id, String firstName, String lastName, String email, String password, Role role,
-                       String companyName, String address, String postalCode, String city,
-                       String phoneNumber, String employerId) {
-        super(id, firstName, lastName, email, password, role, null,
-                companyName, address, postalCode, city, phoneNumber, employerId);
+    public EmployerDto(Long id,
+                       String firstName,
+                       String lastName,
+                       String email,
+                       String password,
+                       Role role,
+                       String companyName,
+                       String address,
+                       String postalCode,
+                       String city,
+                       String phoneNumber,
+                       String employerId) {
+        super(id,
+                firstName,
+                lastName,
+                email,
+                password,
+                role,
+                null,
+                companyName,
+                address,
+                postalCode,
+                city,
+                phoneNumber,
+                employerId);
     }
 
     public EmployerDto() {}

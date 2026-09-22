@@ -14,7 +14,7 @@
       "courriel": "Email",
       "motDePasse": "Password",
       "confirmation": "Confirm password",
-      "matricule": "Student ID",
+      "matricule": "Matricule",
       "programme": "Program of study",
       "programmePlaceholder": "Select a program",
       "nomEntreprise": "Company name",
