@@ -1,5 +1,8 @@
 package com.lacouf.rsbjwt.model.auth;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +22,21 @@ public enum Role{
 
 	Role(String string){
 		this.string = string;
+	}
+
+	@JsonValue
+	public String getString() {
+		return string;
+	}
+
+	@JsonCreator
+	public static Role fromString(String value) {
+		for (Role r : values()) {
+			if (r.string.equals(value) || r.name().equals(value)) {
+				return r;
+			}
+		}
+		throw new IllegalArgumentException("Unknown role: " + value);
 	}
 
 	@Override
