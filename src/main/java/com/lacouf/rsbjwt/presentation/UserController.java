@@ -13,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/user")
@@ -48,10 +50,18 @@ public class UserController {
 
 
 	@PostMapping("/inscription")
-	public ResponseEntity<UserDTO> inscription(@RequestBody UserDTO userDTO) {
+	public ResponseEntity<?> inscription(@RequestBody UserDTO userDTO) {
 		UserDTO existingUser = userService.getUserByEmail(userDTO.getEmail());
 		if (existingUser != null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "email"));
+		}
+
+		if (userDTO.getMatricule() != null && userService.matriculeExists(userDTO.getMatricule())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "matricule"));
+		}
+
+		if (userDTO.getEmployerId() != null && userService.employerIdExists(userDTO.getEmployerId())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "identifiant"));
 		}
 
 		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
