@@ -5,7 +5,7 @@
     "rolePlaceholder": "Sélectionnez un rôle",
     "roles": {
       "student": "Étudiant",
-      "professor": "Professeur",
+      "manager": "Professeur",
       "employer": "Employeur"
     },
     "fields": {
@@ -16,7 +16,13 @@
       "confirmation": "Confirmation de mot de passe",
       "matricule": "Matricule",
       "programme": "Programme d'étude",
-      "programmePlaceholder": "Sélectionnez un programme"
+      "programmePlaceholder": "Sélectionnez un programme",
+      "nomEntreprise": "Nom de l'entreprise",
+      "adresse": "Adresse",
+      "codePostal": "Code postal",
+      "ville": "Ville",
+      "telephone": "téléphone",
+      "identifiant": "NEQ"
     },
     "submit": "S'inscrire"
   },
@@ -25,7 +31,15 @@
     "emailFormat": "Doit être @domain.ca ou @domain.com",
     "passwordComplexity": "8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
-    "matriculeFormat": "Doit être 7 chiffres"
+    "matriculeFormat": "Doit être 7 chiffres",
+    "telephoneFormat": "Doit être 10 chiffres",
+    "postalCodeFormat": "Doit être au format A1A1A1",
+    "enterpriseIdFormat": "Le NEQ doit contenir exactement 10 chiffres",
+    "emailTaken": "Cet email est déjà utilisé.",
+    "matriculeTaken": "Ce matricule est déjà attribué.",
+    "generic": "Une erreur est survenue, veuillez réessayer plus tard.",
+    "required": "Ce champ est requis.",
+    "identifiantTaken": "Cet identifiant est déjà attribué."
   },
   "header": {
     "title": "My App",
@@ -38,6 +52,7 @@
     "login": "Connexion",
     "greeting": "Bonjour"
   },
+  "televerser": "Téléverser un fichier",
   "login": {
     "welcome": "Bienvenue",
     "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",

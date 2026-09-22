@@ -100,12 +100,8 @@ const LoginForm = ({user, setUser, setError}) => {
 
       // Navigate to role-specific page
       const role = userData.role;
-      if (role === "ROLE_EMPRUNTEUR") {
+      if (role === "ROLE_STUDENT") {
         navigate("/emprunteur");
-      } else if (role === "ROLE_PREPOSE") {
-        navigate("/prepose");
-      } else if (role === "ROLE_GESTIONNAIRE") {
-        navigate("/gestionnaire");
       } else {
         navigate("/");
       }
@@ -117,43 +113,10 @@ const LoginForm = ({user, setUser, setError}) => {
 
   }
 
-  // const axiosFetch = () => {
-  //   axiosInstance.post("/user/login", {
-  //     email: formData.email.toLowerCase(),
-  //     password: formData.password
-  //   }).then((response) => {
-  //
-  //     axiosInstance.defaults.headers.common['Authorization'] = response.data.accessToken;
-  //     sessionStorage.setItem('token', response.data.accessToken);
-  //
-  //     axiosInstance.get('/user/me')
-  //       .then(res => {
-  //         let newUser = {...res.data, isLoggedin: true}
-  //         setUser(newUser)
-  //       })
-  //       .catch(err => {
-  //         setWarnings({...warnings, email: err.response?.data.message})
-  //       })
-  //   }).catch((error) => {
-  //     if (error.response) {
-  //       if (error.response?.status === 406) {
-  //         setWarnings({...warnings, email: "wrongEmail"});
-  //         setWarnings({...warnings, password: "wrongPassword"});
-  //       }
-  //     } else {
-  //       //toast.error(t('fetchError') + t(error.response?.data.message));
-  //       setWarnings({...warnings, email: "wrongEmail", password: "wrongPassword"});
-  //     }
-  //   });
-  // }
-
   return (
     <>
       {user?.isLoggedIn ? (
-        user.role === "ROLE_EMPRUNTEUR" ? navigate("/emprunteur") :
-          user.role === "ROLE_PREPOSE" ? navigate("/prepose") :
-            user.role === "ROLE_GESTIONNAIRE" ? navigate("/gestionnaire") :
-              navigate("/")
+        user.role === "ROLE_STUDENT" ? navigate("/emprunteur") : navigate("/")
       ) : (
           <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div

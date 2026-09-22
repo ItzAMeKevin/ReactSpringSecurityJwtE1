@@ -5,7 +5,7 @@
     "rolePlaceholder": "Select a role",
     "roles": {
       "student": "Student",
-      "professor": "Professor",
+      "manager": "Professor",
       "employer": "Employer"
     },
     "fields": {
@@ -14,9 +14,15 @@
       "courriel": "Email",
       "motDePasse": "Password",
       "confirmation": "Confirm password",
-      "matricule": "Student ID",
+      "matricule": "Matricule",
       "programme": "Program of study",
-      "programmePlaceholder": "Select a program"
+      "programmePlaceholder": "Select a program",
+      "nomEntreprise": "Company name",
+      "adresse": "Address",
+      "codePostal": "Postal code",
+      "ville": "City",
+      "telephone": "Phone number",
+      "identifiant": "NEQ"
     },
     "submit": "Register"
   },
@@ -25,7 +31,15 @@
     "emailFormat": "Must be @domain.ca or @domain.com",
     "passwordComplexity": "8+ characters, 1 uppercase, 1 lowercase, 1 digit",
     "passwordMismatch": "Passwords do not match",
-    "matriculeFormat": "Must be 7 digits"
+    "matriculeFormat": "Must be 7 digits",
+    "telephoneFormat": "Must be 10 digits",
+    "postalCodeFormat": "Must be in the format A1A1A1",
+    "enterpriseIdFormat": "NEQ must be exactly 10 digits",
+    "emailTaken": "This email is already in use.",
+    "matriculeTaken": "This ID is already assigned.",
+    "generic": "An error occurred, please try again later.",
+    "required": "This field is required.",
+    "identifiantTaken": "This identifier is already assigned."
   },
   "header": {
     "title": "My App",
@@ -38,6 +52,7 @@
     "login": "Login",
     "greeting": "Hello"
   },
+  "televerser": "Upload a file",
   "login": {
     "welcome": "Welcome",
     "subtitle": "Sign in to access your space and continue your process.",
