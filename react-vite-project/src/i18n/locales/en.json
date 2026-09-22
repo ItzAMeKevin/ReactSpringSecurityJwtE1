@@ -16,7 +16,13 @@
       "confirmation": "Confirm password",
       "matricule": "Student ID",
       "programme": "Program of study",
-      "programmePlaceholder": "Select a program"
+      "programmePlaceholder": "Select a program",
+      "nomEntreprise": "Company name",
+      "adresse": "Address",
+      "codePostal": "Postal code",
+      "ville": "City",
+      "telephone": "Phone number",
+      "identifiant": "Employer ID"
     },
     "submit": "Register"
   },

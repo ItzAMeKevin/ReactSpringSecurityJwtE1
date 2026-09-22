@@ -16,7 +16,13 @@
       "confirmation": "Confirmation de mot de passe",
       "matricule": "Matricule",
       "programme": "Programme d'étude",
-      "programmePlaceholder": "Sélectionnez un programme"
+      "programmePlaceholder": "Sélectionnez un programme",
+      "nomEntreprise": "Nom de l'entreprise",
+      "adresse": "Adresse",
+      "codePostal": "Code postal",
+      "ville": "Ville",
+      "telephone": "téléphone",
+      "identifiant": "Identifiant employeur"
     },
     "submit": "S'inscrire"
   },
