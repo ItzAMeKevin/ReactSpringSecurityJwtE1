@@ -38,7 +38,8 @@
     "emailTaken": "Cet email est déjà utilisé.",
     "matriculeTaken": "Ce matricule est déjà attribué.",
     "generic": "Une erreur est survenue, veuillez réessayer plus tard.",
-    "required": "Ce champ est requis."
+    "required": "Ce champ est requis.",
+    "identifiantTaken": "Cet identifiant est déjà attribué."
   },
   "header": {
     "title": "My App",

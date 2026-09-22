@@ -36,6 +36,14 @@ const Inscription = () => {
     if (role === "student") {
       params.programme = data.programme;
     }
+    if (role === "employer") {
+      params.companyName = data.nomEntreprise;
+      params.adress = data.adresse;
+      params.postalCode = data.codePostal;
+      params.city = data.ville;
+      params.phoneNumber = data.telephone;
+      params.employerId = data.identifiant;
+    }
 
     try {
       const res = await fetch(`${BASE_URL}user/inscription`, {
@@ -45,7 +53,7 @@ const Inscription = () => {
       });
 
       if (res.ok) {
-        navigate("/");
+        navigate(role === "employer" ? "/login": "/");
         return;
       }
 
@@ -55,7 +63,9 @@ const Inscription = () => {
           setErrors((prev) => ({ ...prev, courriel: "errors.emailTaken" }));
         } else if (field === "matricule") {
           setErrors((prev) => ({ ...prev, matricule: "errors.matriculeTaken" }));
-        } else {
+        } else if (field ==="identifiant") {
+          setErrors((prev) => ({ ...prev, identifiant: "errors.identifiantTaken" }));
+        }else {
           setSubmitError("errors.generic");
         }
         return;

@@ -38,8 +38,8 @@
     "emailTaken": "This email is already in use.",
     "matriculeTaken": "This ID is already assigned.",
     "generic": "An error occurred, please try again later.",
-    "required": "This field is required."
-
+    "required": "This field is required.",
+    "identifiantTaken": "This identifier is already assigned."
   },
   "header": {
     "title": "My App",
