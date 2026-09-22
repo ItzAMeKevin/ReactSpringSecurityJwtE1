@@ -22,7 +22,7 @@
       "codePostal": "Code postal",
       "ville": "Ville",
       "telephone": "téléphone",
-      "identifiant": "Identifiant employeur"
+      "identifiant": "NEQ"
     },
     "submit": "S'inscrire"
   },
@@ -34,7 +34,7 @@
     "matriculeFormat": "Doit être 7 chiffres",
     "telephoneFormat": "Doit être 10 chiffres",
     "postalCodeFormat": "Doit être au format A1A1A1",
-    "enterpriseIdFormat": "Alphanumérique, de 3 à 20 caractères",
+    "enterpriseIdFormat": "Le NEQ doit contenir exactement 10 chiffres",
     "emailTaken": "Cet email est déjà utilisé.",
     "matriculeTaken": "Ce matricule est déjà attribué.",
     "generic": "Une erreur est survenue, veuillez réessayer plus tard.",

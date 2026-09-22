@@ -10,8 +10,8 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 const telephoneRegex = /^\d{10}$/;
 // Code postal en format Canadien, ex: A1A1A1
 const postalCodeRegex = /^[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d$/;
-// Identifiant d'entreprise: Alphanomeric, de 3 à 20 caractères, ex: ACME-01
-const enterpriseIdRegex = /^[a-zA-Z0-9]{3,20}$/;
+// NEQ (Numéro d'Entreprise du Québec): exactement 10 chiffres
+const enterpriseIdRegex = /^\d{10}$/;
 
 export const validateField = (name, value, data = {}) => {
     switch (name) {
