@@ -9,8 +9,8 @@ import lombok.Data;
 public class StudentDto extends UserDTO {
 
     @Builder
-    public StudentDto(Long id, String firstName, String lastname, String email, String password, Role role, String matricule) {
-        super(id, firstName, lastname, email, password, role, matricule);
+    public StudentDto(Long id, String firstName, String lastname, String email, String password, Role role, String matricule, String NEQ) {
+        super(id, firstName, lastname, email, password, role, matricule, NEQ);
     }
 
     public StudentDto() {}
@@ -23,6 +23,7 @@ public class StudentDto extends UserDTO {
                 .email(student.getEmail())
                 .password(student.getPassword())
                 .role(student.getRole())
+                .matricule(student.getMatricule())
                 .build();
     }
 

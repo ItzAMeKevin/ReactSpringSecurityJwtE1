@@ -115,11 +115,31 @@ class UserControllerWebMvcTest {
     }
 
     @Test
+    @DisplayName("POST /user/inscription accepts the employer role and returns 202")
+    void inscription_employeeRole_returnsAcceptedAndUser() throws Exception {
+        // Arrange
+        UserDTO request = new UserDTO(null, "Alice", "Boss", "alice@company.com", "password", Role.EMPLOYER, "12312312312", null);
+        UserDTO createdUser = new UserDTO(2L, "Alice", "Boss", "alice@company.com", "encodedPassword", Role.EMPLOYER, "123123231", null);
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.inscription(any(UserDTO.class))).thenReturn(createdUser);
+
+        // Act
+        var result = mockMvc.perform(post("/user/inscription")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        // Assert
+        result.andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
     @DisplayName("POST /user/inscription returns 409 when the user already exists")
     void inscription_existingUser_returnsConflict() throws Exception {
         // Arrange
-        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password", Role.STUDENT, "MAT123");
-        UserDTO existingUser = new UserDTO(1L, "Jane", "Doe", request.getEmail(), null, Role.STUDENT, "MAT123");
+        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password", Role.STUDENT, null, "MAT123");
+        UserDTO existingUser = new UserDTO(1L, "Jane", "Doe", request.getEmail(), null, Role.STUDENT, null, "MAT123");
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(existingUser);
 

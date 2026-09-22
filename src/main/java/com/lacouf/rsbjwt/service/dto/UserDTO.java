@@ -25,6 +25,7 @@ public class UserDTO {
     private String email;
     private String password;
     private Role role;
+    private String NEQ;
     private String matricule;
 
     public User toEntity(UserDTO userDTO) {
@@ -42,6 +43,7 @@ public class UserDTO {
                     .id(userDTO.getId())
                     .firstName(userDTO.getFirstName())
                     .lastName(userDTO.getLastname())
+                    .NEQ(userDTO.getNEQ())
                     .email(userDTO.getEmail())
                     .password(userDTO.getPassword())
                     .build();

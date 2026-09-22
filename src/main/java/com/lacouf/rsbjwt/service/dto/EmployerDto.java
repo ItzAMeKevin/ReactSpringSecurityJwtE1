@@ -7,8 +7,8 @@ import lombok.Builder;
 public class EmployerDto extends UserDTO {
     
     @Builder
-    public EmployerDto(Long id, String firstName, String lastname, String email, String password, Role role) {
-        super(id, firstName, lastname, email, password, role, null);  
+    public EmployerDto(Long id, String firstName, String lastname, String email, String password, Role role, String NEQ) {
+        super(id, firstName, lastname, email, password, role, NEQ, null);  
     }
 
     public EmployerDto() {}
