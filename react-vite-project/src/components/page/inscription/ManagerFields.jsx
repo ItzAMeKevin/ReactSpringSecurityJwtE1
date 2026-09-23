@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import Field from "./Field";
+import Field from "../Field.jsx";
 
 const ManagerFields = ({ errors }) => {
     const { t } = useTranslation();

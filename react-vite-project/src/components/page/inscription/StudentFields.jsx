@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import Field, { labelClass } from "./Field";
+import Field, { labelClass } from "../Field.jsx";
 
 const StudentFields = ({ errors, programmes }) => {
     const { t } = useTranslation();
@@ -13,6 +13,7 @@ const StudentFields = ({ errors, programmes }) => {
                     <select
                         id="programmes"
                         name="programme"
+                        defaultValue=""
                         className={`w-full rounded-md border px-3 py-2 pr-28 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
                             errors.programme ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
                         }`}
