@@ -9,7 +9,8 @@ public class ManagerDto extends UserDTO {
     @Builder
     public ManagerDto(Long id, String firstName, String lastName,
                            String email, String password, Role role, String matricule) {
-        super(id, firstName, lastName, email, password, role, matricule, null, null, null, null, null, null);
+        super(id, firstName, lastName, email, password, role, matricule,
+                null, null, null, null, null, null,null);
     }
 
     public ManagerDto() {}

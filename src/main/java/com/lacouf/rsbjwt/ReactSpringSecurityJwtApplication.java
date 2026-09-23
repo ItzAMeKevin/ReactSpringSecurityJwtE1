@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.Programe;
+import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployerDto;
 import com.lacouf.rsbjwt.service.dto.ManagerDto;
@@ -35,6 +36,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .lastName("Biblio")
                         .matricule("PROF-001")
                         .email("l@l.com")
+                        .role(Role.MANAGER)
                         .password("bib")
                         .build()
         );
@@ -47,6 +49,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .matricule("ETUD-001")
                         .email("ll@l.com")
                         .password("bib")
+                        .role(Role.STUDENT)
                         .programe(Programe.SOINS_INFIRMIERS)
                         .build()
         );
@@ -57,6 +60,13 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         .firstName("Chandeuse")
                         .lastName("Lixor")
                         .email("lll@l.com")
+                        .role(Role.EMPLOYER)
+                        .companyName("Lixor Inc.")
+                        .address("123 rue Principale")
+                        .postalCode("H0H 0H0")
+                        .city("Montréal")
+                        .phoneNumber("514-555-1234")
+                        .employerId("EMP-001")
                         .password("bib")
                         .build()
         );
