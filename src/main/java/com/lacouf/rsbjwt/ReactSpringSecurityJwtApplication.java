@@ -30,46 +30,47 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        UserAppService.inscription(
-                ManagerDto.builder()
-                        .firstName("Gerard")
-                        .lastName("Biblio")
-                        .matricule("PROF-001")
-                        .email("l@l.com")
-                        .role(Role.MANAGER)
-                        .password("bib")
-                        .build()
-        );
+        if (UserAppService.getUserByEmail("l@l.com") == null)
+            UserAppService.inscription(
+                    ManagerDto.builder()
+                            .firstName("Gerard")
+                            .lastName("Biblio")
+                            .matricule("PROF-001")
+                            .email("l@l.com")
+                            .role(Role.MANAGER)
+                            .password("bib")
+                            .build()
+            );
 
+        if (UserAppService.getUserByEmail("ll@l.com") == null)
+            UserAppService.inscription(
+                    StudentDto.builder()
+                            .firstName("Isidor")
+                            .lastName("Teurteur")
+                            .matricule("ETUD-001")
+                            .email("ll@l.com")
+                            .password("bib")
+                            .role(Role.STUDENT)
+                            .programe(Programe.SOINS_INFIRMIERS)
+                            .build()
+            );
 
-        UserAppService.inscription(
-                StudentDto.builder()
-                        .firstName("Isidor")
-                        .lastName("Teurteur")
-                        .matricule("ETUD-001")
-                        .email("ll@l.com")
-                        .password("bib")
-                        .role(Role.STUDENT)
-                        .programe(Programe.SOINS_INFIRMIERS)
-                        .build()
-        );
-
-
-        UserAppService.inscription(
-                EmployerDto.builder()
-                        .firstName("Chandeuse")
-                        .lastName("Lixor")
-                        .email("lll@l.com")
-                        .role(Role.EMPLOYER)
-                        .companyName("Lixor Inc.")
-                        .address("123 rue Principale")
-                        .postalCode("H0H 0H0")
-                        .city("Montréal")
-                        .phoneNumber("514-555-1234")
-                        .employerId("EMP-001")
-                        .password("bib")
-                        .build()
-        );
+        if (UserAppService.getUserByEmail("lll@l.com") == null)
+            UserAppService.inscription(
+                    EmployerDto.builder()
+                            .firstName("Chandeuse")
+                            .lastName("Lixor")
+                            .email("lll@l.com")
+                            .role(Role.EMPLOYER)
+                            .companyName("Lixor Inc.")
+                            .address("123 rue Principale")
+                            .postalCode("H0H 0H0")
+                            .city("Montréal")
+                            .phoneNumber("514-555-1234")
+                            .employerId("EMP-001")
+                            .password("bib")
+                            .build()
+            );
     }
 
 }
