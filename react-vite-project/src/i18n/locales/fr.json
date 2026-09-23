@@ -37,5 +37,6 @@
     "logout": "Déconnexion",
     "login": "Connexion",
     "greeting": "Bonjour"
-  }
+  },
+  "televerser": "Téléverser un fichier"
 }
