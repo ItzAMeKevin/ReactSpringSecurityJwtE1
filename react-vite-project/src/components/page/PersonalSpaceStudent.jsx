@@ -63,7 +63,19 @@ const PersonalSpaceStudent = () => {
         <>
             <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
                 <div className="flex flex-col items-center justify-center gap-4 pt-20">
-                    <input type="file" accept=".pdf" onChange={handleInputChange} />
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleInputChange}
+                        className="block text-sm text-[#4b1113]
+                           file:mr-4 file:py-2 file:px-4
+                           file:rounded-md file:border-0
+                           file:text-sm file:font-medium
+                           file:bg-[#4b1113] file:text-white
+                           hover:file:bg-[#3a0d0f]
+                           file:transition-colors
+                           file:cursor-pointer cursor-pointer"
+                    />
                     {selectedFile && (
                         <>
                             <p className="text-[#4b1113]">
