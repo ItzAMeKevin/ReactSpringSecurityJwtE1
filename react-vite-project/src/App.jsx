@@ -1,7 +1,7 @@
 import "./App.css";
 import PageLayout from "./components/PageLayout.jsx";
 import React, {useEffect, useState} from "react";
-import {Route, Routes, useNavigate} from "react-router-dom";
+import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
@@ -58,7 +58,7 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<PageLayout user={user}/>}>
-          <Route index element={<MainContainer setError={setError}/>}/>
+          <Route index element={<Navigate to="/login" replace />}/>
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
