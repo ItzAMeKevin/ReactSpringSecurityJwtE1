@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { validateField, validateInscription } from "../../../utils/validation.js";
 import BASE_URL from "../../config/Config.jsx";
@@ -7,7 +8,9 @@ import InscriptionForm from "./InscriptionForm.jsx";
 
 const Inscription = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState(null);
   const [role, setRole] = useState(null);
   const programmes = ["420.B0 Techniques de l'informatique", "430.A0 Techniques de gestion hôtelière", "221B0 Technologie du génie civil","180.A0 Soins infirmiers","244.A0 Technologie du génie physique","410.A0 Techniques de la logistique du transport"];
 
@@ -16,6 +19,7 @@ const Inscription = () => {
     const data = Object.fromEntries(new FormData(e.currentTarget));
     const errs = validateInscription(data);
     setErrors(errs);
+    setSubmitError(null);
     if (Object.keys(errs).length > 0) return;
 
     const params = {
@@ -23,30 +27,54 @@ const Inscription = () => {
       lastname: data.nom,
       email: data.courriel,
       password: data.motDePasse,
+      role: `ROLE_${role.toUpperCase()}`,
     };
 
-    switch (role) {
-      case "student":
-        params.role = "ROLE_STUDENT";
-        params.matricule = data.matricule;
-        params.programme = data.programme;
-        break;
-      case "professor":
-        params.role = "ROLE_MANAGER";
-        break;
-      case "employer":
-        params.role = "ROLE_EMPLOYER";
-        break;
-      default:
-        break;
+    if (role === "student" || role === "manager") {
+      params.matricule = data.matricule;
+    }
+    if (role === "student") {
+      params.programme = data.programme;
+    }
+    if (role === "employer") {
+      params.companyName = data.nomEntreprise;
+      params.address = data.adresse;
+      params.postalCode = data.codePostal;
+      params.city = data.ville;
+      params.phoneNumber = data.telephone;
+      params.employerId = data.identifiant;
     }
 
-    const res = await fetch(`${BASE_URL}user/inscription`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
-    });
-    return res.json();
+    try {
+      const res = await fetch(`${BASE_URL}user/inscription`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+
+      if (res.ok) {
+        navigate(role === "employer" ? "/login": "/");
+        return;
+      }
+
+      if (res.status === 409) {
+        const { field } = await res.json();
+        if (field === "email") {
+          setErrors((prev) => ({ ...prev, courriel: "errors.emailTaken" }));
+        } else if (field === "matricule") {
+          setErrors((prev) => ({ ...prev, matricule: "errors.matriculeTaken" }));
+        } else if (field ==="identifiant") {
+          setErrors((prev) => ({ ...prev, identifiant: "errors.identifiantTaken" }));
+        }else {
+          setSubmitError("errors.generic");
+        }
+        return;
+      }
+
+      setSubmitError("errors.generic");
+    } catch {
+      setSubmitError("errors.generic");
+    }
   };
 
   const handleChange = (e) => {
@@ -104,6 +132,9 @@ const Inscription = () => {
           ))}
         </div>
         <h1 className="text-2xl font-bold text-center mb-2 text-[#2b1a12]">{t("inscription.title")}</h1>
+        {submitError && (
+          <p className="mb-3 text-center text-red-800 text-sm font-semibold">{t(submitError)}</p>
+        )}
         <RoleSelector role={role} setRole={setRole} />
         {role != null && (
           <InscriptionForm

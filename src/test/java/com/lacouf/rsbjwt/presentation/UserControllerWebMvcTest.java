@@ -1,10 +1,10 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
-import com.lacouf.rsbjwt.service.dto.StudentDto;
 import com.lacouf.rsbjwt.service.dto.UserDTO;
 import com.lacouf.rsbjwt.model.auth.Role;
 import org.junit.jupiter.api.DisplayName;
@@ -60,16 +60,15 @@ class UserControllerWebMvcTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .build();
         objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
     }
 
     @Test
     @DisplayName("POST /user/login returns 202 and token on success")
     void authenticateUser_success_returnsAcceptedAndToken() throws Exception {
-        // Arrange
         LoginDTO login = new LoginDTO("user@example.com", "password");
         when(userService.authenticateUser(any(LoginDTO.class))).thenReturn("token123");
 
-        // Act + Assert
         mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
@@ -82,11 +81,9 @@ class UserControllerWebMvcTest {
     @Test
     @DisplayName("POST /user/login returns 401 on failure")
     void authenticateUser_failure_returnsUnauthorized() throws Exception {
-        // Arrange
         LoginDTO login = new LoginDTO("user@example.com", "wrong");
         when(userService.authenticateUser(any(LoginDTO.class))).thenThrow(new RuntimeException("bad creds"));
 
-        // Act + Assert
         mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
@@ -97,39 +94,65 @@ class UserControllerWebMvcTest {
     }
 
     @Test
-    @DisplayName("POST /user/inscription returns 202 and the created user")
+    @DisplayName("POST /user/inscription returns 202 and the created student")
     void inscription_success_returnsAcceptedAndUser() throws Exception {
+        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com",
+                "password", Role.STUDENT, "MAT123",
+                null, null, null, null, null, null);
+        UserDTO createdUser = new UserDTO(1L, "Jane", "Doe", "jane@example.com",
+                null, Role.STUDENT, "MAT123", null, null, null,
+                null, null, null);
 
-        // Arrange
-        UserDTO request = StudentDto.builder().firstName("toto").lastname("tata").email("tota@tato.com").password("gg").role(Role.STUDENT).matricule("mat555").build();
-        // Act
-       var result = mockMvc.perform(post("/user/inscription")
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
+        when(userService.inscription(any(UserDTO.class))).thenReturn(createdUser);
+
+        mockMvc.perform(post("/user/inscription")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.firstName").value("Jane"))
+                .andExpect(jsonPath("$.lastname").value("Doe"))
+                .andExpect(jsonPath("$.email").value("jane@example.com"))
+                .andExpect(jsonPath("$.matricule").value("MAT123"));
 
-        // Assert
-
-       result.andExpect(status().isAccepted())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
+        verify(passwordEncoder).encode("password");
+        verify(userService).inscription(any(UserDTO.class));
     }
 
     @Test
-    @DisplayName("POST /user/inscription returns 409 when the user already exists")
+    @DisplayName("POST /user/inscription returns 409 when the email already exists")
     void inscription_existingUser_returnsConflict() throws Exception {
-        // Arrange
-        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password", Role.STUDENT, "MAT123");
-        UserDTO existingUser = new UserDTO(1L, "Jane", "Doe", request.getEmail(), null, Role.STUDENT, "MAT123");
+        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password",
+                Role.STUDENT, "MAT123", null, null, null, null, null, null);
+        UserDTO existingUser = new UserDTO(1L, "Jane", "Doe", request.getEmail(), null,
+                Role.STUDENT, "MAT123", null, null, null, null, null, null);
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(existingUser);
 
-        //Act
-        var result = mockMvc.perform(post("/user/inscription")
+        mockMvc.perform(post("/user/inscription")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)));
-        // Assert
-                result.andExpect(status().isConflict())
-                .andExpect(content().string(""));
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.field").value("email"));
+    }
+
+    @Test
+    @DisplayName("POST /user/inscription returns 409 when the matricule already exists")
+    void inscription_duplicateMatricule_returnsConflict() throws Exception {
+        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password",
+                Role.STUDENT, "MAT123", null, null, null, null, null, null);
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.matriculeExists("MAT123")).thenReturn(true);
+
+        mockMvc.perform(post("/user/inscription")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.field").value("matricule"));
     }
 
     @Test
@@ -150,5 +173,79 @@ class UserControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("POST /user/inscription returns 202 and the created employer")
+    void inscription_employer_success_returnsAcceptedAndEmployer() throws Exception {
+        UserDTO request = new UserDTO(null, "Bob", "Smith", "bob@company.com", "password",
+                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
+                "Montreal", "5141234567", "EMP001");
+        UserDTO createdEmployer = new UserDTO(2L, "Bob", "Smith", "bob@company.com", null,
+                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
+                "Montreal", "5141234567", "EMP001");
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.employerIdExists("EMP001")).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("encoded-password");
+        when(userService.inscription(any(UserDTO.class))).thenReturn(createdEmployer);
+
+        mockMvc.perform(post("/user/inscription")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.firstName").value("Bob"))
+                .andExpect(jsonPath("$.email").value("bob@company.com"))
+                .andExpect(jsonPath("$.companyName").value("Acme Corp"))
+                .andExpect(jsonPath("$.employerId").value("EMP001"));
+
+        verify(passwordEncoder).encode("password");
+        verify(userService).inscription(any(UserDTO.class));
+    }
+
+    @Test
+    @DisplayName("POST /user/inscription returns 202 and the created professor")
+    void inscription_professor_success_returnsAcceptedAndManager() throws Exception {
+        UserDTO request = new UserDTO(null, "Alice", "Tremblay", "alice@school.com", "password",
+                Role.MANAGER, "1234567", null, null, null, null, null, null);
+        UserDTO createdManager = new UserDTO(3L, "Alice", "Tremblay", "alice@school.com", null,
+                Role.MANAGER, "1234567", null, null, null, null, null, null);
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.matriculeExists("1234567")).thenReturn(false);
+        when(passwordEncoder.encode("password")).thenReturn("encoded-password");
+        when(userService.inscription(any(UserDTO.class))).thenReturn(createdManager);
+
+        mockMvc.perform(post("/user/inscription")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.firstName").value("Alice"))
+                .andExpect(jsonPath("$.email").value("alice@school.com"))
+                .andExpect(jsonPath("$.matricule").value("1234567"));
+
+        verify(passwordEncoder).encode("password");
+        verify(userService).inscription(any(UserDTO.class));
+    }
+
+    @Test
+    @DisplayName("POST /user/inscription returns 409 when the employer ID already exists")
+    void inscription_duplicateEmployerId_returnsConflict() throws Exception {
+        UserDTO request = new UserDTO(null, "Bob", "Smith", "bob@company.com", "password",
+                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
+                "Montreal", "5141234567", "EMP001");
+
+        when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
+        when(userService.employerIdExists("EMP001")).thenReturn(true);
+
+        mockMvc.perform(post("/user/inscription")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.field").value("identifiant"));
     }
 }

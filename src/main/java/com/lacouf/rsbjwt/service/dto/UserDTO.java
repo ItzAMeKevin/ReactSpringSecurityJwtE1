@@ -26,6 +26,12 @@ public class UserDTO {
     private String password;
     private Role role;
     private String matricule;
+    private String companyName;
+    private String address;
+    private String postalCode;
+    private String city;
+    private String phoneNumber;
+    private String employerId;
 
     public User toEntity(UserDTO userDTO) {
         return switch (userDTO.getRole()) {
@@ -44,6 +50,12 @@ public class UserDTO {
                     .lastName(userDTO.getLastname())
                     .email(userDTO.getEmail())
                     .password(userDTO.getPassword())
+                    .companyName(userDTO.getCompanyName())
+                    .address(userDTO.getAddress())
+                    .postalCode(userDTO.getPostalCode())
+                    .city(userDTO.getCity())
+                    .phoneNumber(userDTO.getPhoneNumber())
+                    .employerId(userDTO.getEmployerId())
                     .build();
             case STUDENT -> Student.builder()
                     .id(userDTO.getId())
