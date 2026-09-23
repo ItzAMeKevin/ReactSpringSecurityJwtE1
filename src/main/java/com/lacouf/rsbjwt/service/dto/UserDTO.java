@@ -5,7 +5,7 @@ import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.User;
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

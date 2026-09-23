@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Employer;
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 import lombok.Builder;
 
 public class EmployerDto extends UserDTO {

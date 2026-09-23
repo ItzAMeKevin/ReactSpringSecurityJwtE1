@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
 import com.lacouf.rsbjwt.service.dto.StudentDto;
 import com.lacouf.rsbjwt.service.dto.UserDTO;
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
