@@ -1,33 +1,25 @@
 package com.lacouf.rsbjwt;
 
-import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.repository.StudentRepository;
-import com.lacouf.rsbjwt.repository.EmployerRepository;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.model.Programe;
+import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.EmployerDto;
+import com.lacouf.rsbjwt.service.dto.ManagerDto;
+import com.lacouf.rsbjwt.service.dto.StudentDto;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
 
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
-    private final ManagerRepository managerRepository;
-    private final StudentRepository studentRepository;
-    private final EmployerRepository employerRepository;
-    private final UserAppRepository userAppRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final UserAppService UserAppService;
 
-    public ReactSpringSecurityJwtApplication(ManagerRepository managerRepository, StudentRepository emprunteurRepository, EmployerRepository employerRepository, UserAppRepository userAppRepository, PasswordEncoder passwordEncoder) {
-        this.managerRepository = managerRepository;
-        this.studentRepository = emprunteurRepository;
-        this.employerRepository = employerRepository;
-        this.userAppRepository = userAppRepository;
-        this.passwordEncoder = passwordEncoder;
+
+    public ReactSpringSecurityJwtApplication(UserAppService UserService) {
+
+        this.UserAppService = UserService;
+
     }
 
     public static void main(String[] args) {
@@ -36,40 +28,39 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userAppRepository.findUserAppByEmail("l@l.com").isEmpty()) {
-            managerRepository.save(
-                Manager.builder()
-                    .firstName("Gerard")
-                    .lastName("Biblio")
-                    .matricule("PROF-001")
-                    .email("l@l.com")
-                    .password(passwordEncoder.encode("bib"))
-                    .build()
-            );
-        }
-        if (userAppRepository.findUserAppByEmail("ll@l.com").isEmpty()) {
-            studentRepository.save(
-                Student.builder()
-                    .firstName("Isidor")
-                    .lastName("Teurteur")
-                    .matricule("ETUD-001")
-                    .email("ll@l.com")
-                    .password(passwordEncoder.encode("bib"))
-                    .build()
-            );
-        }
-        if (userAppRepository.findUserAppByEmail("lll@l.com").isEmpty()) {
-            employerRepository.save(
-                Employer.builder()
-                    .firstName("Chandeuse")
-                    .lastName("Lixor")
-                    .email("lll@l.com")
-                    .password(passwordEncoder.encode("bib"))
-                    .build()
-            );
-        }
-        final Optional<User> userAppByEmail = userAppRepository.findUserAppByEmail("l@l.com");
-        userAppByEmail.ifPresent(userApp -> System.out.println("user " + userAppByEmail));
 
+        UserAppService.inscription(
+                ManagerDto.builder()
+                        .firstName("Gerard")
+                        .lastName("Biblio")
+                        .matricule("PROF-001")
+                        .email("l@l.com")
+                        .password("bib")
+                        .build()
+        );
+
+
+        UserAppService.inscription(
+                StudentDto.builder()
+                        .firstName("Isidor")
+                        .lastName("Teurteur")
+                        .matricule("ETUD-001")
+                        .email("ll@l.com")
+                        .password("bib")
+                        .programe(Programe.SOINS_INFIRMIERS)
+                        .build()
+        );
+
+
+        UserAppService.inscription(
+                EmployerDto.builder()
+                        .firstName("Chandeuse")
+                        .lastName("Lixor")
+                        .email("lll@l.com")
+                        .password("bib")
+                        .build()
+        );
     }
+
 }
+

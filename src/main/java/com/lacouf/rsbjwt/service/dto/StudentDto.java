@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
+import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.auth.Role;
 import lombok.Builder;
@@ -9,8 +10,9 @@ import lombok.Data;
 public class StudentDto extends UserDTO {
 
     @Builder
-    public StudentDto(Long id, String firstName, String lastname, String email, String password, Role role, String matricule) {
-        super(id, firstName, lastname, email, password, role, matricule, null, null, null, null, null, null);
+    public StudentDto(Long id, String firstName, String lastName, String email, String password, Role role, String matricule, Programe programe) {
+        super(id, firstName, lastName, email, password, role, matricule, null, null, null, null, null, null);
+
     }
 
     public StudentDto() {
@@ -20,10 +22,11 @@ public class StudentDto extends UserDTO {
         return StudentDto.builder()
                 .id(student.getId())
                 .firstName(student.getFirstName())
-                .lastname(student.getLastName())
+                .lastName(student.getLastName())
                 .email(student.getEmail())
                 .password(student.getPassword())
                 .role(student.getRole())
+                .programe(student.getPrograme())
                 .build();
     }
 
