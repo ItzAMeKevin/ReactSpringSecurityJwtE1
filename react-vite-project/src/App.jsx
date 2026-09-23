@@ -9,8 +9,7 @@ import fetcher from "./utils/fetcher.js";
 import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import Inscription from "./components/page/Inscription.jsx";
-import PersonalSpaceStudent from "./components/page/PersonalSpaceStudent.jsx";
+import Inscription from "./components/page/inscription/Inscription.jsx";
 
 function App() {
   const [user, setUser] = useState({})
@@ -65,7 +64,6 @@ function App() {
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
           <Route path='inscription' element={<Inscription/>}/>
-          <Route path='persospace' element={<PersonalSpaceStudent/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
       </Routes>

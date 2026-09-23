@@ -24,6 +24,14 @@
       "telephone": "téléphone",
       "identifiant": "NEQ"
     },
+    "programsList": [
+      { "code": "420.B0", "name": "Techniques de l'informatique" },
+      { "code": "430.A0", "name": "Techniques de gestion hôtelière" },
+      { "code": "221B0", "name": "Technologie du génie civil" },
+      { "code": "180.A0", "name": "Soins infirmiers" },
+      { "code": "244.A0", "name": "Technologie du génie physique" },
+      { "code": "410.A0", "name": "Techniques de la logistique du transport" }
+    ],
     "submit": "S'inscrire"
   },
   "errors": {

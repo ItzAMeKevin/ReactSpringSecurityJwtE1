@@ -24,6 +24,15 @@
       "telephone": "Phone number",
       "identifiant": "NEQ"
     },
+    "programsList": [
+      { "code": "420.B0", "name": "Computer Science Technology" },
+      { "code": "430.A0", "name": "Hotel Management Technology" },
+      { "code": "221B0", "name": "Civil Engineering Technology" },
+      { "code": "180.A0", "name": "Nursing" },
+      { "code": "244.A0", "name": "Physical Engineering Technology" },
+      { "code": "410.A0", "name": "Transport Logistics Technology" }
+    ],
+
     "submit": "Register"
   },
   "errors": {

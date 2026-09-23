@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { validateField, validateInscription } from "../../utils/validation.js";
-import BASE_URL from "../config/Config.jsx";
-import RoleSelector from "./inscription/RoleSelector";
-import InscriptionForm from "./inscription/InscriptionForm";
+import { validateField, validateInscription } from "../../../utils/validation.js";
+import BASE_URL from "../../config/Config.jsx";
+import RoleSelector from "./RoleSelector.jsx";
+import InscriptionForm from "./InscriptionForm.jsx";
 
 const Inscription = () => {
   const { t, i18n } = useTranslation();
@@ -12,8 +12,8 @@ const Inscription = () => {
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [role, setRole] = useState(null);
-  const programmes = ["1", "2", "3"];
-
+  const getProgrammes = t('inscription.programsList', { returnObjects: true });
+  const programmes = Array.isArray(getProgrammes) ? getProgrammes : [];
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));

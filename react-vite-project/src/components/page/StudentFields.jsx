@@ -3,7 +3,7 @@ import Field, { labelClass } from "./Field";
 
 const StudentFields = ({ errors, programmes }) => {
     const { t } = useTranslation();
-
+    const liste = Array.isArray(programmes) ? programmes : [];
     return (
         <>
             <Field label={t("inscription.fields.matricule")} name="matricule" error={errors.matricule} />
@@ -18,8 +18,8 @@ const StudentFields = ({ errors, programmes }) => {
                         }`}
                     >
                         <option value="" disabled hidden>{t("inscription.fields.programmePlaceholder")}</option>
-                        {programmes.map((programme) => (
-                            <option value={programme} key={programme}>{programme}</option>
+                        {liste.map((p) => (
+                            <option value={p.code} key={p.code}>{p.name}</option>
                         ))}
                     </select>
                     {errors.programme && (
