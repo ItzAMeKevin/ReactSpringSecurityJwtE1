@@ -12,8 +12,8 @@ const Inscription = () => {
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState(null);
   const [role, setRole] = useState(null);
-  const programmes = ["420.B0 Techniques de l'informatique", "430.A0 Techniques de gestion hôtelière", "221B0 Technologie du génie civil","180.A0 Soins infirmiers","244.A0 Technologie du génie physique","410.A0 Techniques de la logistique du transport"];
-
+  const getProgrammes = t('inscription.programsList', { returnObjects: true });
+  const programmes = Array.isArray(getProgrammes) ? getProgrammes : [];
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
