@@ -38,5 +38,11 @@
     "login": "Connexion",
     "greeting": "Bonjour"
   },
-  "televerser": "Téléverser un fichier"
+  "televerser": {
+    "fichierChoisi": "Fichier sélectionné",
+    "envoieEnCours": "Envoi en cours...",
+    "envoyerCv": "Envoyer le CV",
+    "envoieSuccess": "CV envoyé avec succès !",
+    "envoieErreur": "Une erreur est survenue, réessaie."
+  }
 }

@@ -38,5 +38,11 @@
     "login": "Login",
     "greeting": "Hello"
   },
-  "televerser": "Upload a file"
+  "televerser": {
+    "fichierChoisi": "Selected file",
+    "envoieEnCours": "Uploading...",
+    "envoyerCv": "Send CV",
+    "envoieSuccess": "CV sent successfully !",
+    "envoieErreur": "An error occurred, try again."
+  }
 }
