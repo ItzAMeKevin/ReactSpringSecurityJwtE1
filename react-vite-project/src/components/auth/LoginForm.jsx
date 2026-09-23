@@ -1,10 +1,12 @@
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
+import {useTranslation} from "react-i18next";
 
 
 const LoginForm = ({user, setUser, setError}) => {
   const navigate = useNavigate();
+  const {t, i18n} = useTranslation()
 
   const [formData, setFormData] = useState({
     email: '',
@@ -20,14 +22,14 @@ const LoginForm = ({user, setUser, setError}) => {
     let updatedWarnings = {...warnings};
 
     if (!validateEmail()) {
-      updatedWarnings.email = "courriel invalide";
+      updatedWarnings.email = t("login.invalidEmail");
       isValid = false;
     } else {
       updatedWarnings.email = "";
     }
 
     if (!validatePassword()) {
-      updatedWarnings.password = "mot de passe invalide";
+      updatedWarnings.password = t("login.invalidPassword");
       isValid = false;
     } else {
       updatedWarnings.password = "";
@@ -98,12 +100,8 @@ const LoginForm = ({user, setUser, setError}) => {
 
       // Navigate to role-specific page
       const role = userData.role;
-      if (role === "ROLE_EMPRUNTEUR") {
+      if (role === "ROLE_STUDENT") {
         navigate("/emprunteur");
-      } else if (role === "ROLE_PREPOSE") {
-        navigate("/prepose");
-      } else if (role === "ROLE_GESTIONNAIRE") {
-        navigate("/gestionnaire");
       } else {
         navigate("/");
       }
@@ -115,43 +113,10 @@ const LoginForm = ({user, setUser, setError}) => {
 
   }
 
-  // const axiosFetch = () => {
-  //   axiosInstance.post("/user/login", {
-  //     email: formData.email.toLowerCase(),
-  //     password: formData.password
-  //   }).then((response) => {
-  //
-  //     axiosInstance.defaults.headers.common['Authorization'] = response.data.accessToken;
-  //     sessionStorage.setItem('token', response.data.accessToken);
-  //
-  //     axiosInstance.get('/user/me')
-  //       .then(res => {
-  //         let newUser = {...res.data, isLoggedin: true}
-  //         setUser(newUser)
-  //       })
-  //       .catch(err => {
-  //         setWarnings({...warnings, email: err.response?.data.message})
-  //       })
-  //   }).catch((error) => {
-  //     if (error.response) {
-  //       if (error.response?.status === 406) {
-  //         setWarnings({...warnings, email: "wrongEmail"});
-  //         setWarnings({...warnings, password: "wrongPassword"});
-  //       }
-  //     } else {
-  //       //toast.error(t('fetchError') + t(error.response?.data.message));
-  //       setWarnings({...warnings, email: "wrongEmail", password: "wrongPassword"});
-  //     }
-  //   });
-  // }
-
   return (
     <>
       {user?.isLoggedIn ? (
-        user.role === "ROLE_EMPRUNTEUR" ? navigate("/emprunteur") :
-          user.role === "ROLE_PREPOSE" ? navigate("/prepose") :
-            user.role === "ROLE_GESTIONNAIRE" ? navigate("/gestionnaire") :
-              navigate("/")
+        user.role === "ROLE_STUDENT" ? navigate("/emprunteur") : navigate("/")
       ) : (
           <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div
@@ -173,28 +138,44 @@ const LoginForm = ({user, setUser, setError}) => {
             <div className="relative z-10 grid min-h-screen md:grid-cols-2">
               <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-[#f3ebe3]">
                 <h2 className="text-4xl lg:text-5xl font-semibold leading-tight mb-4">
-                  Bienvenue
+                  {t("login.welcome")}
                 </h2>
                 <p className="max-w-sm text-[#f3ebe3]/80 text-sm leading-relaxed">
-                  Connectez-vous pour accéder à votre espace et poursuivre vos démarches.
+                  {t("login.subtitle")}
                 </p>
                 <div className="mt-8 h-px w-24 bg-[#e8d5b5]/50" />
               </div>
 
               <div className="flex items-center justify-center px-4 py-12">
                 <div className="w-full max-w-md rounded-2xl border border-[#8b6f52]/30 bg-[#8b6f52] p-8 shadow-2xl shadow-[#4b1113]/30">
-                  <h1 className="text-2xl font-bold text-center mb-2 text-[#2b1a12]">Connexion</h1>
+                  <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-2xl font-bold text-[#2b1a12]">{t("login.title")}</h1>
+                    <div className="flex gap-2">
+                      {["fr", "en"].map((lang) => (
+                        <button
+                          key={lang}
+                          type="button"
+                          onClick={() => i18n.changeLanguage(lang)}
+                          className={`rounded px-2 py-1 text-sm text-[#2b1a12] ${
+                            i18n.language === lang ? "font-bold underline" : ""
+                          }`}
+                        >
+                          {lang.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   <form id="login-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <div className="flex flex-col">
-                      <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">Courriel</label>
+                      <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">{t("login.email")}</label>
                       <input
                           id="email"
                           type="email"
                           name="email"
                           onChange={handleChanges}
                           required
-                          placeholder="prenom.nom@domain.com"
+                          placeholder={t("login.emailPlaceholder")}
                           className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
                               warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
                           }`}
@@ -205,14 +186,14 @@ const LoginForm = ({user, setUser, setError}) => {
                     </div>
 
                     <div className="flex flex-col">
-                      <label htmlFor="password" className="mb-1 font-medium text-[#2b1a12]">Mot de passe</label>
+                      <label htmlFor="password" className="mb-1 font-medium text-[#2b1a12]">{t("login.password")}</label>
                       <input
                           id="password"
                           type="password"
                           name="password"
                           onChange={handleChanges}
                           required
-                          placeholder="Votre mot de passe"
+                          placeholder={t("login.passwordPlaceholder")}
                           className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
                               warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
                           }`}
@@ -226,18 +207,18 @@ const LoginForm = ({user, setUser, setError}) => {
                         type="submit"
                         className="w-full mt-2 bg-[#4b1113] text-white font-medium py-2.5 rounded-md hover:bg-[#3a0d0f] transition-colors"
                     >
-                      Se connecter
+                      {t("login.submit")}
                     </button>
                   </form>
 
                   <p className="text-center mt-6 text-[#2b1a12]">
-                    Première fois ?{" "}
+                    {t("login.firstTime")}{" "}
                     <button
                         type="button"
                         onClick={() => navigate("/inscription")}
                         className="font-semibold underline hover:text-[#3a0d0f]"
                     >
-                      Inscrivez-vous
+                      {t("login.signUp")}
                     </button>
                   </p>
                 </div>

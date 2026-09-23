@@ -25,12 +25,12 @@
       "identifiant": "NEQ"
     },
     "programsList": [
-      { "code": "420.B0", "name": "Techniques de l'informatique" },
-      { "code": "430.A0", "name": "Techniques de gestion hôtelière" },
-      { "code": "221B0", "name": "Technologie du génie civil" },
-      { "code": "180.A0", "name": "Soins infirmiers" },
-      { "code": "244.A0", "name": "Technologie du génie physique" },
-      { "code": "410.A0", "name": "Techniques de la logistique du transport" }
+      { "enumName": "TECHNIQUES_INFORMATIQUE", "code": "420.B0", "name": "Techniques de l'informatique" },
+      { "enumName": "TECHNIQUES_GESTION_HOTELIERE", "code": "430.A0", "name": "Techniques de gestion hôtelière" },
+      { "enumName": "TECHNIQUE_GENIE_CIVIL", "code": "221B0", "name": "Technologie du génie civil" },
+      { "enumName": "SOINS_INFIRMIERS", "code": "180.A0", "name": "Soins infirmiers" },
+      { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Technologie du génie physique" },
+      { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Techniques de la logistique du transport" }
     ],
     "submit": "S'inscrire"
   },
@@ -60,5 +60,19 @@
     "login": "Connexion",
     "greeting": "Bonjour"
   },
-  "televerser": "Téléverser un fichier"
+  "televerser": "Téléverser un fichier",
+  "login": {
+    "welcome": "Bienvenue",
+    "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",
+    "title": "Connexion",
+    "email": "Courriel",
+    "emailPlaceholder": "prenom.nom@domain.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "submit": "Se connecter",
+    "firstTime": "Première fois ?",
+    "signUp": "Inscrivez-vous",
+    "invalidEmail": "Courriel invalide",
+    "invalidPassword": "Mot de passe invalide"
+  }
 }

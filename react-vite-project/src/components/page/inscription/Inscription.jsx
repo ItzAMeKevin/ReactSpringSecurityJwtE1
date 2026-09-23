@@ -34,7 +34,7 @@ const Inscription = () => {
       params.matricule = data.matricule;
     }
     if (role === "student") {
-      params.programme = data.programme;
+      params.programe = data.programme;
     }
     if (role === "employer") {
       params.companyName = data.nomEntreprise;

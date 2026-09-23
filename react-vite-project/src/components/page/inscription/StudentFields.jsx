@@ -20,7 +20,7 @@ const StudentFields = ({ errors, programmes }) => {
                     >
                         <option value="" disabled hidden>{t("inscription.fields.programmePlaceholder")}</option>
                         {liste.map((p) => (
-                            <option value={p.code} key={p.code}>{p.name}</option>
+                            <option value={p.enumName} key={p.enumName}>{p.name}</option>
                         ))}
                     </select>
                     {errors.programme && (
