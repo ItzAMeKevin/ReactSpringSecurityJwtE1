@@ -67,7 +67,7 @@ const PersonalSpaceStudent = () => {
                     {selectedFile && (
                         <>
                             <p className="text-[#4b1113]">
-                                Fichier sélectionné : {selectedFile.name}
+                                {t("televerser.fichierChoisi")} : {selectedFile.name}
                             </p>
 
                             <button
@@ -75,14 +75,14 @@ const PersonalSpaceStudent = () => {
                                 disabled={uploadState === "uploading"}
                                 className="bg-[#4b1113] text-white font-medium py-2 px-4 rounded-md hover:bg-[#3a0d0f] transition-colors disabled:opacity-60"
                             >
-                                {uploadState === "uploading" ? "Envoi en cours..." : "Envoyer le CV"}
+                                {uploadState === "uploading" ? t("televerser.envoieEnCours") : t("televerser.envoyerCv")}
                             </button>
 
                             {uploadState === "success" && (
-                                <p className="text-green-700">CV envoyé avec succès !</p>
+                                <p className="text-green-700">{t("televerser.envoieSuccess")}</p>
                             )}
                             {uploadState === "error" && (
-                                <p className="text-red-700">Une erreur est survenue, réessaie.</p>
+                                <p className="text-red-700">{t("televerser.envoieErreur")}</p>
                             )}
                         </>
                     )}
