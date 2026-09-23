@@ -4,6 +4,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+import fetcher from "../../utils/fetcher.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -38,9 +39,9 @@ const PersonalSpaceStudent = () => {
         try {
             const content = await fileToBase64(selectedFile);
 
-            const response = await fetch("http://localhost:8080/student-cv", {
+            const response = await fetcher("/student-cv", {
                 method: "POST",
-                header: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     fileName: selectedFile.name,
                     contentType: selectedFile.type,
