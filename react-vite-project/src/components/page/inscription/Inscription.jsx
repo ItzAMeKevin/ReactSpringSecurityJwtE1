@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { validateField, validateInscription } from "../../utils/validation.js";
-import BASE_URL from "../config/Config.jsx";
-import RoleSelector from "./inscription/RoleSelector";
-import InscriptionForm from "./inscription/InscriptionForm";
+import { validateField, validateInscription } from "../../../utils/validation.js";
+import BASE_URL from "../../config/Config.jsx";
+import RoleSelector from "./RoleSelector.jsx";
+import InscriptionForm from "./InscriptionForm.jsx";
 
 const Inscription = () => {
   const { t, i18n } = useTranslation();
   const [errors, setErrors] = useState({});
   const [role, setRole] = useState(null);
-  const programmes = ["1", "2", "3"];
+  const programmes = ["420.B0 Techniques de l'informatique", "430.A0 Techniques de gestion hôtelière", "221B0 Technologie du génie civil","180.A0 Soins infirmiers","244.A0 Technologie du génie physique","410.A0 Techniques de la logistique du transport"];
 
   const handleSubmit = async (e) => {
     e.preventDefault();

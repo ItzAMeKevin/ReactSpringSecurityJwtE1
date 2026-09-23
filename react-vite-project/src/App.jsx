@@ -9,7 +9,7 @@ import fetcher from "./utils/fetcher.js";
 import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import Inscription from "./components/page/Inscription.jsx";
+import Inscription from "./components/page/inscription/Inscription.jsx";
 
 function App() {
   const [user, setUser] = useState({})
