@@ -1,15 +1,27 @@
 # En tant qu'étudiant, je veux m'inscrire
 
-## Scénario
+## Scénario happy end
 
 1. Je suis sur la page d'enregistrement et j'accède au formulaire d'inscription.
 2. Je sélectionne le rôle "Étudiant" dans la liste déroulante.
-3. Je saisis mon nom et mon prénom, puis mon adresse e-mail.
-4. Je saisis mon mot de passe et je le confirme.
-5. Je saisis mon matricule.
-6. Je vois le bouton d'inscription pour confirmer mon inscription.
-7. Je vois les messages d'erreur si les informations saisies sont invalides.
-8. Je ne peux pas créer un compte si un compte existe déjà avec mes informations.
+3. Je saisis mon nom "Toto" et mon prénom"lobo", puis mon adresse e-mail"toto.lobo@mail.com".
+4. Je saisis mon mot "Pass123" de passe "Pass123" et je le confirme.
+5. Je saisis mon matricule "1234567".
+6. Je choisi le programe dans lequelle je suis inscrit
+7. Je vois le bouton d'inscription pour confirmer mon inscription.
+8. Je vois les messages d'erreur si les informations saisies sont invalides.
+9. Je résoit un message de confirmation si tout les informations saisies sont valides
+
+## Scénario erruer
+
+1. Je suis sur la page d'enregistrement et j'accède au formulaire d'inscription.
+2. Je sélectionne le rôle "Étudiant" dans la liste déroulante.
+3. Je saisis mon nom "Toto" et mon prénom"lobo", puis mon adresse e-mail"toto.lobo@mail.com".
+4. Je saisis mon mot "Pass123" de passe "Pass123" et je le confirme.
+5. Je saisis mon matricule "1234567".
+6. Je choisi le programe dans lequelle je suis inscrit
+7. Je vois le bouton d'inscription pour confirmer mon inscription.
+8. Si l'étudiant existe déjà dans le système, il reçoit un message d'erreur lorsqu'il tente de s'inscrire à nouveau.
 
 ## Critères d'acceptation
 
