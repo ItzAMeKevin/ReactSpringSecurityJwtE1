@@ -39,10 +39,12 @@
     "greeting": "Hello"
   },
   "televerser": {
+    "choisirFichier": "CHOOSE A FILE",
     "fichierChoisi": "Selected file",
     "envoieEnCours": "Uploading...",
     "envoyerCv": "Send CV",
     "envoieSuccess": "CV sent successfully !",
-    "envoieErreur": "An error occurred, try again."
+    "envoieErreur": "An error occurred, try again.",
+    "mesCvs": "My uploaded CVs"
   }
 }

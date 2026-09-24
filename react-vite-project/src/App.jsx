@@ -10,7 +10,7 @@ import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import Inscription from "./components/page/Inscription.jsx";
-import PersonalSpaceStudent from "./components/page/PersonalSpaceStudent.jsx";
+import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {

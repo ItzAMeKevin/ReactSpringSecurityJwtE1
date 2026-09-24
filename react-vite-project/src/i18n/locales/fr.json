@@ -39,10 +39,12 @@
     "greeting": "Bonjour"
   },
   "televerser": {
+    "choisirFichier": "CHOISIR UN FICHIER",
     "fichierChoisi": "Fichier sélectionné",
     "envoieEnCours": "Envoi en cours...",
     "envoyerCv": "Envoyer le CV",
     "envoieSuccess": "CV envoyé avec succès !",
-    "envoieErreur": "Une erreur est survenue, réessaie."
+    "envoieErreur": "Une erreur est survenue, réessaie.",
+    "mesCvs": "Mes CVs téléversés"
   }
 }
