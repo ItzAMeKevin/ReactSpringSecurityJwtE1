@@ -21,12 +21,14 @@ const PersonalSpaceStudent = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [uploadState, setUploadState] = useState("idle");
+    const [showPreview, setShowPreview] = useState(false);
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
         setSelectedFile(file ?? null);
         setNumPages(null);
         setUploadState("idle");
+        setShowPreview(false);
     };
 
     const onDocumentLoadSuccess = ({ numPages }) => {
@@ -101,6 +103,15 @@ const PersonalSpaceStudent = () => {
                     )}
 
                     {selectedFile && (
+                        <button
+                            onClick={() => setShowPreview(true)}
+                            className="bg-[#4b1113] text-white font-medium py-2 px-4 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                        >
+                            Afficher
+                        </button>
+                    )}
+
+                    {selectedFile && showPreview && (
                         <Document
                             file={selectedFile}
                             onLoadSuccess={onDocumentLoadSuccess}

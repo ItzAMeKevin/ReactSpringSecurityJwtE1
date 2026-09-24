@@ -11,11 +11,13 @@ import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import Inscription from "./components/page/Inscription.jsx";
 import PersonalSpaceStudent from "./components/page/PersonalSpaceStudent.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   const [user, setUser] = useState({})
   const [error, setError] = useState(null)
   const navigate = useNavigate();
+  const [authLoading, setAuthLoading] = useState(true);
 
   let token = localStorage.getItem('token')
 
@@ -43,14 +45,17 @@ function App() {
             ).catch(async (err) => {
               setError(err)
               navigate('/error')
-          })
+          }).finally(() => setAuthLoading(false))
 
         } catch (err) {
           if (!error) {
             setError(err)
             navigate('/error')
           }
+          setAuthLoading(false)
         }
+      } else {
+        setAuthLoading(false)
       }
     }, [token]
   );
@@ -65,7 +70,12 @@ function App() {
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
           <Route path='inscription' element={<Inscription/>}/>
-          <Route path='persospace' element={<PersonalSpaceStudent/>}/>
+          <Route
+              path='persospacestudent'
+              element=
+                  {<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}>
+                    <PersonalSpaceStudent/>
+                  </ProtectedRoute> }/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
       </Routes>
