@@ -20,6 +20,7 @@ const fileToBase64 = (file) =>
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
     const inputRef = useRef(null);
+    const [fileError, setFileError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [uploadState, setUploadState] = useState("idle");
     const [cvList, setCvList] = useState([]);
@@ -36,7 +37,20 @@ const PersonalSpaceStudent = () => {
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
-        setSelectedFile(file ?? null);
+        if (!file) {
+            setSelectedFile(null);
+            return;
+        }
+
+        if (file.type !== "application/pdf") {
+            setFileError(t("televerser.erreurTypeFichier"));
+            setSelectedFile(null);
+            event.target.value = "";
+            return;
+        }
+
+        setFileError(null);
+        setSelectedFile(file);
         setUploadState("idle");
     };
 
@@ -87,6 +101,9 @@ const PersonalSpaceStudent = () => {
                 >
                     {t("televerser.choisirFichier")}
                 </button>
+                {fileError && (
+                    <p className="text-red-700 text-sm">{fileError}</p>
+                )}
 
                 {selectedFile && (
                     <>

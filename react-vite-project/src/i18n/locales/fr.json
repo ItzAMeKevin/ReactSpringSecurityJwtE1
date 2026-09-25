@@ -41,6 +41,7 @@
   "televerser": {
     "choisirFichier": "CHOISIR UN FICHIER",
     "fichierChoisi": "Fichier sélectionné",
+    "erreurTypeFichier": "Seuls les fichiers pdf sont acceptés.",
     "envoieEnCours": "Envoi en cours...",
     "envoyerCv": "Envoyer le CV",
     "envoieSuccess": "CV envoyé avec succès !",
