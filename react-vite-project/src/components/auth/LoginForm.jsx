@@ -148,9 +148,9 @@ const LoginForm = ({user, setUser, setError}) => {
   return (
     <>
       {user?.isLoggedIn ? (
-        user.role === "ROLE_EMPRUNTEUR" ? navigate("/emprunteur") :
-          user.role === "ROLE_PREPOSE" ? navigate("/prepose") :
-            user.role === "ROLE_GESTIONNAIRE" ? navigate("/gestionnaire") :
+        user.role === "ROLE_STUDENT" ? navigate("/persospace") :
+          user.role === "ROLE_EMPLOYER" ? navigate("/prepose") :
+            user.role === "ROLE_MANAGER" ? navigate("/gestionnaire") :
               navigate("/")
       ) : (
           <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
