@@ -19,7 +19,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Student extends User {
-    private String nom;
     @Column (unique = true, nullable = false)
     private String matricule;
     @Column(nullable = false)
