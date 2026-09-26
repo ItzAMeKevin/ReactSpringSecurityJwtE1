@@ -1,9 +1,6 @@
 package com.lacouf.rsbjwt.model.auth;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +15,7 @@ import java.util.Collections;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@DiscriminatorColumn (name = "typeRole")
 public final class Credentials implements UserDetails {
 
 	@Column(unique = true, nullable = false)

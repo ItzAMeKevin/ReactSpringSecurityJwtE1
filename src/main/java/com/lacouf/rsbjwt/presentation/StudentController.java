@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/student-cv")
-public class StudentCvController {
+public class StudentController {
     private final StudentCvService studentCvService;
 
     @PostMapping
