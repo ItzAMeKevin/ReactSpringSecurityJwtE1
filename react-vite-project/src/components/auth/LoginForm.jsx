@@ -16,6 +16,7 @@ const LoginForm = ({user, setUser, setError}) => {
     email: '',
     password: ''
   });
+  const [authError, setAuthError] = useState('');
 
   const validateUser = () => {
     let isValid = true;
@@ -53,6 +54,7 @@ const LoginForm = ({user, setUser, setError}) => {
   const handleChanges = (e) => {
     const {name, value} = e.target;
     setWarnings({...warnings, [name]: ""});
+    setAuthError('');
     setFormData({...formData, [name]: value.trim()});
   }
 
@@ -65,6 +67,7 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const fetchFunc = async () => {
+    setAuthError('');
     try {
       const response = await fetcher('/user/login', {
         method: "POST",
@@ -78,15 +81,9 @@ const LoginForm = ({user, setUser, setError}) => {
         }),
       });
       if (!response.ok) {
-        switch (response.status) {
-          case 401:
-            throw new Error("Not authorized");
-            break;
-          case 404:
-            throw new Error("No server available");
-          default:
-            throw new Error("Not ok")
-        }
+        const errorData = await response.json();
+        setAuthError(errorData.message || "Connexion échouée");
+        return;
       }
       const data = await response.json();
       localStorage.setItem('token', data.accessToken);
@@ -109,8 +106,6 @@ const LoginForm = ({user, setUser, setError}) => {
       setError(error)
       navigate('/error')
     }
-
-
   }
 
   return (
@@ -167,6 +162,11 @@ const LoginForm = ({user, setUser, setError}) => {
                   </div>
 
                   <form id="login-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    {authError && (
+                      <div className="w-full rounded-md bg-red-50 border border-red-400 p-3">
+                        <p className="text-red-800 text-sm font-semibold">{authError}</p>
+                      </div>
+                    )}
                     <div className="flex flex-col">
                       <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">{t("login.email")}</label>
                       <input
