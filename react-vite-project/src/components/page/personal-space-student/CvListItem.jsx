@@ -27,7 +27,7 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
                     onClick={onToggle}
                     className="shrink-0 bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
                 >
-                    {isOpen ? t("televerser.masquer", "Masquer") : t("televerser.afficher", "Afficher")}
+                    {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
                 </button>
             </div>
 
@@ -52,10 +52,7 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
                     </div>
                 ) : (
                     <p className="mt-3 text-sm text-[#4b1113]/70">
-                        {t(
-                            "televerser.apercuIndisponible",
-                            "Aperçu bientôt disponible (en attente de la route de récupération du fichier)."
-                        )}
+                        Aperçu bientôt disponible (en attente de la route de récupération du fichier).
                     </p>
                 )
             )}

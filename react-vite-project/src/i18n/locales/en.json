@@ -46,6 +46,8 @@
     "envoyerCv": "Send CV",
     "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs"
+    "mesCvs": "My uploaded CVs",
+    "masquer": "Hide",
+    "afficher": "Show"
   }
 }

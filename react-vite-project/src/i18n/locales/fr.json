@@ -46,6 +46,8 @@
     "envoyerCv": "Envoyer le CV",
     "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
-    "mesCvs": "Mes CVs téléversés"
+    "mesCvs": "Mes CVs téléversés",
+    "masquer": "Masquer",
+    "afficher": "Afficher"
   }
 }
