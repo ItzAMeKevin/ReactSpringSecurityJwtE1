@@ -1,0 +1,348 @@
+@startuml ReactSpringSecurityJwt - Class Diagram
+
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ==================== MODEL ====================
+package "model" {
+
+    abstract class UserApp {
+        - Long id
+        - String firstName
+        - String lastName
+        - Credentials credentials
+        + String getEmail()
+        + String getPassword()
+        + Role getRole()
+        + Collection<GrantedAuthority> getAuthorities()
+    }
+
+    class Emprunteur {
+        - LocalDate since
+        + LocalDate getSince()
+    }
+
+    class Gestionnaire {
+        - String matricule
+        - String phoneNumber
+        + String getMatricule()
+        + String getPhoneNumber()
+    }
+
+    class Prepose {
+        - String passeKey
+        + String getPasseKey()
+        + void setPasseKey(String)
+    }
+
+    class Client {
+        - String nom
+        + String getNom()
+        + void setNom(String)
+    }
+
+    ' Plain Java interface (NOT a Spring Data repository)
+    interface ClientRepository {
+        + Client saveClient(String nom)
+    }
+
+    ' Plain Java class (NOT a Spring @Service)
+    class ServiceGr2 {
+        - ClientRepository clientRepository
+        + ServiceGr2(ClientRepository)
+        + Client saveClient(String nom)
+    }
+
+    UserApp <|-- Emprunteur
+    UserApp <|-- Gestionnaire
+    UserApp <|-- Prepose
+
+    ServiceGr2 --> ClientRepository
+    ServiceGr2 ..> Client
+    ClientRepository ..> Client
+}
+
+' ==================== MODEL.AUTH ====================
+package "model.auth" {
+
+    class Credentials <<Embeddable>> {
+        - String email
+        - String password
+        - Role role
+        + Collection<GrantedAuthority> getAuthorities()
+        + String getPassword()
+        + String getUsername()
+        + boolean isAccountNonExpired()
+        + boolean isAccountNonLocked()
+        + boolean isCredentialsNonExpired()
+        + boolean isEnabled()
+    }
+
+    enum Role {
+        GESTIONNAIRE
+        PREPOSE
+        EMPRUNTEUR
+        - String string
+        - Set<Role> managedRoles
+        + String toString()
+    }
+
+    Credentials --> Role
+    Credentials ..|> "UserDetails"
+}
+
+UserApp *-- Credentials
+
+' ==================== REPOSITORY ====================
+package "repository" {
+
+    interface UserAppRepository {
+        + Optional<UserApp> findUserAppByEmail(String email)
+    }
+
+    interface EmprunteurRepository {
+    }
+
+    interface GestionnaireRepository {
+    }
+
+    interface PreposeRepository {
+    }
+
+    interface ManagerRepository {
+        + Optional<Gestionnaire> findFirstByFirstNameAndLastName(String, String)
+    }
+
+    UserAppRepository ..|> "JpaRepository<UserApp, Long>"
+    EmprunteurRepository ..|> "JpaRepository<Emprunteur, Long>"
+    GestionnaireRepository ..|> "JpaRepository<Gestionnaire, Long>"
+    PreposeRepository ..|> "JpaRepository<Prepose, Long>"
+    ManagerRepository ..|> "JpaRepository<Gestionnaire, Long>"
+
+    UserAppRepository --> UserApp
+    EmprunteurRepository --> Emprunteur
+    GestionnaireRepository --> Gestionnaire
+    PreposeRepository --> Prepose
+    ManagerRepository --> Gestionnaire
+}
+
+' ==================== SERVICE DTOs ====================
+package "service.dto" {
+
+    class UserDTO {
+        - Long id
+        - String firstName
+        - String lastName
+        - String email
+        - Role role
+        + Long getId()
+        + String getFirstName()
+        + String getLastName()
+        + String getEmail()
+        + Role getRole()
+    }
+
+    class EmprunteurDto {
+        - LocalDate since
+        + LocalDate getSince()
+        + {static} EmprunteurDto create(Emprunteur)
+        + {static} EmprunteurDto empty()
+    }
+
+    class GestionnaireDto {
+        - String matricule
+        - String phoneNumber
+        + {static} GestionnaireDto create(Gestionnaire)
+        + {static} GestionnaireDto empty()
+    }
+
+    class PreposeDto {
+        - String passeKey
+        + {static} PreposeDto create(Prepose)
+        + {static} PreposeDto empty()
+    }
+
+    class LoginDTO {
+        - String email
+        - String password
+        + String getEmail()
+        + String getPassword()
+    }
+
+    class JWTAuthResponse {
+        - String tokenType
+        - String accessToken
+        + String getTokenType()
+        + String getAccessToken()
+    }
+
+    UserDTO <|-- EmprunteurDto
+    UserDTO <|-- GestionnaireDto
+    UserDTO <|-- PreposeDto
+
+    EmprunteurDto ..> Emprunteur
+    GestionnaireDto ..> Gestionnaire
+    PreposeDto ..> Prepose
+    UserDTO --> Role
+}
+
+' ==================== SERVICE ====================
+package "service" {
+
+    class UserAppService {
+        - AuthenticationManager authenticationManager
+        - JwtTokenProvider jwtTokenProvider
+        - UserAppRepository userAppRepository
+        - EmprunteurRepository emprunteurRepository
+        - PreposeRepository preposeRepository
+        - GestionnaireRepository gestionnaireRepository
+        + String authenticateUser(LoginDTO)
+        + UserDTO getMe(String token)
+        - GestionnaireDto getGestionnaireDto(Long id)
+        - PreposeDto getPreposeDto(Long id)
+        - EmprunteurDto getEmprunteurDto(Long id)
+    }
+
+    UserAppService --> "AuthenticationManager"
+    UserAppService --> JwtTokenProvider
+    UserAppService --> UserAppRepository
+    UserAppService --> EmprunteurRepository
+    UserAppService --> PreposeRepository
+    UserAppService --> GestionnaireRepository
+    UserAppService ..> LoginDTO
+    UserAppService ..> UserDTO
+    UserAppService ..> EmprunteurDto
+    UserAppService ..> GestionnaireDto
+    UserAppService ..> PreposeDto
+}
+
+' ==================== PRESENTATION ====================
+package "presentation" {
+
+    class UserController {
+        - UserAppService userService
+        + ResponseEntity<JWTAuthResponse> authenticateUser(LoginDTO)
+        + ResponseEntity<UserDTO> getMe(HttpServletRequest)
+        + ResponseEntity<String> gestionnaireDemoEndpoint()
+    }
+
+    UserController --> UserAppService
+    UserController ..> LoginDTO
+    UserController ..> JWTAuthResponse
+    UserController ..> UserDTO
+}
+
+' ==================== SECURITY ====================
+package "security" {
+
+    class JwtTokenProvider {
+        - int expirationInMs
+        - String jwtSecret
+        - Key getSigningKey()
+        - byte[] hexStringToByteArray(String)
+        + String generateToken(Authentication)
+        + String getEmailFromJWT(String token)
+        + void validateToken(String token)
+    }
+
+    class JwtAuthenticationFilter {
+        - JwtTokenProvider tokenProvider
+        - UserAppRepository userRepository
+        # void doFilterInternal(HttpServletRequest, HttpServletResponse, FilterChain)
+        - String getJWTFromRequest(HttpServletRequest)
+    }
+
+    class AuthProvider {
+        - PasswordEncoder passwordEncoder
+        - UserAppRepository userAppRepository
+        + Authentication authenticate(Authentication)
+        + boolean supports(Class<?>)
+        - UserApp loadUserByEmail(String email)
+        - void validateAuthentication(Authentication, UserApp)
+    }
+
+    class JwtAuthenticationEntryPoint {
+        + void commence(HttpServletRequest, HttpServletResponse, AuthenticationException)
+    }
+
+    class SecurityConfiguration {
+        - JwtTokenProvider jwtTokenProvider
+        - UserAppRepository userRepository
+        - JwtAuthenticationEntryPoint authenticationEntryPoint
+        + SecurityFilterChain securityFilterChain(HttpSecurity)
+        + CorsConfigurationSource corsConfigurationSource()
+        + CorsFilter corsFilter()
+        + JwtAuthenticationFilter jwtAuthenticationFilter()
+        + AuthenticationManager authenticationManager(AuthenticationConfiguration)
+        + PasswordEncoder passwordEncoder()
+    }
+
+    JwtAuthenticationFilter --> JwtTokenProvider
+    JwtAuthenticationFilter --> UserAppRepository
+
+    AuthProvider --> "PasswordEncoder"
+    AuthProvider --> UserAppRepository
+
+    SecurityConfiguration --> JwtTokenProvider
+    SecurityConfiguration --> UserAppRepository
+    SecurityConfiguration --> JwtAuthenticationEntryPoint
+    SecurityConfiguration ..> JwtAuthenticationFilter
+    SecurityConfiguration ..> AuthProvider
+
+    JwtAuthenticationFilter ..|> "OncePerRequestFilter"
+    AuthProvider ..|> "AuthenticationProvider"
+    JwtAuthenticationEntryPoint ..|> "AuthenticationEntryPoint"
+}
+
+' ==================== SECURITY EXCEPTIONS ====================
+package "security.exception" {
+
+    abstract class APIException {
+        # HttpStatus status
+        # String message
+        + APIException(HttpStatus status, String message)
+        + HttpStatus getStatus()
+        + String getMessage()
+    }
+
+    class AuthenticationException {
+        + AuthenticationException(HttpStatus status, String message)
+    }
+
+    class InvalidJwtTokenException {
+        + InvalidJwtTokenException(HttpStatus status, String message)
+    }
+
+    class UserNotFoundException {
+        + UserNotFoundException()
+    }
+
+    APIException ..|> "RuntimeException"
+    APIException <|-- AuthenticationException
+    APIException <|-- InvalidJwtTokenException
+    APIException <|-- UserNotFoundException
+}
+
+' ==================== APPLICATION ENTRY POINT ====================
+package "root" {
+
+    class ReactSpringSecurityJwtApplication {
+        - GestionnaireRepository gestionnaireRepository
+        - EmprunteurRepository emprunteurRepository
+        - PreposeRepository preposeRepository
+        - UserAppRepository userAppRepository
+        - PasswordEncoder passwordEncoder
+        + {static} void main(String[] args)
+        + void run(String... args)
+    }
+
+    ReactSpringSecurityJwtApplication ..|> "CommandLineRunner"
+    ReactSpringSecurityJwtApplication --> GestionnaireRepository
+    ReactSpringSecurityJwtApplication --> EmprunteurRepository
+    ReactSpringSecurityJwtApplication --> PreposeRepository
+    ReactSpringSecurityJwtApplication --> UserAppRepository
+    ReactSpringSecurityJwtApplication --> "PasswordEncoder"
+}
+
+@enduml

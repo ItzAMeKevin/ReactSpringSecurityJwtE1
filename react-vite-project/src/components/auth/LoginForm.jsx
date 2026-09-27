@@ -122,21 +122,21 @@ const LoginForm = ({user, setUser, setError}) => {
   return (
     <>
       {!user?.isLoggedIn ? (
-          <div className="relative min-h-screen overflow-hidden bg-[#f0fdf4]">
+          <div className="auth-page">
             <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
                 style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
             >
-              <div className="absolute inset-0 bg-[#10b981]" />
+              <div className="absolute inset-0 bg-mint" />
               <div
                   className="absolute -inset-[50%] opacity-25"
                   style={{
-                    backgroundImage: "radial-gradient(#6ee7b7 1.6px, transparent 1.7px)",
+                    backgroundImage: "radial-gradient(var(--color-mint-dots) 1.6px, transparent 1.7px)",
                     backgroundSize: "18px 18px",
                     transform: "rotate(32deg)",
                   }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#059669] via-transparent to-[#10b981]/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-mint-dark via-transparent to-mint/40" />
             </div>
 
             <div className="relative z-10 grid min-h-screen md:grid-cols-2">
@@ -151,18 +151,16 @@ const LoginForm = ({user, setUser, setError}) => {
               </div>
 
               <div className="flex items-center justify-center px-4 py-12">
-                <div className="w-full max-w-md rounded-2xl border border-[#a7f3d0] bg-white p-8 shadow-2xl shadow-[#10b981]/20">
+                <div className="auth-card w-full max-w-md">
                   <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-2xl font-bold text-[#1e293b]">{t("login.title")}</h1>
+                    <h1 className="auth-title">{t("login.title")}</h1>
                     <div className="flex gap-2">
                       {["fr", "en"].map((lang) => (
                         <button
                           key={lang}
                           type="button"
                           onClick={() => i18n.changeLanguage(lang)}
-                          className={`rounded px-2 py-1 text-sm text-[#1e293b] ${
-                            i18n.language === lang ? "font-bold underline" : ""
-                          }`}
+                          className={`lang-btn ${i18n.language === lang ? "font-bold underline" : ""}`}
                         >
                           {lang.toUpperCase()}
                         </button>
@@ -177,7 +175,7 @@ const LoginForm = ({user, setUser, setError}) => {
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <label htmlFor="email" className="mb-1 font-medium text-[#1e293b]">{t("login.email")}</label>
+                      <label htmlFor="email" className="form-label">{t("login.email")}</label>
                       <input
                           id="email"
                           type="email"
@@ -185,9 +183,7 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.emailPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#10b981] text-[#1e293b] ${
-                              warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#a7f3d0]"
-                          }`}
+                          className={warnings.email ? "form-input-error" : "form-input"}
                       />
                       {warnings.email && (
                           <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.email}</span>
@@ -195,7 +191,7 @@ const LoginForm = ({user, setUser, setError}) => {
                     </div>
 
                     <div className="flex flex-col">
-                      <label htmlFor="password" className="mb-1 font-medium text-[#1e293b]">{t("login.password")}</label>
+                      <label htmlFor="password" className="form-label">{t("login.password")}</label>
                       <input
                           id="password"
                           type="password"
@@ -203,29 +199,24 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.passwordPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#10b981] text-[#1e293b] ${
-                              warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#a7f3d0]"
-                          }`}
+                          className={warnings.password ? "form-input-error" : "form-input"}
                       />
                       {warnings.password && (
                           <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.password}</span>
                       )}
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full mt-2 bg-[#10b981] text-white font-medium py-2.5 rounded-md hover:bg-[#059669] transition-colors"
-                    >
+                    <button type="submit" className="btn-primary mt-2">
                       {t("login.submit")}
                     </button>
                   </form>
 
-                  <p className="text-center mt-6 text-[#1e293b]">
+                  <p className="text-center mt-6 text-slate">
                     {t("login.firstTime")}{" "}
                     <button
                         type="button"
                         onClick={() => navigate("/inscription")}
-                        className="font-semibold underline hover:text-[#059669]"
+                        className="font-semibold underline hover:text-mint-dark"
                     >
                       {t("login.signUp")}
                     </button>

@@ -109,29 +109,29 @@ const Inscription = () => {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f0fdf4] flex items-center justify-center px-4 py-10">
+    <div className="auth-page flex items-center justify-center px-4 py-10">
       <div
         className="pointer-events-none absolute inset-0 opacity-25"
         style={{
-          backgroundImage: "radial-gradient(#6ee7b7 1.6px, transparent 1.7px)",
+          backgroundImage: "radial-gradient(var(--color-mint-dots) 1.6px, transparent 1.7px)",
           backgroundSize: "18px 18px",
         }}
       />
 
-      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-[#a7f3d0] bg-white p-8 shadow-2xl shadow-[#10b981]/20">
+      <div className="auth-card relative z-10 w-full max-w-lg">
         <div className="flex justify-end gap-2 mb-2">
           {["fr", "en"].map((lang) => (
             <button
               key={lang}
               type="button"
               onClick={() => i18n.changeLanguage(lang)}
-              className={`text-sm px-2 py-1 rounded text-[#1e293b] ${i18n.language === lang ? "font-bold underline" : ""}`}
+              className={`lang-btn ${i18n.language === lang ? "font-bold underline" : ""}`}
             >
               {lang.toUpperCase()}
             </button>
           ))}
         </div>
-        <h1 className="text-2xl font-bold text-center mb-2 text-[#1e293b]">{t("inscription.title")}</h1>
+        <h1 className="auth-title text-center mb-2">{t("inscription.title")}</h1>
         {submitError && (
           <p className="mb-3 text-center text-red-800 text-sm font-semibold">{t(submitError)}</p>
         )}
