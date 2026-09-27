@@ -15,10 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class StudentCvService {
+public class StudentService {
     private static final int MAX_CV_SIZE_BYTES = 5 * 1024 * 1024;
     private static final byte[] PDF_SIGNATURE = {'%', 'P', 'D', 'F', '-'};
     private static final String PDF_CONTENT_TYPE = "application/pdf";
@@ -91,5 +92,14 @@ public class StudentCvService {
             throw new InvalidCvException("Le nom de fichier est invalide.");
         }
         return normalized;
+    }
+
+    @Transactional
+    public List<CvMetaDataDto> listCvs(String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        return studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail)
+                .stream()
+                .map(CvMetaDataDto::toCvMetaDataDto)
+                .toList();
     }
 }

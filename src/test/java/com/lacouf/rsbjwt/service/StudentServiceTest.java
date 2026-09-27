@@ -18,13 +18,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Base64;
 import java.util.Optional;
+import java.util.List;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentCvServiceTest {
+public class StudentServiceTest {
 
     @Mock
     private StudentCvRepository studentCvRepository;
@@ -33,7 +35,7 @@ public class StudentCvServiceTest {
     private StudentRepository studentRepository;
 
     @InjectMocks
-    private StudentCvService studentCvService;
+    private StudentService studentService;
 
     private Student testStudent;
     private byte[] validPdfContent;
@@ -64,7 +66,7 @@ public class StudentCvServiceTest {
                 });
 
         // ACT
-        CvMetaDataDto result = studentCvService.upload(email, request);
+        CvMetaDataDto result = studentService.upload(email, request);
 
         // ASSERT
         assertNotNull(result);
@@ -83,7 +85,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         assertEquals("Seuls les PDF sont acceptés.", exception.getMessage());
         verify(studentCvRepository, never()).save(any());
@@ -97,7 +99,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         assertEquals("Le contenu Base64 est invalide.", exception.getMessage());
         verify(studentCvRepository, never()).save(any());
@@ -112,7 +114,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         assertEquals("Le fichier doit faire entre 1 octet et 5 Mo.", exception.getMessage());
     }
@@ -127,7 +129,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         assertEquals("Le contenu fourni n'est pas un PDF.", exception.getMessage());
     }
@@ -144,7 +146,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         assertThrows(UserNotFoundException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         verify(studentCvRepository, never()).save(any());
     }
@@ -161,7 +163,7 @@ public class StudentCvServiceTest {
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
-            studentCvService.upload(email, request);
+            studentService.upload(email, request);
         });
         assertEquals("Le nom de fichier est invalide.", exception.getMessage());
     }
@@ -183,12 +185,84 @@ public class StudentCvServiceTest {
                 });
 
         // ACT
-        CvMetaDataDto result = studentCvService.upload(email, request);
+        CvMetaDataDto result = studentService.upload(email, request);
 
         // ASSERT
         assertEquals(".._.._evil.pdf", result.getFileName());
         verify(studentCvRepository, times(1)).save(any(StudentCv.class));
     }
 
+    @Test
+    void testListCvsSuccess() {
+        // ARRANGE
+        String email = "student@test.com";
 
+        StudentCv cv1 = new StudentCv();
+        cv1.setId(1L);
+        cv1.setFileName("cv_recent.pdf");
+        cv1.setContentType("application/pdf");
+        cv1.setSize(1024);
+        cv1.setStatus(CvStatus.PENDING);
+        cv1.setUploadedAt(Instant.now());
+        cv1.setStudent(testStudent);
+
+        StudentCv cv2 = new StudentCv();
+        cv2.setId(2L);
+        cv2.setFileName("cv_ancien.pdf");
+        cv2.setContentType("application/pdf");
+        cv2.setSize(2048);
+        cv2.setStatus(CvStatus.ACCEPTED);
+        cv2.setUploadedAt(Instant.now().minusSeconds(3600));
+        cv2.setStudent(testStudent);
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(email))
+                .thenReturn(List.of(cv1, cv2));
+
+        // ACT
+        List<CvMetaDataDto> result = studentService.listCvs(email);
+
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("cv_recent.pdf", result.get(0).getFileName());
+        assertEquals(CvStatus.PENDING, result.get(0).getStatus());
+        assertEquals("cv_ancien.pdf", result.get(1).getFileName());
+        assertEquals(CvStatus.ACCEPTED, result.get(1).getStatus());
+        verify(studentCvRepository, times(1)).findByStudentCredentialsEmailOrderByUploadedAtDesc(email);
+    }
+
+    @Test
+    void testListCvsEmptyWhenNoneUploaded() {
+        // ARRANGE
+        String email = "student@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(email))
+                .thenReturn(List.of());
+
+        // ACT
+        List<CvMetaDataDto> result = studentService.listCvs(email);
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testListCvsStudentNotFoundThrows() {
+        // ARRANGE
+        String email = "unknown@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(UserNotFoundException.class, () -> {
+            studentService.listCvs(email);
+        });
+        verify(studentCvRepository, never()).findByStudentCredentialsEmailOrderByUploadedAtDesc(any());
+    }
 }
