@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
 import {useTranslation} from "react-i18next";
@@ -17,6 +17,13 @@ const LoginForm = ({user, setUser, setError}) => {
     password: ''
   });
   const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    if (!user?.isLoggedIn) return;
+    if (user.role === "ROLE_STUDENT") navigate("/etudiant");
+    else if (user.role === "ROLE_MANAGER") navigate("/gestionnaire");
+    else if (user.role === "ROLE_EMPLOYER") navigate("/employeur");
+  }, [user]);
 
   const validateUser = () => {
     let isValid = true;
@@ -114,9 +121,7 @@ const LoginForm = ({user, setUser, setError}) => {
 
   return (
     <>
-      {user?.isLoggedIn ? (
-        user.role === "ROLE_STUDENT" ? navigate("/etudiant") : navigate("/")
-      ) : (
+      {!user?.isLoggedIn ? (
           <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
@@ -229,7 +234,7 @@ const LoginForm = ({user, setUser, setError}) => {
               </div>
             </div>
           </div>
-      )}
+      ) : null}
     </>
   )
 }
