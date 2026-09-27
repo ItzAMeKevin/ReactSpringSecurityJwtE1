@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
 
-import com.lacouf.rsbjwt.model.auth.ContractType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,11 +37,11 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OfferStatus status = OfferStatus.PUBLIEE;
+    private OfferStatus status = OfferStatus.ON_WAIT;
 
     private LocalDate publicationDate;
     private LocalDate startingDate;
-    private int duration;
+    private int durationInWeeks;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id", nullable = false)
@@ -50,15 +49,17 @@ public class JobOffer {
 
     @Builder
     public JobOffer(String title, String description, String prerequisites,
-                    ContractType contractType, String location, String salary,
-                    OfferStatus status, LocalDate publicationDate, Employer employer) {
+                    String location, String salary,
+                    OfferStatus status, LocalDate startingDate, int durationInWeeks, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
         this.location = location;
         this.salary = salary;
-        this.status = status != null ? status : OfferStatus.PUBLIEE;
-        this.publicationDate = publicationDate;
+        this.status = status != null ? status : OfferStatus.ON_WAIT;
+        this.publicationDate = LocalDate.now();
+        this.startingDate = startingDate;
+        this.durationInWeeks = durationInWeeks;
         this.employer = employer;
     }
 }
