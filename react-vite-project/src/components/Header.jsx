@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function Header({user}) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     // Function to format role for display (remove ROLE_ prefix and capitalize)
     const formatRole = (roleString) => {
@@ -31,6 +31,18 @@ function Header({user}) {
                     {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
                     {!user?.isLoggedIn && <li><Link to="/inscription">{t("header.inscription")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
+                    {["fr", "en"].map((lang) => (
+                        <li key={lang}>
+                            <button
+                                type="button"
+                                onClick={() => i18n.changeLanguage(lang)}
+                                className={i18n.language === lang ? "font-bold underline" : ""}
+                                style={{ background: "none", border: "none", color: "white", cursor: "pointer", fontSize: "inherit" }}
+                            >
+                                {lang.toUpperCase()}
+                            </button>
+                        </li>
+                    ))}
                 </ul>
                 {user?.isLoggedIn && (
                     <div className="user-info">
