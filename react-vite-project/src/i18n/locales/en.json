@@ -74,6 +74,26 @@
     "masquer": "Hide",
     "afficher": "Show"
   },
+  "about": {
+    "subtitle": "Student Internship Opportunity Network",
+    "missionTitle": "Our mission",
+    "missionText": "ZeROSE is a platform dedicated to connecting students with internship opportunities. Our mission is to simplify the internship search, application, and tracking process for all parties involved.",
+    "whoTitle": "Who is it for?",
+    "roles": {
+      "student": {
+        "title": "Students",
+        "desc": "Search for internship offers, submit your CV, and track your application progress."
+      },
+      "employer": {
+        "title": "Employers",
+        "desc": "Post internship offers, review applications, and recruit the best talent."
+      },
+      "manager": {
+        "title": "Professors",
+        "desc": "Supervise your students, validate internship placements, and ensure academic follow-up."
+      }
+    }
+  },
   "login": {
     "welcome": "Welcome",
     "subtitle": "Sign in to access your space and continue your process.",

@@ -73,6 +73,26 @@
     "masquer": "Masquer",
     "afficher": "Afficher"
   },
+  "about": {
+    "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",
+    "missionTitle": "Notre mission",
+    "missionText": "ZeROSE est une plateforme dédiée à connecter les étudiants avec des opportunités de stages. Notre mission est de simplifier le processus de recherche, de candidature et de suivi de stages pour toutes les parties impliquées.",
+    "whoTitle": "Pour qui ?",
+    "roles": {
+      "student": {
+        "title": "Étudiants",
+        "desc": "Recherchez des offres de stage, soumettez votre CV et suivez l'avancement de vos candidatures."
+      },
+      "employer": {
+        "title": "Employeurs",
+        "desc": "Publiez vos offres de stage, consultez les candidatures et recrutez les meilleurs talents."
+      },
+      "manager": {
+        "title": "Professeurs",
+        "desc": "Supervisez vos étudiants, validez les placements en stage et assurez le suivi pédagogique."
+      }
+    }
+  },
   "login": {
     "welcome": "Bienvenue",
     "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",
