@@ -59,7 +59,9 @@
     "gestionnaire": "Admin",
     "logout": "Logout",
     "login": "Login",
-    "greeting": "Hello"
+    "greeting": "Hello",
+    "etudiant": "Student",
+    "employeur": "Employer"
   },
   "televerser": "Upload a file",
   "login": {

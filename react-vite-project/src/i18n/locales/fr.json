@@ -58,7 +58,9 @@
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "greeting": "Bonjour"
+    "greeting": "Bonjour",
+    "etudiant": "Étudiant",
+    "employeur": "Employeur"
   },
   "televerser": "Téléverser un fichier",
   "login": {
