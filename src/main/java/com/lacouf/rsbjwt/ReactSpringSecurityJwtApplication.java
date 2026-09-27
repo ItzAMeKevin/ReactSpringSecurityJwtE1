@@ -9,18 +9,18 @@ import com.lacouf.rsbjwt.service.dto.StudentDto;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
 
     private final UserAppService UserAppService;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public ReactSpringSecurityJwtApplication(UserAppService UserService) {
-
+    public ReactSpringSecurityJwtApplication(UserAppService UserService, PasswordEncoder passwordEncoder) {
         this.UserAppService = UserService;
-
+        this.passwordEncoder = passwordEncoder;
     }
 
     public static void main(String[] args) {
@@ -38,7 +38,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                             .matricule("PROF-001")
                             .email("l@l.com")
                             .role(Role.MANAGER)
-                            .password("bib")
+                            .password(passwordEncoder.encode("bib"))
                             .build()
             );
 
@@ -49,7 +49,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                             .lastName("Teurteur")
                             .matricule("ETUD-001")
                             .email("ll@l.com")
-                            .password("bib")
+                            .password(passwordEncoder.encode("bib"))
                             .role(Role.STUDENT)
                             .programe(Programe.SOINS_INFIRMIERS)
                             .build()
@@ -68,7 +68,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                             .city("Montréal")
                             .phoneNumber("514-555-1234")
                             .employerId("EMP-001")
-                            .password("bib")
+                            .password(passwordEncoder.encode("bib"))
                             .build()
             );
     }
