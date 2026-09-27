@@ -100,7 +100,7 @@ const LoginForm = ({user, setUser, setError}) => {
       if (role === "ROLE_STUDENT") {
         navigate("/etudiant");
       } else if(role === "ROLE_MANAGER"){
-        navigate("/manager");
+        navigate("/gestionnaire");
       } else if (role === "ROLE_EMPLOYER") {
         navigate("/employeur");
       } else {

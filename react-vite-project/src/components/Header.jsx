@@ -28,7 +28,7 @@ function Header({user}) {
                     <li><Link to="/about">{t("header.about")}</Link></li>
                     {isStudent() && <li><Link to="/etudiant">{t("header.etudiant")}</Link></li>}
                     {isEmployer() && <li><Link to="/employeur">{t("header.employeur")}</Link></li>}
-                    {isManager() && <li><Link to="/manager">{t("header.manager")}</Link></li>}
+                    {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
                 </ul>
                 {user?.isLoggedIn && (
