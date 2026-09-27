@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-export const labelClass = "mb-1 font-medium text-[#2b1a12]";
+export const labelClass = "mb-1 font-medium text-[#1e293b]";
 
 const Field = ({ label, name, type = "text", error }) => {
   const { t } = useTranslation();
@@ -12,8 +12,8 @@ const Field = ({ label, name, type = "text", error }) => {
         <input
           type={type}
           name={name}
-          className={`w-full rounded-md border px-3 py-2 pr-28 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-            error ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
+          className={`w-full rounded-md border px-3 py-2 pr-28 focus:outline-none focus:ring-2 focus:ring-[#10b981] text-[#1e293b] ${
+            error ? "bg-red-50 border-red-400" : "bg-white border-[#a7f3d0]"
           }`}
         />
         {error && (

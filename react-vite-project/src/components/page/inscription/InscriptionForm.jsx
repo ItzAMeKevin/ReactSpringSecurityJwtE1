@@ -14,12 +14,12 @@ const InscriptionForm = ({ role, errors, programmes, handleSubmit, handleChange 
           type="submit"
           className="
           w-full mt-6
-          bg-[#4b1113]
+          bg-[#10b981]
           text-white
           font-medium
           py-2
           rounded-md
-          hover:bg-[#3a0d0f]
+          hover:bg-[#059669]
           transition-colors"
         >
           {t("inscription.submit")}

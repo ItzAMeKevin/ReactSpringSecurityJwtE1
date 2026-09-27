@@ -122,45 +122,45 @@ const LoginForm = ({user, setUser, setError}) => {
   return (
     <>
       {!user?.isLoggedIn ? (
-          <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
+          <div className="relative min-h-screen overflow-hidden bg-[#f0fdf4]">
             <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
                 style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
             >
-              <div className="absolute inset-0 bg-[#4b1113]" />
+              <div className="absolute inset-0 bg-[#10b981]" />
               <div
                   className="absolute -inset-[50%] opacity-25"
                   style={{
-                    backgroundImage: "radial-gradient(#e8d5b5 1.6px, transparent 1.7px)",
+                    backgroundImage: "radial-gradient(#6ee7b7 1.6px, transparent 1.7px)",
                     backgroundSize: "18px 18px",
                     transform: "rotate(32deg)",
                   }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4b1113] via-transparent to-[#4b1113]/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#059669] via-transparent to-[#10b981]/40" />
             </div>
 
             <div className="relative z-10 grid min-h-screen md:grid-cols-2">
-              <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-[#f3ebe3]">
+              <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-white">
                 <h2 className="text-4xl lg:text-5xl font-semibold leading-tight mb-4">
                   {t("login.welcome")}
                 </h2>
-                <p className="max-w-sm text-[#f3ebe3]/80 text-sm leading-relaxed">
+                <p className="max-w-sm text-white/80 text-sm leading-relaxed">
                   {t("login.subtitle")}
                 </p>
-                <div className="mt-8 h-px w-24 bg-[#e8d5b5]/50" />
+                <div className="mt-8 h-px w-24 bg-white/50" />
               </div>
 
               <div className="flex items-center justify-center px-4 py-12">
-                <div className="w-full max-w-md rounded-2xl border border-[#8b6f52]/30 bg-[#8b6f52] p-8 shadow-2xl shadow-[#4b1113]/30">
+                <div className="w-full max-w-md rounded-2xl border border-[#a7f3d0] bg-white p-8 shadow-2xl shadow-[#10b981]/20">
                   <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-2xl font-bold text-[#2b1a12]">{t("login.title")}</h1>
+                    <h1 className="text-2xl font-bold text-[#1e293b]">{t("login.title")}</h1>
                     <div className="flex gap-2">
                       {["fr", "en"].map((lang) => (
                         <button
                           key={lang}
                           type="button"
                           onClick={() => i18n.changeLanguage(lang)}
-                          className={`rounded px-2 py-1 text-sm text-[#2b1a12] ${
+                          className={`rounded px-2 py-1 text-sm text-[#1e293b] ${
                             i18n.language === lang ? "font-bold underline" : ""
                           }`}
                         >
@@ -177,7 +177,7 @@ const LoginForm = ({user, setUser, setError}) => {
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">{t("login.email")}</label>
+                      <label htmlFor="email" className="mb-1 font-medium text-[#1e293b]">{t("login.email")}</label>
                       <input
                           id="email"
                           type="email"
@@ -185,8 +185,8 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.emailPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-                              warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
+                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#10b981] text-[#1e293b] ${
+                              warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#a7f3d0]"
                           }`}
                       />
                       {warnings.email && (
@@ -195,7 +195,7 @@ const LoginForm = ({user, setUser, setError}) => {
                     </div>
 
                     <div className="flex flex-col">
-                      <label htmlFor="password" className="mb-1 font-medium text-[#2b1a12]">{t("login.password")}</label>
+                      <label htmlFor="password" className="mb-1 font-medium text-[#1e293b]">{t("login.password")}</label>
                       <input
                           id="password"
                           type="password"
@@ -203,8 +203,8 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.passwordPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-                              warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
+                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#10b981] text-[#1e293b] ${
+                              warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#a7f3d0]"
                           }`}
                       />
                       {warnings.password && (
@@ -214,18 +214,18 @@ const LoginForm = ({user, setUser, setError}) => {
 
                     <button
                         type="submit"
-                        className="w-full mt-2 bg-[#4b1113] text-white font-medium py-2.5 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                        className="w-full mt-2 bg-[#10b981] text-white font-medium py-2.5 rounded-md hover:bg-[#059669] transition-colors"
                     >
                       {t("login.submit")}
                     </button>
                   </form>
 
-                  <p className="text-center mt-6 text-[#2b1a12]">
+                  <p className="text-center mt-6 text-[#1e293b]">
                     {t("login.firstTime")}{" "}
                     <button
                         type="button"
                         onClick={() => navigate("/inscription")}
-                        className="font-semibold underline hover:text-[#3a0d0f]"
+                        className="font-semibold underline hover:text-[#059669]"
                     >
                       {t("login.signUp")}
                     </button>
