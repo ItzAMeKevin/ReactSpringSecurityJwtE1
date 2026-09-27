@@ -99,6 +99,10 @@ const LoginForm = ({user, setUser, setError}) => {
       const role = userData.role;
       if (role === "ROLE_STUDENT") {
         navigate("/etudiant");
+      } else if(role === "ROLE_MANAGER"){
+        navigate("/manager");
+      } else if (role === "ROLE_EMPLOYER") {
+        navigate("/employeur");
       } else {
         navigate("/");
       }
