@@ -31,7 +31,7 @@ public class EmployerDto extends UserDTO {
                 postalCode,
                 city,
                 phoneNumber,
-                employerId);
+                employerId,null);
     }
 
     public EmployerDto() {}

@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import Field from "../Field";
-import StudentFields from "../StudentFields";
-import ManagerFields from "../ManagerFields";
-import EmployerFields from "../EmployerFields";
+import StudentFields from "./StudentFields.jsx";
+import ManagerFields from "./ManagerFields.jsx";
+import EmployerFields from "./EmployerFields.jsx";
 
 const UserFields = ({ role, errors, programmes }) => {
   const { t } = useTranslation();

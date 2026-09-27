@@ -16,17 +16,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Employer extends User {
 
-    @Column
+    @Column(nullable = false)
     private String companyName;
-    @Column
+    @Column(nullable = false)
     private String address;
-    @Column
+    @Column(nullable = false)
     private String postalCode;
-    @Column
+    @Column(nullable = false)
     private String city;
-    @Column
+    @Column(nullable = false)
     private String phoneNumber;
-    @Column(unique = true)
+    @Column(unique = true , nullable = false)
     private String employerId;
 
     @Builder

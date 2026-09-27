@@ -98,7 +98,7 @@ const LoginForm = ({user, setUser, setError}) => {
       // Navigate to role-specific page
       const role = userData.role;
       if (role === "ROLE_STUDENT") {
-        navigate("/emprunteur");
+        navigate("/etudiant");
       } else {
         navigate("/");
       }
@@ -111,7 +111,7 @@ const LoginForm = ({user, setUser, setError}) => {
   return (
     <>
       {user?.isLoggedIn ? (
-        user.role === "ROLE_STUDENT" ? navigate("/emprunteur") : navigate("/")
+        user.role === "ROLE_STUDENT" ? navigate("/etudiant") : navigate("/")
       ) : (
           <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div
