@@ -30,20 +30,19 @@ public class JobOffer {
     @Column(nullable = false, length = 2000)
     private String prerequisites;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ContractType contractType;
 
     @Column(nullable = false)
     private String location;
 
-    private Double salary;
+    private String salary;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OfferStatus status = OfferStatus.PUBLIEE;
 
     private LocalDate publicationDate;
+    private LocalDate startingDate;
+    private int duration;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employer_id", nullable = false)
@@ -51,12 +50,11 @@ public class JobOffer {
 
     @Builder
     public JobOffer(String title, String description, String prerequisites,
-                    ContractType contractType, String location, Double salary,
+                    ContractType contractType, String location, String salary,
                     OfferStatus status, LocalDate publicationDate, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
-        this.contractType = contractType;
         this.location = location;
         this.salary = salary;
         this.status = status != null ? status : OfferStatus.PUBLIEE;

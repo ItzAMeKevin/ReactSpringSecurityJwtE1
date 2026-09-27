@@ -2,12 +2,13 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.auth.Credentials;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("EMPLOYER")
@@ -27,6 +28,10 @@ public class Employer extends User {
     private String phoneNumber;
     @Column(unique = true , nullable = false)
     private String employerId;
+
+
+    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobOffer> jobOffers = new ArrayList<>();
 
     @Builder
     public Employer(
