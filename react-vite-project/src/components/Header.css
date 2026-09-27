@@ -9,6 +9,9 @@
     font-size: calc(10px + 1vmin);
     color: white;
     padding: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .nav-links {
@@ -29,4 +32,8 @@
     margin: 0 5px;
     position: absolute;
     right: 20px;
+}
+
+.user-name {
+    font-weight: bold;
 }

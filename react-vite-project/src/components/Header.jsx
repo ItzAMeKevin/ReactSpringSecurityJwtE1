@@ -16,8 +16,8 @@ function Header({user}) {
     };
 
     const isManager = () => user?.role === 'ROLE_MANAGER';
-    const isEmployer = () => user?.role === 'ROLE_EMPLOYER' || user?.role === 'ROLE_MANAGER';
-    const isStudent = () => user?.role === 'ROLE_STUDENT' || user?.role === 'ROLE_MANAGER';
+    const isEmployer = () => user?.role === 'ROLE_EMPLOYER';
+    const isStudent = () => user?.role === 'ROLE_STUDENT';
 
     return (
         <header className="header">
@@ -29,6 +29,7 @@ function Header({user}) {
                     {isStudent() && <li><Link to="/etudiant">{t("header.etudiant")}</Link></li>}
                     {isEmployer() && <li><Link to="/employeur">{t("header.employeur")}</Link></li>}
                     {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
+                    {!user?.isLoggedIn && <li><Link to="/inscription">{t("header.inscription")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
                 </ul>
                 {user?.isLoggedIn && (
