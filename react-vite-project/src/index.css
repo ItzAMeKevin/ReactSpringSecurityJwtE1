@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --color-mint: #10b981;
-  --color-mint-dark: #059669;
-  --color-mint-light: #a7f3d0;
-  --color-mint-dots: #6ee7b7;
-  --color-mint-bg: #f0fdf4;
+  --color-mint: #ff333c;
+  --color-mint-dark: #dc2626;
+  --color-mint-light: #fecaca;
+  --color-mint-dots: #fca5a5;
+  --color-mint-bg: #fff1f2;
   --color-slate: #1e293b;
 }
 
