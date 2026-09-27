@@ -6,6 +6,12 @@ const emailRegex = /^[\w.-]+@[\w.-]+\.(ca|com)$/;
 const matriculeRegex = /^\d{7}$/;
 // Mot de passe: 8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+// Format de telephone: doit contenire 10 chiffres
+const telephoneRegex = /^\d{10}$/;
+// Code postal en format Canadien, ex: A1A1A1
+const postalCodeRegex = /^[A-Za-z]\d[A-Za-z]\d[A-Za-z]\d$/;
+// NEQ (Numéro d'Entreprise du Québec): exactement 10 chiffres
+const enterpriseIdRegex = /^\d{10}$/;
 
 export const validateField = (name, value, data = {}) => {
     switch (name) {
@@ -20,6 +26,17 @@ export const validateField = (name, value, data = {}) => {
             return value === data.motDePasse ? undefined : "errors.passwordMismatch";
         case "matricule":
             return matriculeRegex.test(value) ? undefined : "errors.matriculeFormat";
+        case "telephone":
+            return telephoneRegex.test(value) ? undefined : "errors.telephoneFormat";
+        case "codePostal":
+            return postalCodeRegex.test(value) ? undefined : "errors.postalCodeFormat";
+        case "identifiant":
+            return enterpriseIdRegex.test(value) ? undefined : "errors.enterpriseIdFormat";
+        case "nomEntreprise":
+        case "adresse":
+        case "ville":
+            return value.trim() !== "" ? undefined : "errors.required";
+
         default:
             return undefined;
     }
@@ -27,12 +44,11 @@ export const validateField = (name, value, data = {}) => {
 
 export const validateInscription = (data) => {
     const errs = {};
-
-    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule"].forEach((field) => {
+    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule",
+        "telephone", "codePostal", "identifiant", "nomEntreprise", "adresse", "ville"].forEach((field) => {
         if (data[field] === undefined) return;
         const error = validateField(field, data[field], data);
-        if (error) errs[field] = error;
+        if (error) errs[field] = error;``
     });
-
     return errs;
 };

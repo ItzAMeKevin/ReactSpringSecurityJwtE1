@@ -24,7 +24,7 @@ const RoleSelector = ({ role, setRole }) => {
       >
         <option value="" disabled hidden>{t("inscription.rolePlaceholder")}</option>
         <option value="student">{t("inscription.roles.student")}</option>
-        <option value="professor">{t("inscription.roles.professor")}</option>
+        <option value="manager">{t("inscription.roles.manager")}</option>
         <option value="employer">{t("inscription.roles.employer")}</option>
       </select>
     </div>

@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Local session notes ###
+session-notes.md
+docker-compose.yml

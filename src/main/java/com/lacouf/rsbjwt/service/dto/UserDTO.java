@@ -1,11 +1,8 @@
 package com.lacouf.rsbjwt.service.dto;
 
 
-import com.lacouf.rsbjwt.model.Employer;
-import com.lacouf.rsbjwt.model.Student;
-import com.lacouf.rsbjwt.model.Manager;
-import com.lacouf.rsbjwt.model.User;
-import com.lacouf.rsbjwt.model.Role;
+import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.auth.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +23,13 @@ public class UserDTO {
     private String password;
     private Role role;
     private String matricule;
+    private String companyName;
+    private String address;
+    private String postalCode;
+    private String city;
+    private String phoneNumber;
+    private String employerId;
+    private Programe programe;
 
     public User toEntity(UserDTO userDTO) {
         return switch (userDTO.getRole()) {
@@ -44,6 +48,12 @@ public class UserDTO {
                     .lastName(userDTO.getLastname())
                     .email(userDTO.getEmail())
                     .password(userDTO.getPassword())
+                    .companyName(userDTO.getCompanyName())
+                    .address(userDTO.getAddress())
+                    .postalCode(userDTO.getPostalCode())
+                    .city(userDTO.getCity())
+                    .phoneNumber(userDTO.getPhoneNumber())
+                    .employerId(userDTO.getEmployerId())
                     .build();
             case STUDENT -> Student.builder()
                     .id(userDTO.getId())
@@ -51,6 +61,7 @@ public class UserDTO {
                     .lastName(userDTO.getLastname())
                     .matricule(userDTO.getMatricule())
                     .email(userDTO.getEmail())
+                    .programe(userDTO.getPrograme())
                     .password(userDTO.getPassword())
                     .build();
             default -> throw new IllegalArgumentException("Unknown role: " + userDTO.getRole());
