@@ -25,15 +25,8 @@ const PersonalSpaceStudent = () => {
     const [uploadState, setUploadState] = useState("idle");
     const [cvList, setCvList] = useState([]);
     const [openCvId, setOpenCvId] = useState(null);
-
-    // TODO: une fois que le backend expose GET /student-cv (liste des CV
-    // associés au compte étudiant connecté), charger la liste au montage :
-    //
-    // useEffect(() => {
-    //     fetcher("/student-cv")
-    //         .then((res) => res.json())
-    //         .then((data) => setCvList(data));
-    // }, []);
+    const [isLoadingList, setIsLoadingList] = useState(true);
+    const [listError, setListError] = useState(null);
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
