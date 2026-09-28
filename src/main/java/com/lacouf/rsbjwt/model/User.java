@@ -14,10 +14,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"credentials"})
 public abstract class User  {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
 

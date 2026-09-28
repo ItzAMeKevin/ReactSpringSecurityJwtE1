@@ -49,7 +49,7 @@ public class EmployerDto extends UserDTO {
                 .postalCode(employer.getPostalCode())
                 .city(employer.getCity())
                 .phoneNumber(employer.getPhoneNumber())
-                .employerId(employer.getEmployerId())
+                .employerId(employer.getEmployerWorkId())
                 .build();
     }
 

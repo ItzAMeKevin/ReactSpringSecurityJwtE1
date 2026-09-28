@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @DiscriminatorValue("EMPLOYER")
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 public class Employer extends User {
 
@@ -27,22 +28,22 @@ public class Employer extends User {
     @Column(nullable = false)
     private String phoneNumber;
     @Column(unique = true , nullable = false)
-    private String employerId;
+    private String employerWorkId;
 
 
-    @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "employer")
     private List<JobOffer> jobOffers = new ArrayList<>();
 
     @Builder
     public Employer(
             Long id, String firstName, String lastName, String email, String password, String companyName,
-            String address, String postalCode, String city, String phoneNumber, String employerId) {
+            String address, String postalCode, String city, String phoneNumber, String employerWorkId) {
         super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.EMPLOYER).build());
         this.companyName = companyName;
         this.address = address;
         this.postalCode = postalCode;
         this.city = city;
         this.phoneNumber = phoneNumber;
-        this.employerId = employerId;
+        this.employerWorkId = employerWorkId;
     }
 }
