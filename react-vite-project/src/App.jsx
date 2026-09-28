@@ -2,7 +2,6 @@ import "./App.css";
 import PageLayout from "./components/PageLayout.jsx";
 import React, {useEffect, useState} from "react";
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
-import MainContainer from "./components/MainContainer.jsx";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import fetcher from "./utils/fetcher.js";
@@ -12,7 +11,6 @@ import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
 import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
 import PersonalSpaceEmployer from "./components/page/PersonalSpaceEmployer.jsx";
-import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -34,7 +32,7 @@ function App() {
                   switch (res.status) {
                     case 401:
                       localStorage.clear();
-                      setUser(null);
+                      setUser({});
                     case 403:
                       throw new Error("Forbidden")
                     case 404:
@@ -69,7 +67,7 @@ function App() {
         <Route path="/" element={<PageLayout user={user}/>}>
           <Route index element={<Navigate to="/login" replace />}/>
           <Route path='about' element={<About/>}/>
-          <Route path='login' element={<LoginForm setError={setError}/>}/>
+          <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
           <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
