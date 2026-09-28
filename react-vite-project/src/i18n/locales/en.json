@@ -72,7 +72,8 @@
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
-    "afficher": "Show"
+    "afficher": "Show",
+    "appercuIndisponible": "Preview not available"
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
