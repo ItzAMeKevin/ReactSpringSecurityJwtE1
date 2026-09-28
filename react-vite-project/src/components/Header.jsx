@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function Header({user}) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     // Function to format role for display (remove ROLE_ prefix and capitalize)
     const formatRole = (roleString) => {
@@ -15,21 +15,9 @@ function Header({user}) {
         return roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
     };
 
-    const isGestionnaire = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE');
-    }
-    const isPrepose = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE' || user.role.toString() === 'PREPOSE');
-    }
-    const isEmprunteur = () => {
-        console.log(user)
-        return user && user.role &&
-            (user.role.toString() === 'GESTIONNAIRE' || user.role.toString() === 'EMPRUNTEUR');
-    }
+    const isManager = () => user?.role === 'ROLE_MANAGER';
+    const isEmployer = () => user?.role === 'ROLE_EMPLOYER';
+    const isStudent = () => user?.role === 'ROLE_STUDENT';
 
     return (
         <header className="header">
@@ -38,10 +26,23 @@ function Header({user}) {
                 <ul className="nav-links">
                     <li><Link to="/">{t("header.accueil")}</Link></li>
                     <li><Link to="/about">{t("header.about")}</Link></li>
-                    {isEmprunteur() && <li><Link to="/emprunteur">{t("header.emprunteur")}</Link></li>}
-                    {isPrepose() && <li><Link to="/prepose">{t("header.prepose")}</Link></li>}
-                    {isGestionnaire() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
+                    {isStudent() && <li><Link to="/etudiant">{t("header.etudiant")}</Link></li>}
+                    {isEmployer() && <li><Link to="/employeur">{t("header.employeur")}</Link></li>}
+                    {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
+                    {!user?.isLoggedIn && <li><Link to="/inscription">{t("header.inscription")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
+                    {["fr", "en"].map((lang) => (
+                        <li key={lang}>
+                            <button
+                                type="button"
+                                onClick={() => i18n.changeLanguage(lang)}
+                                className={i18n.language === lang ? "font-bold underline" : ""}
+                                style={{ background: "none", border: "none", color: "white", cursor: "pointer", fontSize: "inherit" }}
+                            >
+                                {lang.toUpperCase()}
+                            </button>
+                        </li>
+                    ))}
                 </ul>
                 {user?.isLoggedIn && (
                     <div className="user-info">

@@ -51,15 +51,48 @@
     "identifiantTaken": "This identifier is already assigned."
   },
   "header": {
-    "title": "My App",
+    "title": "ZeROSE",
     "accueil": "Home",
     "about": "About",
-    "emprunteur": "Employer",
-    "prepose": "Manager",
-    "gestionnaire": "Admin",
+    "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "greeting": "Hello"
+    "inscription": "Sign up",
+    "greeting": "Hello",
+    "etudiant": "Student",
+    "employeur": "Employer"
+  },
+  "televerser": {
+    "choisirFichier": "CHOOSE A FILE",
+    "fichierChoisi": "Selected file",
+    "erreurTypeFichier": "Only pdf files are accepted.",
+    "envoieEnCours": "Uploading...",
+    "envoyerCv": "Send CV",
+    "envoieSuccess": "CV sent successfully !",
+    "envoieErreur": "An error occurred, try again.",
+    "mesCvs": "My uploaded CVs",
+    "masquer": "Hide",
+    "afficher": "Show"
+  },
+  "about": {
+    "subtitle": "Student Internship Opportunity Network",
+    "missionTitle": "Our mission",
+    "missionText": "ZeROSE is a platform dedicated to connecting students with internship opportunities. Our mission is to simplify the internship search, application, and tracking process for all parties involved.",
+    "whoTitle": "Who is it for?",
+    "roles": {
+      "student": {
+        "title": "Students",
+        "desc": "Search for internship offers, submit your CV, and track your application progress."
+      },
+      "employer": {
+        "title": "Employers",
+        "desc": "Post internship offers, review applications, and recruit the best talent."
+      },
+      "manager": {
+        "title": "Professors",
+        "desc": "Supervise your students, validate internship placements, and ensure academic follow-up."
+      }
+    }
   },
   "login": {
     "welcome": "Welcome",

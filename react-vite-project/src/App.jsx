@@ -10,14 +10,17 @@ import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
+import PersonalSpaceEmployer from "./components/page/PersonalSpaceEmployer.jsx";
+import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   const [user, setUser] = useState({})
   const [error, setError] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
   const navigate = useNavigate();
-  const [authLoading, setAuthLoading] = useState(true);
 
   let token = localStorage.getItem('token')
 
@@ -69,13 +72,10 @@ function App() {
           <Route path='login' element={<LoginForm setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
+          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
+          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
+          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
           <Route path='inscription' element={<Inscription/>}/>
-          <Route
-              path='persospacestudent'
-              element=
-                  {<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}>
-                    <PersonalSpaceStudent/>
-                  </ProtectedRoute> }/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
       </Routes>

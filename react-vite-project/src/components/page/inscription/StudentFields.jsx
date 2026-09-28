@@ -14,9 +14,7 @@ const StudentFields = ({ errors, programmes }) => {
                         id="programmes"
                         name="programme"
                         defaultValue=""
-                        className={`w-full rounded-md border px-3 py-2 pr-28 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-                            errors.programme ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
-                        }`}
+                        className={`${errors.programme ? "form-input-error" : "form-input"} pr-28`}
                     >
                         <option value="" disabled hidden>{t("inscription.fields.programmePlaceholder")}</option>
                         {liste.map((p) => (
