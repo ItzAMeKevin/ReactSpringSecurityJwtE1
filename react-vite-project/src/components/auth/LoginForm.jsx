@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
 import {useTranslation} from "react-i18next";
@@ -16,6 +16,14 @@ const LoginForm = ({user, setUser, setError}) => {
     email: '',
     password: ''
   });
+  const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    if (!user?.isLoggedIn) return;
+    if (user.role === "ROLE_STUDENT") navigate("/etudiant");
+    else if (user.role === "ROLE_MANAGER") navigate("/gestionnaire");
+    else if (user.role === "ROLE_EMPLOYER") navigate("/employeur");
+  }, [user]);
 
   const validateUser = () => {
     let isValid = true;
@@ -53,6 +61,7 @@ const LoginForm = ({user, setUser, setError}) => {
   const handleChanges = (e) => {
     const {name, value} = e.target;
     setWarnings({...warnings, [name]: ""});
+    setAuthError('');
     setFormData({...formData, [name]: value.trim()});
   }
 
@@ -65,6 +74,7 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const fetchFunc = async () => {
+    setAuthError('');
     try {
       const response = await fetcher('/user/login', {
         method: "POST",
@@ -78,15 +88,9 @@ const LoginForm = ({user, setUser, setError}) => {
         }),
       });
       if (!response.ok) {
-        switch (response.status) {
-          case 401:
-            throw new Error("Not authorized");
-            break;
-          case 404:
-            throw new Error("No server available");
-          default:
-            throw new Error("Not ok")
-        }
+        const errorData = await response.json();
+        setAuthError(errorData.message || "Connexion échouée");
+        return;
       }
       const data = await response.json();
       localStorage.setItem('token', data.accessToken);
@@ -101,7 +105,11 @@ const LoginForm = ({user, setUser, setError}) => {
       // Navigate to role-specific page
       const role = userData.role;
       if (role === "ROLE_STUDENT") {
-        navigate("/emprunteur");
+        navigate("/etudiant");
+      } else if(role === "ROLE_MANAGER"){
+        navigate("/gestionnaire");
+      } else if (role === "ROLE_EMPLOYER") {
+        navigate("/employeur");
       } else {
         navigate("/");
       }
@@ -109,56 +117,50 @@ const LoginForm = ({user, setUser, setError}) => {
       setError(error)
       navigate('/error')
     }
-
-
   }
 
   return (
     <>
-      {user?.isLoggedIn ? (
-        user.role === "ROLE_STUDENT" ? navigate("/emprunteur") : navigate("/")
-      ) : (
-          <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
+      {!user?.isLoggedIn ? (
+          <div className="auth-page">
             <div
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
                 style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
             >
-              <div className="absolute inset-0 bg-[#4b1113]" />
+              <div className="absolute inset-0 bg-mint" />
               <div
                   className="absolute -inset-[50%] opacity-25"
                   style={{
-                    backgroundImage: "radial-gradient(#e8d5b5 1.6px, transparent 1.7px)",
+                    backgroundImage: "radial-gradient(var(--color-mint-dots) 1.6px, transparent 1.7px)",
                     backgroundSize: "18px 18px",
                     transform: "rotate(32deg)",
                   }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#4b1113] via-transparent to-[#4b1113]/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-mint-dark via-transparent to-mint/40" />
             </div>
 
             <div className="relative z-10 grid min-h-screen md:grid-cols-2">
-              <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-[#f3ebe3]">
+              <div className="hidden md:flex flex-col justify-center px-12 lg:px-16 text-white">
                 <h2 className="text-4xl lg:text-5xl font-semibold leading-tight mb-4">
                   {t("login.welcome")}
                 </h2>
-                <p className="max-w-sm text-[#f3ebe3]/80 text-sm leading-relaxed">
+                <p className="max-w-sm text-white/80 text-sm leading-relaxed">
                   {t("login.subtitle")}
                 </p>
-                <div className="mt-8 h-px w-24 bg-[#e8d5b5]/50" />
+                <div className="mt-8 h-px w-24 bg-white/50" />
               </div>
 
               <div className="flex items-center justify-center px-4 py-12">
-                <div className="w-full max-w-md rounded-2xl border border-[#8b6f52]/30 bg-[#8b6f52] p-8 shadow-2xl shadow-[#4b1113]/30">
+                <div className="auth-card w-full max-w-md">
                   <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-2xl font-bold text-[#2b1a12]">{t("login.title")}</h1>
+                    <h1 className="auth-title">{t("login.title")}</h1>
                     <div className="flex gap-2">
                       {["fr", "en"].map((lang) => (
                         <button
                           key={lang}
                           type="button"
                           onClick={() => i18n.changeLanguage(lang)}
-                          className={`rounded px-2 py-1 text-sm text-[#2b1a12] ${
-                            i18n.language === lang ? "font-bold underline" : ""
-                          }`}
+                          className={`lang-btn ${i18n.language === lang ? "font-bold underline" : ""}`}
                         >
                           {lang.toUpperCase()}
                         </button>
@@ -167,8 +169,13 @@ const LoginForm = ({user, setUser, setError}) => {
                   </div>
 
                   <form id="login-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    {authError && (
+                      <div className="w-full rounded-md bg-red-50 border border-red-400 p-3">
+                        <p className="text-red-800 text-sm font-semibold">{authError}</p>
+                      </div>
+                    )}
                     <div className="flex flex-col">
-                      <label htmlFor="email" className="mb-1 font-medium text-[#2b1a12]">{t("login.email")}</label>
+                      <label htmlFor="email" className="form-label">{t("login.email")}</label>
                       <input
                           id="email"
                           type="email"
@@ -176,9 +183,7 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.emailPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-                              warnings.email ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
-                          }`}
+                          className={warnings.email ? "form-input-error" : "form-input"}
                       />
                       {warnings.email && (
                           <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.email}</span>
@@ -186,7 +191,7 @@ const LoginForm = ({user, setUser, setError}) => {
                     </div>
 
                     <div className="flex flex-col">
-                      <label htmlFor="password" className="mb-1 font-medium text-[#2b1a12]">{t("login.password")}</label>
+                      <label htmlFor="password" className="form-label">{t("login.password")}</label>
                       <input
                           id="password"
                           type="password"
@@ -194,29 +199,24 @@ const LoginForm = ({user, setUser, setError}) => {
                           onChange={handleChanges}
                           required
                           placeholder={t("login.passwordPlaceholder")}
-                          className={`w-full rounded-md border px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#4b1113] text-[#2b1a12] ${
-                              warnings.password ? "bg-red-50 border-red-400" : "bg-white border-[#5c4432]"
-                          }`}
+                          className={warnings.password ? "form-input-error" : "form-input"}
                       />
                       {warnings.password && (
                           <span className="mt-1 text-red-800 text-xs font-semibold">{warnings.password}</span>
                       )}
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full mt-2 bg-[#4b1113] text-white font-medium py-2.5 rounded-md hover:bg-[#3a0d0f] transition-colors"
-                    >
+                    <button type="submit" className="btn-primary mt-2">
                       {t("login.submit")}
                     </button>
                   </form>
 
-                  <p className="text-center mt-6 text-[#2b1a12]">
+                  <p className="text-center mt-6 text-slate">
                     {t("login.firstTime")}{" "}
                     <button
                         type="button"
                         onClick={() => navigate("/inscription")}
-                        className="font-semibold underline hover:text-[#3a0d0f]"
+                        className="font-semibold underline hover:text-mint-dark"
                     >
                       {t("login.signUp")}
                     </button>
@@ -225,7 +225,7 @@ const LoginForm = ({user, setUser, setError}) => {
               </div>
             </div>
           </div>
-      )}
+      ) : null}
     </>
   )
 }

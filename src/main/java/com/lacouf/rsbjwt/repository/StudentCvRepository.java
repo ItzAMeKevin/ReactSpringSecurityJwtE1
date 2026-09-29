@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
     List<StudentCv> findAllByStudent_IdOrderByUploadedAtDesc(Long studentId);
 
-    Optional<StudentCv> findByIdAndStudent_Id(Long id, Long studentId);}
+    Optional<StudentCv> findByIdAndStudent_Id(Long id, Long studentId);
+
+    List<StudentCv> findByStudentCredentialsEmailOrderByUploadedAtDesc(String studentEmail);
+}
