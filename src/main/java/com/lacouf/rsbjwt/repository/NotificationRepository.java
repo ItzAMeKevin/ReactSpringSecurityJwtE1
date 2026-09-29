@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface NotificationReponsitory extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findAllByStudent_IdOrderByCreatedAtDesc(Long studentId);
     Optional<Notification> findByIdAndStudent_Id(Long id, Long studentId);
 }
