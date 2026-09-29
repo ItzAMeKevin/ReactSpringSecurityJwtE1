@@ -10,10 +10,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface GestionnaireMapper {
 
-    @Mapping(source = "student.firstname", target = "studentFirstName")
-    @Mapping(source = "student.lastname", target = "studentLastName")
+    @Mapping(source = "student.firstName", target = "studentFirstName")
+    @Mapping(source = "student.lastName", target = "studentLastName")
     @Mapping(source = "student.matricule", target = "studentMatricule")
     PendingCvDto toPendingCvDto(StudentCv cv);
 
+    @Mapping(source = "read", target = "isRead")
     NotificationDto toNotificationDto(Notification notification);
 }
