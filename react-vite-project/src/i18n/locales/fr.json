@@ -5,7 +5,7 @@
     "rolePlaceholder": "Sélectionnez un rôle",
     "roles": {
       "student": "Étudiant",
-      "professor": "Professeur",
+      "manager": "Professeur",
       "employer": "Employeur"
     },
     "fields": {
@@ -16,8 +16,22 @@
       "confirmation": "Confirmation de mot de passe",
       "matricule": "Matricule",
       "programme": "Programme d'étude",
-      "programmePlaceholder": "Sélectionnez un programme"
+      "programmePlaceholder": "Sélectionnez un programme",
+      "nomEntreprise": "Nom de l'entreprise",
+      "adresse": "Adresse",
+      "codePostal": "Code postal",
+      "ville": "Ville",
+      "telephone": "téléphone",
+      "identifiant": "NEQ"
     },
+    "programsList": [
+      { "enumName": "TECHNIQUES_INFORMATIQUE", "code": "420.B0", "name": "Techniques de l'informatique" },
+      { "enumName": "TECHNIQUES_GESTION_HOTELIERE", "code": "430.A0", "name": "Techniques de gestion hôtelière" },
+      { "enumName": "TECHNIQUE_GENIE_CIVIL", "code": "221B0", "name": "Technologie du génie civil" },
+      { "enumName": "SOINS_INFIRMIERS", "code": "180.A0", "name": "Soins infirmiers" },
+      { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Technologie du génie physique" },
+      { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Techniques de la logistique du transport" }
+    ],
     "submit": "S'inscrire"
   },
   "errors": {
@@ -25,6 +39,40 @@
     "emailFormat": "Doit être @domain.ca ou @domain.com",
     "passwordComplexity": "8+ caractères, 1 majuscule, 1 minuscule, 1 chiffre",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
-    "matriculeFormat": "Doit être 7 chiffres"
+    "matriculeFormat": "Doit être 7 chiffres",
+    "telephoneFormat": "Doit être 10 chiffres",
+    "postalCodeFormat": "Doit être au format A1A1A1",
+    "enterpriseIdFormat": "Le NEQ doit contenir exactement 10 chiffres",
+    "emailTaken": "Cet email est déjà utilisé.",
+    "matriculeTaken": "Ce matricule est déjà attribué.",
+    "generic": "Une erreur est survenue, veuillez réessayer plus tard.",
+    "required": "Ce champ est requis.",
+    "identifiantTaken": "Cet identifiant est déjà attribué."
+  },
+  "header": {
+    "title": "My App",
+    "accueil": "Accueil",
+    "about": "À propos",
+    "emprunteur": "Emprunteur",
+    "prepose": "Prepose",
+    "gestionnaire": "Gestionnaire",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "greeting": "Bonjour"
+  },
+  "televerser": "Téléverser un fichier",
+  "login": {
+    "welcome": "Bienvenue",
+    "subtitle": "Connectez-vous pour accéder à votre espace et poursuivre vos démarches.",
+    "title": "Connexion",
+    "email": "Courriel",
+    "emailPlaceholder": "prenom.nom@domain.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Votre mot de passe",
+    "submit": "Se connecter",
+    "firstTime": "Première fois ?",
+    "signUp": "Inscrivez-vous",
+    "invalidEmail": "Courriel invalide",
+    "invalidPassword": "Mot de passe invalide"
   }
 }

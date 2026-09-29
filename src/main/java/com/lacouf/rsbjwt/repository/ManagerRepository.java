@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Optional<Manager> findFirstByFirstNameAndLastName(String firstName, String lastName);
+    Optional<Manager> findByMatricule(String matricule);
 }

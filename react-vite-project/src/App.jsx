@@ -1,15 +1,15 @@
 import "./App.css";
 import PageLayout from "./components/PageLayout.jsx";
 import React, {useEffect, useState} from "react";
-import {Route, Routes, useNavigate} from "react-router-dom";
-import MainContainer from "./components/MainContainer.jsx";
+import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import About from "./components/About.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import fetcher from "./utils/fetcher.js";
 import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import Inscription from "./components/page/Inscription.jsx";
+import PersonalSpaceStudent from "./components/page/PersonalSpaceStudent.jsx";
+import Inscription from "./components/page/inscription/Inscription.jsx";
 
 function App() {
   const [user, setUser] = useState({})
@@ -58,11 +58,12 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<PageLayout user={user}/>}>
-          <Route index element={<MainContainer setError={setError}/>}/>
+          <Route index element={<Navigate to="/login" replace />}/>
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
+          <Route path='etudiant' element={<PersonalSpaceStudent/>}/>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
