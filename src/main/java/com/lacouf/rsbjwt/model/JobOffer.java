@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
@@ -20,13 +21,13 @@ public class JobOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 3000)
+    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, length = 2000)
+    @Column(nullable = false)
     private String prerequisites;
 
 
@@ -37,29 +38,42 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OfferStatus status = OfferStatus.ON_WAIT;
+    private OfferStatus status;
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDate publicationDate;
+
+    @Column(nullable = false)
     private LocalDate startingDate;
+    @Column(nullable = false)
     private int durationInWeeks;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     String location, String salary,
-                    OfferStatus status, LocalDate startingDate, int durationInWeeks, Employer employer) {
+                     LocalDate startingDate, int durationInWeeks, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
         this.location = location;
         this.salary = salary;
-        this.status = status != null ? status : OfferStatus.ON_WAIT;
-        this.publicationDate = LocalDate.now();
         this.startingDate = startingDate;
         this.durationInWeeks = durationInWeeks;
         this.employer = employer;
+    }
+
+    @PrePersist
+    void onCreate() {
+        if (publicationDate == null) {
+            publicationDate = LocalDate.now();
+        }
+        if (status == null) {
+            status = OfferStatus.ON_WAIT;
+        }
     }
 }

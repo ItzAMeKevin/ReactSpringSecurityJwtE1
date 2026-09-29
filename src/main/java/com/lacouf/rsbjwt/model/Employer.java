@@ -3,10 +3,7 @@ package com.lacouf.rsbjwt.model;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @DiscriminatorValue("EMPLOYER")
 @Getter @Setter
 @NoArgsConstructor
+@ToString(exclude = "jobOffers")
 public class Employer extends User {
 
     @Column(nullable = false)
