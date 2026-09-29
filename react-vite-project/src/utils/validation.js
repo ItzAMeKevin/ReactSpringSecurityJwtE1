@@ -26,6 +26,8 @@ export const validateField = (name, value, data = {}) => {
             return value === data.motDePasse ? undefined : "errors.passwordMismatch";
         case "matricule":
             return matriculeRegex.test(value) ? undefined : "errors.matriculeFormat";
+        case "programme":
+            return value !== "" ? undefined : "errors.required";
         case "telephone":
             return telephoneRegex.test(value) ? undefined : "errors.telephoneFormat";
         case "codePostal":
@@ -44,11 +46,11 @@ export const validateField = (name, value, data = {}) => {
 
 export const validateInscription = (data) => {
     const errs = {};
-    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule",
+    ["nom", "prenom", "courriel", "motDePasse", "confirmation", "matricule", "programme",
         "telephone", "codePostal", "identifiant", "nomEntreprise", "adresse", "ville"].forEach((field) => {
         if (data[field] === undefined) return;
         const error = validateField(field, data[field], data);
-        if (error) errs[field] = error;``
+        if (error) errs[field] = error;
     });
     return errs;
 };
