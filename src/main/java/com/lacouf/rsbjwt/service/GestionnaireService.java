@@ -50,7 +50,7 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void DeclineCv(Long cvId, UploadCvDto reviewRequest) {
+    public void declineCv(Long cvId, UploadCvDto reviewRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(UserNotFoundException::new);
         byte[] reviewCOntent = Base64.getDecoder().decode(reviewRequest.getContent());
