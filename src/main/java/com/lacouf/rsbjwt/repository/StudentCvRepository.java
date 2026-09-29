@@ -12,5 +12,5 @@ public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
 
     Optional<StudentCv> findByIdAndStudent_Id(Long id, Long studentId);
 
-    List<StudentCv> findAllBySatusOrderByUploadedAtAsc(CvStatus status);
+    List<StudentCv> findAllByStatusOrderByUploadedAtAsc(CvStatus status);
 }
