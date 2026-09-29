@@ -2,13 +2,12 @@ package com.lacouf.rsbjwt.service.dto;
 
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @AllArgsConstructor 
 @NoArgsConstructor
@@ -53,7 +52,7 @@ public class UserDTO {
                     .postalCode(userDTO.getPostalCode())
                     .city(userDTO.getCity())
                     .phoneNumber(userDTO.getPhoneNumber())
-                    .employerId(userDTO.getEmployerId())
+                    .employerWorkId(userDTO.getEmployerId())
                     .build();
             case STUDENT -> Student.builder()
                     .id(userDTO.getId())

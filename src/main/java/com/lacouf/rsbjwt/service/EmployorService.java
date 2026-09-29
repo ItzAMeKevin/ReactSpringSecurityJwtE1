@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmployorService {
 
-
-    public JobOfferDTO addJobOffer(JobOffercreateDTO jobOfferDTO){
+    public JobOfferDTO addJobOffer(JobOfferCreateDTOreateDTO jobOfferDTO){
         JobOffer jobOfferEntity = JobOfferDTO.toEntity(jobOfferDTO);
         JobOffer offreSaved = JobOffreRepository.save(jobOfferEntity);
         return JobOfferDTO.toDto(offreSaved);
