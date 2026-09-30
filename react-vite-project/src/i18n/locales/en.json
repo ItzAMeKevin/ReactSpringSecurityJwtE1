@@ -107,5 +107,45 @@
     "signUp": "Sign up",
     "invalidEmail": "Invalid email",
     "invalidPassword": "Invalid password"
+  },
+  "gestionnaire": {
+    "title": "Manager Space",
+    "loadingCvs": "Loading pending CVs...",
+    "errorLoadingCvs": "An error occurred while loading CVs.",
+    "noCvsPending": "No CVs pending for validation.",
+    "consulter": "View",
+    "masquer": "Hide",
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "preview": {
+      "errorLoading": "Unable to load CV preview.",
+      "loading": "Loading preview..."
+    },
+    "decline": {
+      "title": "Upload the CV review (PDF) before confirming the rejection.",
+      "chooseFile": "Choose a file",
+      "confirmDecline": "Confirm rejection",
+      "processing": "Sending...",
+      "errorNoFile": "You must upload a CV review before confirming the rejection.",
+      "errorPdfOnly": "Only PDF files are accepted.",
+      "errorProcessing": "An error occurred while processing this CV. Please try again."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "ariaLabel": "Notifications",
+    "loading": "Loading...",
+    "error": "Error loading notifications.",
+    "empty": "No notifications.",
+    "types": {
+      "CV_ACCEPTED": {
+        "title": "Your CV has been accepted",
+        "message": "Your CV has been validated by a manager."
+      },
+      "CV_REJECTED": {
+        "title": "Your CV has been rejected",
+        "message": "Please review the feedback and upload a new CV."
+      }
+    }
   }
 }

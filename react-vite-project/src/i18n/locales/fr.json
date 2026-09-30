@@ -106,5 +106,45 @@
     "signUp": "Inscrivez-vous",
     "invalidEmail": "Courriel invalide",
     "invalidPassword": "Mot de passe invalide"
+  },
+  "gestionnaire": {
+    "title": "Espace gestionnaire",
+    "loadingCvs": "Chargement des CV en attente...",
+    "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
+    "noCvsPending": "Aucun CV en attente de validation.",
+    "consulter": "Consulter",
+    "masquer": "Masquer",
+    "accepter": "Accepter",
+    "refuser": "Refuser",
+    "preview": {
+      "errorLoading": "Impossible de charger l'aperçu du CV.",
+      "loading": "Chargement de l'aperçu..."
+    },
+    "decline": {
+      "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",
+      "chooseFile": "Choisir un fichier",
+      "confirmDecline": "Confirmer le refus",
+      "processing": "Envoi en cours...",
+      "errorNoFile": "Vous devez téléverser une revue du CV avant de confirmer le refus.",
+      "errorPdfOnly": "Seuls les fichiers pdf sont acceptés.",
+      "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "ariaLabel": "Notifications",
+    "loading": "Chargement...",
+    "error": "Erreur lors du chargement des notifications.",
+    "empty": "Aucune notification.",
+    "types": {
+      "CV_ACCEPTED": {
+        "title": "Votre CV a été accepté",
+        "message": "Votre CV a été validé par un gestionnaire."
+      },
+      "CV_REJECTED": {
+        "title": "Votre CV a été refusé",
+        "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
+      }
+    }
   }
 }

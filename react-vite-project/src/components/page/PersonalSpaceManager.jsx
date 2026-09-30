@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import fetcher from "../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
 
-const LOAD_ERROR_MESSAGE = "Une erreur est survenue lors du chargement des CV.";
-
 const PersonalSpaceManager = () => {
+    const { t } = useTranslation();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [status, setStatus] = useState("loading");
 
@@ -58,20 +58,20 @@ const PersonalSpaceManager = () => {
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
-                <h1 className="text-2xl font-bold text-[#4b1113]">Espace gestionnaire</h1>
+                <h1 className="text-2xl font-bold text-[#4b1113]">{t("gestionnaire.title")}</h1>
 
                 {status === "loading" && (
-                    <p className="text-[#4b1113]/70">Chargement des CV en attente...</p>
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.loadingCvs")}</p>
                 )}
 
                 {status === "error" && (
                     <p className="text-red-700" role="alert">
-                        {LOAD_ERROR_MESSAGE}
+                        {t("gestionnaire.errorLoadingCvs")}
                     </p>
                 )}
 
                 {isLoaded && pendingCvs.length === 0 && (
-                    <p className="text-[#4b1113]/70">Aucun CV en attente de validation.</p>
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.noCvsPending")}</p>
                 )}
 
                 {isLoaded && pendingCvs.length > 0 && (

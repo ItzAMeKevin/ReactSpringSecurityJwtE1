@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import fetcher from "../../utils/fetcher.js";
 
@@ -11,6 +12,7 @@ const fileToBase64 = (file) =>
     });
 
 const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
+    const { t } = useTranslation();
     const containerRef = useRef(null);
     const reviewInputRef = useRef(null);
 
@@ -52,14 +54,14 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
         try {
             const response = await fetcher(`/gestionnaire/cv/${cv.id}/content`);
             if (!response.ok) {
-                setPreviewError("Impossible de charger l'aperçu du CV.");
+                setPreviewError(t("gestionnaire.preview.errorLoading"));
                 return;
             }
             const blob = await response.blob();
             setPreviewUrl(URL.createObjectURL(blob));
         } catch (error) {
             console.error("Erreur lors du chargement de l'aperçu :", error);
-            setPreviewError("Impossible de charger l'aperçu du CV.");
+            setPreviewError(t("gestionnaire.preview.errorLoading"));
         }
     };
 
@@ -80,7 +82,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
             return;
         }
         if (file.type !== "application/pdf") {
-            setReviewError("Seuls les fichiers pdf sont acceptés.");
+            setReviewError(t("gestionnaire.decline.errorPdfOnly"));
             setReviewFile(null);
             event.target.value = "";
             return;
@@ -91,7 +93,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
 
     const handleConfirmDecline = async () => {
         if (!reviewFile) {
-            setReviewError("Vous devez téléverser une revue du CV avant de confirmer le refus.");
+            setReviewError(t("gestionnaire.decline.errorNoFile"));
             return;
         }
         setActionState("processing");
@@ -123,9 +125,10 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                     <button
                         type="button"
                         onClick={handleToggle}
+                        aria-expanded={isOpen}
                         className="bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
                     >
-                        {isOpen ? "Masquer" : "Consulter"}
+                        {isOpen ? t("gestionnaire.masquer") : t("gestionnaire.consulter")}
                     </button>
                     <button
                         type="button"
@@ -133,7 +136,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                         disabled={actionState === "processing" || isDeclining}
                         className="bg-[#B3FFD9] text-[#4b1113] text-sm font-bold py-1.5 px-3 rounded-md hover:bg-[#8DCCAD] transition-colors disabled:opacity-60"
                     >
-                        Accepter
+                        {t("gestionnaire.accepter")}
                     </button>
                     <button
                         type="button"
@@ -141,14 +144,14 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                         disabled={actionState === "processing"}
                         className="bg-red-100 text-red-800 text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-200 transition-colors disabled:opacity-60"
                     >
-                        Refuser
+                        {t("gestionnaire.refuser")}
                     </button>
                 </div>
             </div>
 
             {isOpen && (
                 <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-                    {previewError && <p className="text-red-700 text-sm">{previewError}</p>}
+                    {previewError && <p className="text-red-700 text-sm" role="alert">{previewError}</p>}
                     {!previewError && previewUrl && containerWidth && (
                         <Document
                             file={previewUrl}
@@ -165,7 +168,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-[#4b1113]/70">Chargement de l'aperçu...</p>
+                        <p className="text-sm text-[#4b1113]/70">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
@@ -173,7 +176,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
                     <p className="text-sm text-[#4b1113] mb-2">
-                        Téléversez la revue du CV (PDF) avant de confirmer le refus.
+                        {t("gestionnaire.decline.title")}
                     </p>
                     <input
                         ref={reviewInputRef}
@@ -188,7 +191,7 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                             onClick={() => reviewInputRef.current?.click()}
                             className="bg-white border border-red-300 text-red-800 text-sm font-medium py-1.5 px-3 rounded-md hover:bg-red-100 transition-colors"
                         >
-                            Choisir un fichier
+                            {t("gestionnaire.decline.chooseFile")}
                         </button>
                         {reviewFile && (
                             <span className="text-sm text-[#4b1113]">{reviewFile.name}</span>
@@ -199,16 +202,16 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                             disabled={actionState === "processing"}
                             className="bg-red-700 text-white text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-800 transition-colors disabled:opacity-60"
                         >
-                            {actionState === "processing" ? "Envoi en cours..." : "Confirmer le refus"}
+                            {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
                         </button>
                     </div>
-                    {reviewError && <p className="text-red-700 text-sm mt-2">{reviewError}</p>}
+                    {reviewError && <p className="text-red-700 text-sm mt-2" role="alert">{reviewError}</p>}
                 </div>
             )}
 
             {actionState === "error" && (
-                <p className="text-red-700 text-sm mt-2">
-                    Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer.
+                <p className="text-red-700 text-sm mt-2" role="alert">
+                    {t("gestionnaire.decline.errorProcessing")}
                 </p>
             )}
         </div>
