@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentServiceTest {
+public class StudentCvServiceTest {
 
     @Mock
     private StudentCvRepository studentCvRepository;
@@ -35,7 +35,7 @@ public class StudentServiceTest {
     private StudentRepository studentRepository;
 
     @InjectMocks
-    private StudentService studentService;
+    private StudentCvService studentService;
 
     private Student testStudent;
     private byte[] validPdfContent;
