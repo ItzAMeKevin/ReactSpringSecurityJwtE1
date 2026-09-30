@@ -71,7 +71,14 @@
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
     "afficher": "Afficher",
-    "appercuIndisponible": "Aperçu indisponible"
+    "apercuIndisponible": "Aperçu indisponible",
+    "chargement": "Chargement de vos CVs...",
+    "aucunCv": "Aucun CV téléversé pour l'instant.",
+    "statuts": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Accepté",
+      "DECLINED": "Refusé"
+    }
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",

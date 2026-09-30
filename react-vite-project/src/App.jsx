@@ -33,6 +33,7 @@ function App() {
                     case 401:
                       localStorage.clear();
                       setUser({});
+                      break;
                     case 403:
                       throw new Error("Forbidden")
                     case 404:

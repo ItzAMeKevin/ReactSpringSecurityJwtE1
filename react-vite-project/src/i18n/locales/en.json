@@ -73,7 +73,14 @@
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
     "afficher": "Show",
-    "appercuIndisponible": "Preview not available"
+    "apercuIndisponible": "Preview not available",
+    "chargement": "Loading your CVs...",
+    "aucunCv": "No CV uploaded yet.",
+    "statuts": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    }
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
@@ -109,16 +116,4 @@
     "invalidEmail": "Invalid email",
     "invalidPassword": "Invalid password"
   },
-  "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
-    "fichierChoisi": "Selected file",
-    "erreurTypeFichier": "Only pdf files are accepted.",
-    "envoieEnCours": "Uploading...",
-    "envoyerCv": "Send CV",
-    "envoieSuccess": "CV sent successfully !",
-    "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs",
-    "masquer": "Hide",
-    "afficher": "Show"
-  }
 }
