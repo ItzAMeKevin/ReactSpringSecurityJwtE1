@@ -53,9 +53,8 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const validatePassword = () => {
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    // return passwordRegex.test(formData.password);
-    return true;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    return passwordRegex.test(formData.password);
   }
 
   const handleChanges = (e) => {
@@ -93,7 +92,7 @@ const LoginForm = ({user, setUser, setError}) => {
         return;
       }
       const data = await response.json();
-      localStorage.setItem('token', data.accessToken);
+      sessionStorage.setItem('token', data.accessToken);
 
       // Fetch user info to get role
       const userResponse = await fetcher('user/me', {});
