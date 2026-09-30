@@ -3,9 +3,9 @@ package com.lacouf.rsbjwt;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.auth.Role;
 import com.lacouf.rsbjwt.service.UserAppService;
-import com.lacouf.rsbjwt.service.dto.EmployerDto;
-import com.lacouf.rsbjwt.service.dto.ManagerDto;
-import com.lacouf.rsbjwt.service.dto.StudentDto;
+import com.lacouf.rsbjwt.service.dto.EmployerCreateDto;
+import com.lacouf.rsbjwt.service.dto.ManagerCreateDto;
+import com.lacouf.rsbjwt.service.dto.StudentCreateDto;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,7 +32,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         if (UserAppService.getUserByEmail("l@l.com") == null)
             UserAppService.inscription(
-                    ManagerDto.builder()
+                    ManagerCreateDto.builder()
                             .firstName("Gerard")
                             .lastName("Biblio")
                             .matricule("PROF-001")
@@ -44,7 +44,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         if (UserAppService.getUserByEmail("ll@l.com") == null)
             UserAppService.inscription(
-                    StudentDto.builder()
+                    StudentCreateDto.builder()
                             .firstName("Isidor")
                             .lastName("Teurteur")
                             .matricule("ETUD-001")
@@ -57,7 +57,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         if (UserAppService.getUserByEmail("lll@l.com") == null)
             UserAppService.inscription(
-                    EmployerDto.builder()
+                    EmployerCreateDto.builder()
                             .firstName("Chandeuse")
                             .lastName("Lixor")
                             .email("lll@l.com")

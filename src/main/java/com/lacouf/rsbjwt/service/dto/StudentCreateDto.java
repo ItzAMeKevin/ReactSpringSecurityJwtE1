@@ -7,20 +7,20 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class StudentDto extends UserDTO {
+public class StudentCreateDto extends UserCreateDTO {
 
     @Builder
-    public StudentDto(Long id, String firstName, String lastName, String email, String password, Role role, String matricule, Programe programe) {
+    public StudentCreateDto(Long id, String firstName, String lastName, String email, String password, Role role, String matricule, Programe programe) {
         super(id, firstName, lastName, email, password, role, matricule,
                 null, null, null, null, null, null,programe);
 
     }
 
-    public StudentDto() {
+    public StudentCreateDto() {
     }
 
-    public static StudentDto toStudentDto(Student student) {
-        return StudentDto.builder()
+    public static StudentCreateDto toStudentDto(Student student) {
+        return StudentCreateDto.builder()
                 .id(student.getId())
                 .firstName(student.getFirstName())
                 .lastName(student.getLastName())
@@ -31,7 +31,7 @@ public class StudentDto extends UserDTO {
                 .build();
     }
 
-    public static StudentDto empty() {
-        return new StudentDto();
+    public static StudentCreateDto empty() {
+        return new StudentCreateDto();
     }
 }

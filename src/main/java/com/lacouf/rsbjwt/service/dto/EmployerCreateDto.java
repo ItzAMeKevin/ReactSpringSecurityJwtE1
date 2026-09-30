@@ -4,21 +4,21 @@ import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.Role;
 import lombok.Builder;
 
-public class EmployerDto extends UserDTO {
+public class EmployerCreateDto extends UserCreateDTO {
 
     @Builder
-    public EmployerDto(Long id,
-                       String firstName,
-                       String lastName,
-                       String email,
-                       String password,
-                       Role role,
-                       String companyName,
-                       String address,
-                       String postalCode,
-                       String city,
-                       String phoneNumber,
-                       String employerId) {
+    public EmployerCreateDto(Long id,
+                             String firstName,
+                             String lastName,
+                             String email,
+                             String password,
+                             Role role,
+                             String companyName,
+                             String address,
+                             String postalCode,
+                             String city,
+                             String phoneNumber,
+                             String employerId) {
         super(id,
                 firstName,
                 lastName,
@@ -34,10 +34,10 @@ public class EmployerDto extends UserDTO {
                 employerId,null);
     }
 
-    public EmployerDto() {}
+    public EmployerCreateDto() {}
 
-    public static EmployerDto toEmployerDto(Employer employer) {
-        return EmployerDto.builder()
+    public static EmployerCreateDto toEmployerDto(Employer employer) {
+        return EmployerCreateDto.builder()
                 .id(employer.getId())
                 .firstName(employer.getFirstName())
                 .lastName(employer.getLastName())
@@ -53,7 +53,7 @@ public class EmployerDto extends UserDTO {
                 .build();
     }
 
-    public static EmployerDto empty() {
-        return new EmployerDto();
+    public static EmployerCreateDto empty() {
+        return new EmployerCreateDto();
     }
 }

@@ -8,7 +8,7 @@ import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
 
     @Transactional
-    public CvMetaDataDto upload(String authenticatedEmail, UploadCvDto request) {
+    public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
         validatePdfContentType(request.getContentType());
         byte[] decodedContent = decodeBase64AndValidatePdf(request.getContent());
         Student student = findStudentByEmail(authenticatedEmail);

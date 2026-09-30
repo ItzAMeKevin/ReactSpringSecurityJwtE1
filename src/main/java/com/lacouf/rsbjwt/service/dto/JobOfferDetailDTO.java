@@ -4,18 +4,18 @@ import com.lacouf.rsbjwt.model.OfferStatus;
 
 import java.time.LocalDate;
 
-public record JobOffreDetailDTO
+public record JobOfferDetailDTO
   (
         Long id,
         String title,
         String description,
         String prerequisites,
-        String location,
+        LocationDTO location,
         String salary,
         OfferStatus status,
         LocalDate publicationDate,
         LocalDate startingDate,
         Integer durationInWeeks,
-        Long employerId,
-        String employerName
+        String companyName
+
 ) {}

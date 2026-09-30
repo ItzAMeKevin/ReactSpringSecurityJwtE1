@@ -31,8 +31,6 @@ public class JobOffer {
     private String prerequisites;
 
 
-    @Column(nullable = false)
-    private String location;
 
     private String salary;
 
@@ -53,9 +51,14 @@ public class JobOffer {
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 
+
+    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
+    @JoinColumn(nullable = false)
+    private Location location;
+
     @Builder
     public JobOffer(String title, String description, String prerequisites,
-                    String location, String salary,
+                    Location location, String salary,
                      LocalDate startingDate, int durationInWeeks, Employer employer) {
         this.title = title;
         this.description = description;
@@ -73,7 +76,7 @@ public class JobOffer {
             publicationDate = LocalDate.now();
         }
         if (status == null) {
-            status = OfferStatus.ON_WAIT;
+            status = OfferStatus.WAITING;
         }
     }
 }

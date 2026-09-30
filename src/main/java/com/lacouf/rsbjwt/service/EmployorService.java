@@ -8,10 +8,13 @@ import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDTO;
-import com.lacouf.rsbjwt.service.dto.JobOffreDetailDTO;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import org.springframework.stereotype.Service;
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -21,13 +24,23 @@ public class EmployorService {
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
 
+
     public EmployorService(JobOfferRepository jobOfferRepository, EmployerRepository employerRepository, JobOfferMapper jobOfferMapper) {
         this.jobOfferRepository = jobOfferRepository;
         this.employerRepository = employerRepository;
         this.jobOfferMapper = jobOfferMapper;
     }
 
-    public JobOffreDetailDTO addJobOffer(JobOfferCreateDTO jobOfferDTO){
+    public List<JobOfferDetailDTO> getJobOffres(Long idEmployer) {
+
+        return jobOfferRepository.getByEmployerId()
+                .stream()
+                .map(jobOfferMapper::toDto)
+                .collect(Collectors.toList());
+
+    }
+
+    public JobOfferDetailDTO addJobOffer(JobOfferCreateDTO jobOfferDTO){
 
         Employer employer = findEmployerById(jobOfferDTO.employerId());
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);

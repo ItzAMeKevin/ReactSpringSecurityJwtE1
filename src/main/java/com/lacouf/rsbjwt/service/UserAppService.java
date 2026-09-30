@@ -36,7 +36,7 @@ public class UserAppService {
         return token;
     }
 
-    public UserDTO getMe(String token) {
+    public UserCreateDTO getMe(String token) {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
         User user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
@@ -47,10 +47,10 @@ public class UserAppService {
         };
     }
     
-    public UserDTO inscription(UserDTO userDTO) {
-        User user = userDTO.toEntity(userDTO);
+    public UserCreateDTO inscription(UserCreateDTO userCreateDTO) {
+        User user = userCreateDTO.toEntity(userCreateDTO);
         final User savedUser = userAppRepository.save(user);
-        return UserDTO.toUserDTO(savedUser);
+        return UserCreateDTO.toUserDTO(savedUser);
     }
 
     public boolean matriculeExists(String matricule) {
@@ -62,31 +62,31 @@ public class UserAppService {
         return employerRepository.findByEmployerId(employerId).isPresent();
     }
 
-    public UserDTO getUserByEmail(String email) {
+    public UserCreateDTO getUserByEmail(String email) {
         final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
         return userOptional.isPresent() ?
-                UserDTO.toUserDTO(userOptional.get()) :
+                UserCreateDTO.toUserDTO(userOptional.get()) :
                 null;
     }
 
-    private ManagerDto getManagerDto(Long id) {
+    private ManagerCreateDto getManagerDto(Long id) {
         final Optional<Manager> managerOptional = managerRepository.findById(id);
         return managerOptional.isPresent() ?
-                ManagerDto.toManagerDto(managerOptional.get()) :
-                ManagerDto.empty();
+                ManagerCreateDto.toManagerDto(managerOptional.get()) :
+                ManagerCreateDto.empty();
     }
 
-    private EmployerDto getPreposeDto(Long id) {
+    private EmployerCreateDto getPreposeDto(Long id) {
         final Optional<Employer> preposeOptional = employerRepository.findById(id);
         return preposeOptional.isPresent() ?
-                EmployerDto.toEmployerDto(preposeOptional.get()) :
-                EmployerDto.empty();
+                EmployerCreateDto.toEmployerDto(preposeOptional.get()) :
+                EmployerCreateDto.empty();
     }
 
-    private StudentDto getEmprunteurDto(Long id) {
+    private StudentCreateDto getEmprunteurDto(Long id) {
         final Optional<Student> emprunteurOptional = studentRepository.findById(id);
         return emprunteurOptional.isPresent() ?
-                StudentDto.toStudentDto(emprunteurOptional.get()) :
-                StudentDto.empty();
+                StudentCreateDto.toStudentDto(emprunteurOptional.get()) :
+                StudentCreateDto.empty();
     }
 }

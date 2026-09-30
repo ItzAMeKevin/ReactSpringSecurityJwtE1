@@ -3,15 +3,14 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EmployorService;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
-import com.lacouf.rsbjwt.service.dto.JobOffreDetailDTO;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,13 +19,19 @@ public class EmployerController {
     private final EmployorService employerService;
 
     @PostMapping("/addJoboffre")
-    public ResponseEntity<JobOffreDetailDTO> addJobOffrre(
+    public ResponseEntity<JobOfferDetailDTO> addJobOffrre(
             @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO) {
-        JobOffreDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO);
+        JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(created);
     }
+
+    @GetMapping()
+    public List<JobOfferDetailDTO> getJobOffre(@RequestBody Long idEmployer){
+        return employerService.getJobOffres(idEmployer);
+    }
+
 
 }

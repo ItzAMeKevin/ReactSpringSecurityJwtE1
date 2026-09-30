@@ -4,19 +4,19 @@ import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.Role;
 import lombok.Builder;
 
-public class ManagerDto extends UserDTO {
+public class ManagerCreateDto extends UserCreateDTO {
 
     @Builder
-    public ManagerDto(Long id, String firstName, String lastName,
-                           String email, String password, Role role, String matricule) {
+    public ManagerCreateDto(Long id, String firstName, String lastName,
+                            String email, String password, Role role, String matricule) {
         super(id, firstName, lastName, email, password, role, matricule,
                 null, null, null, null, null, null,null);
     }
 
-    public ManagerDto() {}
+    public ManagerCreateDto() {}
 
-    public static ManagerDto toManagerDto(Manager manager) {
-        return ManagerDto.builder()
+    public static ManagerCreateDto toManagerDto(Manager manager) {
+        return ManagerCreateDto.builder()
                 .id(manager.getId())
                 .firstName(manager.getFirstName())
                 .lastName(manager.getLastName())
@@ -27,7 +27,7 @@ public class ManagerDto extends UserDTO {
                 .build();
     }
 
-    public static ManagerDto empty() {
-        return new ManagerDto();
+    public static ManagerCreateDto empty() {
+        return new ManagerCreateDto();
     }
 }
