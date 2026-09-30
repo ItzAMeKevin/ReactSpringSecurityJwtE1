@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 
-import com.lacouf.rsbjwt.service.EmployorService;
+import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import jakarta.validation.Valid;
@@ -16,9 +16,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/employer")
 public class EmployerController {
-    private final EmployorService employerService;
+    private final EmployerService employerService;
 
-    @PostMapping("/addJoboffre")
+    @PostMapping("/addJobOffer")
     public ResponseEntity<JobOfferDetailDTO> addJobOffrre(
             @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO) {
         JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO);

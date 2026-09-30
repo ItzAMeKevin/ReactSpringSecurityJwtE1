@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.Programe;
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.EmployerCreateDto;
 import com.lacouf.rsbjwt.service.dto.ManagerCreateDto;

@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class EmployorService {
+public class EmployerService {
 
     private final JobOfferRepository jobOfferRepository;
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
 
 
-    public EmployorService(JobOfferRepository jobOfferRepository, EmployerRepository employerRepository, JobOfferMapper jobOfferMapper) {
+    public EmployerService(JobOfferRepository jobOfferRepository, EmployerRepository employerRepository, JobOfferMapper jobOfferMapper) {
         this.jobOfferRepository = jobOfferRepository;
         this.employerRepository = employerRepository;
         this.jobOfferMapper = jobOfferMapper;
