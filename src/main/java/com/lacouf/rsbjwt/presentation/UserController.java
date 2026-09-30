@@ -1,6 +1,9 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.AuthErrorResponse;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
 import com.lacouf.rsbjwt.service.dto.UserDTO;
@@ -23,15 +26,27 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto) {
+	public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDto) {
 		try {
 			String accessToken = userService.authenticateUser(loginDto);
 			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
 			return ResponseEntity.accepted()
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(authResponse);
+		} catch (UserNotFoundException | AuthenticationException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(new AuthErrorResponse(
+							"Invalid email or password",
+							"AUTH_FAILED"
+					));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new JWTAuthResponse());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(new AuthErrorResponse(
+							"Something went wrong. Please try again later.",
+							"SERVER_ERROR"
+					));
 		}
 	}
 

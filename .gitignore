@@ -58,3 +58,6 @@ package.jason
 ### Local session notes ###
 session-notes.md
 docker-compose.yml
+
+### Node ###
+node_modules/

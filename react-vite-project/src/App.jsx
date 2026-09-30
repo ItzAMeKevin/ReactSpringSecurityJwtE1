@@ -8,12 +8,16 @@ import fetcher from "./utils/fetcher.js";
 import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import PersonalSpaceStudent from "./components/page/PersonalSpaceStudent.jsx";
+import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
+import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
+import PersonalSpaceEmployer from "./components/page/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   const [user, setUser] = useState({})
   const [error, setError] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
   const navigate = useNavigate();
 
   let token = localStorage.getItem('token')
@@ -42,14 +46,17 @@ function App() {
             ).catch(async (err) => {
               setError(err)
               navigate('/error')
-          })
+          }).finally(() => setAuthLoading(false))
 
         } catch (err) {
           if (!error) {
             setError(err)
             navigate('/error')
           }
+          setAuthLoading(false)
         }
+      } else {
+        setAuthLoading(false)
       }
     }, [token]
   );
@@ -58,12 +65,14 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<PageLayout user={user}/>}>
-          <Route index element={<Navigate to="/login" replace />}/>
+            <Route index element={<Navigate to="/login" replace />}/>
+          <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='about' element={<About/>}/>
-          <Route path='login' element={<LoginForm setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
-          <Route path='etudiant' element={<PersonalSpaceStudent/>}/>
+          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
+          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
+          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
