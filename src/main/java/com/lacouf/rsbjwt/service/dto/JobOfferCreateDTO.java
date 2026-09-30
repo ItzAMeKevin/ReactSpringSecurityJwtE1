@@ -10,7 +10,7 @@ public record JobOfferCreateDTO(
         @NotBlank String title,
         @NotBlank String description,
         @NotBlank String prerequisites,
-        @NotBlank LocationCreateDTO location,
+        @NotBlank AdresseDTO adresse,
         String salary,
         LocalDate startingDate,
         @Positive Integer durationInWeeks,

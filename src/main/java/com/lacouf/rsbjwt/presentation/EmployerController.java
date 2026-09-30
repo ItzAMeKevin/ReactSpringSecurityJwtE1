@@ -19,7 +19,7 @@ public class EmployerController {
     private final EmployerService employerService;
 
     @PostMapping("/addJobOffer")
-    public ResponseEntity<JobOfferDetailDTO> addJobOffrre(
+    public ResponseEntity<JobOfferDetailDTO> addJobOffer(
             @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO) {
         JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO);
 
@@ -29,7 +29,7 @@ public class EmployerController {
     }
 
     @GetMapping()
-    public List<JobOfferDetailDTO> getJobOffre(@RequestBody Long idEmployer){
+    public List<JobOfferDetailDTO> getJobOffer(@RequestBody Long idEmployer){
         return employerService.getJobOffres(idEmployer);
     }
 

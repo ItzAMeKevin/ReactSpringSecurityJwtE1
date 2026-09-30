@@ -15,14 +15,10 @@ import java.util.List;
 @ToString(exclude = "jobOffers")
 public class Employer extends User {
 
+    @Embedded
+    private Adresse adresse;
     @Column(nullable = false)
     private String companyName;
-    @Column(nullable = false)
-    private String address;
-    @Column(nullable = false)
-    private String postalCode;
-    @Column(nullable = false)
-    private String city;
     @Column(nullable = false)
     private String phoneNumber;
     @Column(unique = true , nullable = false)
@@ -35,12 +31,10 @@ public class Employer extends User {
     @Builder
     public Employer(
             Long id, String firstName, String lastName, String email, String password, String companyName,
-            String address, String postalCode, String city, String phoneNumber, String employerWorkId) {
+            Adresse adresse, String phoneNumber, String employerWorkId) {
         super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.EMPLOYER).build());
         this.companyName = companyName;
-        this.address = address;
-        this.postalCode = postalCode;
-        this.city = city;
+        this.adresse = adresse;
         this.phoneNumber = phoneNumber;
         this.employerWorkId = employerWorkId;
     }

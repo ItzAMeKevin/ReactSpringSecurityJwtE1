@@ -10,7 +10,7 @@ public record JobOfferDetailDTO
         String title,
         String description,
         String prerequisites,
-        LocationDTO location,
+        AdresseDTO location,
         String salary,
         OfferStatus status,
         LocalDate publicationDate,

@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
 
+import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.Role;
 
@@ -14,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter 
 public class UserCreateDTO {
+    private AdresseMapper adresseMapper;
 
     private Long id;
     private String firstName;
@@ -23,9 +25,7 @@ public class UserCreateDTO {
     private Role role;
     private String matricule;
     private String companyName;
-    private String address;
-    private String postalCode;
-    private String city;
+    private AdresseDTO adresseDTO;
     private String phoneNumber;
     private String employerId;
     private Programe programe;
@@ -48,9 +48,7 @@ public class UserCreateDTO {
                     .email(userCreateDTO.getEmail())
                     .password(userCreateDTO.getPassword())
                     .companyName(userCreateDTO.getCompanyName())
-                    .address(userCreateDTO.getAddress())
-                    .postalCode(userCreateDTO.getPostalCode())
-                    .city(userCreateDTO.getCity())
+                    .adresse(adresseMapper.toEntity(userCreateDTO.getAdresseDTO()))
                     .phoneNumber(userCreateDTO.getPhoneNumber())
                     .employerWorkId(userCreateDTO.getEmployerId())
                     .build();

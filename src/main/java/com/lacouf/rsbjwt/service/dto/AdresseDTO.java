@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.Location;
+import com.lacouf.rsbjwt.model.Adresse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -13,15 +13,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class LocationDTO {
+public class AdresseDTO {
 
-    private Long id;
 
     @NotBlank(message = "Le pays est obligatoire")
     private String pays;
 
-    @NotBlank(message = "La province est obligatoire")
-    private String province;
 
     @NotBlank(message = "La ville est obligatoire")
     private String ville;
@@ -40,16 +37,4 @@ public class LocationDTO {
     )
     private String codePostal;
 
-    public static LocationDTO fromEntity(Location l) {
-        if (l == null) return null;
-        return LocationDTO.builder()
-                .id(l.getId())
-                .pays(l.getPays())
-                .province(l.getProvince())
-                .ville(l.getVille())
-                .rue(l.getRue())
-                .numeroCivic(l.getNumeroCivic())
-                .codePostal(l.getCodePostal())
-                .build();
-    }
 }

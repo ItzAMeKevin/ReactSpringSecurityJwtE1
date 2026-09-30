@@ -64,7 +64,6 @@ public class StudentServiceTest {
                     cv.setId(1L);
                     return cv;
                 });
-
         // ACT
         CvMetaDataDto result = studentService.upload(email, request);
 

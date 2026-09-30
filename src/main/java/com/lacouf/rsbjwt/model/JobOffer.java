@@ -54,16 +54,16 @@ public class JobOffer {
 
     @ManyToOne(fetch = FetchType.LAZY ,optional = false)
     @JoinColumn(nullable = false)
-    private Location location;
+    private Adresse adresse;
 
     @Builder
     public JobOffer(String title, String description, String prerequisites,
-                    Location location, String salary,
-                     LocalDate startingDate, int durationInWeeks, Employer employer) {
+                    Adresse adresse, String salary,
+                    LocalDate startingDate, int durationInWeeks, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
-        this.location = location;
+        this.adresse = adresse;
         this.salary = salary;
         this.startingDate = startingDate;
         this.durationInWeeks = durationInWeeks;

@@ -1,28 +1,20 @@
 package com.lacouf.rsbjwt.model;
 
-
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
+
 @Getter
 @Setter
 @NoArgsConstructor
-public class Location {
+@Embeddable
+public class Adresse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String pays;
-
-    @Column(nullable = false)
-    private String province;
+    @Column
+    private String pay;
 
     @Column(nullable = false)
     private String ville;
@@ -37,13 +29,14 @@ public class Location {
     private String codePostal;
 
     @Builder
-    public Location(String pays, String province, String ville,
+    public Adresse(String pays,  String ville,
                     String rue, String numeroCivic, String codePostal) {
-        this.pays = pays;
-        this.province = province;
+        this.pay =  pays;
         this.ville = ville;
         this.rue = rue;
         this.numeroCivic = numeroCivic;
         this.codePostal = codePostal;
     }
+
+
 }

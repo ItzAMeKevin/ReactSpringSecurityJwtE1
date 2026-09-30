@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = LocationMapper.class)
+@Mapper(componentModel = "spring", uses = AdresseMapper.class)
 public interface JobOfferMapper {
 
     @Mapping(target = "id", ignore = true)
