@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -83,7 +84,6 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     @DisplayName("GET /gestionnaire/cv/pending returns 200 and list of pending CVs")
-    @WithMockUser(authorities = "MANAGER")
     void getPendingCvs_success_returnsOkAndList() throws Exception {
         PendingCvDto dto = PendingCvDto.builder()
                 .id(1L)
@@ -94,7 +94,8 @@ class GestionnaireControllerWebMvcTest {
                 .build();
         when(gestionnaireService.getPendingCvs()).thenReturn(List.of(dto));
 
-        mockMvc.perform(get("/gestionnaire/cv/pending"))
+        mockMvc.perform(get("/gestionnaire/cv/pending")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER"))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1))
@@ -105,12 +106,12 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     @DisplayName("GET /gestionnaire/cv/{cvId}/content returns 200 and PDF bytes")
-    @WithMockUser(authorities = "MANAGER")
     void getCvContent_success_returnsOkAndBytes() throws Exception {
-        byte[] pdfBytes = new byte[]{37, 80, 68, 70, 45}; // %PDF-
+        byte[] pdfBytes = new byte[]{37, 80, 68, 70, 45};
         when(gestionnaireService.getCvContent(1L)).thenReturn(pdfBytes);
 
-        mockMvc.perform(get("/gestionnaire/cv/1/content"))
+        mockMvc.perform(get("/gestionnaire/cv/1/content")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER"))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_PDF))
                 .andExpect(content().bytes(pdfBytes));
@@ -118,43 +119,43 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     @DisplayName("GET /gestionnaire/cv/{cvId}/content returns 404 when CV not found")
-    @WithMockUser(authorities = "MANAGER")
     void getCvContent_notFound_returns404() throws Exception {
         when(gestionnaireService.getCvContent(99L)).thenThrow(new UserNotFoundException());
 
-        mockMvc.perform(get("/gestionnaire/cv/99/content"))
+        mockMvc.perform(get("/gestionnaire/cv/99/content")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/accept returns 204 on success")
-    @WithMockUser(authorities = "MANAGER")
     void acceptCv_success_returnsNoContent() throws Exception {
         doNothing().when(gestionnaireService).acceptCv(1L);
 
-        mockMvc.perform(put("/gestionnaire/cv/1/accept"))
+        mockMvc.perform(put("/gestionnaire/cv/1/accept")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER"))))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/accept returns 404 when CV not found")
-    @WithMockUser(authorities = "MANAGER")
     void acceptCv_notFound_returns404() throws Exception {
         doThrow(new UserNotFoundException()).when(gestionnaireService).acceptCv(99L);
 
-        mockMvc.perform(put("/gestionnaire/cv/99/accept"))
+        mockMvc.perform(put("/gestionnaire/cv/99/accept")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 204 on success")
-    @WithMockUser(authorities = "MANAGER")
     void declineCv_success_returnsNoContent() throws Exception {
         UploadCvDto reviewRequest = new UploadCvDto("review.pdf", "application/pdf",
                 Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
         doNothing().when(gestionnaireService).declineCv(eq(1L), any(UploadCvDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/1/decline")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewRequest)))
                 .andExpect(status().isNoContent());
@@ -162,13 +163,13 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 404 when CV not found")
-    @WithMockUser(authorities = "MANAGER")
     void declineCv_notFound_returns404() throws Exception {
         UploadCvDto reviewRequest = new UploadCvDto("review.pdf", "application/pdf",
                 Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
         doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(UploadCvDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/99/decline")
+                        .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewRequest)))
                 .andExpect(status().isNotFound());
