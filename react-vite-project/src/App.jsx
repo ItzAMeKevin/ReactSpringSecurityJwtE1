@@ -20,7 +20,7 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true)
   const navigate = useNavigate();
 
-  let token = localStorage.getItem('token')
+  let token = sessionStorage.getItem('token')
 
   useEffect(() => {
       if (token) {
@@ -31,7 +31,7 @@ function App() {
                 if (!res.ok) {
                   switch (res.status) {
                     case 401:
-                      localStorage.clear();
+                      sessionStorage.clear();
                       setUser(null);
                     case 403:
                       throw new Error("Forbidden")

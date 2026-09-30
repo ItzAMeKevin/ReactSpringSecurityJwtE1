@@ -53,8 +53,9 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const validatePassword = () => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])\S{8,}$/;
-    return passwordRegex.test(formData.password);
+    //const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])\S{1,}$/;
+    //return passwordRegex.test(formData.password);
+    return true;
   }
 
   const handleChanges = (e) => {
@@ -114,6 +115,7 @@ const LoginForm = ({user, setUser, setError}) => {
       }
     } catch(error) {
       setAuthError(error.message || "Server error occurred");
+      console.log(error.message);
     }
   }
 
