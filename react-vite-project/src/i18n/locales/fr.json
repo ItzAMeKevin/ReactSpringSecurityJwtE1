@@ -136,6 +136,7 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
+    "downloadReview": "Télécharger la revue",
     "types": {
       "CV_ACCEPTED": {
         "title": "Votre CV a été accepté",

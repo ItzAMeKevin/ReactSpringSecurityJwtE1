@@ -137,6 +137,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
+    "downloadReview": "Download feedback",
     "types": {
       "CV_ACCEPTED": {
         "title": "Your CV has been accepted",

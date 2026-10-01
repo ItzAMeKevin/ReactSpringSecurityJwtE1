@@ -2,15 +2,26 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
+import { downloadFile } from "../utils/downloadFile.js";
 
 const NotificationBell = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { notifications, status, unreadCount, markAsRead } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
+    const REVIEW_FILENAME = "cv_review.pdf";
 
     const handleNotificationClick = (notificationId, isRead) => {
         if (!isRead) {
             markAsRead(notificationId);
+        }
+    };
+
+    const handleDownloadReview = async (e, actionUrl) => {
+        e.stopPropagation();
+        try {
+            await downloadFile(actionUrl, REVIEW_FILENAME);
+        } catch (error) {
+            console.error("Erreur lors du téléchargement du review:", error);
         }
     };
 
@@ -59,9 +70,18 @@ const NotificationBell = () => {
                                     {localizedNotif.message}
                                 </p>
                             )}
+                            {notification.actionUrl && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleDownloadReview(e, notification.actionUrl)}
+                                    className="mt-2 bg-[#4b1113] text-white text-xs font-medium py-1 px-2 rounded hover:bg-[#3a0d0f] transition-colors"
+                                >
+                                    {t("notifications.downloadReview")}
+                                </button>
+                            )}
                             {notification.createdAt && (
                                 <p className="text-xs text-[#4b1113]/50 mt-1">
-                                    {new Date(notification.createdAt).toLocaleDateString("fr-FR")}
+                                    {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
                         </li>

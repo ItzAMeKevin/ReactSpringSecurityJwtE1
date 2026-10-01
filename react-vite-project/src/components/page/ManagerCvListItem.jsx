@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
-import fetcher from "../../utils/fetcher.js";
+import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
 
 const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -13,6 +13,7 @@ const fileToBase64 = (file) =>
 
 const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
     const { t } = useTranslation();
+    const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
     const reviewInputRef = useRef(null);
 
@@ -52,16 +53,19 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
         setPreviewError(null);
 
         try {
-            const response = await fetcher(`/gestionnaire/cv/${cv.id}/content`);
-            if (!response.ok) {
-                setPreviewError(t("gestionnaire.preview.errorLoading"));
-                return;
-            }
-            const blob = await response.blob();
-            setPreviewUrl(URL.createObjectURL(blob));
+            const url = await fetchBlobUrl(contentUrl);
+            setPreviewUrl(url);
         } catch (error) {
             console.error("Erreur lors du chargement de l'aperçu :", error);
             setPreviewError(t("gestionnaire.preview.errorLoading"));
+        }
+    };
+
+    const handleDownload = async () => {
+        try {
+            await downloadFile(contentUrl, cv.fileName || "cv.pdf");
+        } catch (error) {
+            console.error("Erreur lors du téléchargement du CV :", error);
         }
     };
 
@@ -122,6 +126,26 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
                 </div>
 
                 <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={handleDownload}
+                        className="bg-blue-100 text-blue-800 py-1.5 px-3 rounded-md hover:bg-blue-200 transition-colors flex items-center"
+                    >
+                        <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </button>
                     <button
                         type="button"
                         onClick={handleToggle}
