@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,9 @@ class GestionnaireControllerWebMvcTest {
 
     @MockitoBean
     private GestionnaireService gestionnaireService;
+
+    @MockitoBean
+    private UserAppService userAppService;
 
     @MockitoBean
     private UserAppRepository userAppRepository;

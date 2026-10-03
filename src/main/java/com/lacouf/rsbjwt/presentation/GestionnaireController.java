@@ -21,7 +21,7 @@ public class GestionnaireController {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
 
-    @PutMapping("/ofofers/{id}/accept")
+    @PutMapping("/offres/{id}/accept")
     public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
         return gestionnaireService.acceptOffer(id)
                 .map(ResponseEntity::ok)
