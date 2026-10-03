@@ -5,13 +5,22 @@ import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.OfferStatus;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
+import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
+import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.lacouf.rsbjwt.model.Manager;
+import com.lacouf.rsbjwt.model.ManagerNotification;
+import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 
 import java.util.List;
 import java.util.Optional;
+
+
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +28,9 @@ public class GestionnaireService {
 
     private final JobOfferRepository jobOfferRepository;
     private final EmployerNotificationRepository employerNotificationRepository;
+    private final ManagerRepository managerRepository;
+    private final ManagerNotificationRepository managerNotificationRepository;
+
 
     public List<JobOfferDto> getPendingOffers() {
         return jobOfferRepository.findAllByStatus(OfferStatus.WAITING)
@@ -39,6 +51,31 @@ public class GestionnaireService {
             return toDto(offer);
         });
     }
+
+    public List<ManagerNotificationDto> getNotifications(String managerEmail) {
+        return managerRepository.findByCredentialsEmail(managerEmail)
+                .map(manager -> managerNotificationRepository
+                        .findAllByManager_IdOrderByCreatedAtDesc(manager.getId())
+                        .stream()
+                        .map(n -> new ManagerNotificationDto(
+                                n.getId(), n.getTitle(), n.getMessage(),
+                                n.isRead(), n.getCreatedAt(), n.getOfferId()))
+                        .toList())
+                .orElse(List.of());
+    }
+
+    public Optional<ManagerNotificationDto> markNotificationAsRead(String managerEmail, Long notifId) {
+        return managerRepository.findByCredentialsEmail(managerEmail).flatMap(manager ->
+                managerNotificationRepository.findByIdAndManager_Id(notifId, manager.getId())
+                        .map(notif -> {
+                            notif.markAsRead();
+                            managerNotificationRepository.save(notif);
+                            return new ManagerNotificationDto(
+                                    notif.getId(), notif.getTitle(), notif.getMessage(),
+                                    notif.isRead(), notif.getCreatedAt(), notif.getOfferId());
+                        }));
+    }
+
 
     public Optional<JobOfferDto> refuseOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {

@@ -19,7 +19,7 @@ public class ManagerNotification {
     private String message;
     private boolean isRead = false;
     private Instant createdAt = Instant.now();
-    private Long OfferId;
+    private Long offerId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "manager_id")
@@ -28,9 +28,12 @@ public class ManagerNotification {
     public ManagerNotification(String title, String message, Long offerId, Manager manager) {
         this.title = title;
         this.message = message;
-        this.OfferId = offerId;
+        this.offerId = offerId;
         this.manager = manager;
+    }
 
+    public void markAsRead() {
+        this.isRead = true;
     }
 
 }

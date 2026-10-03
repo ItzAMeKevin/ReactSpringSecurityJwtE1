@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ManagerNotificationRepository extends JpaRepository<ManagerNotification, Long> {
-    List<ManagerNotification> findByManager_IdOrderByCreatedAtDesc(Long managerId);
-    Optional<ManagerNotification> findByManager_IdOrderById(Long id, Long managerId);
+    List<ManagerNotification> findAllByManager_IdOrderByCreatedAtDesc(Long managerId);
+    Optional<ManagerNotification> findByIdAndManager_Id(Long id, Long managerId);
 }
