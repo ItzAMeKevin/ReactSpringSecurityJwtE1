@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +63,9 @@ class GestionnaireControllerWebMvcTest {
     private EmployerNotificationRepository employerNotificationRepository;
 
     @MockitoBean
+    private ManagerNotificationRepository managerNotificationRepository;
+
+    @MockitoBean
     private PasswordEncoder passwordEncoder;
 
     private MockMvc mockMvc;
@@ -67,7 +73,9 @@ class GestionnaireControllerWebMvcTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
 
         AdresseDTO adresse = new AdresseDTO("Canada", "Montreal", "Rue Principale", "123", "H1A1A1");
         testOfferDto = new JobOfferDto(
@@ -140,6 +148,55 @@ class GestionnaireControllerWebMvcTest {
         when(gestionnaireService.refuseOffer(99L)).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/gestionnaire/offres/99/refuse"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /gestionnaire/notifications returns 200 with list")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void getNotifications_returnsOk() throws Exception {
+        ManagerNotificationDto notif = new ManagerNotificationDto(
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L);
+        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of(notif));
+
+        mockMvc.perform(get("/gestionnaire/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Nouvelle offre"));
+    }
+
+    @Test
+    @DisplayName("GET /gestionnaire/notifications returns 200 with empty list")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void getNotifications_empty_returnsOk() throws Exception {
+        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of());
+
+        mockMvc.perform(get("/gestionnaire/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/notifications/{id}/read returns 200 when found")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void markAsRead_found_returnsOk() throws Exception {
+        ManagerNotificationDto notif = new ManagerNotificationDto(
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L);
+        when(gestionnaireService.markNotificationAsRead("manager@test.com", 1L))
+                .thenReturn(Optional.of(notif));
+
+        mockMvc.perform(put("/gestionnaire/notifications/1/read"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isRead").value(true));
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/notifications/{id}/read returns 404 when not found")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void markAsRead_notFound_returns404() throws Exception {
+        when(gestionnaireService.markNotificationAsRead("manager@test.com", 99L))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/gestionnaire/notifications/99/read"))
                 .andExpect(status().isNotFound());
     }
 }
