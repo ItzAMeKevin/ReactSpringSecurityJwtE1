@@ -22,7 +22,7 @@ public class EmployerNotification {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employer_id")
     private Employer employer;
-    
+
     public EmployerNotification(String title, String message, Employer employer) {
         this.title = title;
         this.message = message;
