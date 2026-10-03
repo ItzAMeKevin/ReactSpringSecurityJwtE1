@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,6 +33,10 @@ public class JobOffer {
     @Column(nullable = false)
     private OfferStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Programe programe;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDate publicationDate;
@@ -51,15 +56,16 @@ public class JobOffer {
 
     @Builder
     public JobOffer(String title, String description, String prerequisites, Adresse adresse, String salary,
-                    LocalDate startingDate, int dureationInWeeks, Employer employer) {
+                    LocalDate startingDate, int durationInWeeks, Employer employer, Programe programe) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
         this.adresse = adresse;
         this.salary = salary;
         this.startingDate = startingDate;
-        this.durationInWeeks = dureationInWeeks;
+        this.durationInWeeks = durationInWeeks;
         this.employer = employer;
+        this.programe = programe;
     }
 
     @PrePersist
