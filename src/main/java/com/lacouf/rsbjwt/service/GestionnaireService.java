@@ -11,6 +11,7 @@ import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.ManagerNotification;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
@@ -39,6 +40,7 @@ public class GestionnaireService {
                 .toList();
     }
 
+    @Transactional
     public Optional<JobOfferDto> acceptOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
             offer.setStatus(OfferStatus.ACCEPTED);
@@ -77,6 +79,7 @@ public class GestionnaireService {
     }
 
 
+    @Transactional
     public Optional<JobOfferDto> refuseOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
             offer.setStatus(OfferStatus.REFUSED);

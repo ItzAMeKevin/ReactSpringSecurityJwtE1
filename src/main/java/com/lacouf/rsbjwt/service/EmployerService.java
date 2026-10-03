@@ -13,6 +13,7 @@ import com.lacouf.rsbjwt.service.dto.JobOfferCreateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class EmployerService {
     private final ManagerNotificationRepository managerNotificationRepository;
 
 
+    @Transactional
     public Optional<JobOfferDto> submitOffer(String employerEmail, JobOfferCreateDto dto) {
         return employerRepository.findByCredentialsEmail(employerEmail)
                 .map(employer -> {
@@ -59,17 +61,18 @@ public class EmployerService {
     }
     private void notifyManagers(JobOffer offer) {
         List<Manager> managers = managerRepository.findAll();
-        for (Manager manager : managers) {
-            managerNotificationRepository.save(new ManagerNotification(
-                    "Nouvelle offre de stage",
-                    "L'entreprise \"" + offer.getEmployer().getCompanyName()
-                            + "\" a déposé une offre : \"" + offer.getTitle()
-                            + "\" (" + offer.getPrograme() + ")",
-                    offer.getId(),
-                    manager
-            ));
-            logEmail(manager, offer);
-        }
+        List<ManagerNotification> notifs = managers.stream()
+                .map(manager -> new ManagerNotification(
+                        "Nouvelle offre de stage",
+                        "L'entreprise \"" + offer.getEmployer().getCompanyName()
+                                + "\" a déposé une offre : \"" + offer.getTitle()
+                                + "\" (" + offer.getPrograme() + ")",
+                        offer.getId(),
+                        manager
+                ))
+                .toList();
+        managerNotificationRepository.saveAll(notifs);
+        managers.forEach(manager -> logEmail(manager, offer));
     }
 
     private void logEmail(Manager manager, JobOffer offer) {
