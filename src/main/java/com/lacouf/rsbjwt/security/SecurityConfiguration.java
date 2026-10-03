@@ -50,7 +50,7 @@ public class SecurityConfiguration {
     private static final String EMPRUNTEUR_PATH = "/emprunteur/**";
     private static final String PREPOSE_PATH = "/prepose/**";
     private static final String GESTIONNAIRE_PATH = "/gestionnaire/**";
-
+    private static final String EMPLOYER_PATH = "/employer/**";
 
 
     @Bean
@@ -72,6 +72,7 @@ public class SecurityConfiguration {
                         .requestMatchers(EMPRUNTEUR_PATH).hasAuthority(Role.STUDENT.name())
                         .requestMatchers(PREPOSE_PATH).hasAuthority(Role.EMPLOYER.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.MANAGER.name())
+                        .requestMatchers(EMPLOYER_PATH).hasAuthority(Role.EMPLOYER.name())
                         .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
