@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class JobOffer {
     @Id
@@ -27,10 +26,12 @@ public class JobOffer {
     @Column(nullable = false)
     private String prerequisites;
 
+    @Column(nullable = false)
     private String salary;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private OfferStatus status;
 
     @Enumerated(EnumType.STRING)

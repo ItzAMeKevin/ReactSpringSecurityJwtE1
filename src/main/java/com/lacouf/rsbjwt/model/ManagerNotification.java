@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -18,7 +19,9 @@ public class ManagerNotification {
     private String title;
     private String message;
     private boolean isRead = false;
-    private Instant createdAt = Instant.now();
+
+    @CreationTimestamp
+    private Instant createdAt;
     private Long offerId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

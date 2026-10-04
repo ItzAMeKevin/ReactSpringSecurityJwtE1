@@ -1,16 +1,20 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Programe;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public record JobOfferCreateDto(
-        String title,
-        String description,
-        String prerequisites,
-        AdresseDTO adresse,
-        String salary,
-        LocalDate startingDate,
-        int durationInWeeks,
-        Programe programe
+        @NotBlank String title,
+        @NotBlank String description,
+        @NotBlank String prerequisites,
+        @Valid @NotNull AdresseDTO adresse,
+        @NotBlank String salary,
+        @NotNull LocalDate startingDate,
+        @Min(1) int durationInWeeks,
+        @NotNull Programe programe
 ) {}

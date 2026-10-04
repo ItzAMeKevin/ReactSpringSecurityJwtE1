@@ -1,9 +1,11 @@
 package com.lacouf.rsbjwt.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AdresseDTO(
-        String pay,
-        String ville,
-        String rue,
-        String numeroCivic,
-        String codePostal
+        @NotBlank String pay,
+        @NotBlank String ville,
+        @NotBlank String rue,
+        @NotBlank String numeroCivic,
+        @NotBlank String codePostal
 ) {}

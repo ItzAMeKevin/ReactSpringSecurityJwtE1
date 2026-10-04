@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ public class EmployerController {
     private final EmployerService employerService;
 
     @PostMapping("/offres")
-    public ResponseEntity<JobOfferDto> submitOffer(@RequestBody JobOfferCreateDto dto, Authentication authentication) {
+    public ResponseEntity<JobOfferDto> submitOffer(@Valid @RequestBody JobOfferCreateDto dto, Authentication authentication) {
         String email = authentication.getName();
         return employerService.submitOffer(email, dto)
                 .map(ResponseEntity::ok)
