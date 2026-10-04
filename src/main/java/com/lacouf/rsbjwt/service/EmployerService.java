@@ -72,10 +72,10 @@ public class EmployerService {
                 ))
                 .toList();
         managerNotificationRepository.saveAll(notifs);
-        managers.forEach(manager -> logEmail(manager, offer));
+        managers.forEach(manager -> sendEmailStub(manager, offer));
     }
 
-    private void logEmail(Manager manager, JobOffer offer) {
+    private void sendEmailStub(Manager manager, JobOffer offer) {
         System.out.println("[EMAIL-STUB] To: " + manager.getCredentials().getEmail()
                 + " | Offre: " + offer.getTitle()
                 + " | Entreprise: " + offer.getEmployer().getCompanyName());
