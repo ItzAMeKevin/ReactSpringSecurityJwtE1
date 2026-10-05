@@ -51,6 +51,7 @@
   },
   "header": {
     "title": "My App",
+    "inscription": "Inscription",
     "accueil": "Accueil",
     "about": "À propos",
     "emprunteur": "Emprunteur",
