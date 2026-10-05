@@ -107,5 +107,26 @@
     "signUp": "Inscrivez-vous",
     "invalidEmail": "Courriel invalide",
     "invalidPassword": "Mot de passe invalide"
+  },
+  "personalSpaceEmployer": {
+    "title": "Espace employeur",
+    "createJobOffer": "Créer une offre de stage",
+    "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
+    "close": "Fermer",
+    "jobOffers": "Mes offres de stage",
+    "submit": "Publier l'offre",
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "requirements": "Prérequis",
+      "salary": "Salaire",
+      "startingDate": "Date de début",
+      "address": "Adresse",
+      "city": "Ville",
+      "country": "Pays",
+      "postalCode": "Code postal",
+      "civicNumber": "Numéro civique",
+      "street": "Rue"
+    }
   }
 }

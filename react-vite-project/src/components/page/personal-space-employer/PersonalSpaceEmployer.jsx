@@ -1,12 +1,7 @@
 import ListJobOffer from "./ListJobOffer.jsx";
 import {useTranslation} from "react-i18next";
-import {useState} from "react";
-import {
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-} from "@material-tailwind/react";
+import {useEffect, useState} from "react";
+import FormJobOffer from "./FormJobOffer.jsx";
 
 const PersonalSpaceEmployer = () => {
     
@@ -14,7 +9,23 @@ const PersonalSpaceEmployer = () => {
 
     const [openForm, setOpenForm] = useState(false);
 
-    const handleOpenForm = () => setOpenForm(!openForm);
+    const handleOpenForm = () => setOpenForm(true);
+    const handleCloseForm = () => setOpenForm(false);
+
+    useEffect(() => {
+        if (!openForm) {
+            return undefined;
+        }
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                handleCloseForm();
+            }
+        };
+
+        document.addEventListener("keydown", handleEscape);
+        return () => document.removeEventListener("keydown", handleEscape);
+    }, [openForm]);
     
     return (
         <>
@@ -22,20 +33,39 @@ const PersonalSpaceEmployer = () => {
                 <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
                     <h1 className="text-2xl font-bold text-[#4b1113]">{t("personalSpaceEmployer.title")}</h1>
                     <button className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleOpenForm}>
-                        t("personalSpaceEmployer.createJobOffer")
+                        {t("personalSpaceEmployer.createJobOffer")}
                     </button>
-                    <Dialog open={openForm} handler={handleOpenForm} className="w-full max-w-md p-6 bg-white rounded shadow-lg">
-                        <DialogHeader className="text-lg font-bold text-[#4b1113]">{t("personalSpaceEmployer.createJobOffer")}</DialogHeader>
-                        <DialogBody className="text-sm text-[#4b1113]/70">{t("personalSpaceEmployer.createJobOfferDescription")}</DialogBody>
-                        <DialogFooter
-                            className="flex justify-end gap-2"
+                    {openForm && (
+                        <div
+                            className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4"
+                            role="presentation"
+                            onMouseDown={(event) => {
+                                if (event.target === event.currentTarget) {
+                                    handleCloseForm();
+                                }
+                            }}
                         >
-                            <button className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleOpenForm}>
-                                {t("personalSpaceEmployer.close")}
-                            </button>
-                        </DialogFooter>
-                    </Dialog>
-                    <h2 className="text-xl font-bold text-[#4b1113]">t("personalSpaceEmployer.jobOffers")</h2>  
+                            <div
+                                className="flex max-h-[calc(100vh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded bg-white shadow-2xl"
+                                role="dialog"
+                                aria-modal="true"
+                                aria-labelledby="create-job-offer-title"
+                            >
+                                <div className="overflow-y-auto p-6">
+                                    <h2 id="create-job-offer-title" className="mb-6 text-lg font-bold text-[#4b1113]">
+                                        {t("personalSpaceEmployer.createJobOffer")}
+                                    </h2>
+                                    <FormJobOffer />
+                                    <div className="mt-6 flex justify-end gap-2">
+                                        <button type="button" className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleCloseForm}>
+                                            {t("personalSpaceEmployer.close")}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <h2 className="text-xl font-bold text-[#4b1113]">{t("personalSpaceEmployer.jobOffers")}</h2>
                     <ListJobOffer /> 
                 </div>
             </div>
