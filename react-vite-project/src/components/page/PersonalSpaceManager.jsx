@@ -27,11 +27,11 @@ const PersonalSpaceManager = () => {
         void fetchPendingCvs();
     }, []);
 
-    const removeFromList = ((cvId) => {
+    const removeFromList = (cvId) => {
         setPendingCvs((current) => current.filter((cv) => cv.id !== cvId));
-    });
+    };
 
-    const handleAccept = (async (cvId) => {
+    const handleAccept = async (cvId) => {
         const response = await fetcher(`/gestionnaire/cv/${cvId}/accept`, {
             method: "PUT",
         });
@@ -39,9 +39,9 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors de l'acceptation du CV");
         }
         removeFromList(cvId);
-    });
+    };
 
-    const handleDecline = (async (cvId, reviewPayload) => {
+    const handleDecline = async (cvId, reviewPayload) => {
         const response = await fetcher(`/gestionnaire/cv/${cvId}/decline`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -51,7 +51,7 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors du refus du CV");
         }
         removeFromList(cvId);
-    });
+    };
 
     const isLoaded = status === "loaded";
 
