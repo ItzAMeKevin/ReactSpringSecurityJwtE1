@@ -121,6 +121,9 @@
       "errorLoading": "Unable to load CV preview.",
       "loading": "Loading preview..."
     },
+    "accept": {
+      "errorProcessing": "An error occurred while accepting this CV. Please try again."
+    },
     "decline": {
       "title": "Upload the CV review (PDF) before confirming the rejection.",
       "chooseFile": "Choose a file",
@@ -128,7 +131,7 @@
       "processing": "Sending...",
       "errorNoFile": "You must upload a CV review before confirming the rejection.",
       "errorPdfOnly": "Only PDF files are accepted.",
-      "errorProcessing": "An error occurred while processing this CV. Please try again."
+      "errorProcessing": "An error occurred while declining this CV. Please try again."
     }
   },
   "notifications": {
