@@ -114,8 +114,8 @@ const LoginForm = ({user, setUser, setError}) => {
         navigate("/");
       }
     } catch(error) {
-      setError(error)
-      navigate('/error')
+      setAuthError(error.message || "Server error occurred");
+      console.log(error.message);
     }
   }
 
