@@ -33,7 +33,6 @@ public class UserCreateDTO {
     public User toEntity(UserCreateDTO userCreateDTO) {
         return switch (userCreateDTO.getRole()) {
             case MANAGER -> Manager.builder()
-                    .id(userCreateDTO.getId())
                     .firstName(userCreateDTO.getFirstName())
                     .password(userCreateDTO.getPassword())
                     .matricule(userCreateDTO.getMatricule())
@@ -42,7 +41,6 @@ public class UserCreateDTO {
                     .password(userCreateDTO.getPassword())
                     .build();
             case EMPLOYER -> Employer.builder()
-                    .id(userCreateDTO.getId())
                     .firstName(userCreateDTO.getFirstName())
                     .lastName(userCreateDTO.getLastname())
                     .email(userCreateDTO.getEmail())
@@ -53,7 +51,6 @@ public class UserCreateDTO {
                     .employerWorkId(userCreateDTO.getEmployerId())
                     .build();
             case STUDENT -> Student.builder()
-                    .id(userCreateDTO.getId())
                     .firstName(userCreateDTO.getFirstName())
                     .lastName(userCreateDTO.getLastname())
                     .matricule(userCreateDTO.getMatricule())

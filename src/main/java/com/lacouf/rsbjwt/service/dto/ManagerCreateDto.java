@@ -9,7 +9,7 @@ public class ManagerCreateDto extends UserCreateDTO {
     @Builder
     public ManagerCreateDto(Long id, String firstName, String lastName,
                             String email, String password, Role role, String matricule) {
-        super(id, firstName, lastName, email, password, role, matricule,
+        super(firstName, lastName, email, password, role, matricule,
                 null, null, null, null, null, null,null);
     }
 

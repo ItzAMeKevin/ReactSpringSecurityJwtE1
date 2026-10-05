@@ -1,12 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lacouf.rsbjwt.model.OfferStatus;
 import com.lacouf.rsbjwt.model.Role;
-import com.lacouf.rsbjwt.repository.EmployerRepository;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
-import com.lacouf.rsbjwt.repository.StudentRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -17,24 +12,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
+@WebMvcTest(EmployerController.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class EmployerControllerTest {
@@ -48,19 +45,8 @@ class EmployerControllerTest {
     @MockitoBean
     private EmployerService employerService;
 
-    private ObjectMapper objectMapper;
-
-    @MockitoBean
-    private StudentRepository emprunteurRepository;
-
-    @MockitoBean
-    private EmployerRepository employerRepository;
-
-    @MockitoBean
-    private ManagerRepository managerRepository;
-
-    @MockitoBean
-    private UserAppRepository userAppRepository;
+    @Autowired
+    private JsonMapper JsonMapper;
 
 
     @Autowired
@@ -123,7 +109,7 @@ class EmployerControllerTest {
 
     @Test
     @DisplayName("Post /employer/addJobOffer")
-    void add_Job_Offer_succes() throws Exception {
+    void add_Job_Offer_succes_devrai_retour_201() throws Exception {
         // ===== ARRANGE =====
         when(employerService.addJobOffer(any(JobOfferCreateDTO.class)))
                 .thenReturn(jobOfferDetailDTO);
@@ -131,7 +117,7 @@ class EmployerControllerTest {
         // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(jobOfferCreateDTO)))
+                        .content(JsonMapper.writeValueAsString(jobOfferCreateDTO)))
 
                 // ===== assert=====
                 .andExpect(status().isCreated())
@@ -145,6 +131,65 @@ class EmployerControllerTest {
     }
 
     @Test
-    void getJobOffre() {
+    void addJobOffer_devraitRetourner400SiBodyInvalide() throws Exception {
+               // ===== ARRANGE =====
+
+
+                // ===== ACT =====
+        mockMvc.perform(post("/employer/addJobOffer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                // ===== assert=====
+                .andExpect(status().isBadRequest());   // 400
+
+
+        verify(employerService, never()).addJobOffer(any());
+    }
+
+    @Test
+    void getJobOffer_devraitRetournerLaListeDuService() throws Exception {
+        // ───── ARRANGE ─────
+        Long employerId = 42L;
+        List<JobOfferDetailDTO> expected = List.of(
+
+                new JobOfferDetailDTO(
+                        1L,
+                        "Développeur Java",
+                        "Description du poste",
+                        "Spring Boot, JPA",
+                        adresseDTO,
+                        "60000$",
+                        OfferStatus.WAITING,
+                        LocalDate.now(),
+                        LocalDate.of(2025, 3, 1),
+                        12,
+                        "ACME Inc."
+                ),
+                new JobOfferDetailDTO(
+                        2L,
+                        "Designer UX",
+                        "Description du poste 2",
+                        "Figma, Sketch",
+                        adresseDTO,
+                        "50000$",
+                        OfferStatus.ACCEPTED,
+                        LocalDate.now(),
+                        LocalDate.of(2025, 4, 1),
+                        6,
+                        "ACME Inc."
+                )
+        );
+        when(employerService.getJobOffres(employerId)).thenReturn(expected);
+
+
+                // ===== ACT =====
+        mockMvc.perform(get("/employer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonMapper.writeValueAsString(employerId)))
+                // ===== assert=====
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        verify(employerService).getJobOffres(employerId);
     }
 }
