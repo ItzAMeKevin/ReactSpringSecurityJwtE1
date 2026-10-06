@@ -51,15 +51,17 @@ public class JobOffer {
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 
-
-    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
-    @JoinColumn(nullable = false)
+    @Embedded
     private Adresse adresse;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Programe programe;
 
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     Adresse adresse, String salary,
-                    LocalDate startingDate, int durationInWeeks, Employer employer) {
+                    LocalDate startingDate, int durationInWeeks, Programe programe,Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
@@ -67,6 +69,7 @@ public class JobOffer {
         this.salary = salary;
         this.startingDate = startingDate;
         this.durationInWeeks = durationInWeeks;
+        this.programe = programe;
         this.employer = employer;
     }
 
