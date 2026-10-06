@@ -133,6 +133,7 @@
   },
   "notifications": {
     "title": "Notifications",
+    "managerTitle": "CVs to Review",
     "ariaLabel": "Notifications",
     "loading": "Loading...",
     "error": "Error loading notifications.",
@@ -150,6 +151,9 @@
       "CV_REJECTED": {
         "title": "Your CV has been rejected",
         "message": "Please review the feedback and upload a new CV."
+      },
+      "CV_REVIEW_READY": {
+        "title": "Review ready"
       }
     }
   }

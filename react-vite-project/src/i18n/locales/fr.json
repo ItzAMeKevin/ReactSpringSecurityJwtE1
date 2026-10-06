@@ -132,6 +132,7 @@
   },
   "notifications": {
     "title": "Notifications",
+    "managerTitle": "CVs à réviser",
     "ariaLabel": "Notifications",
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
@@ -149,6 +150,9 @@
       "CV_REJECTED": {
         "title": "Votre CV a été refusé",
         "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
+      },
+      "CV_REVIEW_READY": {
+        "title": "Revue prête"
       }
     }
   }

@@ -29,9 +29,9 @@ const ManagerNotificationBell = () => {
             "CV_UPLOADED": t("notifications.types.CV_UPLOADED.title"),
             "CV_ACCEPTED": t("notifications.types.CV_ACCEPTED.title"),
             "CV_REJECTED": t("notifications.types.CV_REJECTED.title"),
-            "CV_REVIEW_READY": "Review Ready",
+            "CV_REVIEW_READY": t("notifications.types.CV_REVIEW_READY.title"),
         };
-        return labels[type] || "Notification";
+        return labels[type] || t("notifications.title");
     };
 
     const getNotificationMessage = (notification) => {
@@ -65,20 +65,20 @@ const ManagerNotificationBell = () => {
 
     const renderContent = () => {
         if (status === "loading") {
-            return <p className="text-sm text-[#4b1113]/70 p-3">Loading...</p>;
+            return <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.loading")}</p>;
         }
 
         if (status === "error") {
             return (
                 <p className="text-sm text-red-700 p-3" role="alert">
-                    Error loading notifications
+                    {t("notifications.error")}
                 </p>
             );
         }
 
         if (status === "empty") {
             return (
-                <p className="text-sm text-[#4b1113]/70 p-3">No notifications</p>
+                <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.empty")}</p>
             );
         }
 
@@ -148,7 +148,7 @@ const ManagerNotificationBell = () => {
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-[#4b1113]/20 z-50">
                     <div className="p-3 border-b border-[#4b1113]/10">
-                        <h3 className="text-[#4b1113] font-bold">CVs to Review</h3>
+                        <h3 className="text-[#4b1113] font-bold">{t("notifications.managerTitle")}</h3>
                     </div>
                     {renderContent()}
                 </div>
