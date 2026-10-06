@@ -12,9 +12,6 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = AdresseMapper.class)
 public interface JobOfferMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "publicationDate", ignore = true)
     @Mapping(target = "employer", ignore = true)
     JobOffer toEntity(JobOfferCreateDTO dto);
 
