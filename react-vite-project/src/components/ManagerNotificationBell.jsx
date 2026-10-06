@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useManagerNotifications from "../hooks/useManagerNotifications.js";
+import getLocalizedNotification from "../utils/getLocalizedNotification.js";
 
 const ManagerNotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -24,33 +25,17 @@ const ManagerNotificationBell = () => {
         navigate("/gestionnaire", { state: { highlightCvId: cvId } });
     };
 
-    const getNotificationTypeLabel = (type) => {
-        const labels = {
-            "CV_UPLOADED": t("notifications.types.CV_UPLOADED.title"),
-            "CV_ACCEPTED": t("notifications.types.CV_ACCEPTED.title"),
-            "CV_REJECTED": t("notifications.types.CV_REJECTED.title"),
-            "CV_REVIEW_READY": t("notifications.types.CV_REVIEW_READY.title"),
-        };
-        return labels[type] || t("notifications.title");
-    };
-
     const getNotificationMessage = (notification) => {
+        const { message } = getLocalizedNotification(notification, t);
         if (notification.type === "CV_UPLOADED") {
-            const template = t("notifications.types.CV_UPLOADED.message");
-            return template
+            return message
                 .replace("{firstName}", notification.studentFirstName || "")
                 .replace("{lastName}", notification.studentLastName || "")
                 .replace("{matricule}", notification.studentMatricule || "")
                 .replace("{fileName}", notification.cvFileName || "")
                 .replace("{uploadedAt}", new Date(notification.uploadedAt).toLocaleDateString(i18n.language));
         }
-        if (notification.type === "CV_ACCEPTED") {
-            return t("notifications.types.CV_ACCEPTED.message");
-        }
-        if (notification.type === "CV_REJECTED") {
-            return t("notifications.types.CV_REJECTED.message");
-        }
-        return notification.message;
+        return message;
     };
 
     const formatDateTime = (date) => {
@@ -96,7 +81,7 @@ const ManagerNotificationBell = () => {
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                                 <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-200 text-blue-900 rounded">
-                                    {getNotificationTypeLabel(notification.type)}
+                                    {getLocalizedNotification(notification, t).title}
                                 </span>
                             </div>
                             <p className="line-clamp-2 mt-1">{getNotificationMessage(notification)}</p>
