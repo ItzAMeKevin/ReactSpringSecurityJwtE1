@@ -29,6 +29,29 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Dependencies
+node_modules/
+react-vite-project/node_modules/
+
+# Build directory
+react-vite-project/dist/
+
+# Log files
+react-vite-project/npm-debug.log*
+react-vite-project/yarn-debug.log*
+react-vite-project/yarn-error.log*
+
+# Environment variables
+.env
+.env*.local
+
+# React package
+package-lock.jason
+package.jason
+
+# Ignore self
+.gitignore
+
 ### VS Code ###
 .vscode/
 
