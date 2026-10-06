@@ -115,6 +115,7 @@
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
     "jobOffers": "My internship offers",
+    "noJobOffers": "You have no internship offers yet.",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",

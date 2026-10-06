@@ -114,6 +114,7 @@
     "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
+    "noJobOffers": "Aucune offre de stage publiée",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
