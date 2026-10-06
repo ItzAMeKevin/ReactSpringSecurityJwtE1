@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,18 +21,14 @@ public class EmployerController {
 
     @PostMapping("/addJobOffer")
     public ResponseEntity<JobOfferDetailDTO> addJobOffer(
-            @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO) {
-        JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(created);
+            @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO,
+            Authentication authentication) {
+        JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO, authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping()
-    public List<JobOfferDetailDTO> getJobOffer(@RequestBody Long idEmployer){
-        return employerService.getJobOffres(idEmployer);
+    public List<JobOfferDetailDTO> getJobOffer(Authentication authentication) {
+        return employerService.getJobOffres(authentication.getName());
     }
-
-
 }

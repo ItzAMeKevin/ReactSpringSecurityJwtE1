@@ -21,7 +21,6 @@ public record JobOfferCreateDTO(
         @NotNull(message = "La date de début est obligatoire")
         LocalDate startingDate,
         @Positive Integer durationInWeeks,
-        @NotNull Programe programe,
-        @NotNull Long employer_id
+        @NotNull Programe programe
 ) {
 }

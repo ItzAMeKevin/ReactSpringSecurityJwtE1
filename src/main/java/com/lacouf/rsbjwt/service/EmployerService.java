@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,27 +29,25 @@ public class EmployerService {
         this.jobOfferMapper = jobOfferMapper;
     }
 
-    public List<JobOfferDetailDTO> getJobOffres(Long idEmployer) {
-
-        return jobOfferRepository.getJobOffersByEmployerId(idEmployer)
+    public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
+        Employer employer = findEmployerByEmail(employerEmail);
+        return jobOfferRepository.getJobOffersByEmployerId(employer.getId())
                 .stream()
                 .map(jobOfferMapper::toDto)
                 .toList();
-
     }
 
-    public JobOfferDetailDTO addJobOffer(JobOfferCreateDTO jobOfferDTO) {
-
-        Employer employer = findEmployerById(jobOfferDTO.employer_id());
+    public JobOfferDetailDTO addJobOffer(JobOfferCreateDTO jobOfferDTO, String employerEmail) {
+        Employer employer = findEmployerByEmail(employerEmail);
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);
         jobOfferEntity.setEmployer(employer);
         JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
-
         return jobOfferMapper.toDto(savedOffer);
     }
 
-    public Employer findEmployerById(Long id) {
-        return employerRepository.findById(id).orElseThrow(() -> new EmployerNotFoundException(id));
+    public Employer findEmployerByEmail(String email) {
+        return employerRepository.findByCredentialsEmail(email)
+                .orElseThrow(() -> new EmployerNotFoundException(email));
     }
 
 

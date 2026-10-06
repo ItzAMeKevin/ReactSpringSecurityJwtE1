@@ -17,6 +17,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -86,8 +87,7 @@ class EmployerControllerTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE,
-                2L
+                Programe.TECHNIQUES_INFORMATIQUE
         );
 
         jobOfferDetailDTO = new JobOfferDetailDTO(
@@ -108,10 +108,11 @@ class EmployerControllerTest {
     }
 
     @Test
+    @WithMockUser(authorities = "EMPLOYER")
     @DisplayName("Post /employer/addJobOffer")
     void add_Job_Offer_succes_devrai_retour_201() throws Exception {
         // ===== ARRANGE =====
-        when(employerService.addJobOffer(any(JobOfferCreateDTO.class)))
+        when(employerService.addJobOffer(any(JobOfferCreateDTO.class), anyString()))
                 .thenReturn(jobOfferDetailDTO);
 
         // ===== ACT =====
@@ -126,11 +127,12 @@ class EmployerControllerTest {
                 .andExpect(jsonPath("$.status").value("WAITING"))
                 .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
-        verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class));
+        verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class), anyString());
 
     }
 
     @Test
+    @WithMockUser(authorities = "EMPLOYER")
     void addJobOffer_devraitRetourner400SiBodyInvalide() throws Exception {
         // ===== ARRANGE =====
 
@@ -143,13 +145,13 @@ class EmployerControllerTest {
                 .andExpect(status().isBadRequest());   // 400
 
 
-        verify(employerService, never()).addJobOffer(any());
+        verify(employerService, never()).addJobOffer(any(), anyString());
     }
 
     @Test
+    @WithMockUser(authorities = "EMPLOYER")
     void getJobOffer_devraitRetournerLaListeDuService() throws Exception {
         // ───── ARRANGE ─────
-        Long employerId = 42L;
         List<JobOfferDetailDTO> expected = List.of(
 
                 new JobOfferDetailDTO(
@@ -181,17 +183,15 @@ class EmployerControllerTest {
                         "ACME Inc."
                 )
         );
-        when(employerService.getJobOffres(employerId)).thenReturn(expected);
+        when(employerService.getJobOffres(anyString())).thenReturn(expected);
 
 
         // ===== ACT =====
-        mockMvc.perform(get("/employer")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonMapper.writeValueAsString(employerId)))
+        mockMvc.perform(get("/employer"))
                 // ===== assert=====
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
 
-        verify(employerService).getJobOffres(employerId);
+        verify(employerService).getJobOffres(anyString());
     }
 }

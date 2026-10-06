@@ -70,17 +70,19 @@ class EmployerServiceTest {
     @DisplayName("getJobOffres retourne la liste mappée")
     void getJobOffres_returnsMappedList() {
         // Arrange
-        Long employerId = 42L;
-        when(jobOfferRepository.getJobOffersByEmployerId(employerId))
+        String email = "marie@acme.com";
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
+        when(jobOfferRepository.getJobOffersByEmployerId(employer.getId()))
                 .thenReturn(List.of(jobOffer, jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
 
         // Act
-        List<JobOfferDetailDTO> result = employerService.getJobOffres(employerId);
+        List<JobOfferDetailDTO> result = employerService.getJobOffres(email);
 
         // Assert
         assertEquals(2, result.size());
-        verify(jobOfferRepository).getJobOffersByEmployerId(employerId);
+        verify(employerRepository).findByCredentialsEmail(email);
+        verify(jobOfferRepository).getJobOffersByEmployerId(employer.getId());
         verify(jobOfferMapper, times(2)).toDto(jobOffer);
     }
 
@@ -88,16 +90,17 @@ class EmployerServiceTest {
     @DisplayName("getJobOffres liste vide si aucune offre")
     void getJobOffres_returnsEmptyList() {
         // Arrange
-        Long employerId = 99L;
-        when(jobOfferRepository.getJobOffersByEmployerId(employerId))
-                .thenReturn(List.of());
+        String email = "vide@test.com";
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
+        when(jobOfferRepository.getJobOffersByEmployerId(employer.getId())).thenReturn(List.of());
 
         // Act
-        List<JobOfferDetailDTO> result = employerService.getJobOffres(employerId);
+        List<JobOfferDetailDTO> result = employerService.getJobOffres(email);
 
         // Assert
         assertTrue(result.isEmpty());
-        verify(jobOfferRepository).getJobOffersByEmployerId(employerId);
+        verify(employerRepository).findByCredentialsEmail(email);
+        verify(jobOfferRepository).getJobOffersByEmployerId(employer.getId());
         verifyNoInteractions(jobOfferMapper);
     }
 
@@ -113,8 +116,7 @@ class EmployerServiceTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE,
-                42L
+                Programe.TECHNIQUES_INFORMATIQUE
         );
         JobOfferDetailDTO expected = new JobOfferDetailDTO(
                 1L, "Titre", "Desc", "Preq",
@@ -124,17 +126,18 @@ class EmployerServiceTest {
                 12, Programe.TECHNIQUES_INFORMATIQUE, "ACME Inc."
         );
 
-        when(employerRepository.findById(42L)).thenReturn(Optional.of(employer));
+        String email = "marie@acme.com";
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
         when(jobOfferMapper.toEntity(dto)).thenReturn(jobOffer);
         when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(expected);
 
         // Act
-        JobOfferDetailDTO result = employerService.addJobOffer(dto);
+        JobOfferDetailDTO result = employerService.addJobOffer(dto, email);
 
         // Assert
         assertEquals(expected, result);
-        verify(employerRepository).findById(42L);
+        verify(employerRepository).findByCredentialsEmail(email);
         verify(jobOfferMapper).toEntity(dto);
         assertEquals(employer, jobOffer.getEmployer());
         verify(jobOfferRepository).save(jobOffer);
@@ -151,14 +154,14 @@ class EmployerServiceTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE,
-                42L
+                Programe.TECHNIQUES_INFORMATIQUE
         );
-        when(employerRepository.findById(42L)).thenReturn(Optional.empty());
+        String email = "inconnu@test.com";
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(EmployerNotFoundException.class,
-                () -> employerService.addJobOffer(dto));
+                () -> employerService.addJobOffer(dto, email));
 
         verify(jobOfferRepository, never()).save(any());
         verify(jobOfferMapper, never()).toEntity(any());
