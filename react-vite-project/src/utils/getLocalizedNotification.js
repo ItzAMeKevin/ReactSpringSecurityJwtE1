@@ -1,13 +1,5 @@
 const getLocalizedNotification = (notification, t) => {
-    let notificationType = notification.type;
-    
-    if (!notificationType) {
-        if (notification.title?.includes("accepté")) {
-            notificationType = "CV_ACCEPTED";
-        } else if (notification.title?.includes("refusé")) {
-            notificationType = "CV_REJECTED";
-        }
-    }
+    const notificationType = notification.type;
 
     if (notificationType) {
         const typePath = `notifications.types.${notificationType}`;
