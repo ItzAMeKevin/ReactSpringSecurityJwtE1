@@ -15,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
@@ -32,12 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EmployerController.class)
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
 class EmployerControllerTest {
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @MockitoBean
     private UserAppService userAppService;
@@ -46,8 +42,10 @@ class EmployerControllerTest {
     private EmployerService employerService;
 
     @Autowired
-    private JsonMapper JsonMapper;
+    private JsonMapper jsonMapper;
 
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private MockMvc mockMvc;
@@ -116,14 +114,14 @@ class EmployerControllerTest {
         // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonMapper.writeValueAsString(jobOfferCreateDTO)))
+                        .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
 
                 // ===== assert=====
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.title").value("Développeur Java"))
                 .andExpect(jsonPath("$.status").value("WAITING"))
-                .andExpect(jsonPath("$.employerId").value(2L));
+                .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
         verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class));
 
@@ -131,10 +129,10 @@ class EmployerControllerTest {
 
     @Test
     void addJobOffer_devraitRetourner400SiBodyInvalide() throws Exception {
-               // ===== ARRANGE =====
+        // ===== ARRANGE =====
 
 
-                // ===== ACT =====
+        // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
@@ -181,10 +179,10 @@ class EmployerControllerTest {
         when(employerService.getJobOffres(employerId)).thenReturn(expected);
 
 
-                // ===== ACT =====
+        // ===== ACT =====
         mockMvc.perform(get("/employer")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonMapper.writeValueAsString(employerId)))
+                        .content(jsonMapper.writeValueAsString(employerId)))
                 // ===== assert=====
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
