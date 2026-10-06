@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.UserMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -27,6 +29,9 @@ public class UserAppService {
     private final EmployerRepository employerRepository;
     private final ManagerRepository managerRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+
+
 
     public String authenticateUser(LoginDTO loginDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -40,17 +45,15 @@ public class UserAppService {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token);
         User user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
-        return switch(user.getRole()){
-            case STUDENT -> getEmprunteurDto(user.getId());
-            case EMPLOYER -> getPreposeDto(user.getId());
-            case MANAGER -> getManagerDto(user.getId());
-        };
+        return userMapper.toDto(user);
+
     }
-    
+
+    @Transactional
     public UserCreateDTO inscription(UserCreateDTO userCreateDTO) {
-        User user = userCreateDTO.toEntity(userCreateDTO);
+        User user = userMapper.toEntity(userCreateDTO);
         final User savedUser = userAppRepository.save(user);
-        return UserCreateDTO.toUserDTO(savedUser);
+        return userMapper.toDto(savedUser);
     }
 
     public boolean matriculeExists(String matricule) {
@@ -64,29 +67,7 @@ public class UserAppService {
 
     public UserCreateDTO getUserByEmail(String email) {
         final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
-        return userOptional.isPresent() ?
-                UserCreateDTO.toUserDTO(userOptional.get()) :
-                null;
+        return userOptional.map(userMapper::toDto).orElse(null);
     }
 
-    private ManagerCreateDto getManagerDto(Long id) {
-        final Optional<Manager> managerOptional = managerRepository.findById(id);
-        return managerOptional.isPresent() ?
-                ManagerCreateDto.toManagerDto(managerOptional.get()) :
-                ManagerCreateDto.empty();
-    }
-
-    private EmployerCreateDto getPreposeDto(Long id) {
-        final Optional<Employer> preposeOptional = employerRepository.findById(id);
-        return preposeOptional.isPresent() ?
-                EmployerCreateDto.toEmployerDto(preposeOptional.get()) :
-                EmployerCreateDto.empty();
-    }
-
-    private StudentCreateDto getEmprunteurDto(Long id) {
-        final Optional<Student> emprunteurOptional = studentRepository.findById(id);
-        return emprunteurOptional.isPresent() ?
-                StudentCreateDto.toStudentDto(emprunteurOptional.get()) :
-                StudentCreateDto.empty();
-    }
 }
