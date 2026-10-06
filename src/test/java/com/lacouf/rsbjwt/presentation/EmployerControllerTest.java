@@ -68,7 +68,6 @@ class EmployerControllerTest {
                 .build();
 
         UserCreateDTO userCreateDTO = new UserCreateDTO();
-        userCreateDTO.setId(2L);
         userCreateDTO.setFirstName("Marie");
         userCreateDTO.setLastname("Tremblay");
         userCreateDTO.setEmail("marie@acme.com");
