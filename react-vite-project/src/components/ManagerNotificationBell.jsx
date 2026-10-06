@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import useManagerNotifications from "../hooks/useManagerNotifications.js";
+import { useManagerNotificationsContext } from "../context/ManagerNotificationsContext.jsx";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
 
 const ManagerNotificationBell = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { notifications, status, unreadCount, markAsRead } = useManagerNotifications();
+    const { notifications, status, unreadCount, markAsRead } = useManagerNotificationsContext();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleDropdown = () => {

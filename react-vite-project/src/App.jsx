@@ -13,6 +13,7 @@ import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
 import PersonalSpaceEmployer from "./components/page/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { ManagerNotificationsProvider } from "./context/ManagerNotificationsContext.jsx";
 
 function App() {
   const [user, setUser] = useState({})
@@ -64,7 +65,7 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<PageLayout user={user}/>}>
+        <Route path="/" element={<ManagerNotificationsProvider isManager={user?.role === "ROLE_MANAGER"}><PageLayout user={user}/></ManagerNotificationsProvider>}>
             <Route index element={<Navigate to="/login" replace />}/>
           <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='about' element={<About/>}/>

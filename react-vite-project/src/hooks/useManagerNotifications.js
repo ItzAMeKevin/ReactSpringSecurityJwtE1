@@ -3,7 +3,7 @@ import fetcher from "../utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
-const useManagerNotifications = () => {
+const useManagerNotifications = (enabled = true) => {
     const [notifications, setNotifications] = useState([]);
     const [status, setStatus] = useState("loading");
     const [unreadCount, setUnreadCount] = useState(0);
@@ -28,6 +28,8 @@ const useManagerNotifications = () => {
     }, []);
 
     useEffect(() => {
+        if (!enabled) return;
+
         fetchNotifications();
 
         pollingIntervalRef.current = setInterval(() => {
@@ -39,7 +41,7 @@ const useManagerNotifications = () => {
                 clearInterval(pollingIntervalRef.current);
             }
         };
-    }, [fetchNotifications]);
+    }, [fetchNotifications, enabled]);
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
@@ -61,11 +63,21 @@ const useManagerNotifications = () => {
         }
     }, []);
 
+    const removeNotificationsByCvId = useCallback((cvId) => {
+        setNotifications((current) => {
+            const removedUnreadCount = current
+                .filter((n) => n.cvId === cvId && !n.isRead).length;
+            setUnreadCount((prev) => Math.max(0, prev - removedUnreadCount));
+            return current.filter((n) => n.cvId !== cvId);
+        });
+    }, []);
+
     return {
         notifications,
         status,
         unreadCount,
         markAsRead,
+        removeNotificationsByCvId,
         refetch: fetchNotifications,
     };
 };
