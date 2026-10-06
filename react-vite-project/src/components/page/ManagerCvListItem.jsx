@@ -75,7 +75,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
             await onAccept(cv.id);
         } catch (error) {
             console.error("Erreur lors de l'acceptation du CV :", error);
-            setActionState("error");
+            setActionState("acceptError");
         }
     };
 
@@ -110,7 +110,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
             });
         } catch (error) {
             console.error("Erreur lors du refus du CV :", error);
-            setActionState("error");
+            setActionState("declineError");
         }
     };
 
@@ -235,7 +235,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                 </div>
             )}
 
-            {actionState === "error" && (
+            {actionState === "acceptError" && (
+                <p className="text-red-700 text-sm mt-2" role="alert">
+                    {t("gestionnaire.accept.errorProcessing")}
+                </p>
+            )}
+            {actionState === "declineError" && (
                 <p className="text-red-700 text-sm mt-2" role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>

@@ -120,6 +120,9 @@
       "errorLoading": "Impossible de charger l'aperçu du CV.",
       "loading": "Chargement de l'aperçu..."
     },
+    "accept": {
+      "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
+    },
     "decline": {
       "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",
       "chooseFile": "Choisir un fichier",
@@ -127,7 +130,7 @@
       "processing": "Envoi en cours...",
       "errorNoFile": "Vous devez téléverser une revue du CV avant de confirmer le refus.",
       "errorPdfOnly": "Seuls les fichiers pdf sont acceptés.",
-      "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
+      "errorProcessing": "Une erreur est survenue lors du refus de ce CV. Veuillez réessayer."
     }
   },
   "notifications": {
