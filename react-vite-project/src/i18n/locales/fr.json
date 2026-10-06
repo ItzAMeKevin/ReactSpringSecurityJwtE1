@@ -50,12 +50,12 @@
     "identifiantTaken": "Cet identifiant est déjà attribué."
   },
   "header": {
-    "title": "My App",
+    "title": "ZeROSE",
     "inscription": "Inscription",
     "accueil": "Accueil",
     "about": "À propos",
-    "emprunteur": "Emprunteur",
-    "prepose": "Prepose",
+    "etudiant": "Étudiant",
+    "employeur": "Employeur",
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
