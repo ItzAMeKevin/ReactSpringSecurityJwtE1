@@ -3,6 +3,10 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.model.OfferStatus;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Role;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
+import com.lacouf.rsbjwt.security.JwtTokenProvider;
+import com.lacouf.rsbjwt.security.SecurityConfiguration;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -15,12 +19,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDate;
@@ -28,12 +36,14 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(EmployerController.class)
+@Import(SecurityConfiguration.class)
 @ActiveProfiles("test")
 class EmployerControllerTest {
 
@@ -49,7 +59,18 @@ class EmployerControllerTest {
     @MockitoBean
     private PasswordEncoder passwordEncoder;
 
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private UserAppRepository userAppRepository;
+
+    @MockitoBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     @Autowired
+    private WebApplicationContext webApplicationContext;
+
     private MockMvc mockMvc;
 
     private AdresseDTO adresseDTO;
@@ -59,6 +80,11 @@ class EmployerControllerTest {
 
     @BeforeEach
     void setUp() {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
+
         adresseDTO = AdresseDTO.builder()
                 .pays("Canada")
                 .ville("Montréal")
@@ -108,7 +134,6 @@ class EmployerControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "EMPLOYER")
     @DisplayName("Post /employer/addJobOffer")
     void add_Job_Offer_succes_devrai_retour_201() throws Exception {
         // ===== ARRANGE =====
@@ -117,6 +142,7 @@ class EmployerControllerTest {
 
         // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
+                        .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
 
@@ -132,13 +158,13 @@ class EmployerControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "EMPLOYER")
     void addJobOffer_devraitRetourner400SiBodyInvalide() throws Exception {
         // ===== ARRANGE =====
 
 
         // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
+                        .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 // ===== assert=====
@@ -149,7 +175,6 @@ class EmployerControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = "EMPLOYER")
     void getJobOffer_devraitRetournerLaListeDuService() throws Exception {
         // ───── ARRANGE ─────
         List<JobOfferDetailDTO> expected = List.of(
@@ -187,7 +212,8 @@ class EmployerControllerTest {
 
 
         // ===== ACT =====
-        mockMvc.perform(get("/employer"))
+        mockMvc.perform(get("/employer")
+                        .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
                 // ===== assert=====
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));

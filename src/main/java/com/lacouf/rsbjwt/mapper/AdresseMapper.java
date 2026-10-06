@@ -10,7 +10,6 @@ public interface AdresseMapper {
     @Mapping(source = "pay", target = "pays")
     AdresseDTO toDto(Adresse adresse);
 
-    @Mapping(source = "pays", target = "pay")
     Adresse toEntity(AdresseDTO adresseDTO);
 }
 
