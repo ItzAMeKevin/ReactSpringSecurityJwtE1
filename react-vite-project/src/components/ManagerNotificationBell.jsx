@@ -25,18 +25,32 @@ const ManagerNotificationBell = () => {
     };
 
     const getNotificationTypeLabel = (type) => {
-        switch (type) {
-            case "CV_UPLOADED":
-                return "New CV";
-            case "CV_ACCEPTED":
-                return "CV Accepted";
-            case "CV_REJECTED":
-                return "CV Rejected";
-            case "CV_REVIEW_READY":
-                return "Review Ready";
-            default:
-                return "Notification";
+        const labels = {
+            "CV_UPLOADED": t("notifications.types.CV_UPLOADED.title"),
+            "CV_ACCEPTED": t("notifications.types.CV_ACCEPTED.title"),
+            "CV_REJECTED": t("notifications.types.CV_REJECTED.title"),
+            "CV_REVIEW_READY": "Review Ready",
+        };
+        return labels[type] || "Notification";
+    };
+
+    const getNotificationMessage = (notification) => {
+        if (notification.type === "CV_UPLOADED") {
+            const template = t("notifications.types.CV_UPLOADED.message");
+            return template
+                .replace("{firstName}", notification.studentFirstName || "")
+                .replace("{lastName}", notification.studentLastName || "")
+                .replace("{matricule}", notification.studentMatricule || "")
+                .replace("{fileName}", notification.cvFileName || "")
+                .replace("{uploadedAt}", new Date(notification.uploadedAt).toLocaleDateString(i18n.language));
         }
+        if (notification.type === "CV_ACCEPTED") {
+            return t("notifications.types.CV_ACCEPTED.message");
+        }
+        if (notification.type === "CV_REJECTED") {
+            return t("notifications.types.CV_REJECTED.message");
+        }
+        return notification.message;
     };
 
     const formatDateTime = (date) => {
@@ -85,30 +99,14 @@ const ManagerNotificationBell = () => {
                                     {getNotificationTypeLabel(notification.type)}
                                 </span>
                             </div>
-                            <p className="line-clamp-2 mt-1">{notification.title}</p>
-                            {(notification.studentFirstName || notification.studentLastName) && (
-                                <p className="text-xs text-[#4b1113]/60 mt-1 font-medium">
-                                    {notification.studentFirstName} {notification.studentLastName}
-                                    {notification.studentMatricule && ` - ${notification.studentMatricule}`}
-                                </p>
-                            )}
-                            {notification.cvFileName && (
-                                <p className="text-xs text-[#4b1113]/60">
-                                    {notification.cvFileName}
-                                </p>
-                            )}
-                            {notification.uploadedAt && (
-                                <p className="text-xs text-[#4b1113]/50 mt-1">
-                                    {formatDateTime(notification.uploadedAt)}
-                                </p>
-                            )}
+                            <p className="line-clamp-2 mt-1">{getNotificationMessage(notification)}</p>
                         </div>
                         <button
                             type="button"
                             onClick={(e) => handleConsulter(e, notification.id, notification.cvId)}
                             className="shrink-0 bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#3a0d0f] transition-colors font-medium text-sm"
                         >
-                            Consulter
+                            {t("gestionnaire.consulter")}
                         </button>
                     </li>
                 ))}

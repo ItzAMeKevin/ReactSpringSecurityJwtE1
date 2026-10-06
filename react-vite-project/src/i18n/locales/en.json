@@ -139,6 +139,10 @@
     "empty": "No notifications.",
     "downloadReview": "Download feedback",
     "types": {
+      "CV_UPLOADED": {
+        "title": "New CV to validate",
+        "message": "Student {firstName} {lastName} (ID: {matricule}) uploaded a new CV: {fileName} on {uploadedAt}. Please review and approve the document."
+      },
       "CV_ACCEPTED": {
         "title": "Your CV has been accepted",
         "message": "Your CV has been validated by a manager."

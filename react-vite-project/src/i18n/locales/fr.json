@@ -138,6 +138,10 @@
     "empty": "Aucune notification.",
     "downloadReview": "Télécharger la revue",
     "types": {
+      "CV_UPLOADED": {
+        "title": "Nouveau CV à valider",
+        "message": "L'étudiant {firstName} {lastName} (Matricule: {matricule}) a téléversé un nouveau CV: {fileName} le {uploadedAt}. Veuillez consulter et approuver le document."
+      },
       "CV_ACCEPTED": {
         "title": "Votre CV a été accepté",
         "message": "Votre CV a été validé par un gestionnaire."

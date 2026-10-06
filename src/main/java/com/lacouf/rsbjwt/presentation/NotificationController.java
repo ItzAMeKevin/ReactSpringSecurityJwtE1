@@ -42,7 +42,7 @@ public class NotificationController {
             
             log.info("Fetching notifications for manager: {}", manager.getId());
             List<NotificationDto> notifications = notificationRepository
-                    .findAllByManager_IdOrderByCreatedAtDesc(manager.getId())
+                    .findManagerNotificationsWithPendingCvs(manager.getId())
                     .stream()
                     .map(gestionnaireMapper::toNotificationDtoForManager)
                     .toList();
