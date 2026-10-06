@@ -55,13 +55,12 @@
     "inscription": "Sign up",
     "accueil": "Home",
     "about": "About",
+    "etudiant": "Student",
+    "employeur": "Employer",
     "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "inscription": "Sign up",
-    "greeting": "Hello",
-    "etudiant": "Student",
-    "employeur": "Employer"
+    "greeting": "Hello"
   },
   "televerser": {
     "choisirFichier": "CHOOSE A FILE",
@@ -130,17 +129,5 @@
       "civicNumber": "Civic number",
       "street": "Street"
     }
-  },
-  "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
-    "fichierChoisi": "Selected file",
-    "erreurTypeFichier": "Only pdf files are accepted.",
-    "envoieEnCours": "Uploading...",
-    "envoyerCv": "Send CV",
-    "envoieSuccess": "CV sent successfully !",
-    "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs",
-    "masquer": "Hide",
-    "afficher": "Show"
   }
 }
