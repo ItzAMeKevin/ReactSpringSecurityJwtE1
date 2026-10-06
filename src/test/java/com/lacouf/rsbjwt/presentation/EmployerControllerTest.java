@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -74,7 +75,7 @@ class EmployerControllerTest {
         userCreateDTO.setCompanyName("ACME Inc.");
         userCreateDTO.setAdresseDTO(adresseDTO);
         userCreateDTO.setPhoneNumber("514-555-1234");
-        userCreateDTO.setEmployerId("EMP001");
+        userCreateDTO.setEmployerWorkId("EMP001");
 
 
         jobOfferCreateDTO = new JobOfferCreateDTO(
@@ -85,6 +86,7 @@ class EmployerControllerTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
+                Programe.TECHNIQUES_INFORMATIQUE,
                 2L
         );
 
