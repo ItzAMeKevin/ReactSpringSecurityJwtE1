@@ -35,16 +35,16 @@ public class EmployerService {
         return jobOfferRepository.getJobOffersByEmployerId(idEmployer)
                 .stream()
                 .map(jobOfferMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
     }
 
     public JobOfferDetailDTO addJobOffer(JobOfferCreateDTO jobOfferDTO) {
 
+        Employer employer = findEmployerById(jobOfferDTO.employer_id());
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);
-        JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
-        Employer employer = findEmployerById(savedOffer.getId());
         jobOfferEntity.setEmployer(employer);
+        JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
 
         return jobOfferMapper.toDto(savedOffer);
     }
