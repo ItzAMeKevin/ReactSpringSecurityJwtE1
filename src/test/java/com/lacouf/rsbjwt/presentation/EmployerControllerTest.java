@@ -101,6 +101,7 @@ class EmployerControllerTest {
                 LocalDate.now(),
                 LocalDate.of(2025, 3, 1),
                 12,
+                Programe.TECHNIQUES_INFORMATIQUE,
                 "ACME Inc."
         );
 
@@ -162,6 +163,7 @@ class EmployerControllerTest {
                         LocalDate.now(),
                         LocalDate.of(2025, 3, 1),
                         12,
+                        Programe.TECHNIQUES_INFORMATIQUE,
                         "ACME Inc."
                 ),
                 new JobOfferDetailDTO(
@@ -175,6 +177,7 @@ class EmployerControllerTest {
                         LocalDate.now(),
                         LocalDate.of(2025, 4, 1),
                         6,
+                        Programe.TECHNIQUES_INFORMATIQUE,
                         "ACME Inc."
                 )
         );

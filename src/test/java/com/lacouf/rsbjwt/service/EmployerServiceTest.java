@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -112,6 +113,7 @@ class EmployerServiceTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
+                Programe.TECHNIQUES_INFORMATIQUE,
                 42L
         );
         JobOfferDetailDTO expected = new JobOfferDetailDTO(
@@ -119,7 +121,7 @@ class EmployerServiceTest {
                 adresse,
                 "60000$", OfferStatus.WAITING,
                 LocalDate.now(), LocalDate.of(2025, 3, 1),
-                12, "ACME Inc."
+                12, Programe.TECHNIQUES_INFORMATIQUE, "ACME Inc."
         );
 
         when(employerRepository.findById(42L)).thenReturn(Optional.of(employer));
@@ -149,6 +151,7 @@ class EmployerServiceTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
+                Programe.TECHNIQUES_INFORMATIQUE,
                 42L
         );
         when(employerRepository.findById(42L)).thenReturn(Optional.empty());
