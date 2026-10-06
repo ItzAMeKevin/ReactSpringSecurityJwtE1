@@ -67,8 +67,7 @@ public class CvNotificationService {
         if (student.getAssignedManager() != null) {
             return student.getAssignedManager();
         }
-        return managerRepository.findAll().stream()
-            .findFirst()
+        return managerRepository.findFirstBy()
             .orElseThrow(() -> new ManagerNotFoundException("No manager available to receive notifications"));
     }
 
