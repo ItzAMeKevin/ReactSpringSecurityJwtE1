@@ -2,15 +2,29 @@ import ListJobOffer from "./ListJobOffer.jsx";
 import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import FormJobOffer from "./FormJobOffer.jsx";
+import SuccessPopup from "../SuccessPopup.jsx";
 
 const PersonalSpaceEmployer = () => {
     
     const {t} = useTranslation();
     const [refreshKey, setRefreshKey] = useState(0);
     const [openForm, setOpenForm] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const handleOpenForm = () => setOpenForm(true);
     const handleCloseForm = () => setOpenForm(false);
+    const handleFormSuccess = () => {
+        handleCloseForm();
+        setRefreshKey((key) => key + 1);
+        setShowSuccess(true);
+    };
+
+    useEffect(() => {
+        if (!showSuccess) return undefined;
+
+        const timeoutId = setTimeout(() => setShowSuccess(false), 3000);
+        return () => clearTimeout(timeoutId);
+    }, [showSuccess]);
 
     useEffect(() => {
         if (!openForm) {
@@ -29,6 +43,12 @@ const PersonalSpaceEmployer = () => {
     
     return (
         <>
+            {showSuccess && (
+                <SuccessPopup
+                    message={t("personalSpaceEmployer.offerCreated")}
+                    onClose={() => setShowSuccess(false)}
+                />
+            )}
             <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
                 <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
                     <h1 className="text-2xl font-bold text-[#4b1113]">{t("personalSpaceEmployer.title")}</h1>
@@ -55,7 +75,7 @@ const PersonalSpaceEmployer = () => {
                                     <h2 id="create-job-offer-title" className="mb-6 text-lg font-bold text-[#4b1113]">
                                         {t("personalSpaceEmployer.createJobOffer")}
                                     </h2>
-                                    <FormJobOffer onSuccess={() => {handleCloseForm(); setRefreshKey((k) => k + 1);}}/>
+                                    <FormJobOffer onSuccess={handleFormSuccess}/>
                                     <div className="mt-6 flex justify-end gap-2">
                                         <button type="button" className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleCloseForm}>
                                             {t("personalSpaceEmployer.close")}
