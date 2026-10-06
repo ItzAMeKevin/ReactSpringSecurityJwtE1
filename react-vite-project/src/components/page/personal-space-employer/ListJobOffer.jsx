@@ -50,12 +50,14 @@ const ListJobOffer = ({refreshKey}) => {
                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
                     <p className="mt-2 line-clamp-3">{offer.description}</p>
                     <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
+                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.salary")}</dt>
+                        <dd>{offer.salary}</dd>
                         <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                         <dd>{offer.startingDate}</dd>
                         <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                         <dd>{offer.durationInWeeks}</dd>
-                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.city")}</dt>
-                        <dd>{offer.adresse?.ville}</dd>
+                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.address")}</dt>
+                        <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
                     </dl>
                 </li>
             ))}
