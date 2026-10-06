@@ -84,7 +84,7 @@ const ManagerNotificationBell = () => {
                                     {getLocalizedNotification(notification, t).title}
                                 </span>
                             </div>
-                            <p className="line-clamp-2 mt-1">{getNotificationMessage(notification)}</p>
+                            <p className="mt-1">{getNotificationMessage(notification)}</p>
                         </div>
                         <button
                             type="button"
