@@ -62,7 +62,7 @@ public class UserAppService {
     }
 
     public boolean employerIdExists(String employerId) {
-        return employerRepository.findByEmployerId(employerId).isPresent();
+        return employerRepository.findByEmployerWorkId(employerId).isPresent();
     }
 
     public UserCreateDTO getUserByEmail(String email) {

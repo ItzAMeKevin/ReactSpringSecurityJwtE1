@@ -17,7 +17,6 @@ public interface StudentMapper {
     @Mapping(target = "adresseDTO", ignore = true)
     @Mapping(target = "companyName", ignore = true)
     @Mapping(target = "phoneNumber", ignore = true)
-    @Mapping(target = "employerId", ignore = true)
     StudentCreateDto toDto(Student student);
 
     @Mapping(target = "credentials", source = "dto", qualifiedByName = "buildCredentials")

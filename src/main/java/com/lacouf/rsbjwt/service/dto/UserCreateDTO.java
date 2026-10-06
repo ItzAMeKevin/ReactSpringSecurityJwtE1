@@ -21,6 +21,6 @@ public class UserCreateDTO {
     private String companyName;
     private AdresseDTO adresseDTO;
     private String phoneNumber;
-    private String employerId;
+    private String employerWorkId;
     private Programe programe;
 }

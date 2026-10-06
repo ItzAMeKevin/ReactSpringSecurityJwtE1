@@ -62,7 +62,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             employer.setRole(Role.EMPLOYER);
             employer.setCompanyName("Lixor Inc.");
             employer.setPhoneNumber("514-555-1234");
-            employer.setEmployerId("EMP-001");
+            employer.setEmployerWorkId("EMP-001");
             employer.setPassword(passwordEncoder.encode("bib"));
 
 

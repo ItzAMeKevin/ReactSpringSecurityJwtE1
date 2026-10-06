@@ -67,7 +67,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "matricule"));
 		}
 
-		if (userCreateDTO.getEmployerId() != null && userService.employerIdExists(userCreateDTO.getEmployerId())) {
+		if (userCreateDTO.getEmployerWorkId() != null && userService.employerIdExists(userCreateDTO.getEmployerWorkId())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "identifiant"));
 		}
 

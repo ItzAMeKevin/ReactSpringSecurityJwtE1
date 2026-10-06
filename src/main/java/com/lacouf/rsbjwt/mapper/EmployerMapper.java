@@ -14,7 +14,6 @@ import org.mapstruct.Named;
 public interface EmployerMapper {
 
     @Mapping(target = "lastname", source = "lastName")
-    @Mapping(target = "employerId", source = "employerWorkId")
     @Mapping(target = "adresseDTO", source = "adresse")
     @Mapping(target = "matricule", ignore = true)
     @Mapping(target = "programe", ignore = true)
@@ -22,7 +21,6 @@ public interface EmployerMapper {
 
     @Mapping(target = "jobOffers", ignore = true)
     @Mapping(target = "credentials", source = "dto", qualifiedByName = "buildCredentials")
-    @Mapping(target = "employerWorkId", source = "employerId")
     @Mapping(target = "lastName", source = "lastname")
     @Mapping(target = "adresse", source = "adresseDTO")
     Employer toEntity(UserCreateDTO dto);

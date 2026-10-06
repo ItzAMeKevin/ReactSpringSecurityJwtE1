@@ -51,9 +51,7 @@ public class JobOffer {
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 
-
-    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
-    @JoinColumn(nullable = false)
+    @Embedded
     private Adresse adresse;
 
     @Builder

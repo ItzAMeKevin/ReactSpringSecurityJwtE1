@@ -17,7 +17,6 @@ public interface ManagerMapper {
     @Mapping(target = "adresseDTO", ignore = true)
     @Mapping(target = "companyName", ignore = true)
     @Mapping(target = "phoneNumber", ignore = true)
-    @Mapping(target = "employerId", ignore = true)
     @Mapping(target = "programe", ignore = true)
     ManagerCreateDto toDto(Manager manager);
 
