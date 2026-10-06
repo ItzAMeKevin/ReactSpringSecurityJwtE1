@@ -32,24 +32,13 @@ public class NotificationScheduler {
             fiveMinutesAgo
         ).forEach(notification -> {
             if (notification.getRetryCount() < MAX_RETRY_ATTEMPTS) {
-                try {
-                    notification.setStatus(NotificationStatus.RETRYING);
-                    notification.setRetryCount(notification.getRetryCount() + 1);
-                    notification.setLastRetryAt(Instant.now());
-                    notificationRepository.save(notification);
-                    
-                    notification.setStatus(NotificationStatus.SENT);
-                    notification.setSentAt(Instant.now());
-                    notificationRepository.save(notification);
-                    
-                    log.info("Retry successful for notification {}, attempt {}", 
-                        notification.getId(), notification.getRetryCount());
-                } catch (Exception e) {
-                    notification.setStatus(NotificationStatus.FAILED);
-                    notification.setLastRetryAt(Instant.now());
-                    notificationRepository.save(notification);
-                    log.error("Retry failed for notification {}", notification.getId(), e);
-                }
+                notification.setStatus(NotificationStatus.SENT);
+                notification.setRetryCount(notification.getRetryCount() + 1);
+                notification.setLastRetryAt(Instant.now());
+                notification.setSentAt(Instant.now());
+                notificationRepository.save(notification);
+                log.info("Retry successful for notification {}, attempt {}",
+                    notification.getId(), notification.getRetryCount());
             } else {
                 log.warn("Max retry attempts reached for notification {}", notification.getId());
             }
