@@ -55,7 +55,7 @@ const PersonalSpaceEmployer = () => {
                                     <h2 id="create-job-offer-title" className="mb-6 text-lg font-bold text-[#4b1113]">
                                         {t("personalSpaceEmployer.createJobOffer")}
                                     </h2>
-                                    <FormJobOffer />
+                                    <FormJobOffer onSuccess={handleCloseForm}/>
                                     <div className="mt-6 flex justify-end gap-2">
                                         <button type="button" className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleCloseForm}>
                                             {t("personalSpaceEmployer.close")}

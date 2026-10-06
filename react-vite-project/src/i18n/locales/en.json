@@ -127,7 +127,9 @@
       "country": "Country",
       "postalCode": "Postal code",
       "civicNumber": "Civic number",
-      "street": "Street"
+      "street": "Street",
+      "durationInWeeks": "Duration (weeks)",
+      "programe": "Program of study"
     }
   }
 }
