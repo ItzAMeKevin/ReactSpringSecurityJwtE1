@@ -10,7 +10,7 @@ import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
 import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
-import PersonalSpaceEmployer from "./components/page/PersonalSpaceEmployer.jsx";
+import PersonalSpaceEmployer from "./components/page/personal-space-employer/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -20,7 +20,7 @@ function App() {
   const [authLoading, setAuthLoading] = useState(true)
   const navigate = useNavigate();
 
-  let token = localStorage.getItem('token')
+  let token = sessionStorage.getItem('token')
 
   useEffect(() => {
       if (token) {
@@ -31,8 +31,8 @@ function App() {
                 if (!res.ok) {
                   switch (res.status) {
                     case 401:
-                      localStorage.clear();
-                      setUser({});
+                      sessionStorage.clear();
+                      setUser(null);
                     case 403:
                       throw new Error("Forbidden")
                     case 404:
