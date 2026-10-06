@@ -32,7 +32,7 @@ public class StudentNotificationController {
         List<NotificationDto> notifications = notificationRepository
                 .findAllByStudent_IdOrderByCreatedAtDesc(student.getId())
                 .stream()
-                .map(gestionnaireMapper::toNotificationDto)
+                .map(gestionnaireMapper::toNotificationDtoWithStudentCv)
                 .toList();
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

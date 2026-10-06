@@ -1,12 +1,26 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import fetcher from "../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
+    const location = useLocation();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [status, setStatus] = useState("loading");
+    const [highlightedCvId, setHighlightedCvId] = useState(null);
+
+    useEffect(() => {
+        if (location.state?.highlightCvId) {
+            setHighlightedCvId(location.state.highlightCvId);
+            // Remove highlight after 3 seconds
+            const timer = setTimeout(() => {
+                setHighlightedCvId(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [location.state?.highlightCvId]);
 
     useEffect(() => {
         const fetchPendingCvs = async () => {
@@ -80,6 +94,7 @@ const PersonalSpaceManager = () => {
                             <ManagerCvListItem
                                 key={cv.id}
                                 cv={cv}
+                                isHighlighted={highlightedCvId === cv.id}
                                 onAccept={handleAccept}
                                 onDecline={handleDecline}
                             />

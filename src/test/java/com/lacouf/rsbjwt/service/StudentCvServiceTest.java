@@ -9,9 +9,11 @@ import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.event.CvUploadedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,6 +36,9 @@ public class StudentCvServiceTest {
 
     @InjectMocks
     private StudentCvService studentCvService;
+
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     private Student testStudent;
     private byte[] validPdfContent;
@@ -87,6 +92,31 @@ public class StudentCvServiceTest {
         });
         assertEquals("Seuls les PDF sont acceptés.", exception.getMessage());
         verify(studentCvRepository, never()).save(any());
+        verifyNoInteractions(eventPublisher);
+    }
+    @Test
+    void testValidPdfPublishesCvUploadedEventWithSavedId() {
+        // ARRANGE
+        String email = "student@test.com";
+        String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
+        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", base64Content);
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.save(any(StudentCv.class)))
+                .thenAnswer(invocation -> {
+                    StudentCv cv = invocation.getArgument(0);
+                    cv.setId(42L);
+                    return cv;
+                });
+
+        // ACT
+        studentCvService.upload(email, request);
+
+        // ASSERT
+        ArgumentCaptor<CvUploadedEvent> captor = ArgumentCaptor.forClass(CvUploadedEvent.class);
+        verify(eventPublisher, times(1)).publishEvent(captor.capture());
+        assertEquals(42L, captor.getValue().cvId());
     }
 
     @Test
@@ -188,5 +218,47 @@ public class StudentCvServiceTest {
         // ASSERT
         assertEquals(".._.._evil.pdf", result.getFileName());
         verify(studentCvRepository, times(1)).save(any(StudentCv.class));
+    }
+    @Test
+    void testGetReviewFileOwnerReturnsContent() {
+        // ARRANGE
+        String email = "student@test.com";
+        StudentCv cv = new StudentCv();
+        cv.setStudent(testStudent);
+        cv.setReviewContent(new byte[]{1, 2, 3});
+
+        when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
+        when(studentRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(testStudent));
+
+        // ACT
+        byte[] result = studentCvService.getReviewFile(5L, email);
+
+        // ASSERT
+        assertArrayEquals(new byte[]{1, 2, 3}, result);
+    }
+    @Test
+    void testGetReviewFileOtherStudentThrows() {
+        // ARRANGE
+        String email = "student@test.com";
+        Student otherStudent = new Student();
+        otherStudent.setId(99L);
+        StudentCv cv = new StudentCv();
+        cv.setStudent(otherStudent);
+
+        when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
+        when(studentRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(testStudent));
+
+        // ACT & ASSERT
+        assertThrows(RuntimeException.class, () -> studentCvService.getReviewFile(5L, email));
+    }
+
+    @Test
+    void testGetReviewFileUnknownCvThrows() {
+        // ARRANGE
+        when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(RuntimeException.class,
+                () -> studentCvService.getReviewFile(5L, "student@test.com"));
     }
 }

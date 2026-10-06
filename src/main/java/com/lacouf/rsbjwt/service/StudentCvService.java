@@ -9,9 +9,11 @@ import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.UploadCvDto;
-import jakarta.transaction.Transactional;
+import com.lacouf.rsbjwt.service.event.CvUploadedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -25,6 +27,7 @@ public class StudentCvService {
 
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, UploadCvDto request) {
@@ -32,6 +35,9 @@ public class StudentCvService {
         byte[] decodedContent = decodeBase64AndValidatePdf(request.getContent());
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
+        
+        eventPublisher.publishEvent(new CvUploadedEvent(savedCv.getId()));
+        
         return CvMetaDataDto.toCvMetaDataDto(savedCv);
     }
 
@@ -85,6 +91,18 @@ public class StudentCvService {
         }
     }
 
+    public byte[] getReviewFile(Long cvId, String authenticatedEmail) {
+        StudentCv cv = studentCvRepository.findById(cvId)
+                .orElseThrow(() -> new RuntimeException("CV not found"));
+        
+        Student student = findStudentByEmail(authenticatedEmail);
+        if (!cv.getStudent().getId().equals(student.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+        
+        return cv.getReviewContent();
+    }
+
     private static String sanitizeFileName(String fileName) {
         String normalized = fileName.replace('\\', '_').replace('/', '_').trim();
         if (normalized.isEmpty() || normalized.length() > 255) {
@@ -93,3 +111,4 @@ public class StudentCvService {
         return normalized;
     }
 }
+

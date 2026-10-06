@@ -36,4 +36,20 @@ public class StudentCvController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/{cvId}/review")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<byte[]> getReviewFile(@PathVariable Long cvId, Authentication authentication) {
+        try {
+            byte[] reviewContent = studentCvService.getReviewFile(cvId, authentication.getName());
+            if (reviewContent == null || reviewContent.length == 0) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(reviewContent);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
 }

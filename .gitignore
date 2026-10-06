@@ -38,3 +38,6 @@ docker-compose.yml
 
 ### Node ###
 node_modules/
+
+### Build scripts ###
+compile.bat

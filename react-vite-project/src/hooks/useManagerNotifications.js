@@ -3,7 +3,7 @@ import fetcher from "../utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
-const useNotifications = () => {
+const useManagerNotifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [status, setStatus] = useState("loading");
     const [unreadCount, setUnreadCount] = useState(0);
@@ -11,22 +11,18 @@ const useNotifications = () => {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const response = await fetcher("/etudiant/notifications");
+            const response = await fetcher("/gestionnaire/notifications");
             if (!response.ok) {
                 setStatus("error");
                 return;
             }
             const data = await response.json();
-            const enrichedData = data.map((n) => ({
-                ...n,
-                actionUrl: n.type === "CV_REJECTED" && n.studentCv ? `/student-cv/${n.studentCv.id}/review` : null,
-            }));
-            setNotifications(enrichedData);
-            const unread = enrichedData.filter((n) => !n.isRead).length;
+            setNotifications(data);
+            const unread = data.filter((n) => !n.isRead).length;
             setUnreadCount(unread);
-            setStatus(enrichedData.length === 0 ? "empty" : "ready");
+            setStatus(data.length === 0 ? "empty" : "ready");
         } catch (error) {
-            console.error("Erreur lors du chargement des notifications :", error);
+            console.error("Error loading manager notifications:", error);
             setStatus("error");
         }
     }, []);
@@ -47,11 +43,11 @@ const useNotifications = () => {
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
+            const response = await fetcher(`/gestionnaire/notifications/${notificationId}/read`, {
                 method: "PUT",
             });
             if (!response.ok) {
-                console.error("Erreur lors du marquage de la notification comme lue");
+                console.error("Error marking notification as read");
                 return;
             }
             setNotifications((current) =>
@@ -61,7 +57,7 @@ const useNotifications = () => {
             );
             setUnreadCount((current) => Math.max(0, current - 1));
         } catch (error) {
-            console.error("Erreur lors du marquage de la notification :", error);
+            console.error("Error marking notification as read:", error);
         }
     }, []);
 
@@ -74,4 +70,4 @@ const useNotifications = () => {
     };
 };
 
-export default useNotifications;
+export default useManagerNotifications;

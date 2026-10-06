@@ -29,15 +29,47 @@ public class Notification {
     @Column(nullable = false)
     private boolean isRead = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private NotificationType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private NotificationStatus status = NotificationStatus.PENDING;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @Column(nullable = true)
+    private Instant sentAt;
+
+    @Column(nullable = true)
+    private Integer retryCount = 0;
+
+    @Column(nullable = true)
+    private Instant lastRetryAt;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = true)
     private Student student;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_id", nullable = true)
+    private Manager manager;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_cv_id", nullable = true)
+    private StudentCv studentCv;
 
     @PrePersist
     void onCreate() {
         this.createdAt = Instant.now();
+        if (this.status == null) {
+            this.status = NotificationStatus.PENDING;
+        }
+        if (this.retryCount == null) {
+            this.retryCount = 0;
+        }
     }
 }
+
