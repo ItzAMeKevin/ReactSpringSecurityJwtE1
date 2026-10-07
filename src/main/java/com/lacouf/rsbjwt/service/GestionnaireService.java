@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Status;
+import com.lacouf.rsbjwt.model.JobOffer;
+import com.lacouf.rsbjwt.model.EmployerNotification;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
