@@ -2,7 +2,7 @@ import mergeHeaders from "./mergeheader";
 import BASE_URL from "../components/config/Config.jsx";
 
 async function fetcher(input, options = {}) {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   const defaultHeaders = token
     ? { Authorization: `Bearer ${token}` }
     : {};
@@ -16,3 +16,4 @@ async function fetcher(input, options = {}) {
 }
 
 export default fetcher;
+  

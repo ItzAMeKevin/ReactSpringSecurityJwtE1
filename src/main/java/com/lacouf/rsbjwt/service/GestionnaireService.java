@@ -8,7 +8,7 @@ import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void declineCv(Long cvId, UploadCvDto reviewRequest) {
+    public void declineCv(Long cvId, CvUploadDto reviewRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(UserNotFoundException::new);
         byte[] reviewCOntent = Base64.getDecoder().decode(reviewRequest.getContent());

@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AuthErrorResponse;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
-import com.lacouf.rsbjwt.service.dto.UserDTO;
+import com.lacouf.rsbjwt.service.dto.UserCreateDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,28 +51,28 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
+	public ResponseEntity<UserCreateDTO> getMe(HttpServletRequest request) {
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
 				userService.getMe(request.getHeader("Authorization")));
 	}
 
 	@PostMapping("/inscription")
-	public ResponseEntity<?> inscription(@RequestBody UserDTO userDTO) {
-		UserDTO existingUser = userService.getUserByEmail(userDTO.getEmail());
+	public ResponseEntity<?> inscription(@RequestBody UserCreateDTO userCreateDTO) {
+		UserCreateDTO existingUser = userService.getUserByEmail(userCreateDTO.getEmail());
 		if (existingUser != null) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "email"));
 		}
 
-		if (userDTO.getMatricule() != null && userService.matriculeExists(userDTO.getMatricule())) {
+		if (userCreateDTO.getMatricule() != null && userService.matriculeExists(userCreateDTO.getMatricule())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "matricule"));
 		}
 
-		if (userDTO.getEmployerId() != null && userService.employerIdExists(userDTO.getEmployerId())) {
+		if (userCreateDTO.getEmployerWorkId() != null && userService.employerIdExists(userCreateDTO.getEmployerWorkId())) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "identifiant"));
 		}
 
-		userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		userCreateDTO.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
 		return ResponseEntity.accepted().contentType(MediaType.APPLICATION_JSON).body(
-				userService.inscription(userDTO));
+				userService.inscription(userCreateDTO));
 	}
 }

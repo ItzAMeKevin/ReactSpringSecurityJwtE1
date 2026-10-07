@@ -53,8 +53,8 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const validatePassword = () => {
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    // return passwordRegex.test(formData.password);
+    /*const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{2,}$/;
+    return passwordRegex.test(formData.password);*/
     return true;
   }
 
@@ -93,7 +93,7 @@ const LoginForm = ({user, setUser, setError}) => {
         return;
       }
       const data = await response.json();
-      localStorage.setItem('token', data.accessToken);
+      sessionStorage.setItem('token', data.accessToken);
 
       // Fetch user info to get role
       const userResponse = await fetcher('user/me', {});
@@ -114,8 +114,8 @@ const LoginForm = ({user, setUser, setError}) => {
         navigate("/");
       }
     } catch(error) {
-      setError(error)
-      navigate('/error')
+      setAuthError(error.message || "Server error occurred");
+      console.log(error.message);
     }
   }
 

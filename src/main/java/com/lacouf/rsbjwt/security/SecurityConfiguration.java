@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.security;
 
-import com.lacouf.rsbjwt.model.auth.Role;
+import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +50,7 @@ public class SecurityConfiguration {
     private static final String EMPRUNTEUR_PATH = "/emprunteur/**";
     private static final String PREPOSE_PATH = "/prepose/**";
     private static final String GESTIONNAIRE_PATH = "/gestionnaire/**";
+    private static final String EMPLOYER_PATH = "/employer/**";
 
 
 
@@ -72,6 +73,7 @@ public class SecurityConfiguration {
                         .requestMatchers(EMPRUNTEUR_PATH).hasAuthority(Role.STUDENT.name())
                         .requestMatchers(PREPOSE_PATH).hasAuthority(Role.EMPLOYER.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.MANAGER.name())
+                        .requestMatchers(EMPLOYER_PATH).hasAuthority(Role.EMPLOYER.name())
                         .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
@@ -91,7 +93,7 @@ public class SecurityConfiguration {
         // 1. Specify allowed origins (VERY IMPORTANT!)
         //    Must match your React app's URL exactly (e.g., http://localhost:3000)
         //    Do NOT use "*" if you need credentials (like sending Authorization headers)
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Adjust if your frontend runs elsewhere
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001")); // Adjust if your frontend runs elsewhere
 
         // 2. Specify allowed HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
