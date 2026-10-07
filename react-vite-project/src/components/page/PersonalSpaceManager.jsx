@@ -3,15 +3,19 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import fetcher from "../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
+import ManagerJobOfferListItem from "./ManagerJobOfferListItem.jsx";
 import { useManagerNotificationsContext } from "../../context/ManagerNotificationsContext.jsx";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
     const location = useLocation();
-    const { removeNotificationsByCvId } = useManagerNotificationsContext();
+    const { removeNotificationsByCvId, removeNotificationsByOfferId } = useManagerNotificationsContext();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [status, setStatus] = useState("loading");
     const [highlightedCvId, setHighlightedCvId] = useState(null);
+    const [pendingOffers, setPendingOffers] = useState([]);
+    const [offersStatus, setOffersStatus] = useState("loading");
+    const [highlightedOfferId, setHighlightedOfferId] = useState(null);
 
     useEffect(() => {
         if (location.state?.highlightCvId) {
@@ -23,6 +27,14 @@ const PersonalSpaceManager = () => {
             return () => clearTimeout(timer);
         }
     }, [location.state?.highlightCvId]);
+
+    useEffect(() => {
+        if (location.state?.highlightOfferId) {
+            setHighlightedOfferId(location.state.highlightOfferId);
+            const timer = setTimeout(() => setHighlightedOfferId(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [location.state?.highlightOfferId]);
 
     useEffect(() => {
         const fetchPendingCvs = async () => {
@@ -41,6 +53,24 @@ const PersonalSpaceManager = () => {
         };
 
         void fetchPendingCvs();
+    }, []);
+
+    useEffect(() => {
+        const fetchPendingOffers = async () => {
+            try {
+                const response = await fetcher("/gestionnaire/offres/pending");
+                if (!response.ok) {
+                    setOffersStatus("error");
+                    return;
+                }
+                setPendingOffers(await response.json());
+                setOffersStatus("loaded");
+            } catch (error) {
+                console.error("Erreur lors du chargement des offres en attente :", error);
+                setOffersStatus("error");
+            }
+        };
+        void fetchPendingOffers();
     }, []);
 
     const removeFromList = ((cvId) => {
@@ -70,6 +100,20 @@ const PersonalSpaceManager = () => {
         removeFromList(cvId);
         removeNotificationsByCvId(cvId);
     });
+
+    const handleAcceptOffer = async (offerId) => {
+        const response = await fetcher(`/gestionnaire/offres/${offerId}/accept`, { method: "PUT" });
+        if (!response.ok) throw new Error("Erreur lors de l'acceptation de l'offre");
+        setPendingOffers((current) => current.filter((o) => o.id !== offerId));
+        removeNotificationsByOfferId(offerId);
+    };
+
+    const handleRefuseOffer = async (offerId) => {
+        const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, { method: "PUT" });
+        if (!response.ok) throw new Error("Erreur lors du refus de l'offre");
+        setPendingOffers((current) => current.filter((o) => o.id !== offerId));
+        removeNotificationsByOfferId(offerId);
+    };
 
     const isLoaded = status === "loaded";
 
@@ -101,6 +145,30 @@ const PersonalSpaceManager = () => {
                                 isHighlighted={highlightedCvId === cv.id}
                                 onAccept={handleAccept}
                                 onDecline={handleDecline}
+                            />
+                        ))}
+                    </div>
+                )}
+                <h2 className="text-xl font-bold text-[#4b1113] mt-8">{t("gestionnaire.offres.title")}</h2>
+
+                {offersStatus === "loading" && (
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.offres.loading")}</p>
+                )}
+                {offersStatus === "error" && (
+                    <p className="text-red-700" role="alert">{t("gestionnaire.offres.error")}</p>
+                )}
+                {offersStatus === "loaded" && pendingOffers.length === 0 && (
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.offres.none")}</p>
+                )}
+                {offersStatus === "loaded" && pendingOffers.length > 0 && (
+                    <div className="w-full max-w-3xl flex flex-col gap-3">
+                        {pendingOffers.map((offer) => (
+                            <ManagerJobOfferListItem
+                                key={offer.id}
+                                offer={offer}
+                                isHighlighted={highlightedOfferId === offer.id}
+                                onAccept={handleAcceptOffer}
+                                onRefuse={handleRefuseOffer}
                             />
                         ))}
                     </div>
