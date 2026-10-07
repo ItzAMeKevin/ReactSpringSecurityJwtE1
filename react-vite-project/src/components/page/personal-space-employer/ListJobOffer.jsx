@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 
-const ListJobOffer = ({refreshKey}) => {
+const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -69,6 +69,15 @@ const ListJobOffer = ({refreshKey}) => {
                         <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.address")}</dt>
                         <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
                     </dl>
+                    {offer.status === "REFUSED" && onEdit && (
+                        <button
+                            type="button"
+                            className="mt-4 bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300"
+                            onClick={() => onEdit(offer)}
+                        >
+                            {t("personalSpaceEmployer.editAndResubmit")}
+                        </button>
+                    )}
                 </li>
             ))}
         </ul>

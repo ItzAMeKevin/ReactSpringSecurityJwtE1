@@ -5,13 +5,16 @@ import Field from "../Field.jsx";
 
 const inputClass = "w-full border border-[#4b1113] rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#4b1113]";
 
-const FormJobOffer = ({onSuccess}) => {
+const getToday = () => new Date().toLocaleDateString("en-CA");
+
+const FormJobOffer = ({offer, onSuccess}) => {
 
     const {t} = useTranslation();
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [fieldErrors, setFieldErrors] = useState({});
 
+    const isEdit = Boolean(offer);
     const programs = t("inscription.programsList", {returnObjects: true});
 
     const handleSubmit = async (e) => {
@@ -51,7 +54,7 @@ const FormJobOffer = ({onSuccess}) => {
         }
 
         const startingDate = fd.get("startingDate");
-        if (startingDate && new Date(startingDate) < new Date()) {
+        if (startingDate && startingDate < getToday()) {
             validationErrors.startingDate = "errors.startingDatePast";
         }
 
@@ -77,11 +80,18 @@ const FormJobOffer = ({onSuccess}) => {
         };
 
         try {
-            const res = await fetcher("/employer/addJobOffer", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(body),
-            });
+            const res = await fetcher(
+                isEdit ? `/employer/updateJobOffer/${offer.id}` : "/employer/addJobOffer",
+                {
+                    method: isEdit ? "PUT" : "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(body),
+                },
+            );
+            if (res.status === 409) {
+                setError(t("errors.offerNotEditable"));
+                return;
+            }
             if (!res.ok) throw new Error(`${res.status}`);
             onSuccess?.();
         } catch {
@@ -91,30 +101,32 @@ const FormJobOffer = ({onSuccess}) => {
         }
     };
 
+    const location = offer?.location;
+
     return (
         <form onSubmit={handleSubmit} noValidate>
-            {error && <p className="text-red-600 mb-4">{error}</p>}
+            {error && <p className="text-red-600 mb-4" role="alert">{error}</p>}
             <div className="space-y-4">
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} error={fieldErrors.title} className={inputClass}/>
+                    <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} defaultValue={offer?.title} error={fieldErrors.title} className={inputClass}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.description")} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.description}/>
+                    <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.description")} defaultValue={offer?.description} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.description}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.requirements")} name="requirements" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.requirements")} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.requirements}/>
+                    <Field label={t("personalSpaceEmployer.fields.requirements")} name="requirements" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.requirements")} defaultValue={offer?.prerequisites} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.requirements}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.salary")} name="salary" type="number" min="0" step="0.01" required placeholder={t("personalSpaceEmployer.placeholders.salary")} suffix="/hr" className={inputClass} error={fieldErrors.salary}/>
+                    <Field label={t("personalSpaceEmployer.fields.salary")} name="salary" type="number" min="0" step="0.01" required placeholder={t("personalSpaceEmployer.placeholders.salary")} defaultValue={offer?.salary} suffix="/hr" className={inputClass} error={fieldErrors.salary}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.startingDate")} name="startingDate" type="date" required placeholder={t("personalSpaceEmployer.placeholders.startingDate")} className={inputClass} error={fieldErrors.startingDate}/>
+                    <Field label={t("personalSpaceEmployer.fields.startingDate")} name="startingDate" type="date" min={getToday()} required placeholder={t("personalSpaceEmployer.placeholders.startingDate")} defaultValue={offer?.startingDate} className={inputClass} error={fieldErrors.startingDate}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.durationInWeeks")} name="durationInWeeks" type="number" min="1" required placeholder={t("personalSpaceEmployer.placeholders.durationInWeeks")} className={inputClass} error={fieldErrors.durationInWeeks}/>
+                    <Field label={t("personalSpaceEmployer.fields.durationInWeeks")} name="durationInWeeks" type="number" min="1" required placeholder={t("personalSpaceEmployer.placeholders.durationInWeeks")} defaultValue={offer?.durationInWeeks} className={inputClass} error={fieldErrors.durationInWeeks}/>
                 </div>
                 <div>
-                    <Field label={t("personalSpaceEmployer.fields.programe")} name="programe" as="select" required className={inputClass} error={fieldErrors.programe}>
+                    <Field label={t("personalSpaceEmployer.fields.programe")} name="programe" as="select" required defaultValue={offer?.programe ?? ""} className={inputClass} error={fieldErrors.programe}>
                         <option value="">{t("personalSpaceEmployer.placeholders.programe")}</option>
                         {programs.map((p) => (
                             <option key={p.enumName} value={p.enumName}>{p.name}</option>
@@ -124,19 +136,19 @@ const FormJobOffer = ({onSuccess}) => {
                 <h2 className="text-[#4b1113] font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <Field label={t("personalSpaceEmployer.fields.city")} name="city" required placeholder={t("personalSpaceEmployer.placeholders.city")} className={inputClass} error={fieldErrors.city}/>
+                        <Field label={t("personalSpaceEmployer.fields.city")} name="city" required placeholder={t("personalSpaceEmployer.placeholders.city")} defaultValue={location?.ville} className={inputClass} error={fieldErrors.city}/>
                     </div>
                     <div>
-                        <Field label={t("personalSpaceEmployer.fields.country")} name="country" required placeholder={t("personalSpaceEmployer.placeholders.country")} className={inputClass} error={fieldErrors.country}/>
+                        <Field label={t("personalSpaceEmployer.fields.country")} name="country" required placeholder={t("personalSpaceEmployer.placeholders.country")} defaultValue={location?.pays} className={inputClass} error={fieldErrors.country}/>
                     </div>
                     <div>
-                        <Field label={t("personalSpaceEmployer.fields.postalCode")} name="postalCode" required placeholder={t("personalSpaceEmployer.placeholders.postalCode")} maxLength="7" className={inputClass} error={fieldErrors.postalCode}/>
+                        <Field label={t("personalSpaceEmployer.fields.postalCode")} name="postalCode" required placeholder={t("personalSpaceEmployer.placeholders.postalCode")} maxLength="7" defaultValue={location?.codePostal} className={inputClass} error={fieldErrors.postalCode}/>
                     </div>
                     <div>
-                        <Field label={t("personalSpaceEmployer.fields.civicNumber")} name="civicNumber" required inputMode="numeric" pattern="[0-9]+" placeholder={t("personalSpaceEmployer.placeholders.civicNumber")} className={inputClass} error={fieldErrors.civicNumber}/>
+                        <Field label={t("personalSpaceEmployer.fields.civicNumber")} name="civicNumber" required inputMode="numeric" pattern="[0-9]+" placeholder={t("personalSpaceEmployer.placeholders.civicNumber")} defaultValue={location?.numeroCivic} className={inputClass} error={fieldErrors.civicNumber}/>
                     </div>
                     <div className="sm:col-span-2">
-                        <Field label={t("personalSpaceEmployer.fields.street")} name="street" required placeholder={t("personalSpaceEmployer.placeholders.street")} className={inputClass} error={fieldErrors.street}/>
+                        <Field label={t("personalSpaceEmployer.fields.street")} name="street" required placeholder={t("personalSpaceEmployer.placeholders.street")} defaultValue={location?.rue} className={inputClass} error={fieldErrors.street}/>
                     </div>
                 </div>
                 <button
@@ -144,7 +156,7 @@ const FormJobOffer = ({onSuccess}) => {
                     disabled={submitting}
                     className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300 disabled:opacity-50"
                 >
-                    {submitting ? "..." : t("personalSpaceEmployer.submit")}
+                    {submitting ? "..." : t(isEdit ? "personalSpaceEmployer.resubmit" : "personalSpaceEmployer.submit")}
                 </button>
             </div>
         </form>

@@ -52,7 +52,8 @@
     "startingDatePast": "Starting date cannot be in the past.",
     "digitsOnly": "Enter digits only.",
     "positiveNumber": "Enter a whole number greater than 0.",
-    "identifiantTaken": "This identifier is already assigned."
+    "identifiantTaken": "This identifier is already assigned.",
+    "offerNotEditable": "This offer can no longer be edited."
   },
   "header": {
     "title": "ZeROSE",
@@ -155,7 +156,11 @@
       "postalCode": "e.g. H1A1A1",
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
-    }
+    },
+    "editAndResubmit": "Edit and resubmit",
+    "editJobOffer": "Edit job offer",
+    "resubmit": "Resubmit offer",
+    "offerResubmitted": "Offer resubmitted. It is awaiting validation again."
   },
   "personalSpaceManager": {
     "title": "Manager space",

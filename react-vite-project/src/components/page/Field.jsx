@@ -17,6 +17,7 @@ const Field = ({
   as = "input",
   suffix,
   className,
+  defaultValue,
   children,
 }) => {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ const Field = ({
     min,
     step,
     maxLength,
+    defaultValue,
     className: controlClassName,
   };
 
