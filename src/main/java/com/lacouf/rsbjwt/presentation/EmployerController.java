@@ -1,29 +1,33 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.EmployerService;
-import com.lacouf.rsbjwt.service.dto.JobOfferCreateDto;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/employer")
-@RequiredArgsConstructor
 public class EmployerController {
-
     private final EmployerService employerService;
 
-    @PostMapping("/offres")
-    public ResponseEntity<JobOfferDto> submitOffer(@Valid @RequestBody JobOfferCreateDto dto, Authentication authentication) {
-        String email = authentication.getName();
-        return employerService.submitOffer(email, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PostMapping("/addJobOffer")
+    public ResponseEntity<JobOfferDetailDTO> addJobOffer(
+            @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO,
+            Authentication authentication) {
+        JobOfferDetailDTO created = employerService.addJobOffer(jobOfferCreateDTO, authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @GetMapping()
+    public List<JobOfferDetailDTO> getJobOffer(Authentication authentication) {
+        return employerService.getJobOffres(authentication.getName());
     }
 }

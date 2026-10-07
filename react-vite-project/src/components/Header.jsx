@@ -2,16 +2,15 @@ import React from "react";
 import './Header.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import NotificationBell from "./NotificationBell.jsx";
+import ManagerNotificationBell from "./ManagerNotificationBell.jsx";
 
 function Header({user}) {
     const { t, i18n } = useTranslation();
 
-    // Function to format role for display (remove ROLE_ prefix and capitalize)
     const formatRole = (roleString) => {
         if (!roleString) return '';
-        // Remove ROLE_ prefix if present
         const roleName = roleString.replace('ROLE_', '');
-        // Capitalize first letter, lowercase the rest
         return roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
     };
 
@@ -45,7 +44,9 @@ function Header({user}) {
                     ))}
                 </ul>
                 {user?.isLoggedIn && (
-                    <div className="user-info">
+                    <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        {isStudent() && <NotificationBell />}
+                        {isManager() && <ManagerNotificationBell />}
                         <p className="para-align">
                             {t("header.greeting")} <span className="user-name">{user.firstName} {user.lastName}</span>
                             {user.role && (

@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.Security;
 
 import com.lacouf.rsbjwt.model.Student;
-import com.lacouf.rsbjwt.model.auth.Role;
+
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.AuthProvider;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;

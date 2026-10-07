@@ -32,7 +32,6 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
-
     "submit": "Register"
   },
   "errors": {
@@ -48,19 +47,23 @@
     "matriculeTaken": "This ID is already assigned.",
     "generic": "An error occurred, please try again later.",
     "required": "This field is required.",
+    "numberOnly": "Enter numbers only, with up to two decimal places.",
+    "startingDatePast": "Starting date cannot be in the past.",
+    "digitsOnly": "Enter digits only.",
+    "positiveNumber": "Enter a whole number greater than 0.",
     "identifiantTaken": "This identifier is already assigned."
   },
   "header": {
     "title": "ZeROSE",
+    "inscription": "Sign up",
     "accueil": "Home",
     "about": "About",
+    "etudiant": "Student",
+    "employeur": "Employer",
     "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "inscription": "Sign up",
-    "greeting": "Hello",
-    "etudiant": "Student",
-    "employeur": "Employer"
+    "greeting": "Hello"
   },
   "televerser": {
     "choisirFichier": "CHOOSE A FILE",
@@ -72,7 +75,8 @@
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
-    "afficher": "Show"
+    "afficher": "Show",
+    "appercuIndisponible": "Preview not available"
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
@@ -107,5 +111,93 @@
     "signUp": "Sign up",
     "invalidEmail": "Invalid email",
     "invalidPassword": "Invalid password"
+  },
+  "personalSpaceEmployer": {
+    "title": "Employer space",
+    "createJobOffer": "Create internship offer",
+    "createJobOfferDescription": "Fill in the details of your internship offer.",
+    "close": "Close",
+    "jobOffers": "My internship offers",
+    "noJobOffers": "You have no internship offers yet.",
+    "offerCreated": "Internship offer published successfully.",
+    "submit": "Publish offer",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "requirements": "Prerequisites",
+      "salary": "Salary",
+      "startingDate": "Starting date",
+      "address": "Address",
+      "city": "City",
+      "country": "Country",
+      "postalCode": "Postal code",
+      "civicNumber": "Civic number",
+      "street": "Street",
+      "durationInWeeks": "Duration (weeks)",
+      "programe": "Program of study"
+    },
+    "placeholders": {
+      "title": "e.g. Web developer intern",
+      "description": "Describe the internship and its responsibilities",
+      "requirements": "List the skills and prerequisites",
+      "salary": "e.g. 20 dollars per hour",
+      "startingDate": "Select a starting date",
+      "durationInWeeks": "e.g. 12",
+      "programe": "Select a program",
+      "city": "e.g. Montreal",
+      "country": "e.g. Canada",
+      "postalCode": "e.g. H1A1A1",
+      "civicNumber": "e.g. 123",
+      "street": "e.g. Main Street"
+    }
+  },
+  "gestionnaire": {
+    "title": "Manager Space",
+    "loadingCvs": "Loading pending CVs...",
+    "errorLoadingCvs": "An error occurred while loading CVs.",
+    "noCvsPending": "No CVs pending for validation.",
+    "consulter": "View",
+    "masquer": "Hide",
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "preview": {
+      "errorLoading": "Unable to load CV preview.",
+      "loading": "Loading preview..."
+    },
+    "decline": {
+      "title": "Upload the CV review (PDF) before confirming the rejection.",
+      "chooseFile": "Choose a file",
+      "confirmDecline": "Confirm rejection",
+      "processing": "Sending...",
+      "errorNoFile": "You must upload a CV review before confirming the rejection.",
+      "errorPdfOnly": "Only PDF files are accepted.",
+      "errorProcessing": "An error occurred while processing this CV. Please try again."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "managerTitle": "CVs to Review",
+    "ariaLabel": "Notifications",
+    "loading": "Loading...",
+    "error": "Error loading notifications.",
+    "empty": "No notifications.",
+    "downloadReview": "Download feedback",
+    "types": {
+      "CV_UPLOADED": {
+        "title": "New CV to validate",
+        "message": "Student {firstName} {lastName} (ID: {matricule}) uploaded a new CV: {fileName} on {uploadedAt}. Please review and approve the document."
+      },
+      "CV_ACCEPTED": {
+        "title": "Your CV has been accepted",
+        "message": "Your CV has been validated by a manager."
+      },
+      "CV_REJECTED": {
+        "title": "Your CV has been rejected",
+        "message": "Please review the feedback and upload a new CV."
+      },
+      "CV_REVIEW_READY": {
+        "title": "Review ready"
+      }
+    }
   }
 }

@@ -1,16 +1,18 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
+import com.lacouf.rsbjwt.service.dto.PendingCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +22,53 @@ import java.util.List;
 public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
+
+    // ── CV Management ─────────────────────────────────────────────────────────
+
+    @GetMapping("/cv/pending")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<List<PendingCvDto>> getPendingCvs() {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(gestionnaireService.getPendingCvs());
+    }
+
+    @GetMapping("/cv/{cvId}/content")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<byte[]> getCvContent(@PathVariable Long cvId) {
+        try {
+            byte[] content = gestionnaireService.getCvContent(cvId);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(content);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/cv/{cvId}/accept")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<Void> acceptCv(@PathVariable Long cvId) {
+        try {
+            gestionnaireService.acceptCv(cvId);
+            return ResponseEntity.noContent().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/cv/{cvId}/decline")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<Void> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvUploadDto reviewRequest) {
+        try {
+            gestionnaireService.declineCv(cvId, reviewRequest);
+            return ResponseEntity.noContent().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    // ── Job Offer Management ──────────────────────────────────────────────────
 
     @GetMapping("/offres/pending")
     public ResponseEntity<List<JobOfferDto>> getPendingOffers() {
@@ -40,12 +89,16 @@ public class GestionnaireController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/notifications")
+    // ── Manager Notifications (job-offer events) ──────────────────────────────
+
+    @GetMapping("/offres/notifications")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<List<ManagerNotificationDto>> getNotifications(Authentication authentication) {
         return ResponseEntity.ok(gestionnaireService.getNotifications(authentication.getName()));
     }
 
-    @PutMapping("/notifications/{id}/read")
+    @PutMapping("/offres/notifications/{id}/read")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ManagerNotificationDto> markAsRead(
             @PathVariable Long id, Authentication authentication) {
         return gestionnaireService.markNotificationAsRead(authentication.getName(), id)

@@ -11,8 +11,10 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class JobOffer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,17 +28,11 @@ public class JobOffer {
     @Column(nullable = false)
     private String prerequisites;
 
-    @Column(nullable = false)
     private String salary;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Setter
     private OfferStatus status;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Programe programe;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -55,9 +51,14 @@ public class JobOffer {
     @Embedded
     private Adresse adresse;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Programe programe;
+
     @Builder
-    public JobOffer(String title, String description, String prerequisites, Adresse adresse, String salary,
-                    LocalDate startingDate, int durationInWeeks, Employer employer, Programe programe) {
+    public JobOffer(String title, String description, String prerequisites,
+                    Adresse adresse, String salary,
+                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
@@ -65,15 +66,17 @@ public class JobOffer {
         this.salary = salary;
         this.startingDate = startingDate;
         this.durationInWeeks = durationInWeeks;
-        this.employer = employer;
         this.programe = programe;
+        this.employer = employer;
     }
 
     @PrePersist
     void onCreate() {
+        if (publicationDate == null) {
+            publicationDate = LocalDate.now();
+        }
         if (status == null) {
             status = OfferStatus.WAITING;
         }
     }
-
 }

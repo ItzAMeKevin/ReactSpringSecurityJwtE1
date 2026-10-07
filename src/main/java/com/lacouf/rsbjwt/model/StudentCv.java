@@ -18,7 +18,6 @@ public class StudentCv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Pas de @Lob : sur PostgreSQL, un byte[] devient une colonne bytea
     @Column(nullable = false)
     private byte[] content;
 
@@ -41,6 +40,15 @@ public class StudentCv {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
+
+    @Column(nullable = true)
+    private byte[] reviewContent;
+
+    @Column(nullable = true, length = 255)
+    private String reviewFileName;
+
+    @Column(nullable = true, length = 255)
+    private String reviewContentType;
 
     @PrePersist
     void onCreate() {

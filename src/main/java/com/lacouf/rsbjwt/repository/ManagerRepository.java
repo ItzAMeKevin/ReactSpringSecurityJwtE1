@@ -9,4 +9,5 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
     Optional<Manager> findFirstByFirstNameAndLastName(String firstName, String lastName);
     Optional<Manager> findByMatricule(String matricule);
     Optional<Manager> findByCredentialsEmail(String email);
+    Optional<Manager> findFirstBy();
 }

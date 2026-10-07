@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     List<JobOffer> findAllByStatus(OfferStatus status);
+    List<JobOffer> getJobOffersByEmployerId(Long employerId);
 }
