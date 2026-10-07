@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import jakarta.validation.Valid;
@@ -21,6 +22,25 @@ public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
     private final HandlerMapping resourceHandlerMapping;
+
+    @GetMapping("/offres/pending")
+    public ResponseEntity<List<JobOfferDetailDTO>> getPendingOffers() {
+        return ResponseEntity.ok(gestionnaireService.getPendingOffers());
+    }
+
+    @PutMapping("/offres/{id}/accept")
+    public ResponseEntity<JobOfferDetailDTO> acceptOffer(@PathVariable Long id) {
+        return gestionnaireService.acceptOffer(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/offres/{id}/refuse")
+    public ResponseEntity<JobOfferDetailDTO> refuseOffer(@PathVariable Long id) {
+        return gestionnaireService.refuseOffer(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @GetMapping("/cv/pending")
     @PreAuthorize("hasAuthority('MANAGER')")

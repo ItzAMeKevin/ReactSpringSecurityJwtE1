@@ -47,7 +47,7 @@ public class JobOffer {
     @Column(nullable = false)
     private int durationInWeeks;
 
-    @ManyToOne(fetch = FetchType.LAZY ,optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
 

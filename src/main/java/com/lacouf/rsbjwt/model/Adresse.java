@@ -36,7 +36,6 @@ public class Adresse {
         this.rue = rue;
         this.numeroCivic = numeroCivic;
         this.codePostal = codePostal;
-    }
-
+        }
 
 }
