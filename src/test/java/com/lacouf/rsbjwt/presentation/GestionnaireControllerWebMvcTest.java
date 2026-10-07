@@ -6,8 +6,8 @@ import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -150,9 +150,9 @@ class GestionnaireControllerWebMvcTest {
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 204 on success")
     void declineCv_success_returnsNoContent() throws Exception {
-        UploadCvDto reviewRequest = new UploadCvDto("review.pdf", "application/pdf",
+        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
                 Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doNothing().when(gestionnaireService).declineCv(eq(1L), any(UploadCvDto.class));
+        doNothing().when(gestionnaireService).declineCv(eq(1L), any(CvUploadDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/1/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
@@ -164,9 +164,9 @@ class GestionnaireControllerWebMvcTest {
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 404 when CV not found")
     void declineCv_notFound_returns404() throws Exception {
-        UploadCvDto reviewRequest = new UploadCvDto("review.pdf", "application/pdf",
+        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
                 Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(UploadCvDto.class));
+        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(CvUploadDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/99/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
