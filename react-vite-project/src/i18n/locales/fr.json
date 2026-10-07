@@ -155,5 +155,20 @@
       "civicNumber": "ex. 123",
       "street": "ex. Rue Principale"
     }
+  },
+  "personalSpaceManager": {
+    "title": "Espace gestionnaire",
+    "pendingOffers": "Offres en attente",
+    "noPendingOffers": "Aucune offre en attente de validation.",
+    "view": "Consulter",
+    "accept": "Accepter",
+    "refuse": "Refuser",
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "actions": "Actions",
+    "notice": {
+      "accepted": "L'offre « {{title}} » a été acceptée. L'employeur a été notifié.",
+      "refused": "L'offre « {{title}} » a été refusée. L'employeur a été notifié."
+    }
   }
 }

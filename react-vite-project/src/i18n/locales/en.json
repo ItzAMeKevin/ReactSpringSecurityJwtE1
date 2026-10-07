@@ -156,5 +156,20 @@
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
     }
+  },
+  "personalSpaceManager": {
+    "title": "Manager space",
+    "pendingOffers": "Pending offers",
+    "noPendingOffers": "No offers are waiting for validation.",
+    "view": "View",
+    "accept": "Accept",
+    "refuse": "Refuse",
+    "close": "Close",
+    "retry": "Try again",
+    "actions": "Actions",
+    "notice": {
+      "accepted": "The offer \"{{title}}\" was accepted. The employer has been notified.",
+      "refused": "The offer \"{{title}}\" was refused. The employer has been notified."
+    }
   }
 }
