@@ -14,18 +14,26 @@ const ManagerNotificationBell = () => {
         setIsOpen((current) => !current);
     };
 
-    const handleConsulter = async (e, notificationId, cvId) => {
+    const handleConsulter = async (e, notification) => {
         e.stopPropagation();
         try {
-            await markAsRead(notificationId);
+            await markAsRead(notification.id, notification.source);
         } catch (error) {
             console.error("Error marking as read:", error);
         }
         setIsOpen(false);
-        navigate("/gestionnaire", { state: { highlightCvId: cvId } });
+        if (notification.source === "jobOffer") {
+            navigate("/gestionnaire", { state: { highlightOfferId: notification.offerId } });
+        } else {
+            navigate("/gestionnaire", { state: { highlightCvId: notification.cvId } });
+        }
     };
 
+
     const getNotificationMessage = (notification) => {
+        if (notification.source === "jobOffer") {
+            return notification.message || "";
+        }
         const { message } = getLocalizedNotification(notification, t);
         if (notification.type === "CV_UPLOADED") {
             return message
@@ -37,6 +45,7 @@ const ManagerNotificationBell = () => {
         }
         return message;
     };
+
 
     const formatDateTime = (date) => {
         return new Date(date).toLocaleString(i18n.language, {
@@ -71,7 +80,7 @@ const ManagerNotificationBell = () => {
             <ul className="max-h-96 overflow-y-auto">
                 {notifications.map((notification) => (
                     <li
-                        key={notification.id}
+                        key={`${notification.source}-${notification.id}`}
                         className={`px-3 py-3 text-sm transition-colors border-b border-[#4b1113]/10 flex items-center justify-between gap-4 ${
                             notification.isRead
                                 ? "bg-white text-[#4b1113]/70 hover:bg-white/80"
@@ -88,7 +97,7 @@ const ManagerNotificationBell = () => {
                         </div>
                         <button
                             type="button"
-                            onClick={(e) => handleConsulter(e, notification.id, notification.cvId)}
+                            onClick={(e) => handleConsulter(e, notification)}
                             className="shrink-0 bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#3a0d0f] transition-colors font-medium text-sm"
                         >
                             {t("gestionnaire.consulter")}
