@@ -9,12 +9,10 @@ import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import com.lacouf.rsbjwt.model.CvStatus;
-import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
@@ -53,7 +51,7 @@ public class GestionnaireServiceTest {
     private StudentCvRepository studentCvRepository;
 
     @Mock
-    private NotificationRepository notificationRepository;
+    private CvNotificationService cvNotificationService;
 
     @Mock
     private GestionnaireMapper gestionnaireMapper;
@@ -282,26 +280,26 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void getCvContent_not_Found_throwsUserNotFoundException() {
+    void getCvContent_not_Found_throwsInvalidCvException() {
         // ARRANGE
         when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
 
         // ACT & ASSERT
-        assertThrows(UserNotFoundException.class, () -> gestionnaireService.getCvContent(99L));
+        assertThrows(InvalidCvException.class, () -> gestionnaireService.getCvContent(99L));
         verify(studentCvRepository, times(1)).findById(99L);
     }
 
     @Test
     void acceptCv_success_setStatusAndCreatesNotification() {
         // ARRANGE
-
         when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
+
         // ACT
         gestionnaireService.acceptCv(10L);
 
         // ASSERT
         assertEquals(CvStatus.ACCEPTED, testCv.getStatus());
-        verify(notificationRepository, times(1)).save(any(Notification.class));
+        verify(cvNotificationService, times(1)).notifyStudentOnCvAccepted(testStudent, testCv);
     }
 
     @Test
@@ -322,11 +320,11 @@ public class GestionnaireServiceTest {
         assertEquals("review.pdf", testCv.getReviewFileName());
         assertEquals("application/pdf", testCv.getReviewContentType());
         verify(studentCvRepository, times(1)).save(testCv);
-        verify(notificationRepository, times(1)).save(any(Notification.class));
+        verify(cvNotificationService, times(1)).notifyStudentOnCvDeclined(testStudent, testCv);
     }
 
     @Test
-    void declineCv_notFound_throwsUserNotFoundException() {
+    void declineCv_notFound_throwsInvalidCvException() {
         // ARRANGE
         String base64Review = Base64.getEncoder().encodeToString(new byte[]{1});
         CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf", base64Review);
@@ -334,8 +332,8 @@ public class GestionnaireServiceTest {
         when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
 
         // ACT & ASSERT
-        assertThrows(UserNotFoundException.class, () -> gestionnaireService.declineCv(99L, reviewRequest));
+        assertThrows(InvalidCvException.class, () -> gestionnaireService.declineCv(99L, reviewRequest));
         verify(studentCvRepository, never()).save(any());
-        verify(notificationRepository, never()).save(any());
+        verify(cvNotificationService, never()).notifyStudentOnCvDeclined(any(), any());
     }
 }

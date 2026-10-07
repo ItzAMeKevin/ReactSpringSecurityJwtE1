@@ -103,7 +103,7 @@ class StudentNotificationControllerWebMvcTest {
                 .thenReturn(Optional.of(testStudent));
         when(notificationRepository.findAllByStudent_IdOrderByCreatedAtDesc(1L))
                 .thenReturn(List.of(testNotification));
-        when(gestionnaireMapper.toNotificationDto(testNotification))
+        when(gestionnaireMapper.toNotificationDtoWithStudentCv(testNotification))
                 .thenReturn(dto);
 
         mockMvc.perform(get("/etudiant/notifications")
