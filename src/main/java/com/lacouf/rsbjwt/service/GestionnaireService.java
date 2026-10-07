@@ -1,12 +1,13 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.EmployerNotification;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.OfferStatus;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,16 @@ public class GestionnaireService {
 
     private final JobOfferRepository jobOfferRepository;
     private final EmployerNotificationRepository employerNotificationRepository;
+    private final JobOfferMapper jobOfferMapper;
 
-    public List<JobOfferDto> getPendingOffers() {
+    public List<JobOfferDetailDTO> getPendingOffers() {
         return jobOfferRepository.findAllByStatus(OfferStatus.WAITING)
                 .stream()
-                .map(this::toDto)
+                .map(jobOfferMapper::toDto)
                 .toList();
     }
 
-    public Optional<JobOfferDto> acceptOffer(Long id) {
+    public Optional<JobOfferDetailDTO> acceptOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
             offer.setStatus(OfferStatus.ACCEPTED);
             jobOfferRepository.save(offer);
@@ -36,11 +38,11 @@ public class GestionnaireService {
                     "Votre offre \"" + offer.getTitle() + "\" a été acceptée.",
                     offer.getEmployer()
             ));
-            return toDto(offer);
+            return jobOfferMapper.toDto(offer);
         });
     }
 
-    public Optional<JobOfferDto> refuseOffer(Long id) {
+    public Optional<JobOfferDetailDTO> refuseOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
             offer.setStatus(OfferStatus.REFUSED);
             jobOfferRepository.save(offer);
@@ -49,30 +51,7 @@ public class GestionnaireService {
                     "Votre offre \"" + offer.getTitle() + "\" a été refusée.",
                     offer.getEmployer()
             ));
-            return toDto(offer);
+            return jobOfferMapper.toDto(offer);
         });
-    }
-
-
-    private JobOfferDto toDto(JobOffer offer) {
-        AdresseDTO adresseDTO = new AdresseDTO(
-                offer.getAdresse().getPay(),
-                offer.getAdresse().getVille(),
-                offer.getAdresse().getRue(),
-                offer.getAdresse().getNumeroCivic(),
-                offer.getAdresse().getCodePostal()
-        );
-        return new JobOfferDto(
-                offer.getId(),
-                offer.getTitle(),
-                offer.getDescription(),
-                offer.getPrerequisites(),
-                adresseDTO,
-                offer.getSalary(),
-                offer.getStartingDate(),
-                offer.getDurationInWeeks(),
-                offer.getEmployer().getCompanyName(),
-                offer.getPublicationDate()
-        );
     }
 }

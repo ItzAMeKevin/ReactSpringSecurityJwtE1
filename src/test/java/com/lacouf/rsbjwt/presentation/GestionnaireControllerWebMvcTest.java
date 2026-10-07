@@ -4,7 +4,7 @@ import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,17 +63,26 @@ class GestionnaireControllerWebMvcTest {
     private PasswordEncoder passwordEncoder;
 
     private MockMvc mockMvc;
-    private JobOfferDto testOfferDto;
+    private JobOfferDetailDTO testOfferDto;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
         AdresseDTO adresse = new AdresseDTO("Canada", "Montreal", "Rue Principale", "123", "H1A1A1");
-        testOfferDto = new JobOfferDto(
-                1L, "Dev Java", "Développement backend", "Java, Spring",
-                adresse, "20$/h", LocalDate.of(2025, 9, 1),
-                16, "Acme Corp", LocalDate.of(2025, 1, 1)
+        testOfferDto = new JobOfferDetailDTO(
+                1L,
+                "Dev Java",
+                "Développement d'applications Java",
+                "Connaissance de Java et Spring Boot",
+                adresse,
+                "50000",
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                12,
+                null,
+                "Acme Corp"
         );
     }
 

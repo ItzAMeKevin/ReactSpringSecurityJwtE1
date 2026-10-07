@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.UserAppService;
+import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
-import com.lacouf.rsbjwt.service.dto.UserDTO;
-import com.lacouf.rsbjwt.model.auth.Role;
-import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import com.lacouf.rsbjwt.service.dto.UserCreateDTO;
+import com.lacouf.rsbjwt.model.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -84,31 +83,34 @@ class UserControllerWebMvcTest {
     @DisplayName("POST /user/login returns 401 on failure")
     void authenticateUser_failure_returnsUnauthorized() throws Exception {
         LoginDTO login = new LoginDTO("user@example.com", "wrong");
-        when(userService.authenticateUser(any(LoginDTO.class)))
-                .thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "bad creds"));
+        when(userService.authenticateUser(any(LoginDTO.class))).thenThrow(new RuntimeException("bad creds"));
 
         mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Invalid email or password"))
-                .andExpect(jsonPath("$.errorCode").value("AUTH_FAILED"));
+                .andExpect(jsonPath("$.tokenType").value("BEARER"))
+                .andExpect(jsonPath("$.accessToken").value(org.hamcrest.Matchers.nullValue()));
     }
 
     @Test
     @DisplayName("POST /user/inscription returns 202 and the created student")
     void inscription_success_returnsAcceptedAndUser() throws Exception {
-        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com",
-                "password", Role.STUDENT, "MAT123",
-                null, null, null, null, null, null, null);
-        UserDTO createdUser = new UserDTO(1L, "Jane", "Doe", "jane@example.com",
-                null, Role.STUDENT, "MAT123", null, null, null,
-                null, null, null, null);
+        UserCreateDTO request = new UserCreateDTO(
+                "Jane", "Doe", "jane@example.com", "password",
+                Role.STUDENT, "MAT123",
+                null, null, null, null, null
+        );
+        UserCreateDTO createdUser = new UserCreateDTO(
+                "Jane", "Doe", "jane@example.com", null,
+                Role.STUDENT, "MAT123",
+                null, null, null, null, null
+        );
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encoded-password");
-        when(userService.inscription(any(UserDTO.class))).thenReturn(createdUser);
+        when(userService.inscription(any(UserCreateDTO.class))).thenReturn(createdUser);
 
         mockMvc.perform(post("/user/inscription")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -122,16 +124,19 @@ class UserControllerWebMvcTest {
                 .andExpect(jsonPath("$.matricule").value("MAT123"));
 
         verify(passwordEncoder).encode("password");
-        verify(userService).inscription(any(UserDTO.class));
+        verify(userService).inscription(any(UserCreateDTO.class));
     }
 
     @Test
     @DisplayName("POST /user/inscription returns 409 when the email already exists")
     void inscription_existingUser_returnsConflict() throws Exception {
-        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password",
-                Role.STUDENT, "MAT123", null, null, null, null, null, null, null);
-        UserDTO existingUser = new UserDTO(1L, "Jane", "Doe", request.getEmail(), null,
-                Role.STUDENT, "MAT123", null, null, null, null, null, null, null);
+        UserCreateDTO request = new UserCreateDTO(
+                "Jane", "Doe", "jane@example.com", "password",
+                Role.STUDENT, "MAT123",
+                null, null, null, null, null
+        );
+        UserCreateDTO existingUser = new UserCreateDTO( "Jane", "Doe", request.getEmail(), null,
+                Role.STUDENT, "MAT123", null, null, null, null, null);
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(existingUser);
 
@@ -145,8 +150,11 @@ class UserControllerWebMvcTest {
     @Test
     @DisplayName("POST /user/inscription returns 409 when the matricule already exists")
     void inscription_duplicateMatricule_returnsConflict() throws Exception {
-        UserDTO request = new UserDTO(null, "Jane", "Doe", "jane@example.com", "password",
-                Role.STUDENT, "MAT123", null, null, null, null, null, null, null);
+        UserCreateDTO request = new UserCreateDTO(
+                "Jane", "Doe", "jane@example.com", "password",
+                Role.STUDENT, "MAT123",
+                null, null, null, null, null
+        );
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
         when(userService.matriculeExists("MAT123")).thenReturn(true);
@@ -181,17 +189,30 @@ class UserControllerWebMvcTest {
     @Test
     @DisplayName("POST /user/inscription returns 202 and the created employer")
     void inscription_employer_success_returnsAcceptedAndEmployer() throws Exception {
-        UserDTO request = new UserDTO(null, "Bob", "Smith", "bob@company.com", "password",
-                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
-                "Montreal", "5141234567", "EMP001", null);
-        UserDTO createdEmployer = new UserDTO(2L, "Bob", "Smith", "bob@company.com", null,
-                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
-                "Montreal", "5141234567", "EMP001", null);
+        AdresseDTO adresse = new AdresseDTO();
+        adresse.setPays("Canada");
+        adresse.setVille("Montreal");
+        adresse.setRue("123 Main St");
+        adresse.setNumeroCivic("123");
+        adresse.setCodePostal("H1A1A1");
+
+        UserCreateDTO request = new UserCreateDTO(
+                "Bob", "Smith", "bob@company.com", "password",
+                Role.EMPLOYER, null,
+                "Acme Corp", adresse,
+                "5141234567", "EMP001", null
+        );
+        UserCreateDTO createdEmployer = new UserCreateDTO(
+                "Bob", "Smith", "bob@company.com", null,
+                Role.EMPLOYER, null,
+                "Acme Corp", adresse,
+                "5141234567", "EMP001", null
+        );
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
         when(userService.employerIdExists("EMP001")).thenReturn(false);
         when(passwordEncoder.encode("password")).thenReturn("encoded-password");
-        when(userService.inscription(any(UserDTO.class))).thenReturn(createdEmployer);
+        when(userService.inscription(any(UserCreateDTO.class))).thenReturn(createdEmployer);
 
         mockMvc.perform(post("/user/inscription")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -205,21 +226,27 @@ class UserControllerWebMvcTest {
                 .andExpect(jsonPath("$.employerId").value("EMP001"));
 
         verify(passwordEncoder).encode("password");
-        verify(userService).inscription(any(UserDTO.class));
+        verify(userService).inscription(any(UserCreateDTO.class));
     }
 
     @Test
     @DisplayName("POST /user/inscription returns 202 and the created professor")
     void inscription_professor_success_returnsAcceptedAndManager() throws Exception {
-        UserDTO request = new UserDTO(null, "Alice", "Tremblay", "alice@school.com", "password",
-                Role.MANAGER, "1234567", null, null, null, null, null, null, null);
-        UserDTO createdManager = new UserDTO(3L, "Alice", "Tremblay", "alice@school.com", null,
-                Role.MANAGER, "1234567", null, null, null, null, null, null, null);
+        UserCreateDTO request = new UserCreateDTO(
+                "Alice", "Tremblay", "alice@school.com", "password",
+                Role.MANAGER, "1234567",
+                null, null, null, null, null
+        );
+        UserCreateDTO createdManager = new UserCreateDTO(
+                "Alice", "Tremblay", "alice@school.com", null,
+                Role.MANAGER, "1234567",
+                null, null, null, null, null
+        );
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
         when(userService.matriculeExists("1234567")).thenReturn(false);
         when(passwordEncoder.encode("password")).thenReturn("encoded-password");
-        when(userService.inscription(any(UserDTO.class))).thenReturn(createdManager);
+        when(userService.inscription(any(UserCreateDTO.class))).thenReturn(createdManager);
 
         mockMvc.perform(post("/user/inscription")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -232,15 +259,26 @@ class UserControllerWebMvcTest {
                 .andExpect(jsonPath("$.matricule").value("1234567"));
 
         verify(passwordEncoder).encode("password");
-        verify(userService).inscription(any(UserDTO.class));
+        verify(userService).inscription(any(UserCreateDTO.class));
     }
 
     @Test
     @DisplayName("POST /user/inscription returns 409 when the employer ID already exists")
     void inscription_duplicateEmployerId_returnsConflict() throws Exception {
-        UserDTO request = new UserDTO(null, "Bob", "Smith", "bob@company.com", "password",
-                Role.EMPLOYER, null, "Acme Corp", "123 Main St", "H1A1A1",
-                "Montreal", "5141234567", "EMP001", null);
+
+        AdresseDTO adresse = new AdresseDTO();
+        adresse.setPays("Canada");
+        adresse.setVille("Montreal");
+        adresse.setRue("123 Main St");
+        adresse.setNumeroCivic("123");
+        adresse.setCodePostal("H1A1A1");
+
+        UserCreateDTO request = new UserCreateDTO(
+                "Bob", "Smith", "bob@company.com", "password",
+                Role.EMPLOYER, null,
+                "Acme Corp", adresse,
+                "5141234567", "EMP001", null
+        );
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(null);
         when(userService.employerIdExists("EMP001")).thenReturn(true);

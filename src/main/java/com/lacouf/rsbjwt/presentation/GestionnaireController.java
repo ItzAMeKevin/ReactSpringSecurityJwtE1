@@ -1,9 +1,8 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,19 +16,19 @@ public class GestionnaireController {
     private final GestionnaireService gestionnaireService;
 
     @GetMapping("/offres/pending")
-    public ResponseEntity<List<JobOfferDto>> getPendingOffers() {
+    public ResponseEntity<List<JobOfferDetailDTO>> getPendingOffers() {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
 
     @PutMapping("/offres/{id}/accept")
-    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
+    public ResponseEntity<JobOfferDetailDTO> acceptOffer(@PathVariable Long id) {
         return gestionnaireService.acceptOffer(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/offres/{id}/refuse")
-    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) {
+    public ResponseEntity<JobOfferDetailDTO> refuseOffer(@PathVariable Long id) {
         return gestionnaireService.refuseOffer(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());

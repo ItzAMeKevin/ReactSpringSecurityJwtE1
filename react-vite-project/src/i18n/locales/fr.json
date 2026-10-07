@@ -47,19 +47,23 @@
     "matriculeTaken": "Ce matricule est déjà attribué.",
     "generic": "Une erreur est survenue, veuillez réessayer plus tard.",
     "required": "Ce champ est requis.",
+    "numberOnly": "Entrez uniquement des chiffres, avec au plus deux décimales.",
+    "startingDatePast": "La date de début ne peut pas être dans le passé.",
+    "digitsOnly": "Entrez uniquement des chiffres.",
+    "positiveNumber": "Entrez un nombre entier supérieur à 0.",
     "identifiantTaken": "Cet identifiant est déjà attribué."
   },
   "header": {
     "title": "ZeROSE",
+    "inscription": "Inscription",
     "accueil": "Accueil",
     "about": "À propos",
+    "etudiant": "Étudiant",
+    "employeur": "Employeur",
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "inscription": "S'inscrire",
-    "greeting": "Bonjour",
-    "etudiant": "Étudiant",
-    "employeur": "Employeur"
+    "greeting": "Bonjour"
   },
   "televerser": {
     "choisirFichier": "CHOISIR UN FICHIER",
@@ -71,7 +75,8 @@
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
-    "afficher": "Afficher"
+    "afficher": "Afficher",
+    "appercuIndisponible": "Aperçu indisponible"
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",
@@ -106,5 +111,44 @@
     "signUp": "Inscrivez-vous",
     "invalidEmail": "Courriel invalide",
     "invalidPassword": "Mot de passe invalide"
+  },
+  "personalSpaceEmployer": {
+    "title": "Espace employeur",
+    "createJobOffer": "Créer une offre de stage",
+    "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
+    "close": "Fermer",
+    "jobOffers": "Mes offres de stage",
+    "noJobOffers": "Aucune offre de stage publiée",
+    "offerCreated": "L'offre de stage a été publiée avec succès.",
+    "submit": "Publier l'offre",
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "requirements": "Prérequis",
+      "salary": "Salaire",
+      "startingDate": "Date de début",
+      "address": "Adresse",
+      "city": "Ville",
+      "country": "Pays",
+      "postalCode": "Code postal",
+      "civicNumber": "Numéro civique",
+      "street": "Rue",
+      "durationInWeeks": "Durée (semaines)",
+      "programe": "Programme d'études"
+    },
+    "placeholders": {
+      "title": "ex. Stagiaire en développement web",
+      "description": "Décrivez le stage et ses responsabilités",
+      "requirements": "Indiquez les compétences et prérequis",
+      "salary": "ex. 20 dollars de l'heure",
+      "startingDate": "Sélectionnez une date de début",
+      "durationInWeeks": "ex. 12",
+      "programe": "Sélectionnez un programme",
+      "city": "ex. Montréal",
+      "country": "ex. Canada",
+      "postalCode": "ex. H1A1A1",
+      "civicNumber": "ex. 123",
+      "street": "ex. Rue Principale"
+    }
   }
 }
