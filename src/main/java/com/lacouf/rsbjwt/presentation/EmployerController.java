@@ -31,4 +31,18 @@ public class EmployerController {
     public List<JobOfferDetailDTO> getJobOffer(Authentication authentication) {
         return employerService.getJobOffres(authentication.getName());
     }
+
+    @PutMapping("/updateJobOffer/{id}")
+    public ResponseEntity<JobOfferDetailDTO> updateJobOffer(
+            @PathVariable Long id,
+            @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO,
+            Authentication authentication) {
+        try {
+            return employerService.updateRefusedJobOffer(id, jobOfferCreateDTO, authentication.getName())
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
 }
