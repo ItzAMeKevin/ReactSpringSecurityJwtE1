@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.model.OfferStatus;
 import com.lacouf.rsbjwt.model.Programe;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -96,7 +96,7 @@ class EmployerControllerWebMvcTest {
 
         testOfferDetailDto = new JobOfferDetailDTO(
                 1L, "Dev Java", "Description", "Java, Spring",
-                adresse, "20$/h", OfferStatus.WAITING,
+                adresse, "20$/h", Status.WAITING,
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 9, 1),
                 16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp"
         );

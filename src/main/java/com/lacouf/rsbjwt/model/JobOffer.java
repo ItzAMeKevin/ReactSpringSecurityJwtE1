@@ -32,7 +32,7 @@ public class JobOffer {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OfferStatus status;
+    private Status status;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -76,7 +76,7 @@ public class JobOffer {
             publicationDate = LocalDate.now();
         }
         if (status == null) {
-            status = OfferStatus.WAITING;
+            status = Status.WAITING;
         }
     }
 }

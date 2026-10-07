@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
@@ -53,7 +53,7 @@ public class GestionnaireServiceTest {
         testCv.setId(10L);
         testCv.setFileName("cv.pdf");
         testCv.setContent(pdfBytes);
-        testCv.setStatus(CvStatus.PENDING);
+        testCv.setStatus(Status.PENDING);
         testCv.setStudent(testStudent);
     }
 
@@ -61,7 +61,7 @@ public class GestionnaireServiceTest {
     void getPendingCvs_returnsMappedList() {
         // ARRANGE
         PendingCvDto dto = PendingCvDto.builder().id(10L).fileName("cv.pdf").build();
-        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(CvStatus.PENDING)).thenReturn(List.of(testCv));
+        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)).thenReturn(List.of(testCv));
         when(gestionnaireMapper.toPendingCvDto(testCv)).thenReturn(dto);
 
         // ACT
@@ -70,13 +70,13 @@ public class GestionnaireServiceTest {
         // ASSERT
         assertEquals(1, result.size());
         assertEquals("cv.pdf", result.getFirst().getFileName());
-        verify(studentCvRepository, times(1)).findAllByStatusOrderByUploadedAtAsc(CvStatus.PENDING);
+        verify(studentCvRepository, times(1)).findAllByStatusOrderByUploadedAtAsc(Status.PENDING);
     }
 
     @Test
     void getPendingCvs_returnsEmptyList() {
         // ARRANGE
-        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(CvStatus.PENDING)).thenReturn(List.of());
+        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)).thenReturn(List.of());
 
         // ACT
         List<PendingCvDto> result = gestionnaireService.getPendingCvs();
@@ -117,7 +117,7 @@ public class GestionnaireServiceTest {
         gestionnaireService.acceptCv(10L);
 
         // ASSERT
-        assertEquals(CvStatus.ACCEPTED, testCv.getStatus());
+        assertEquals(Status.ACCEPTED, testCv.getStatus());
         verify(cvNotificationService, times(1)).notifyStudentOnCvAccepted(testStudent, testCv);
     }
 
@@ -134,7 +134,7 @@ public class GestionnaireServiceTest {
         gestionnaireService.declineCv(10L, reviewRequest);
 
         // ASSERT
-        assertEquals(CvStatus.DECLINED, testCv.getStatus());
+        assertEquals(Status.DECLINED, testCv.getStatus());
         assertArrayEquals(reviewBytes, testCv.getReviewContent());
         assertEquals("review.pdf", testCv.getReviewFileName());
         assertEquals("application/pdf", testCv.getReviewContentType());

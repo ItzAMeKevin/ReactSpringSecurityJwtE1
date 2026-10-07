@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.model.NotificationStatus;
+import com.lacouf.rsbjwt.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +16,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     
     Optional<Notification> findByIdAndManager_Id(Long id, Long managerId);
     
-    List<Notification> findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(NotificationStatus status, Instant beforeTime);
+    List<Notification> findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(Status status, Instant beforeTime);
     
     @Query("SELECT n FROM Notification n WHERE n.manager.id = :managerId " +
            "AND (n.type != 'CV_UPLOADED' OR (n.studentCv IS NOT NULL AND n.studentCv.status = 'PENDING')) " +

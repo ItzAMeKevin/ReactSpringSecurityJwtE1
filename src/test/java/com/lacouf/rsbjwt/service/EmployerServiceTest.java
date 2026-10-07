@@ -4,7 +4,7 @@ import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
@@ -129,7 +129,7 @@ class EmployerServiceTest {
         JobOfferDetailDTO expected = new JobOfferDetailDTO(
                 1L, "Titre", "Desc", "Preq",
                 adresse,
-                "60000$", OfferStatus.WAITING,
+                "60000$", Status.WAITING,
                 LocalDate.now(), LocalDate.of(2025, 3, 1),
                 12, Programe.TECHNIQUES_INFORMATIQUE, "ACME Inc."
         );

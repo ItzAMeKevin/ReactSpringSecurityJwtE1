@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.NotificationStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ public class NotificationScheduler {
         Instant fiveMinutesAgo = Instant.now().minus(RETRY_INTERVAL_MINUTES, ChronoUnit.MINUTES);
         
         notificationRepository.findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(
-            NotificationStatus.FAILED, 
+            Status.FAILED, 
             fiveMinutesAgo
         ).forEach(notification -> {
             if (notification.getRetryCount() < MAX_RETRY_ATTEMPTS) {
-                notification.setStatus(NotificationStatus.SENT);
+                notification.setStatus(Status.SENT);
                 notification.setRetryCount(notification.getRetryCount() + 1);
                 notification.setLastRetryAt(Instant.now());
                 notification.setSentAt(Instant.now());

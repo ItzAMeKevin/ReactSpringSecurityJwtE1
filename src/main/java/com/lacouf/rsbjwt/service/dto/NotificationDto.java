@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lacouf.rsbjwt.model.NotificationStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.NotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class NotificationDto {
     private Instant createdAt;
     private Instant sentAt;
     private NotificationType type;
-    private NotificationStatus status;
+    private Status status;
     private Integer retryCount;
     private String studentName;
     private String studentFirstName;

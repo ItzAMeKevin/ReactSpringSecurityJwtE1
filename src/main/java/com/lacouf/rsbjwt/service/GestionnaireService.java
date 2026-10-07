@@ -1,10 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
-import com.lacouf.rsbjwt.model.EmployerNotification;
-import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.ManagerNotification;
-import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
@@ -42,7 +38,7 @@ public class GestionnaireService {
     // ── CV Management ──────────────────────────────────────────────────────────
 
     public List<PendingCvDto> getPendingCvs() {
-        return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(CvStatus.PENDING)
+        return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)
                 .stream()
                 .map(gestionnaireMapper::toPendingCvDto)
                 .toList();
@@ -58,7 +54,7 @@ public class GestionnaireService {
     public void acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
-        cv.setStatus(CvStatus.ACCEPTED);
+        cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         Student student = cv.getStudent();
         cvNotificationService.notifyStudentOnCvAccepted(student, cv);
@@ -69,7 +65,7 @@ public class GestionnaireService {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
         byte[] reviewContent = Base64.getDecoder().decode(reviewRequest.getContent());
-        cv.setStatus(CvStatus.DECLINED);
+        cv.setStatus(Status.DECLINED);
         cv.setReviewContent(reviewContent);
         cv.setReviewFileName(reviewRequest.getFileName());
         cv.setReviewContentType(reviewRequest.getContentType());
@@ -81,7 +77,7 @@ public class GestionnaireService {
     // ── Job Offer Management ───────────────────────────────────────────────────
 
     public List<JobOfferDto> getPendingOffers() {
-        return jobOfferRepository.findAllByStatus(OfferStatus.WAITING)
+        return jobOfferRepository.findAllByStatus(Status.WAITING)
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -90,7 +86,7 @@ public class GestionnaireService {
     @Transactional
     public Optional<JobOfferDto> acceptOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
-            offer.setStatus(OfferStatus.ACCEPTED);
+            offer.setStatus(Status.ACCEPTED);
             jobOfferRepository.save(offer);
             employerNotificationRepository.save(new EmployerNotification(
                     "Offre acceptée",
@@ -104,7 +100,7 @@ public class GestionnaireService {
     @Transactional
     public Optional<JobOfferDto> refuseOffer(Long id) {
         return jobOfferRepository.findById(id).map(offer -> {
-            offer.setStatus(OfferStatus.REFUSED);
+            offer.setStatus(Status.DECLINED);
             jobOfferRepository.save(offer);
             employerNotificationRepository.save(new EmployerNotification(
                     "Offre refusée",

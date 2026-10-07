@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +19,7 @@ public class CvMetaDataDto {
     private String fileName;
     private String contentType;
     private long size;
-    private CvStatus status;
+    private Status status;
     private Instant uploadedAt;
 
     public static CvMetaDataDto toCvMetaDataDto(StudentCv cv){

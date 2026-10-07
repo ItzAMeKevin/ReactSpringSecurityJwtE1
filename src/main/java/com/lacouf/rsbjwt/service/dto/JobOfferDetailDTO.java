@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
 
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ public record JobOfferDetailDTO(
         String prerequisites,
         AdresseDTO location,
         String salary,
-        OfferStatus status,
+        Status status,
         LocalDate publicationDate,
         LocalDate startingDate,
         Integer durationInWeeks,

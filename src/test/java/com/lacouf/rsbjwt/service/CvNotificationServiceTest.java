@@ -79,7 +79,7 @@ public class CvNotificationServiceTest {
         assertSame(assigned, saved.getManager());
         assertSame(testCv, saved.getStudentCv());
         assertEquals(NotificationType.CV_UPLOADED, saved.getType());
-        assertEquals(NotificationStatus.SENT, saved.getStatus());
+        assertEquals(Status.SENT, saved.getStatus());
         assertEquals(0, saved.getRetryCount());
         assertNotNull(saved.getSentAt());
         verifyNoInteractions(managerRepository);
@@ -160,7 +160,7 @@ public class CvNotificationServiceTest {
         assertSame(testCv, saved.getStudentCv());
         assertNull(saved.getManager());
         assertEquals(NotificationType.CV_ACCEPTED, saved.getType());
-        assertEquals(NotificationStatus.SENT, saved.getStatus());
+        assertEquals(Status.SENT, saved.getStatus());
         assertTrue(saved.getMessage().contains("cv LeonM.pdf"));
         assertNotNull(saved.getSentAt());
     }
@@ -174,7 +174,7 @@ public class CvNotificationServiceTest {
         Notification saved = captureSavedNotification();
         assertSame(testStudent, saved.getStudent());
         assertEquals(NotificationType.CV_REJECTED, saved.getType());
-        assertEquals(NotificationStatus.SENT, saved.getStatus());
+        assertEquals(Status.SENT, saved.getStatus());
         assertTrue(saved.getMessage().contains("cv LeonM.pdf"));
     }
 
