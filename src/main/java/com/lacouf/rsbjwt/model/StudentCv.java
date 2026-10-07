@@ -18,7 +18,6 @@ public class StudentCv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Pas de @Lob : sur PostgreSQL, un byte[] devient une colonne bytea
     @Column(nullable = false)
     private byte[] content;
 

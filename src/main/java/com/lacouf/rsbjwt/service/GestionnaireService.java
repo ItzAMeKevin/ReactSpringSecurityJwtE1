@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void declineCv(Long cvId, UploadCvDto reviewRequest) {
+    public void declineCv(Long cvId, CvUploadDto reviewRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
         byte[] reviewContent = Base64.getDecoder().decode(reviewRequest.getContent());

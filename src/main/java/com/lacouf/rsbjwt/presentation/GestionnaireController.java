@@ -3,7 +3,7 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -56,7 +56,7 @@ public class GestionnaireController {
 
     @PutMapping("/cv/{cvId}/decline")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Void> declineCv(@PathVariable Long cvId, @Valid @RequestBody UploadCvDto reviewRequest) {
+    public ResponseEntity<Void> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvUploadDto reviewRequest) {
         try {
             gestionnaireService.declineCv(cvId, reviewRequest);
             return ResponseEntity.noContent().build();
