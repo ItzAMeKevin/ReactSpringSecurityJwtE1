@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import {useRef, useState} from "react";
+import {useRef, useState, useEffect} from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -77,6 +77,33 @@ const PersonalSpaceStudent = () => {
         }
     };
 
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadCvs = async () => {
+            setIsLoadingList(true);
+            setListError(null);
+            try {
+                const response = await fetcher("/student-cv", {method: "GET"});
+                if (!response.ok) throw new Error(`${response.status}`);
+                const data = await response.json();
+                if (!cancelled) {
+                    setCvList((prev) => [...prev, ...data.filter((cv) => !prev.some((p) => p.id === cv.id))]);
+                }
+            } catch (error) {
+                console.error("Erreur lors du chargement des CV :", error);
+                if (!cancelled) setListError(t("televerser.erreurChargementCvs"));
+            } finally {
+                if (!cancelled) setIsLoadingList(false);
+            }
+        };
+
+        loadCvs();
+        return () => {
+            cancelled = true;
+        };
+    }, [t]);
+
     return (
         <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
@@ -123,11 +150,18 @@ const PersonalSpaceStudent = () => {
                     <p className="text-red-700">{t("televerser.envoieErreur")}</p>
                 )}
 
-                {cvList.length > 0 && (
-                    <div className="w-full mt-10">
-                        <h2 className="text-[#4b1113] font-semibold mb-3">
-                            {t("televerser.mesCvs")}
-                        </h2>
+                <div className="w-full mt-10">
+                    <h2 className="text-[#4b1113] font-semibold mb-3">
+                        {t("televerser.mesCvs")}
+                    </h2>
+
+                    {isLoadingList && cvList.length === 0 && <p className="text-[#4b1113]">...</p>}
+                    {listError && <p className="text-red-700 text-sm">{listError}</p>}
+                    {!isLoadingList && !listError && cvList.length === 0 && (
+                        <p className="text-[#4b1113]/70">{t("televerser.aucunCv")}</p>
+                    )}
+
+                    {cvList.length > 0 && (
                         <div className="flex flex-col gap-3">
                             {cvList.map((cv) => (
                                 <CvListItem
@@ -140,8 +174,8 @@ const PersonalSpaceStudent = () => {
                                 />
                             ))}
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );
