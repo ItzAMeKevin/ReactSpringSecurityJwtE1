@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.repository;
 
+import com.lacouf.rsbjwt.model.CvStatus;
 import com.lacouf.rsbjwt.model.StudentCv;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,6 +11,9 @@ public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
     List<StudentCv> findAllByStudent_IdOrderByUploadedAtDesc(Long studentId);
 
     Optional<StudentCv> findByIdAndStudent_Id(Long id, Long studentId);
+
+    List<StudentCv> findAllByStatusOrderByUploadedAtAsc(CvStatus status);
+
 
     List<StudentCv> findByStudentCredentialsEmailOrderByUploadedAtDesc(String studentEmail);
 }

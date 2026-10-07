@@ -2,6 +2,7 @@ import React from "react";
 import './Header.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import NotificationBell from "./NotificationBell.jsx";
 
 function Header({user}) {
     const { t, i18n } = useTranslation();
@@ -45,7 +46,8 @@ function Header({user}) {
                     ))}
                 </ul>
                 {user?.isLoggedIn && (
-                    <div className="user-info">
+                    <div className="user-info" style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                        {isStudent() && <NotificationBell />}
                         <p className="para-align">
                             {t("header.greeting")} <span className="user-name">{user.firstName} {user.lastName}</span>
                             {user.role && (
