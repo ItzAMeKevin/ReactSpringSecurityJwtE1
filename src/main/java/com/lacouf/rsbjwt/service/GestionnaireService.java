@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
@@ -24,7 +24,7 @@ public class GestionnaireService {
     private final CvNotificationService cvNotificationService;
 
     public List<PendingCvDto> getPendingCvs() {
-        return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(CvStatus.PENDING)
+        return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)
                 .stream()
                 .map(gestionnaireMapper::toPendingCvDto)
                 .toList();
@@ -40,7 +40,7 @@ public class GestionnaireService {
     public void acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
-        cv.setStatus(CvStatus.ACCEPTED);
+        cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         
         Student student = cv.getStudent();
@@ -52,7 +52,7 @@ public class GestionnaireService {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
         byte[] reviewContent = Base64.getDecoder().decode(reviewRequest.getContent());
-        cv.setStatus(CvStatus.DECLINED);
+        cv.setStatus(Status.DECLINED);
         cv.setReviewContent(reviewContent);
         cv.setReviewFileName(reviewRequest.getFileName());
         cv.setReviewContentType(reviewRequest.getContentType());

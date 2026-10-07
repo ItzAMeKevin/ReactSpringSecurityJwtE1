@@ -2,7 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.model.NotificationStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
@@ -46,7 +46,7 @@ public class CvNotificationService {
 
         Notification notification = new Notification();
         notification.setType(NotificationType.CV_UPLOADED);
-        notification.setStatus(NotificationStatus.SENT);
+        notification.setStatus(Status.SENT);
         notification.setTitle(title);
         notification.setMessage(message);
         notification.setManager(targetManager);
@@ -78,7 +78,7 @@ public class CvNotificationService {
             
             Notification notification = new Notification();
             notification.setType(NotificationType.CV_ACCEPTED);
-            notification.setStatus(NotificationStatus.SENT);
+            notification.setStatus(Status.SENT);
             notification.setTitle(title);
             notification.setMessage(message);
             notification.setStudent(student);
@@ -105,7 +105,7 @@ public class CvNotificationService {
             
             Notification notification = new Notification();
             notification.setType(NotificationType.CV_REJECTED);
-            notification.setStatus(NotificationStatus.SENT);
+            notification.setStatus(Status.SENT);
             notification.setTitle(title);
             notification.setMessage(message);
             notification.setStudent(student);

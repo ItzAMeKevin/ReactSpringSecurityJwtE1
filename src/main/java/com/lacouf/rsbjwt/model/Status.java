@@ -1,7 +1,10 @@
 package com.lacouf.rsbjwt.model;
 
-public enum NotificationStatus {
+public enum Status {
     PENDING,
+    ACCEPTED,
+    DECLINED,
+    WAITING,
     SENT,
     FAILED,
     RETRYING

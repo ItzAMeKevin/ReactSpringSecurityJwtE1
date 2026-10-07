@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
@@ -123,7 +123,7 @@ class EmployerControllerTest {
                 "Spring Boot, JPA",
                 adresseDTO,
                 "60000$",
-                OfferStatus.WAITING,
+                Status.WAITING,
                 LocalDate.now(),
                 LocalDate.of(2025, 3, 1),
                 12,
@@ -186,7 +186,7 @@ class EmployerControllerTest {
                         "Spring Boot, JPA",
                         adresseDTO,
                         "60000$",
-                        OfferStatus.WAITING,
+                        Status.WAITING,
                         LocalDate.now(),
                         LocalDate.of(2025, 3, 1),
                         12,
@@ -200,7 +200,7 @@ class EmployerControllerTest {
                         "Figma, Sketch",
                         adresseDTO,
                         "50000$",
-                        OfferStatus.ACCEPTED,
+                        Status.ACCEPTED,
                         LocalDate.now(),
                         LocalDate.of(2025, 4, 1),
                         6,

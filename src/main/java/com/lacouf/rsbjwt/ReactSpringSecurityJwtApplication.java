@@ -3,7 +3,7 @@ package com.lacouf.rsbjwt;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.model.Adresse;
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Student;
@@ -171,7 +171,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         cv.setContentType("application/pdf");
         cv.setContent(content);
         cv.setSize(content.length);
-        cv.setStatus(CvStatus.PENDING);
+        cv.setStatus(Status.PENDING);
         cv.setStudent(student);
         studentCvRepository.save(cv);
     }

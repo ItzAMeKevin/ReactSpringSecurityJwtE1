@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
@@ -70,7 +70,7 @@ public class StudentCvService {
         cv.setContentType(PDF_CONTENT_TYPE);
         cv.setContent(content);
         cv.setSize(content.length);
-        cv.setStatus(CvStatus.PENDING);
+        cv.setStatus(Status.PENDING);
         cv.setStudent(student);
 
         return studentCvRepository.save(cv);
