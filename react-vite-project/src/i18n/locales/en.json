@@ -122,6 +122,11 @@
     "noJobOffers": "You have no internship offers yet.",
     "offerCreated": "Internship offer published successfully.",
     "submit": "Publish offer",
+    "status": {
+      "WAITING": "Pending",
+      "ACCEPTED": "Accepted",
+      "REFUSED": "Refused"
+    },
     "fields": {
       "title": "Title",
       "description": "Description",

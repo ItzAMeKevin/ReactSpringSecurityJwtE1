@@ -121,6 +121,11 @@
     "noJobOffers": "Aucune offre de stage publiée",
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "submit": "Publier l'offre",
+    "status": {
+      "WAITING": "En attente",
+      "ACCEPTED": "Acceptée",
+      "REFUSED": "Refusée"
+    },
     "fields": {
       "title": "Titre",
       "description": "Description",

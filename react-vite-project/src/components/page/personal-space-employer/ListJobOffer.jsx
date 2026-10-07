@@ -11,6 +11,13 @@ const ListJobOffer = ({refreshKey}) => {
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
         programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+    const statusLabel = (status) =>
+        t(`personalSpaceEmployer.status.${status}`, {defaultValue: status});
+    const statusStyles = {
+        WAITING: "bg-yellow-100 text-yellow-800",
+        ACCEPTED: "bg-green-100 text-green-800",
+        REFUSED: "bg-red-100 text-red-800",
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -46,6 +53,9 @@ const ListJobOffer = ({refreshKey}) => {
         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
                 <li key={offer.id ?? i} className="rounded border border-[#4b1113] bg-white p-4 shadow">
+                    <span className={`w-fit rounded px-2 py-0.5 text-xs font-bold ${statusStyles[offer.status] ?? "bg-gray-100 text-gray-800"}`}>
+                        {statusLabel(offer.status)}
+                    </span>
                     <h3 className="text-lg font-bold text-[#4b1113]">{offer.title}</h3>
                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
                     <p className="mt-2 line-clamp-3">{offer.description}</p>
