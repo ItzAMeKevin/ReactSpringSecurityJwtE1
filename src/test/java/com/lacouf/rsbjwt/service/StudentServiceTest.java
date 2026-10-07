@@ -8,7 +8,7 @@ import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,7 +54,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "student@test.com";
         String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
-        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("cv.pdf", "application/pdf", base64Content);
 
         when(studentRepository.findByCredentialsEmail(email))
                 .thenReturn(Optional.of(testStudent));
@@ -64,7 +64,6 @@ public class StudentServiceTest {
                     cv.setId(1L);
                     return cv;
                 });
-
         // ACT
         CvMetaDataDto result = studentService.upload(email, request);
 
@@ -81,7 +80,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "student@test.com";
         String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
-        UploadCvDto request = new UploadCvDto("cv.pdf", "text/plain", base64Content);
+        CvUploadDto request = new CvUploadDto("cv.pdf", "text/plain", base64Content);
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
@@ -95,7 +94,7 @@ public class StudentServiceTest {
     void testInvalidBase64Throws() {
         // ARRANGE
         String email = "student@test.com";
-        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", "not@valid@base64!!!");
+        CvUploadDto request = new CvUploadDto("cv.pdf", "application/pdf", "not@valid@base64!!!");
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
@@ -110,7 +109,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "student@test.com";
         String base64Content = Base64.getEncoder().encodeToString(new byte[]{});
-        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("cv.pdf", "application/pdf", base64Content);
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
@@ -125,7 +124,7 @@ public class StudentServiceTest {
         String email = "student@test.com";
         byte[] invalidPdfContent = new byte[]{1, 2, 3, 4, 5}; // Pas %PDF-
         String base64Content = Base64.getEncoder().encodeToString(invalidPdfContent);
-        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("cv.pdf", "application/pdf", base64Content);
 
         // ACT & ASSERT
         InvalidCvException exception = assertThrows(InvalidCvException.class, () -> {
@@ -139,7 +138,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "unknown@test.com";
         String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
-        UploadCvDto request = new UploadCvDto("cv.pdf", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("cv.pdf", "application/pdf", base64Content);
 
         when(studentRepository.findByCredentialsEmail(email))
                 .thenReturn(Optional.empty());
@@ -156,7 +155,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "student@test.com";
         String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
-        UploadCvDto request = new UploadCvDto("", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("", "application/pdf", base64Content);
 
         when(studentRepository.findByCredentialsEmail(email))
                 .thenReturn(Optional.of(testStudent));
@@ -173,7 +172,7 @@ public class StudentServiceTest {
         // ARRANGE
         String email = "student@test.com";
         String base64Content = Base64.getEncoder().encodeToString(validPdfContent);
-        UploadCvDto request = new UploadCvDto("..\\..\\evil.pdf", "application/pdf", base64Content);
+        CvUploadDto request = new CvUploadDto("..\\..\\evil.pdf", "application/pdf", base64Content);
 
         when(studentRepository.findByCredentialsEmail(email))
                 .thenReturn(Optional.of(testStudent));

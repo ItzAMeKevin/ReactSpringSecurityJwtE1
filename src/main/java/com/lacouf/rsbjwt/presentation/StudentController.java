@@ -4,7 +4,7 @@ import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
-import com.lacouf.rsbjwt.service.dto.UploadCvDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -24,7 +24,7 @@ public class StudentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('STUDENT')")
-    public ResponseEntity<CvMetaDataDto> upload(Authentication authentication, @Valid @RequestBody UploadCvDto request){
+    public ResponseEntity<CvMetaDataDto> upload(Authentication authentication, @Valid @RequestBody CvUploadDto request){
         try {
             CvMetaDataDto response = studentService.upload(authentication.getName(), request);
             return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
