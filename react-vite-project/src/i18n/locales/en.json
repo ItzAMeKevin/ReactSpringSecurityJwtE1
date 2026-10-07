@@ -32,7 +32,6 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
-
     "submit": "Register"
   },
   "errors": {
@@ -150,6 +149,55 @@
       "postalCode": "e.g. H1A1A1",
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
+    }
+  },
+  "gestionnaire": {
+    "title": "Manager Space",
+    "loadingCvs": "Loading pending CVs...",
+    "errorLoadingCvs": "An error occurred while loading CVs.",
+    "noCvsPending": "No CVs pending for validation.",
+    "consulter": "View",
+    "masquer": "Hide",
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "preview": {
+      "errorLoading": "Unable to load CV preview.",
+      "loading": "Loading preview..."
+    },
+    "decline": {
+      "title": "Upload the CV review (PDF) before confirming the rejection.",
+      "chooseFile": "Choose a file",
+      "confirmDecline": "Confirm rejection",
+      "processing": "Sending...",
+      "errorNoFile": "You must upload a CV review before confirming the rejection.",
+      "errorPdfOnly": "Only PDF files are accepted.",
+      "errorProcessing": "An error occurred while processing this CV. Please try again."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "managerTitle": "CVs to Review",
+    "ariaLabel": "Notifications",
+    "loading": "Loading...",
+    "error": "Error loading notifications.",
+    "empty": "No notifications.",
+    "downloadReview": "Download feedback",
+    "types": {
+      "CV_UPLOADED": {
+        "title": "New CV to validate",
+        "message": "Student {firstName} {lastName} (ID: {matricule}) uploaded a new CV: {fileName} on {uploadedAt}. Please review and approve the document."
+      },
+      "CV_ACCEPTED": {
+        "title": "Your CV has been accepted",
+        "message": "Your CV has been validated by a manager."
+      },
+      "CV_REJECTED": {
+        "title": "Your CV has been rejected",
+        "message": "Please review the feedback and upload a new CV."
+      },
+      "CV_REVIEW_READY": {
+        "title": "Review ready"
+      }
     }
   }
 }

@@ -9,9 +9,11 @@ import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
-import jakarta.transaction.Transactional;
+import com.lacouf.rsbjwt.service.event.CvUploadedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -19,13 +21,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class StudentService {
+public class StudentCvService {
     private static final int MAX_CV_SIZE_BYTES = 5 * 1024 * 1024;
     private static final byte[] PDF_SIGNATURE = {'%', 'P', 'D', 'F', '-'};
     private static final String PDF_CONTENT_TYPE = "application/pdf";
 
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -33,6 +36,9 @@ public class StudentService {
         byte[] decodedContent = decodeBase64AndValidatePdf(request.getContent());
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
+
+        eventPublisher.publishEvent(new CvUploadedEvent(savedCv.getId()));
+
         return CvMetaDataDto.toCvMetaDataDto(savedCv);
     }
 
@@ -58,7 +64,7 @@ public class StudentService {
         return content;
     }
 
-        private StudentCv createAndSaveStudentCv(Student student, String fileName, byte[] content) {
+    private StudentCv createAndSaveStudentCv(Student student, String fileName, byte[] content) {
         StudentCv cv = new StudentCv();
         cv.setFileName(sanitizeFileName(fileName));
         cv.setContentType(PDF_CONTENT_TYPE);
@@ -74,16 +80,28 @@ public class StudentService {
         if (content.length < PDF_SIGNATURE.length) {
             return false;
         }
-        return Arrays.equals(content, 0 , PDF_SIGNATURE.length, PDF_SIGNATURE, 0, PDF_SIGNATURE.length);
+        return Arrays.equals(content, 0, PDF_SIGNATURE.length, PDF_SIGNATURE, 0, PDF_SIGNATURE.length);
     }
 
-    private void validatePdfContent(byte[] content){
+    private void validatePdfContent(byte[] content) {
         if (content.length == 0 || content.length > MAX_CV_SIZE_BYTES) {
             throw new InvalidCvException("Le fichier doit faire entre 1 octet et 5 Mo.");
         }
         if (!isPdfSignatureValid(content)) {
             throw new InvalidCvException("Le contenu fourni n'est pas un PDF.");
         }
+    }
+
+    public byte[] getReviewFile(Long cvId, String authenticatedEmail) {
+        StudentCv cv = studentCvRepository.findById(cvId)
+                .orElseThrow(() -> new RuntimeException("CV not found"));
+
+        Student student = findStudentByEmail(authenticatedEmail);
+        if (!cv.getStudent().getId().equals(student.getId())) {
+            throw new RuntimeException("Access denied");
+        }
+
+        return cv.getReviewContent();
     }
 
     private static String sanitizeFileName(String fileName) {
@@ -96,7 +114,7 @@ public class StudentService {
 
     @Transactional
     public List<CvMetaDataDto> listCvs(String authenticatedEmail) {
-        Student student = findStudentByEmail(authenticatedEmail);
+        findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail)
                 .stream()
                 .map(CvMetaDataDto::toCvMetaDataDto)
