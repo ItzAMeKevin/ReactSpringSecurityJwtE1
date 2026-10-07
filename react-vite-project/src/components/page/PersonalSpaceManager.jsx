@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import fetcher from "../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
+import { useManagerNotificationsContext } from "../../context/ManagerNotificationsContext.jsx";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
     const location = useLocation();
+    const { removeNotificationsByCvId } = useManagerNotificationsContext();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [status, setStatus] = useState("loading");
     const [highlightedCvId, setHighlightedCvId] = useState(null);
@@ -53,6 +55,7 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors de l'acceptation du CV");
         }
         removeFromList(cvId);
+        removeNotificationsByCvId(cvId);
     };
 
     const handleDecline = async (cvId, reviewPayload) => {
@@ -65,6 +68,7 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors du refus du CV");
         }
         removeFromList(cvId);
+        removeNotificationsByCvId(cvId);
     };
 
     const isLoaded = status === "loaded";

@@ -28,46 +28,42 @@ public class CvNotificationService {
 
     @Transactional
     public void notifyManagerOnCvUpload(Long cvId) {
-        try {
-            StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new IllegalStateException("CV not found with id: " + cvId));
-            Student student = cv.getStudent();
-            Manager targetManager = determineTargetManager(student);
+        StudentCv cv = studentCvRepository.findById(cvId)
+            .orElseThrow(() -> new IllegalStateException("CV not found with id: " + cvId));
+        Student student = cv.getStudent();
+        Manager targetManager = determineTargetManager(student);
 
-            String title = "Nouveau CV a valider";
-            String message = String.format(
-                "L'etudiant %s %s (Matricule: %s) a televerse un nouveau CV: %s le %s. "
-                    + "Veuillez consulter et approuver le document via la plateforme.",
-                    student.getFirstName(),
-                    student.getLastName(),
-                    student.getMatricule(),
-                    cv.getFileName(),
-                    cv.getUploadedAt()
-                );
+        String title = "Nouveau CV a valider";
+        String message = String.format(
+            "L'etudiant %s %s (Matricule: %s) a televerse un nouveau CV: %s le %s. "
+                + "Veuillez consulter et approuver le document via la plateforme.",
+                student.getFirstName(),
+                student.getLastName(),
+                student.getMatricule(),
+                cv.getFileName(),
+                cv.getUploadedAt()
+            );
 
-            Notification notification = new Notification();
-            notification.setType(NotificationType.CV_UPLOADED);
-            notification.setStatus(NotificationStatus.SENT);
-            notification.setTitle(title);
-            notification.setMessage(message);
-            notification.setManager(targetManager);
-            notification.setStudentCv(cv);
-            notification.setRetryCount(0);
-            notification.setSentAt(Instant.now());
+        Notification notification = new Notification();
+        notification.setType(NotificationType.CV_UPLOADED);
+        notification.setStatus(NotificationStatus.SENT);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setManager(targetManager);
+        notification.setStudentCv(cv);
+        notification.setRetryCount(0);
+        notification.setSentAt(Instant.now());
 
-            notificationRepository.save(notification);
-            log.info("Notification created for CV upload: student={}, manager={}, cv={}",
-                student.getId(), targetManager.getId(), cv.getId());
-        } catch (Exception e) {
-            log.error("Error creating CV upload notification for cvId={}", cvId, e);
-        }
+        notificationRepository.save(notification);
+        log.info("Notification created for CV upload: student={}, manager={}, cv={}",
+            student.getId(), targetManager.getId(), cv.getId());
     }
 
     private Manager determineTargetManager(Student student) {
         if (student.getAssignedManager() != null) {
             return student.getAssignedManager();
         }
-        return managerRepository.findFirstBy()
+        return managerRepository.findAll().stream().findFirst()
             .orElseThrow(() -> new ManagerNotFoundException("No manager available to receive notifications"));
     }
 
