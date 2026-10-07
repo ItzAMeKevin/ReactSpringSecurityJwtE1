@@ -77,7 +77,14 @@
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
     "afficher": "Afficher",
-    "appercuIndisponible": "Aperçu indisponible"
+    "appercuIndisponible": "Aperçu indisponible",
+    "erreurChargementCvs": "Impossible de charger vos CV. Réessayez plus tard.",
+    "aucunCv": "Vous n'avez pas encore téléversé de CV.",
+    "status": {
+      "PENDING": "En attente de validation",
+      "ACCEPTED": "Accepté",
+      "REJECTED": "Refusé"
+    }
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",
@@ -174,6 +181,51 @@
     "notice": {
       "accepted": "L'offre « {{title}} » a été acceptée. L'employeur a été notifié.",
       "refused": "L'offre « {{title}} » a été refusée. L'employeur a été notifié."
+    }
+  },
+  "gestionnaire": {
+    "title": "Espace gestionnaire",
+    "pendingCvs": "CVs en attente de validation",
+    "loadingCvs": "Chargement des CV en attente...",
+    "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
+    "noCvsPending": "Aucun CV en attente de validation.",
+    "consulter": "Consulter",
+    "masquer": "Masquer",
+    "accepter": "Accepter",
+    "refuser": "Refuser",
+    "preview": {
+      "errorLoading": "Impossible de charger l'aperçu du CV.",
+      "loading": "Chargement de l'aperçu..."
+    },
+    "accept": {
+      "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
+    },
+    "decline": {
+      "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",
+      "chooseFile": "Choisir un fichier",
+      "confirmDecline": "Confirmer le refus",
+      "processing": "Envoi en cours...",
+      "errorNoFile": "Vous devez téléverser une revue du CV avant de confirmer le refus.",
+      "errorPdfOnly": "Seuls les fichiers pdf sont acceptés.",
+      "errorProcessing": "Une erreur est survenue lors du refus de ce CV. Veuillez réessayer."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "ariaLabel": "Notifications",
+    "loading": "Chargement...",
+    "error": "Erreur lors du chargement des notifications.",
+    "empty": "Aucune notification.",
+    "downloadReview": "Télécharger la revue",
+    "types": {
+      "CV_ACCEPTED": {
+        "title": "Votre CV a été accepté",
+        "message": "Votre CV a été validé par un gestionnaire."
+      },
+      "CV_REJECTED": {
+        "title": "Votre CV a été refusé",
+        "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
+      }
     }
   }
 }

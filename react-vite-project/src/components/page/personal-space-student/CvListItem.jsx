@@ -39,11 +39,20 @@ const CvPreview = ({ file }) => {
 
 const CvListItem = ({ cv, isOpen, onToggle }) => {
     const { t } = useTranslation();
+    const statusLabel = (status) => t(`televerser.status.${status}`, {defaultValue: status});
+    const statusStyles = {
+        PENDING: "bg-yellow-100 text-yellow-800",
+        ACCEPTED: "bg-green-100 text-green-800",
+        REFUSED: "bg-red-100 text-red-800",
+    };
 
     return (
         <div className="rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3">
             <div className="flex items-center justify-between gap-4">
                 <span className="text-[#4b1113] font-medium truncate">{cv.fileName}</span>
+                <span className={`w-fit rounded px-2 py-0.5 text-xs font-bold ${statusStyles[cv.status] ?? "bg-gray-100 text-gray-800"}`}>
+                    {statusLabel(cv.status)}
+                </span>
                 <button
                     type="button"
                     onClick={onToggle}

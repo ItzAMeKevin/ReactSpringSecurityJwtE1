@@ -2,11 +2,15 @@ import {useCallback, useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import OfferDetailModal from "./OfferDetailModal.jsx";
+import ManagerCvListItem from "../ManagerCvListItem.jsx";
 
 const NOTICE_DURATION_MS = 5000;
 
 const PersonalSpaceManager = () => {
     const {t} = useTranslation();
+
+    const [pendingCvs, setPendingCvs] = useState([]);
+    const [status, setStatus] = useState("loading");
 
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,16 +40,6 @@ const PersonalSpaceManager = () => {
         }
     }, []);
 
-    useEffect(() => {
-        loadOffers();
-    }, [loadOffers]);
-
-    useEffect(() => {
-        if (!notice) return undefined;
-        const timer = setTimeout(() => setNotice(null), NOTICE_DURATION_MS);
-        return () => clearTimeout(timer);
-    }, [notice]);
-
     const closeModal = useCallback(() => {
         setSelected(null);
         setDecisionError(false);
@@ -63,7 +57,6 @@ const PersonalSpaceManager = () => {
         try {
             const res = await fetcher(`/gestionnaire/offres/${selected.id}/${action}`, {method: "PUT"});
 
-            // 404: the offer no longer exists, so it simply leaves the list
             if (!res.ok && res.status !== 404) throw new Error(`${res.status}`);
 
             setOffers((prev) => prev.filter((o) => o.id !== selected.id));
@@ -78,6 +71,63 @@ const PersonalSpaceManager = () => {
         }
     };
 
+    const removeFromList = (cvId) => {
+        setPendingCvs((current) => current.filter((cv) => cv.id !== cvId));
+    };
+
+    const handleAccept = async (cvId) => {
+        const response = await fetcher(`/gestionnaire/cv/${cvId}/accept`, {
+            method: "PUT",
+        });
+        if (!response.ok) {
+            throw new Error("Erreur lors de l'acceptation du CV");
+        }
+        removeFromList(cvId);
+    };
+
+    const handleDecline = async (cvId, reviewPayload) => {
+        const response = await fetcher(`/gestionnaire/cv/${cvId}/decline`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(reviewPayload),
+        });
+        if (!response.ok) {
+            throw new Error("Erreur lors du refus du CV");
+        }
+        removeFromList(cvId);
+    };
+
+    const isLoaded = status === "loaded";
+
+    useEffect(() => {
+        loadOffers();
+    }, [loadOffers]);
+
+    useEffect(() => {
+        if (!notice) return undefined;
+        const timer = setTimeout(() => setNotice(null), NOTICE_DURATION_MS);
+        return () => clearTimeout(timer);
+    }, [notice]);
+
+    useEffect(() => {
+        const fetchPendingCvs = async () => {
+            try {
+                const response = await fetcher("/gestionnaire/cv/pending");
+                if (!response.ok) {
+                    setStatus("error");
+                    return;
+                }
+                setPendingCvs(await response.json());
+                setStatus("loaded");
+            } catch (error) {
+                console.error("Erreur lors du chargement des CVs en attente :", error);
+                setStatus("error");
+            }
+        };
+
+        void fetchPendingCvs();
+    }, []);
+
     const showList = !loading && !loadError && offers.length > 0;
     const showEmpty = !loading && !loadError && offers.length === 0;
 
@@ -85,6 +135,38 @@ const PersonalSpaceManager = () => {
         <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
             <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
                 <h1 className="text-2xl font-bold text-[#4b1113]">{t("personalSpaceManager.title")}</h1>
+
+                <h2 className="text-xl font-bold text-[#4b1113]">
+                    {t("gestionnaire.pendingCvs")}
+                    {showList && ` (${offers.length})`}
+                </h2>
+
+                {status === "loading" && (
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.loadingCvs")}</p>
+                )}
+
+                {status === "error" && (
+                    <p className="text-red-700" role="alert">
+                        {t("gestionnaire.errorLoadingCvs")}
+                    </p>
+                )}
+
+                {isLoaded && pendingCvs.length === 0 && (
+                    <p className="text-[#4b1113]/70">{t("gestionnaire.noCvsPending")}</p>
+                )}
+
+                {isLoaded && pendingCvs.length > 0 && (
+                    <div className="w-full max-w-3xl flex flex-col gap-3">
+                        {pendingCvs.map((cv) => (
+                            <ManagerCvListItem
+                                key={cv.id}
+                                cv={cv}
+                                onAccept={handleAccept}
+                                onDecline={handleDecline}
+                            />
+                        ))}
+                    </div>
+                )}
 
                 {/* Subtitle with live count (count hidden when there is nothing to process) */}
                 <h2 className="text-xl font-bold text-[#4b1113]">
