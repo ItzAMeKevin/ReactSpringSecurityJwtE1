@@ -164,6 +164,14 @@
       "errorLoading": "Unable to load CV preview.",
       "loading": "Loading preview..."
     },
+    "offres": {
+      "title": "Pending internship offers",
+      "loading": "Loading offers...",
+      "error": "Error loading offers.",
+      "none": "No pending internship offers.",
+      "company": "Company",
+      "weeks": "wks"
+    },
     "decline": {
       "title": "Upload the CV review (PDF) before confirming the rejection.",
       "chooseFile": "Choose a file",

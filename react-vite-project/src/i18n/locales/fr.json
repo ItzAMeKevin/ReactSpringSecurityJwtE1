@@ -164,6 +164,14 @@
       "errorLoading": "Impossible de charger l'aperçu du CV.",
       "loading": "Chargement de l'aperçu..."
     },
+    "offres": {
+      "title": "Offres de stage en attente",
+      "loading": "Chargement des offres...",
+      "error": "Erreur lors du chargement des offres.",
+      "none": "Aucune offre de stage en attente.",
+      "company": "Entreprise",
+      "weeks": "sem."
+    },
     "decline": {
       "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",
       "chooseFile": "Choisir un fichier",
