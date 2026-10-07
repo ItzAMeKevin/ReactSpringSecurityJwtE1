@@ -50,16 +50,15 @@
     "identifiantTaken": "Cet identifiant est déjà attribué."
   },
   "header": {
-    "title": "ZeROSE",
+    "title": "My App",
     "accueil": "Accueil",
     "about": "À propos",
+    "emprunteur": "Emprunteur",
+    "prepose": "Prepose",
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "inscription": "S'inscrire",
-    "greeting": "Bonjour",
-    "etudiant": "Étudiant",
-    "employeur": "Employeur"
+    "greeting": "Bonjour"
   },
   "televerser": {
     "choisirFichier": "CHOISIR UN FICHIER",
@@ -71,7 +70,8 @@
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
-    "afficher": "Afficher"
+    "afficher": "Afficher",
+    "appercuIndisponible": "Aperçu indisponible"
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",

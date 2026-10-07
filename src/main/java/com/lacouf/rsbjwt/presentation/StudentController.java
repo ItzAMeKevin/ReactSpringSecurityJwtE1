@@ -2,7 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
-import com.lacouf.rsbjwt.service.StudentCvService;
+import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.UploadCvDto;
 import jakarta.validation.Valid;
@@ -12,25 +12,35 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/student-cv")
 public class StudentController {
-    private final StudentCvService studentCvService;
+    private final StudentService studentService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<CvMetaDataDto> upload(Authentication authentication, @Valid @RequestBody UploadCvDto request){
         try {
-            CvMetaDataDto response = studentCvService.upload(authentication.getName(), request);
+            CvMetaDataDto response = studentService.upload(authentication.getName(), request);
             return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
         } catch (InvalidCvException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<List<CvMetaDataDto>> listCvs(Authentication authentication) {
+        try {
+            List<CvMetaDataDto> response = studentService.listCvs(authentication.getName());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(response);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

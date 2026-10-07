@@ -65,9 +65,9 @@ function App() {
     <div>
       <Routes>
         <Route path="/" element={<PageLayout user={user}/>}>
-            <Route index element={<Navigate to="/login" replace />}/>
-          <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
+          <Route index element={<Navigate to="/login" replace />}/>
           <Route path='about' element={<About/>}/>
+          <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
           <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>

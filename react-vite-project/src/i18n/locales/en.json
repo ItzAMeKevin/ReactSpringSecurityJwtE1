@@ -72,7 +72,8 @@
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
-    "afficher": "Show"
+    "afficher": "Show",
+    "appercuIndisponible": "Preview not available"
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
@@ -107,5 +108,17 @@
     "signUp": "Sign up",
     "invalidEmail": "Invalid email",
     "invalidPassword": "Invalid password"
+  },
+  "televerser": {
+    "choisirFichier": "CHOOSE A FILE",
+    "fichierChoisi": "Selected file",
+    "erreurTypeFichier": "Only pdf files are accepted.",
+    "envoieEnCours": "Uploading...",
+    "envoyerCv": "Send CV",
+    "envoieSuccess": "CV sent successfully !",
+    "envoieErreur": "An error occurred, try again.",
+    "mesCvs": "My uploaded CVs",
+    "masquer": "Hide",
+    "afficher": "Show"
   }
 }
