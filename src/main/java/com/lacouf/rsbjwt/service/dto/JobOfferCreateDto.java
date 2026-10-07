@@ -2,19 +2,25 @@ package com.lacouf.rsbjwt.service.dto;
 
 import com.lacouf.rsbjwt.model.Programe;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
-public record JobOfferCreateDto(
-        @NotBlank String title,
-        @NotBlank String description,
-        @NotBlank String prerequisites,
-        @Valid @NotNull AdresseDTO adresse,
-        @NotBlank String salary,
-        @NotNull LocalDate startingDate,
-        @Min(1) int durationInWeeks,
+public record JobOfferCreateDTO(
+        @NotBlank (message = "Le titre est obligatoire")
+        String title,
+        @NotBlank(message = "La description est obligatoire")
+        String description,
+        @NotBlank (message = "Les prérequis sont obligatoires")
+        String prerequisites,
+        @NotNull (message = "L'adresse est obligatoire")
+        @Valid AdresseDTO adresse,
+        String salary,
+        @NotNull(message = "La date de début est obligatoire")
+        LocalDate startingDate,
+        @Positive Integer durationInWeeks,
         @NotNull Programe programe
-) {}
+) {
+}
