@@ -159,6 +159,7 @@
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
+    "cvSection": "CVs en attente de validation",
     "loadingCvs": "Chargement des CV en attente...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",

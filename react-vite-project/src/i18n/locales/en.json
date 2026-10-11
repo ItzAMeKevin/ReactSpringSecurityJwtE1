@@ -159,6 +159,7 @@
   },
   "gestionnaire": {
     "title": "Manager Space",
+    "cvSection": "CVs pending validation",
     "loadingCvs": "Loading pending CVs...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
