@@ -92,7 +92,7 @@ public class StudentCvService {
         }
     }
 
-    public byte[] getReviewFile(Long cvId, String authenticatedEmail) {
+    public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new RuntimeException("CV not found"));
 
@@ -101,7 +101,7 @@ public class StudentCvService {
             throw new RuntimeException("Access denied");
         }
 
-        return cv.getReviewContent();
+        return cv.getReviewFeedback();
     }
 
     private static String sanitizeFileName(String fileName) {

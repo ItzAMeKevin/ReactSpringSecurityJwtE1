@@ -265,14 +265,14 @@ public class StudentCvServiceTest {
         String email = "student@test.com";
         StudentCv cv = new StudentCv();
         cv.setStudent(testStudent);
-        cv.setReviewContent(new byte[]{1, 2, 3});
+        cv.setReviewFeedback("Le format du CV n'est pas correct.");
 
         when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(testStudent));
 
-        byte[] result = studentCvService.getReviewFile(5L, email);
+        String result = studentCvService.getReviewFile(5L, email);
 
-        assertArrayEquals(new byte[]{1, 2, 3}, result);
+        assertEquals("Le format du CV n'est pas correct.", result);
     }
 
     @Test
