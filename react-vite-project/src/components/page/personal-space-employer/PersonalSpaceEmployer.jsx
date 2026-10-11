@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import FormJobOffer from "./FormJobOffer.jsx";
 import SuccessPopup from "../SuccessPopup.jsx";
-import { pageWrapper, pageInner, pageTitle, sectionTitle, btnPrimary, btnOutline } from "../../../styles/classes.js";
+import { pageWrapper, pageInner, pageTitle, sectionTitle, btnPrimary, btnOutline, btnModalPrimary, textMuted } from "../../../styles/classes.js";
 
 const PersonalSpaceEmployer = () => {
     
@@ -93,19 +93,19 @@ const PersonalSpaceEmployer = () => {
                                 <div className="fixed inset-0 z-[1001] flex items-center justify-center bg-black/40">
                                     <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
                                         <h3 className="text-lg font-bold text-brand mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
-                                        <p className="text-sm text-brand/70 mb-6">{t("personalSpaceEmployer.confirmClose.message")}</p>
+                                        <p className={`text-sm ${textMuted} mb-6`}>{t("personalSpaceEmployer.confirmClose.message")}</p>
                                         <div className="flex justify-end gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCloseConfirm(false)}
-                                                className={`${btnOutline} text-sm font-medium`}
+                                                className={`${btnOutline} text-sm`}
                                             >
                                                 {t("personalSpaceEmployer.confirmClose.cancel")}
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleCloseForm}
-                                                className={`${btnPrimary} text-sm font-medium`}
+                                                className={btnModalPrimary}
                                             >
                                                 {t("personalSpaceEmployer.confirmClose.confirm")}
                                             </button>

@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import Field from "../Field.jsx";
-import { inputField, btnOutline, btnPrimary } from "../../../styles/classes.js";
+import { inputField, btnOutline, btnModalPrimary } from "../../../styles/classes.js";
 
 const FormJobOffer = ({onSuccess, onCancel}) => {
 
@@ -131,7 +131,7 @@ const FormJobOffer = ({onSuccess, onCancel}) => {
                     <button
                         type="submit"
                         disabled={submitting}
-                        className={`${btnPrimary} disabled:opacity-50`}
+                        className={btnModalPrimary}
                     >
                         {submitting ? "..." : t("personalSpaceEmployer.submit")}
                     </button>

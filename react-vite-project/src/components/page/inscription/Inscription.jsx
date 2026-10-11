@@ -113,7 +113,7 @@ const Inscription = () => {
       <div
         className="pointer-events-none absolute inset-0 opacity-25"
         style={{
-          backgroundImage: "radial-gradient(var(--color-brand) 1.6px, transparent 1.7px)",
+          backgroundImage: "radial-gradient(var(--color-mint-dots) 1.6px, transparent 1.7px)",
           backgroundSize: "18px 18px",
         }}
       />

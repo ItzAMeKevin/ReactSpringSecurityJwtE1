@@ -6,7 +6,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
-import { btnAcceptLg, pageWrapper, pageInner } from "../../../styles/classes.js";
+import { btnAcceptLg, pageWrapper, pageInner, textError, textSuccess } from "../../../styles/classes.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -96,7 +96,7 @@ const PersonalSpaceStudent = () => {
                     {t("televerser.choisirFichier")}
                 </button>
                 {fileError && (
-                    <p className="text-red-700 text-sm">{fileError}</p>
+                    <p className={`${textError} text-sm`}>{fileError}</p>
                 )}
 
                 {selectedFile && (
@@ -118,10 +118,10 @@ const PersonalSpaceStudent = () => {
                 )}
 
                 {uploadState === "success" && (
-                    <p className="text-green-700">{t("televerser.envoieSuccess")}</p>
+                    <p className={textSuccess}>{t("televerser.envoieSuccess")}</p>
                 )}
                 {uploadState === "error" && (
-                    <p className="text-red-700">{t("televerser.envoieErreur")}</p>
+                    <p className={textError}>{t("televerser.envoieErreur")}</p>
                 )}
 
                 {cvList.length > 0 && (
