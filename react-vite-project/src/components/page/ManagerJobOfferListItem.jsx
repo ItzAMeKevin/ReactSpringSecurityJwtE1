@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { btnAccept, btnRefuse } from "../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const { t } = useTranslation();
@@ -53,8 +54,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         type="button"
                         onClick={handleAccept}
                         disabled={processing !== null}
-                        className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition-colors
-  text-sm font-medium disabled:opacity-50"
+                        className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
@@ -62,7 +62,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         type="button"
                         onClick={handleRefuse}
                         disabled={processing !== null}
-                        className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-hover transition-colors text-sm font-medium disabled:opacity-50"
+                        className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
                     </button>

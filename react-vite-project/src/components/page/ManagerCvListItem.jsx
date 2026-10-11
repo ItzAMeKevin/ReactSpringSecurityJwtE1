@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept } from "../../styles/classes.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse } from "../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -102,7 +102,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                     <button
                         type="button"
                         onClick={handleDownload}
-                        className="bg-blue-100 text-blue-800 py-1.5 px-3 rounded-md hover:bg-blue-200 transition-colors flex items-center"
+                        className={`${btnSmPrimary} flex items-center`}
                     >
                         <svg
                             width="16"
@@ -139,7 +139,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={() => setIsDeclining((current) => !current)}
                         disabled={actionState === "processing"}
-                        className="bg-red-100 text-red-800 text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-200 transition-colors disabled:opacity-60"
+                        className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
                     </button>
@@ -187,7 +187,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                             type="button"
                             onClick={handleConfirmDecline}
                             disabled={actionState === "processing"}
-                            className="bg-red-700 text-white text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-800 transition-colors disabled:opacity-60"
+                            className={btnRefuse}
                         >
                             {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
                         </button>

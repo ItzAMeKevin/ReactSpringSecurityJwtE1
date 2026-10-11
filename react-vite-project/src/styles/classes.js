@@ -15,6 +15,9 @@ export const btnAcceptLg = "bg-accept text-brand font-bold text-lg py-2 px-4 rou
 /** Outlined brand button — used in modals (cancel actions) */
 export const btnOutline = "border border-brand text-brand px-4 py-2 rounded hover:bg-surface transition-colors";
 
+/** Refuse / decline button (small) — used for destructive reject actions */
+export const btnRefuse = "bg-red-700 text-white text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-800 transition-colors disabled:opacity-60";
+
 // ── Cards ─────────────────────────────────────────────────────────────────────
 
 /** CV / offer list item card */
