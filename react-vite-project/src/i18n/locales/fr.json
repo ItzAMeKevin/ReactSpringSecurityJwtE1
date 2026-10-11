@@ -149,6 +149,12 @@
       "postalCode": "ex. H1A1A1",
       "civicNumber": "ex. 123",
       "street": "ex. Rue Principale"
+    },
+    "confirmClose": {
+      "title": "Fermer le formulaire ?",
+      "message": "Les données non sauvegardées seront perdues.",
+      "cancel": "Annuler",
+      "confirm": "Confirmer"
     }
   },
   "gestionnaire": {

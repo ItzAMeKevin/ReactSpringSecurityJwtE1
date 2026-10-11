@@ -149,6 +149,12 @@
       "postalCode": "e.g. H1A1A1",
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
+    },
+    "confirmClose": {
+      "title": "Close the form?",
+      "message": "Unsaved data will be lost.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "gestionnaire": {
