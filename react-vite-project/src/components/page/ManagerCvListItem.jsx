@@ -3,19 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
 
-const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(",")[1]);
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
-    });
-
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
-    const reviewInputRef = useRef(null);
 
     const [isOpen, setIsOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -25,7 +16,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
 
     const [actionState, setActionState] = useState("idle");
     const [isDeclining, setIsDeclining] = useState(false);
-    const [reviewFile, setReviewFile] = useState(null);
+    const [reviewFeedback, setReviewFeedback] = useState("");
     const [reviewError, setReviewError] = useState(null);
 
     useEffect(() => {
@@ -79,35 +70,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
         }
     };
 
-    const handleReviewFileChange = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) {
-            setReviewFile(null);
-            return;
-        }
-        if (file.type !== "application/pdf") {
-            setReviewError(t("gestionnaire.decline.errorPdfOnly"));
-            setReviewFile(null);
-            event.target.value = "";
-            return;
-        }
-        setReviewError(null);
-        setReviewFile(file);
-    };
-
     const handleConfirmDecline = async () => {
-        if (!reviewFile) {
-            setReviewError(t("gestionnaire.decline.errorNoFile"));
+        if (!reviewFeedback.trim()) {
+            setReviewError(t("gestionnaire.decline.errorNoFeedback"));
             return;
         }
         setActionState("processing");
         try {
-            const content = await fileToBase64(reviewFile);
-            await onDecline(cv.id, {
-                fileName: reviewFile.name,
-                contentType: reviewFile.type,
-                content,
-            });
+            await onDecline(cv.id, { feedback: reviewFeedback.trim() });
         } catch (error) {
             console.error("Erreur lors du refus du CV :", error);
             setActionState("error");
@@ -204,24 +174,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                     <p className="text-sm text-[#4b1113] mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
-                    <input
-                        ref={reviewInputRef}
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleReviewFileChange}
-                        className="hidden"
+                    <textarea
+                        value={reviewFeedback}
+                        onChange={(e) => setReviewFeedback(e.target.value)}
+                        placeholder={t("gestionnaire.decline.placeholder")}
+                        rows={3}
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-[#4b1113] bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
-                    <div className="flex flex-wrap items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={() => reviewInputRef.current?.click()}
-                            className="bg-white border border-red-300 text-red-800 text-sm font-medium py-1.5 px-3 rounded-md hover:bg-red-100 transition-colors"
-                        >
-                            {t("gestionnaire.decline.chooseFile")}
-                        </button>
-                        {reviewFile && (
-                            <span className="text-sm text-[#4b1113]">{reviewFile.name}</span>
-                        )}
+                    <div className="flex justify-end">
                         <button
                             type="button"
                             onClick={handleConfirmDecline}

@@ -180,12 +180,11 @@
       "weeks": "wks"
     },
     "decline": {
-      "title": "Upload the CV review (PDF) before confirming the rejection.",
-      "chooseFile":"Upload your CV in PDF format",
+      "title": "Write your feedback before confirming the rejection.",
+      "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
       "processing": "Sending...",
-      "errorNoFile": "You must upload a CV review before confirming the rejection.",
-      "errorPdfOnly": "Only PDF files are accepted.",
+      "errorNoFeedback": "You must write feedback before confirming the rejection.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },
