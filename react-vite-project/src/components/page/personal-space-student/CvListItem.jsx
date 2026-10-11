@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
+import { cardItem, btnSmPrimary } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -41,14 +42,14 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3">
+        <div className={cardItem}>
             <div className="flex items-center justify-between gap-4">
-                <span className="text-[#4b1113] font-medium truncate">{cv.fileName}</span>
+                <span className="text-brand font-medium truncate">{cv.fileName}</span>
                 <button
                     type="button"
                     onClick={onToggle}
                     aria-expanded={isOpen}
-                    className="shrink-0 bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                    className={`shrink-0 ${btnSmPrimary}`}
                 >
                     {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
                 </button>
@@ -58,7 +59,7 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
                 cv.file ? (
                     <CvPreview file={cv.file} />
                 ) : (
-                    <p className="mt-3 text-sm text-[#4b1113]/70">
+                    <p className="mt-3 text-sm text-brand/70">
                         {t("televerser.apercuIndisponible")}
                     </p>
                 )
