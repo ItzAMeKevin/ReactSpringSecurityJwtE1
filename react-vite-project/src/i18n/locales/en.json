@@ -174,7 +174,7 @@
     },
     "decline": {
       "title": "Upload the CV review (PDF) before confirming the rejection.",
-      "chooseFile": "Choose a file",
+      "chooseFile":"Upload your CV in PDF format",
       "confirmDecline": "Confirm rejection",
       "processing": "Sending...",
       "errorNoFile": "You must upload a CV review before confirming the rejection.",
