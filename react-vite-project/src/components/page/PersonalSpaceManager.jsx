@@ -5,6 +5,7 @@ import fetcher from "../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
 import ManagerJobOfferListItem from "./ManagerJobOfferListItem.jsx";
 import { useManagerNotificationsContext } from "../../context/ManagerNotificationsContext.jsx";
+import { pageWrapper, pageTitle, sectionTitle } from "../../styles/classes.js";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
@@ -118,20 +119,20 @@ const PersonalSpaceManager = () => {
     const isLoaded = status === "loaded";
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
+        <div className={pageWrapper}>
             <div className="flex flex-col items-center gap-8 pt-20 pb-20 px-4">
-                <h1 className="text-2xl font-bold text-[#4b1113]">{t("gestionnaire.title")}</h1>
+                <h1 className={pageTitle}>{t("gestionnaire.title")}</h1>
 
                 <section className="w-full max-w-3xl">
-                    <h2 className="text-xl font-bold text-[#4b1113] mb-4 pb-2 border-b border-[#4b1113]/20">{t("gestionnaire.cvSection")}</h2>
+                    <h2 className={sectionTitle}>{t("gestionnaire.cvSection")}</h2>
                     {status === "loading" && (
-                        <p className="text-[#4b1113]/70">{t("gestionnaire.loadingCvs")}</p>
+                        <p className="text-brand/70">{t("gestionnaire.loadingCvs")}</p>
                     )}
                     {status === "error" && (
                         <p className="text-red-700" role="alert">{t("gestionnaire.errorLoadingCvs")}</p>
                     )}
                     {isLoaded && pendingCvs.length === 0 && (
-                        <p className="text-[#4b1113]/70">{t("gestionnaire.noCvsPending")}</p>
+                        <p className="text-brand/70">{t("gestionnaire.noCvsPending")}</p>
                     )}
                     {isLoaded && pendingCvs.length > 0 && (
                         <div className="flex flex-col gap-3">
@@ -149,15 +150,15 @@ const PersonalSpaceManager = () => {
                 </section>
 
                 <section className="w-full max-w-3xl">
-                    <h2 className="text-xl font-bold text-[#4b1113] mb-4 pb-2 border-b border-[#4b1113]/20">{t("gestionnaire.offres.title")}</h2>
+                    <h2 className={sectionTitle}>{t("gestionnaire.offres.title")}</h2>
                     {offersStatus === "loading" && (
-                        <p className="text-[#4b1113]/70">{t("gestionnaire.offres.loading")}</p>
+                        <p className="text-brand/70">{t("gestionnaire.offres.loading")}</p>
                     )}
                     {offersStatus === "error" && (
                         <p className="text-red-700" role="alert">{t("gestionnaire.offres.error")}</p>
                     )}
                     {offersStatus === "loaded" && pendingOffers.length === 0 && (
-                        <p className="text-[#4b1113]/70">{t("gestionnaire.offres.none")}</p>
+                        <p className="text-brand/70">{t("gestionnaire.offres.none")}</p>
                     )}
                     {offersStatus === "loaded" && pendingOffers.length > 0 && (
                         <div className="flex flex-col gap-3">

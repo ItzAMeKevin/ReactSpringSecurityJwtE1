@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {useEffect, useState} from "react";
 import FormJobOffer from "./FormJobOffer.jsx";
 import SuccessPopup from "../SuccessPopup.jsx";
+import { pageWrapper, pageInner, pageTitle, sectionTitle, btnPrimary, btnOutline } from "../../../styles/classes.js";
 
 const PersonalSpaceEmployer = () => {
     
@@ -57,10 +58,10 @@ const PersonalSpaceEmployer = () => {
                     onClose={() => setShowSuccess(false)}
                 />
             )}
-            <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
-                <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
-                    <h1 className="text-2xl font-bold text-[#4b1113]">{t("personalSpaceEmployer.title")}</h1>
-                    <button className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleOpenForm}>
+            <div className={pageWrapper}>
+                <div className={pageInner}>
+                    <h1 className={pageTitle}>{t("personalSpaceEmployer.title")}</h1>
+                    <button className={btnPrimary} onClick={handleOpenForm}>
                         {t("personalSpaceEmployer.createJobOffer")}
                     </button>
                     {openForm && (
@@ -81,7 +82,7 @@ const PersonalSpaceEmployer = () => {
                                     aria-labelledby="create-job-offer-title"
                                 >
                                     <div className="overflow-y-auto p-6">
-                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-[#4b1113]">
+                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-brand">
                                             {t("personalSpaceEmployer.createJobOffer")}
                                         </h2>
                                         <FormJobOffer onSuccess={handleFormSuccess} onCancel={handleRequestClose}/>
@@ -91,20 +92,20 @@ const PersonalSpaceEmployer = () => {
                             {showCloseConfirm && (
                                 <div className="fixed inset-0 z-[1001] flex items-center justify-center bg-black/40">
                                     <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-                                        <h3 className="text-lg font-bold text-[#4b1113] mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
-                                        <p className="text-sm text-[#4b1113]/70 mb-6">{t("personalSpaceEmployer.confirmClose.message")}</p>
+                                        <h3 className="text-lg font-bold text-brand mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
+                                        <p className="text-sm text-brand/70 mb-6">{t("personalSpaceEmployer.confirmClose.message")}</p>
                                         <div className="flex justify-end gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => setShowCloseConfirm(false)}
-                                                className="px-4 py-2 rounded text-sm font-medium border border-[#4b1113] text-[#4b1113] hover:bg-[#f3ebe3] transition-colors"
+                                                className={`${btnOutline} text-sm font-medium`}
                                             >
                                                 {t("personalSpaceEmployer.confirmClose.cancel")}
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={handleCloseForm}
-                                                className="px-4 py-2 rounded text-sm font-medium bg-[#4b1113] text-white hover:bg-[#6b1c1f] transition-colors"
+                                                className={`${btnPrimary} text-sm font-medium`}
                                             >
                                                 {t("personalSpaceEmployer.confirmClose.confirm")}
                                             </button>
@@ -114,7 +115,7 @@ const PersonalSpaceEmployer = () => {
                             )}
                         </>
                     )}
-                    <h2 className="text-xl font-bold text-[#4b1113]">{t("personalSpaceEmployer.jobOffers")}</h2>
+                    <h2 className={sectionTitle}>{t("personalSpaceEmployer.jobOffers")}</h2>
                     <ListJobOffer refreshKey={refreshKey} />
                 </div>
             </div>
