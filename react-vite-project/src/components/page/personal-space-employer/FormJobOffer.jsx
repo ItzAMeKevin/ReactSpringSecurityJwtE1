@@ -5,7 +5,7 @@ import Field from "../Field.jsx";
 
 const inputClass = "w-full border border-[#4b1113] rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[#4b1113]";
 
-const FormJobOffer = ({onSuccess}) => {
+const FormJobOffer = ({onSuccess, onCancel}) => {
 
     const {t} = useTranslation();
     const [submitting, setSubmitting] = useState(false);
@@ -95,25 +95,15 @@ const FormJobOffer = ({onSuccess}) => {
         <form onSubmit={handleSubmit} noValidate>
             {error && <p className="text-red-600 mb-4">{error}</p>}
             <div className="space-y-4">
-                <div>
-                    <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} error={fieldErrors.title} className={inputClass}/>
-                </div>
-                <div>
-                    <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.description")} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.description}/>
-                </div>
-                <div>
-                    <Field label={t("personalSpaceEmployer.fields.requirements")} name="requirements" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.requirements")} className={`min-h-24 resize-y ${inputClass}`} error={fieldErrors.requirements}/>
-                </div>
-                <div>
+                <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} error={fieldErrors.title} className={inputClass}/>
+                <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.description")} className={`min-h-16 resize-y ${inputClass}`} error={fieldErrors.description}/>
+                <Field label={t("personalSpaceEmployer.fields.requirements")} name="requirements" required placeholder={t("personalSpaceEmployer.placeholders.requirements")} className={inputClass} error={fieldErrors.requirements}/>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.salary")} name="salary" type="number" min="0" step="0.01" required placeholder={t("personalSpaceEmployer.placeholders.salary")} suffix="/hr" className={inputClass} error={fieldErrors.salary}/>
-                </div>
-                <div>
                     <Field label={t("personalSpaceEmployer.fields.startingDate")} name="startingDate" type="date" required placeholder={t("personalSpaceEmployer.placeholders.startingDate")} className={inputClass} error={fieldErrors.startingDate}/>
                 </div>
-                <div>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.durationInWeeks")} name="durationInWeeks" type="number" min="1" required placeholder={t("personalSpaceEmployer.placeholders.durationInWeeks")} className={inputClass} error={fieldErrors.durationInWeeks}/>
-                </div>
-                <div>
                     <Field label={t("personalSpaceEmployer.fields.programe")} name="programe" as="select" required className={inputClass} error={fieldErrors.programe}>
                         <option value="">{t("personalSpaceEmployer.placeholders.programe")}</option>
                         {programs.map((p) => (
@@ -123,29 +113,30 @@ const FormJobOffer = ({onSuccess}) => {
                 </div>
                 <h2 className="text-[#4b1113] font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <Field label={t("personalSpaceEmployer.fields.city")} name="city" required placeholder={t("personalSpaceEmployer.placeholders.city")} className={inputClass} error={fieldErrors.city}/>
-                    </div>
-                    <div>
-                        <Field label={t("personalSpaceEmployer.fields.country")} name="country" required placeholder={t("personalSpaceEmployer.placeholders.country")} className={inputClass} error={fieldErrors.country}/>
-                    </div>
-                    <div>
-                        <Field label={t("personalSpaceEmployer.fields.postalCode")} name="postalCode" required placeholder={t("personalSpaceEmployer.placeholders.postalCode")} maxLength="7" className={inputClass} error={fieldErrors.postalCode}/>
-                    </div>
-                    <div>
-                        <Field label={t("personalSpaceEmployer.fields.civicNumber")} name="civicNumber" required inputMode="numeric" pattern="[0-9]+" placeholder={t("personalSpaceEmployer.placeholders.civicNumber")} className={inputClass} error={fieldErrors.civicNumber}/>
-                    </div>
+                    <Field label={t("personalSpaceEmployer.fields.city")} name="city" required placeholder={t("personalSpaceEmployer.placeholders.city")} className={inputClass} error={fieldErrors.city}/>
+                    <Field label={t("personalSpaceEmployer.fields.country")} name="country" required placeholder={t("personalSpaceEmployer.placeholders.country")} className={inputClass} error={fieldErrors.country}/>
+                    <Field label={t("personalSpaceEmployer.fields.postalCode")} name="postalCode" required placeholder={t("personalSpaceEmployer.placeholders.postalCode")} maxLength="7" className={inputClass} error={fieldErrors.postalCode}/>
+                    <Field label={t("personalSpaceEmployer.fields.civicNumber")} name="civicNumber" required inputMode="numeric" pattern="[0-9]+" placeholder={t("personalSpaceEmployer.placeholders.civicNumber")} className={inputClass} error={fieldErrors.civicNumber}/>
                     <div className="sm:col-span-2">
                         <Field label={t("personalSpaceEmployer.fields.street")} name="street" required placeholder={t("personalSpaceEmployer.placeholders.street")} className={inputClass} error={fieldErrors.street}/>
                     </div>
                 </div>
-                <button
-                    type="submit"
-                    disabled={submitting}
-                    className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300 disabled:opacity-50"
-                >
-                    {submitting ? "..." : t("personalSpaceEmployer.submit")}
-                </button>
+                <div className="flex justify-between gap-2">
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="border border-[#4b1113] text-[#4b1113] px-4 py-2 rounded hover:bg-[#f3ebe3] transition-colors duration-300"
+                    >
+                        {t("personalSpaceEmployer.close")}
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={submitting}
+                        className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300 disabled:opacity-50"
+                    >
+                        {submitting ? "..." : t("personalSpaceEmployer.submit")}
+                    </button>
+                </div>
             </div>
         </form>
     );

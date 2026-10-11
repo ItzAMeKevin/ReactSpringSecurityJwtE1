@@ -81,15 +81,10 @@ const PersonalSpaceEmployer = () => {
                                     aria-labelledby="create-job-offer-title"
                                 >
                                     <div className="overflow-y-auto p-6">
-                                        <h2 id="create-job-offer-title" className="mb-6 text-lg font-bold text-[#4b1113]">
+                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-[#4b1113]">
                                             {t("personalSpaceEmployer.createJobOffer")}
                                         </h2>
-                                        <FormJobOffer onSuccess={handleFormSuccess}/>
-                                        <div className="mt-6 flex justify-end gap-2">
-                                            <button type="button" className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300" onClick={handleRequestClose}>
-                                                {t("personalSpaceEmployer.close")}
-                                            </button>
-                                        </div>
+                                        <FormJobOffer onSuccess={handleFormSuccess} onCancel={handleRequestClose}/>
                                     </div>
                                 </div>
                             </div>
