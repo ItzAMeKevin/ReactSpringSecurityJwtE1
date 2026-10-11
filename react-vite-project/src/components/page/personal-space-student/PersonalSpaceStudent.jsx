@@ -6,6 +6,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
+import { btnAcceptLg, pageWrapper, pageInner } from "../../../styles/classes.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -78,8 +79,8 @@ const PersonalSpaceStudent = () => {
     };
 
     return (
-        <div className="relative min-h-screen overflow-hidden bg-[#f3ebe3]">
-            <div className="flex flex-col items-center gap-4 pt-20 pb-20 px-4">
+        <div className={pageWrapper}>
+            <div className={pageInner}>
                 <input
                     ref={inputRef}
                     type="file"
@@ -90,7 +91,7 @@ const PersonalSpaceStudent = () => {
                 <button
                     type="button"
                     onClick={() => inputRef.current?.click()}
-                    className="bg-[#B3FFD9] font-bold text-lg py-2 px-4 rounded-md hover:bg-[#8DCCAD] transition-colors"
+                    className={btnAcceptLg}
                 >
                     {t("televerser.choisirFichier")}
                 </button>
@@ -107,7 +108,7 @@ const PersonalSpaceStudent = () => {
                         <button
                             onClick={handleUpload}
                             disabled={uploadState === "uploading"}
-                            className="bg-[#B3FFD9] text-lg font-bold py-2 px-4 rounded-md hover:bg-[#8DCCAD] transition-colors disabled:opacity-60"
+                            className={btnAcceptLg}
                         >
                             {uploadState === "uploading"
                                 ? t("televerser.envoieEnCours")
@@ -125,7 +126,7 @@ const PersonalSpaceStudent = () => {
 
                 {cvList.length > 0 && (
                     <div className="w-full mt-10">
-                        <h2 className="text-[#4b1113] font-semibold mb-3">
+                        <h2 className="text-brand font-semibold mb-3">
                             {t("televerser.mesCvs")}
                         </h2>
                         <div className="flex flex-col gap-3">
