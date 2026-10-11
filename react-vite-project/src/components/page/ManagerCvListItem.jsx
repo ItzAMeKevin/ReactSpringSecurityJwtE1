@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, btnAccept } from "../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -85,13 +86,13 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     };
 
     return (
-        <div className={`rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3 transition-all duration-500 ${
+        <div className={`${cardItem} ${
             isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-[#4b1113] font-medium truncate">{cv.fileName}</p>
-                    <p className="text-sm text-[#4b1113]/70 truncate">
+                    <p className="text-brand font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-brand/70 truncate">
                         {cv.studentFirstName} {cv.studentLastName}
                         {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
                     </p>
@@ -122,7 +123,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={handleToggle}
                         aria-expanded={isOpen}
-                        className="bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                        className={btnSmPrimary}
                     >
                         {isOpen ? t("gestionnaire.masquer") : t("gestionnaire.consulter")}
                     </button>
@@ -130,7 +131,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={handleAccept}
                         disabled={actionState === "processing" || isDeclining}
-                        className="bg-[#B3FFD9] text-[#4b1113] text-sm font-bold py-1.5 px-3 rounded-md hover:bg-[#8DCCAD] transition-colors disabled:opacity-60"
+                        className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
@@ -164,14 +165,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-[#4b1113]/70">{t("gestionnaire.preview.loading")}</p>
+                        <p className="text-sm text-brand/70">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
 
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm text-[#4b1113] mb-2">
+                    <p className="text-sm text-brand mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
                     <textarea
@@ -179,7 +180,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         onChange={(e) => setReviewFeedback(e.target.value)}
                         placeholder={t("gestionnaire.decline.placeholder")}
                         rows={3}
-                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-[#4b1113] bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-brand bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
                     <div className="flex justify-end">
                         <button
