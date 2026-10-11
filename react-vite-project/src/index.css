@@ -12,6 +12,7 @@
   --color-brand: #4b1113;
   --color-brand-hover: #3a0d0f;
   --color-brand-soft: #6b1c1f;
+
   --color-accept: #B3FFD9;
   --color-accept-hover: #8DCCAD;
   --color-surface: #f3ebe3;
@@ -19,35 +20,47 @@
 
 @layer components {
   .auth-page {
-    @apply relative min-h-screen overflow-hidden bg-surface;
+    @apply relative min-h-screen overflow-hidden bg-mint-bg;
   }
 
   .auth-card {
-    @apply rounded-2xl border border-brand/20 bg-white p-8 shadow-2xl shadow-brand/10;
+    @apply rounded-2xl border border-mint-light bg-white p-8 shadow-2xl shadow-mint/20;
   }
 
   .auth-title {
-    @apply text-2xl font-bold text-brand;
+    @apply text-2xl font-bold text-slate;
   }
 
   .btn-primary {
-    @apply w-full bg-brand text-white font-medium py-2.5 rounded-md transition-colors hover:bg-brand-soft;
+    @apply w-full bg-mint text-white font-medium py-2.5 rounded-md transition-colors hover:bg-mint-dark;
   }
 
   .form-label {
-    @apply mb-1 font-medium text-brand;
+    @apply mb-1 font-medium text-slate;
   }
 
   .form-input {
-    @apply w-full rounded-md border border-brand/30 bg-white px-3 py-2.5 text-brand focus:outline-none focus:ring-2 focus:ring-brand;
+    @apply w-full rounded-md border border-mint-light bg-white px-3 py-2.5 text-slate focus:outline-none focus:ring-2 focus:ring-mint;
   }
 
   .form-input-error {
-    @apply w-full rounded-md border border-red-400 bg-red-50 px-3 py-2.5 text-brand focus:outline-none focus:ring-2 focus:ring-brand;
+    @apply w-full rounded-md border border-red-400 bg-red-50 px-3 py-2.5 text-slate focus:outline-none focus:ring-2 focus:ring-mint;
   }
 
   .lang-btn {
     @apply rounded px-2 py-1 text-sm text-slate;
+  }
+
+  /* Polka-dot texture for light backgrounds (brand-colored dots) */
+  .dots-bg {
+    background-image: radial-gradient(rgba(75, 17, 19, 0.22) 1.2px, transparent 1.3px);
+    background-size: 18px 18px;
+  }
+
+  /* Polka-dot texture for dark backgrounds (white dots) */
+  .dots-bg-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.3px);
+    background-size: 18px 18px;
   }
 }
 
