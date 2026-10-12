@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.auth.Credentials;
-import com.lacouf.rsbjwt.model.auth.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,10 +14,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"credentials"})
 public abstract class User  {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
 

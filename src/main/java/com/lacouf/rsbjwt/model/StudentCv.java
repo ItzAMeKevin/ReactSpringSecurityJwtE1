@@ -18,7 +18,6 @@ public class StudentCv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Pas de @Lob : sur PostgreSQL, un byte[] devient une colonne bytea
     @Column(nullable = false)
     private byte[] content;
 
@@ -33,7 +32,7 @@ public class StudentCv {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private CvStatus status;
+    private Status status;
 
     @Column(nullable = false, updatable = false)
     private Instant uploadedAt;
@@ -42,11 +41,20 @@ public class StudentCv {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
+    @Column(nullable = true)
+    private byte[] reviewContent;
+
+    @Column(nullable = true, length = 255)
+    private String reviewFileName;
+
+    @Column(nullable = true, length = 255)
+    private String reviewContentType;
+
     @PrePersist
     void onCreate() {
         this.uploadedAt = Instant.now();
         if (this.status == null) {
-            this.status = CvStatus.PENDING;
+            this.status = Status.PENDING;
         }
     }
 }

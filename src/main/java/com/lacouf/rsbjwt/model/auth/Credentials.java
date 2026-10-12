@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model.auth;
 
+import com.lacouf.rsbjwt.model.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

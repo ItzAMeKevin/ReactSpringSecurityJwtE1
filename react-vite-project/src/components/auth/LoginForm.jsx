@@ -53,8 +53,8 @@ const LoginForm = ({user, setUser, setError}) => {
   }
 
   const validatePassword = () => {
-    //const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])\S{1,}$/;
-    //return passwordRegex.test(formData.password);
+    /*const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{2,}$/;
+    return passwordRegex.test(formData.password);*/
     return true;
   }
 
