@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useManagerNotificationsContext } from "../context/ManagerNotificationsContext.jsx";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
+import { textError } from "../styles/classes.js";
 
 const ManagerNotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -64,7 +65,7 @@ const ManagerNotificationBell = () => {
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );

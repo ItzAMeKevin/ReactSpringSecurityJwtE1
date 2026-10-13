@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { btnAccept, btnRefuse } from "../../styles/classes.js";
+import { btnAccept, btnRefuse, textError } from "../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const { t } = useTranslation();
@@ -69,7 +69,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                 </div>
             </div>
             {actionError && (
-                <p className="text-red-700 text-sm mt-2" role="alert">{actionError}</p>
+                <p className={`${textError} text-sm mt-2`} role="alert">{actionError}</p>
             )}
         </div>
     );

@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
-import { cardItem } from "../../../styles/classes.js";
+import { cardItem, textError } from "../../../styles/classes.js";
 
 const ListJobOffer = ({refreshKey}) => {
     const {t} = useTranslation();
@@ -38,7 +38,7 @@ const ListJobOffer = ({refreshKey}) => {
     }, [refreshKey, t]);
 
     if (loading) return <p className="text-brand">...</p>;
-    if (error) return <p className="text-red-600">{error}</p>;
+    if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) {
         return <p className="text-brand">{t("personalSpaceEmployer.noJobOffers")}</p>;
     }

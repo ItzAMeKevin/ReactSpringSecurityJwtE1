@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept, btnRefuse } from "../../styles/classes.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -148,7 +148,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
 
             {isOpen && (
                 <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-                    {previewError && <p className="text-red-700 text-sm" role="alert">{previewError}</p>}
+                    {previewError && <p className={`${textError} text-sm`} role="alert">{previewError}</p>}
                     {!previewError && previewUrl && containerWidth && (
                         <Document
                             file={previewUrl}
@@ -192,12 +192,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                             {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
                         </button>
                     </div>
-                    {reviewError && <p className="text-red-700 text-sm mt-2" role="alert">{reviewError}</p>}
+                    {reviewError && <p className={`${textError} text-sm mt-2`} role="alert">{reviewError}</p>}
                 </div>
             )}
 
             {actionState === "error" && (
-                <p className="text-red-700 text-sm mt-2" role="alert">
+                <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>
             )}

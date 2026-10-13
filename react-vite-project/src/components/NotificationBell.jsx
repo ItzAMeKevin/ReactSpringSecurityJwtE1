@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
 import { downloadFile } from "../utils/downloadFile.js";
+import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -36,7 +37,7 @@ const NotificationBell = () => {
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );
