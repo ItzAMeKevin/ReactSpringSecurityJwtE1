@@ -127,16 +127,16 @@ const LoginForm = ({user, setUser, setError}) => {
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
                 style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
             >
-              <div className="absolute inset-0 bg-brand" />
+              <div className="absolute inset-0 bg-mint" />
               <div
-                  className="absolute -inset-[50%] opacity-10"
+                  className="absolute -inset-[50%] opacity-25"
                   style={{
-                    backgroundImage: "radial-gradient(white 1.6px, transparent 1.7px)",
+                    backgroundImage: "radial-gradient(var(--color-mint-dots) 1.6px, transparent 1.7px)",
                     backgroundSize: "18px 18px",
                     transform: "rotate(32deg)",
                   }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-brand-hover via-transparent to-brand/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-mint-dark via-transparent to-mint/40" />
             </div>
 
             <div className="relative z-10 grid min-h-screen md:grid-cols-2">
@@ -216,7 +216,7 @@ const LoginForm = ({user, setUser, setError}) => {
                     <button
                         type="button"
                         onClick={() => navigate("/inscription")}
-                        className="font-semibold underline hover:text-brand-soft"
+                        className="font-semibold underline hover:text-mint-dark"
                     >
                       {t("login.signUp")}
                     </button>
