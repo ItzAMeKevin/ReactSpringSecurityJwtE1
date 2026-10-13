@@ -8,12 +8,6 @@ import ManagerNotificationBell from "./ManagerNotificationBell.jsx";
 function Header({user}) {
     const { t, i18n } = useTranslation();
 
-    const formatRole = (roleString) => {
-        if (!roleString) return '';
-        const roleName = roleString.replace('ROLE_', '');
-        return roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase();
-    };
-
     const isManager = () => user?.role === 'ROLE_MANAGER';
     const isEmployer = () => user?.role === 'ROLE_EMPLOYER';
     const isStudent = () => user?.role === 'ROLE_STUDENT';
@@ -49,7 +43,7 @@ function Header({user}) {
                     <p className="user-greeting">
                         {t("header.greeting")} <span className="user-name">{user.firstName} {user.lastName}</span>
                         {user.role && (
-                            <span style={{ opacity: 0.6 }}> - {formatRole(user.role.toString())}</span>
+                            <span style={{ opacity: 0.6 }}> - {t(`header.roles.${user.role.replace('ROLE_', '')}`)}</span>
                         )}
                     </p>
                 )}

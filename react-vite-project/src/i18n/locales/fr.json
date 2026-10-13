@@ -63,7 +63,12 @@
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "greeting": "Bonjour"
+    "greeting": "Bonjour",
+    "roles": {
+      "STUDENT": "Étudiant",
+      "MANAGER": "Gestionnaire",
+      "EMPLOYER": "Employeur"
+    }
   },
   "televerser": {
     "choisirFichier": "Téléverser votre CV en format PDF",
@@ -213,5 +218,11 @@
         "title": "Revue prête"
       }
     }
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "MANAGER": "Manager",
+    "EMPLOYER": "Employer"
   }
+
 }

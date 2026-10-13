@@ -94,13 +94,7 @@ const FormJobOffer = ({onSuccess, onCancel}) => {
         <form onSubmit={handleSubmit} noValidate>
             {error && <p className={`${textError} mb-4`}>{error}</p>}
             <div className="space-y-4">
-                <Field label={t("personalSpaceEmployer.fields.title")}
-                    Field label={t("personalSpaceEmployer.fields.title")}
-                        name="title"
-                        required placeholder={t("personalSpaceEmployer.placeholders.title")}
-                        error={fieldErrors.title}
-                        className={inputField}
-                />
+                <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} error={fieldErrors.title} className={inputField}/>
                 <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea"
                        required placeholder={t("personalSpaceEmployer.placeholders.description")}
                        className={`min-h-16 resize-y ${inputField}`} error={fieldErrors.description}/>
