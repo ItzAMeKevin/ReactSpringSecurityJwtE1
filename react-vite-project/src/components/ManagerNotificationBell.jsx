@@ -32,7 +32,10 @@ const ManagerNotificationBell = () => {
 
     const getNotificationMessage = (notification) => {
         if (notification.source === "jobOffer") {
-            return notification.message || "";
+            return notification.message
+                .replace("{company}", notification.company || "")
+                .replace("{offerTitle}", notification.offerTitle || "")
+                .replace("{program}", notification.program || "");
         }
         const { message } = getLocalizedNotification(notification, t);
         if (notification.type === "CV_UPLOADED") {
@@ -94,6 +97,11 @@ const ManagerNotificationBell = () => {
                                 </span>
                             </div>
                             <p className="mt-1">{getNotificationMessage(notification)}</p>
+                            {notification.createdAt && (
+                                <p className="text-xs text-[#4b1113]/50 mt-1">
+                                    {formatDateTime(notification.createdAt)}
+                                </p>
+                            )}
                         </div>
                         <button
                             type="button"

@@ -205,6 +205,18 @@
       },
       "CV_REVIEW_READY": {
         "title": "Review ready"
+      },
+      "JOB_OFFER_UPLOADED": {
+        "title": "New internship offer",
+        "message": "Company {company} has posted a new internship offer: {offerTitle} ({program}). Please review and approve the offer."
+      },
+      "JOB_OFFER_ACCEPTED": {
+        "title": "Your internship offer has been accepted",
+        "message": "Your internship offer has been validated by a manager."
+      },
+      "JOB_OFFER_REJECTED": {
+        "title": "Your internship offer has been rejected",
+        "message": "Please review the feedback and resubmit your offer."
       }
     }
   }

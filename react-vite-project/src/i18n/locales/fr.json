@@ -205,6 +205,18 @@
       },
       "CV_REVIEW_READY": {
         "title": "Revue prête"
+      },
+      "JOB_OFFER_UPLOADED": {
+        "title": "Nouvelle offre de stage",
+        "message": "L'entreprise {company} a déposé une nouvelle offre de stage : {offerTitle} ({program}). Veuillez examiner et approuver l'offre."
+      },
+      "JOB_OFFER_ACCEPTED": {
+        "title": "Votre offre de stage a été acceptée",
+        "message": "Votre offre de stage a été validée par un gestionnaire."
+      },
+      "JOB_OFFER_REJECTED": {
+        "title": "Votre offre de stage a été refusée",
+        "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
       }
     }
   }
