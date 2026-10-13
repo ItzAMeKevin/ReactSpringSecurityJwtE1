@@ -51,6 +51,9 @@ export const textError = "text-red-700";
 /** Success feedback text */
 export const textSuccess = "text-green-700";
 
+/** Success toast / popup card colors */
+export const successCard = "border border-green-200 bg-green-50 text-green-800";
+
 // ── Forms ─────────────────────────────────────────────────────────────────────
 
 /** Standard text input / select / textarea */
