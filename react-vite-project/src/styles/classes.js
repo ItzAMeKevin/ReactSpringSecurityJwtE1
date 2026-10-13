@@ -13,7 +13,7 @@ export const btnAccept = "bg-accept text-brand text-sm font-bold py-1.5 px-3 rou
 export const btnAcceptLg = "bg-accept text-brand font-bold text-lg py-2 px-4 rounded-md hover:bg-accept-hover transition-colors disabled:opacity-60";
 
 /** Outlined brand button — used in modals (cancel actions) */
-export const btnOutline = "border border-brand text-brand px-4 py-2 rounded hover:bg-mint-bg transition-colors";
+export const btnOutline = "border border-brand text-black px-4 py-2 rounded hover:bg-mint-bg transition-colors";
 
 /** Primary action button inside modals (publish, confirm) */
 export const btnModalPrimary = "bg-brand text-white text-sm font-medium px-4 py-2 rounded hover:bg-brand-soft transition-colors disabled:opacity-50";
@@ -37,10 +37,10 @@ export const pageInner = "flex flex-col items-center gap-4 pt-20 pb-20 px-4";
 // ── Typography ────────────────────────────────────────────────────────────────
 
 /** Page title (h1) */
-export const pageTitle = "text-2xl font-bold text-brand";
+export const pageTitle = "text-2xl font-bold text-black";
 
 /** Section title (h2) with bottom divider */
-export const sectionTitle = "text-xl font-bold text-brand mb-4 pb-2 border-b border-brand/20";
+export const sectionTitle = "text-xl font-bold text-black mb-4 pb-2 border-b border-brand/20";
 
 /** Secondary / status text */
 export const textMuted = "text-brand/70";

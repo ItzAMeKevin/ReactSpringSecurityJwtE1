@@ -91,8 +91,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-brand font-medium truncate">{cv.fileName}</p>
-                    <p className="text-sm text-brand/70 truncate">
+                    <p className="text-black font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-black truncate">
                         {cv.studentFirstName} {cv.studentLastName}
                         {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
                     </p>
@@ -165,14 +165,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-brand/70">{t("gestionnaire.preview.loading")}</p>
+                        <p className="text-sm text-black">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
 
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm text-brand mb-2">
+                    <p className="text-sm text-black mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
                     <textarea
@@ -180,7 +180,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         onChange={(e) => setReviewFeedback(e.target.value)}
                         placeholder={t("gestionnaire.decline.placeholder")}
                         rows={3}
-                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-brand bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-black bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
                     <div className="flex justify-end">
                         <button

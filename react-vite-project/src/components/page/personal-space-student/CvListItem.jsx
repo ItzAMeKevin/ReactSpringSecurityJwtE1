@@ -44,7 +44,7 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
     return (
         <div className={cardItem}>
             <div className="flex items-center justify-between gap-4">
-                <span className="text-brand font-medium truncate">{cv.fileName}</span>
+                <span className="text-black font-medium truncate">{cv.fileName}</span>
                 <button
                     type="button"
                     onClick={onToggle}

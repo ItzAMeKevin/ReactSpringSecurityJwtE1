@@ -33,20 +33,20 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
 
     return (
         <div className={`bg-white rounded-xl shadow-sm p-5 border transition-all duration-500 ${
-            isHighlighted ? "border-brand ring-2 ring-brand/30" : "border-brand/10"
+            isHighlighted ? "border-black ring-2 ring-brand/30" : "border-brand/10"
         }`}>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-brand text-lg">{offer.title}</h3>
-                    <p className="text-sm text-brand/70 mt-1">
+                    <h3 className="font-semibold text-black text-lg">{offer.title}</h3>
+                    <p className="text-sm text-black mt-1">
                         {t("gestionnaire.offres.company")}: <span
                         className="font-medium">{offer.companyName}</span>
                     </p>
-                    <p className="text-sm text-brand/70 mt-1">
+                    <p className="text-sm text-black mt-1">
                         {offer.startingDate} · {offer.durationInWeeks} {t("gestionnaire.offres.weeks")}
                     </p>
                     {offer.description && (
-                        <p className="text-sm text-brand/70 mt-2 line-clamp-2">{offer.description}</p>
+                        <p className="text-sm text-black mt-2 line-clamp-2">{offer.description}</p>
                     )}
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">

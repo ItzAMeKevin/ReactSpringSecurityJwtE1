@@ -82,7 +82,7 @@ const PersonalSpaceEmployer = () => {
                                     aria-labelledby="create-job-offer-title"
                                 >
                                     <div className="overflow-y-auto p-6">
-                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-brand">
+                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-black">
                                             {t("personalSpaceEmployer.createJobOffer")}
                                         </h2>
                                         <FormJobOffer onSuccess={handleFormSuccess} onCancel={handleRequestClose}/>
@@ -92,7 +92,7 @@ const PersonalSpaceEmployer = () => {
                             {showCloseConfirm && (
                                 <div className="fixed inset-0 z-[1001] flex items-center justify-center bg-black/40">
                                     <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-                                        <h3 className="text-lg font-bold text-brand mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
+                                        <h3 className="text-lg font-bold text-black mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
                                         <p className={`text-sm ${textMuted} mb-6`}>{t("personalSpaceEmployer.confirmClose.message")}</p>
                                         <div className="flex justify-end gap-2">
                                             <button
