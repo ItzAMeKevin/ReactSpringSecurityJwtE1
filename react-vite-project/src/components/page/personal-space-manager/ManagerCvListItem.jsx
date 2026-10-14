@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
-import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept, btnRefuse } from "../../styles/classes.js";
+import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse } from "../../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -91,8 +91,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-brand font-medium truncate">{cv.fileName}</p>
-                    <p className="text-sm text-brand/70 truncate">
+                    <p className="text-main font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-main/70 truncate">
                         {cv.studentFirstName} {cv.studentLastName}
                         {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
                     </p>
@@ -105,8 +105,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         className={`${btnSmPrimary} flex items-center`}
                     >
                         <svg
-                            width="16"
-                            height="16"
+                            width="19"
+                            height="19"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"

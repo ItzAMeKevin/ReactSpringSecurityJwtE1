@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import fetcher from "../../utils/fetcher.js";
+import fetcher from "../../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
 import ManagerJobOfferListItem from "./ManagerJobOfferListItem.jsx";
-import { useManagerNotificationsContext } from "../../context/ManagerNotificationsContext.jsx";
-import { pageWrapper, pageTitle, sectionTitle, textMuted, textError } from "../../styles/classes.js";
+import { useManagerNotificationsContext } from "../../../context/ManagerNotificationsContext.jsx";
+import { pageWrapper, pageTitle, sectionTitle, textMuted, textError } from "../../../styles/classes.js";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();

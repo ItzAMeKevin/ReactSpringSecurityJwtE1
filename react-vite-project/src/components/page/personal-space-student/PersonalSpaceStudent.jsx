@@ -126,7 +126,7 @@ const PersonalSpaceStudent = () => {
 
                 {cvList.length > 0 && (
                     <div className="w-full mt-10">
-                        <h2 className="text-brand font-semibold mb-3">
+                        <h2 className="text-main font-semibold mb-3">
                             {t("televerser.mesCvs")}
                         </h2>
                         <div className="flex flex-col gap-3">

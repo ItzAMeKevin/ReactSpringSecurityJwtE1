@@ -9,12 +9,13 @@
   --color-slate: #1e293b;
 
   /* App design tokens */
-  --color-brand: #4b1113;
-  --color-brand-hover: #3a0d0f;
-  --color-brand-soft: #6b1c1f;
+  --color-brand: #0051b6;
+  --color-brand-hover: #032880;
+  --color-brand-soft: #506fd5;
+  --color-main: #000000;
 
-  --color-accept: #B3FFD9;
-  --color-accept-hover: #8DCCAD;
+  --color-accept: #009840;
+  --color-accept-hover: #006230;
   --color-surface: #f3ebe3;
 }
 
