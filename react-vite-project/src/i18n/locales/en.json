@@ -81,7 +81,16 @@
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
     "afficher": "Show",
-    "appercuIndisponible": "Preview not available"
+    "apercuIndisponible": "Preview not available",
+    "chargementApercu": "Loading preview...",
+    "chargement": "Loading your CVs...",
+    "aucunCv": "No CV uploaded yet.",
+    "erreurChargement": "Unable to load your CVs. Please try again later.",
+    "statuts": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    }
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",

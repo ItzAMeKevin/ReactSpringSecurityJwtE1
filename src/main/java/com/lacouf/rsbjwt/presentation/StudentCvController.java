@@ -52,6 +52,19 @@ public class StudentCvController {
         }
     }
 
+    @GetMapping("/{cvId}/content")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<byte[]> getCvContent(@PathVariable Long cvId, Authentication authentication) {
+        try {
+            byte[] content = studentCvService.getCvContent(cvId, authentication.getName());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(content);
+        } catch (InvalidCvException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/{cvId}/review")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<String> getReviewFile(@PathVariable Long cvId, Authentication authentication) {

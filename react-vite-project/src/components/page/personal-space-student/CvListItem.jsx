@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
-import { cardItem, btnSmPrimary } from "../../../styles/classes.js";
+import { fetchBlobUrl } from "../../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, textError, textMuted } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -38,13 +39,66 @@ const CvPreview = ({ file }) => {
     );
 };
 
+const STATUS_STYLES = {
+    PENDING: "bg-yellow-100 text-yellow-800",
+    ACCEPTED: "bg-green-100 text-green-800",
+    DECLINED: "bg-red-100 text-red-800",
+};
+
 const CvListItem = ({ cv, isOpen, onToggle }) => {
     const { t } = useTranslation();
+    const statusStyle = STATUS_STYLES[cv.status] ?? "bg-gray-100 text-gray-700";
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewError, setPreviewError] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen || cv.file || previewUrl) return;
+        let cancelled = false;
+        setPreviewError(false);
+        fetchBlobUrl(`/student-cv/${cv.id}/content`)
+            .then((url) => {
+                if (cancelled) {
+                    URL.revokeObjectURL(url);
+                } else {
+                    setPreviewUrl(url);
+                }
+            })
+            .catch((error) => {
+                console.error("Erreur lors du chargement de l'aperçu :", error);
+                if (!cancelled) setPreviewError(true);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isOpen, cv.id, cv.file, previewUrl]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
+
+    const renderPreview = () => {
+        if (cv.file) return <CvPreview file={cv.file} />;
+        if (previewUrl) return <CvPreview file={previewUrl} />;
+        return (
+            <p className={`mt-3 text-sm ${previewError ? textError : textMuted}`}>
+                {previewError ? t("televerser.apercuIndisponible") : t("televerser.chargementApercu")}
+            </p>
+        );
+    };
 
     return (
         <div className={cardItem}>
             <div className="flex items-center justify-between gap-4">
-                <span className="text-main font-medium truncate">{cv.fileName}</span>
+                <div className="min-w-0 flex items-center gap-2">
+                    <span className="text-main font-medium truncate">{cv.fileName}</span>
+                    {cv.status && (
+                        <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle}`}>
+                            {t(`televerser.statuts.${cv.status}`, cv.status)}
+                        </span>
+                    )}
+                </div>
                 <button
                     type="button"
                     onClick={onToggle}
@@ -55,15 +109,7 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
                 </button>
             </div>
 
-            {isOpen && (
-                cv.file ? (
-                    <CvPreview file={cv.file} />
-                ) : (
-                    <p className="mt-3 text-sm text-main/70">
-                        {t("televerser.apercuIndisponible")}
-                    </p>
-                )
-            )}
+            {isOpen && renderPreview()}
         </div>
     );
 };

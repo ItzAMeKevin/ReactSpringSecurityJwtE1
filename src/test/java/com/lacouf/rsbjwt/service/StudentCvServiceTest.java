@@ -261,6 +261,47 @@ public class StudentCvServiceTest {
     }
 
     @Test
+    void testGetCvContentOwnerReturnsBytes() {
+        String email = "student@test.com";
+        StudentCv cv = new StudentCv();
+        cv.setContent(validPdfContent);
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(10L, testStudent.getId()))
+                .thenReturn(Optional.of(cv));
+
+        byte[] result = studentCvService.getCvContent(10L, email);
+
+        assertArrayEquals(validPdfContent, result);
+    }
+
+    @Test
+    void testGetCvContentOfAnotherStudentThrows() {
+        String email = "student@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(99L, testStudent.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(InvalidCvException.class, () ->
+                studentCvService.getCvContent(99L, email));
+    }
+
+    @Test
+    void testGetCvContentStudentNotFoundThrows() {
+        String email = "unknown@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () ->
+                studentCvService.getCvContent(10L, email));
+        verify(studentCvRepository, never()).findByIdAndStudent_Id(any(), any());
+    }
+
+    @Test
     void testGetReviewFileOwnerReturnsContent() {
         String email = "student@test.com";
         StudentCv cv = new StudentCv();
