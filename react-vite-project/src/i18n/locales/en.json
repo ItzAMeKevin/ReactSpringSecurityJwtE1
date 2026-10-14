@@ -71,7 +71,7 @@
     }
   },
   "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
+    "choisirFichier": "Upload your CV",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",

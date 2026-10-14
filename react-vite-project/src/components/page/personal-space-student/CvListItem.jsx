@@ -89,12 +89,12 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
     };
 
     return (
-        <div className={cardItem}>
-            <div className="flex items-center justify-between gap-4">
+        <div className={`${cardItem} border-2`}>
+            <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex items-center gap-2">
                     <span className="text-main font-medium truncate">{cv.fileName}</span>
                     {cv.status && (
-                        <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle}`}>
                             {t(`televerser.statuts.${cv.status}`, cv.status)}
                         </span>
                     )}
@@ -103,13 +103,15 @@ const CvListItem = ({ cv, isOpen, onToggle }) => {
                     type="button"
                     onClick={onToggle}
                     aria-expanded={isOpen}
-                    className={`shrink-0 ${btnSmPrimary}`}
+                    className={`${btnSmPrimary}`}
                 >
                     {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
                 </button>
             </div>
 
-            {isOpen && renderPreview()}
+            <div className="w-full">
+                {isOpen && renderPreview()}
+            </div>
         </div>
     );
 };

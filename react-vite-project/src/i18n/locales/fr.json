@@ -71,7 +71,7 @@
     }
   },
   "televerser": {
-    "choisirFichier": "Téléverser votre CV en format PDF",
+    "choisirFichier": "Téléverser votre CV",
     "fichierChoisi": "Fichier sélectionné",
     "erreurTypeFichier": "Seuls les fichiers pdf sont acceptés.",
     "envoieEnCours": "Envoi en cours...",
