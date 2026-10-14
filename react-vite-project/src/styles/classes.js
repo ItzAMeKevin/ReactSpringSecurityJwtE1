@@ -13,7 +13,7 @@ export const btnAccept = "bg-accept text-white text-sm font-bold py-1.5 px-3 bor
 export const btnAcceptLg = "bg-brand text-white font-bold text-lg py-2 px-4 border border-black py-2 hover:shadow-md hover:shadow-brand rounded-md hover:bg-brand-hover transition-colors disabled:opacity-60";
 
 /** Outlined brand button — used in modals (cancel actions) */
-export const btnOutline = "border border-brand text-brand px-4 py-2 rounded hover:bg-mint-bg transition-colors";
+export const btnOutline = "border border-brand text-black px-4 py-2 rounded hover:bg-mint-bg transition-colors";
 
 /** Primary action button inside modals (publish, confirm) */
 export const btnModalPrimary = "bg-brand text-white text-sm font-medium px-4 py-2 rounded hover:bg-brand-soft transition-colors disabled:opacity-50";
@@ -50,6 +50,9 @@ export const textError = "text-red-700";
 
 /** Success feedback text */
 export const textSuccess = "text-green-700";
+
+/** Success toast / popup card colors */
+export const successCard = "border border-green-200 bg-green-50 text-green-800";
 
 // ── Forms ─────────────────────────────────────────────────────────────────────
 

@@ -63,7 +63,12 @@
     "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "greeting": "Hello"
+    "greeting": "Hello",
+    "roles": {
+      "STUDENT": "Student",
+      "MANAGER": "Manager",
+      "EMPLOYER": "Employer"
+    }
   },
   "televerser": {
     "choisirFichier": "CHOOSE A FILE",
@@ -213,5 +218,11 @@
         "title": "Review ready"
       }
     }
+  },
+  "roles": {
+    "STUDENT": "Étudiant",
+    "MANAGER": "Gestionnaire",
+    "EMPLOYER": "Employeur"
   }
+
 }

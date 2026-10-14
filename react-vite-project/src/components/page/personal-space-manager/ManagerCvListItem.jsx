@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept, btnRefuse } from "../../../styles/classes.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -148,7 +148,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
 
             {isOpen && (
                 <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-                    {previewError && <p className="text-red-700 text-sm" role="alert">{previewError}</p>}
+                    {previewError && <p className={`${textError} text-sm`} role="alert">{previewError}</p>}
                     {!previewError && previewUrl && containerWidth && (
                         <Document
                             file={previewUrl}
@@ -165,14 +165,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-brand/70">{t("gestionnaire.preview.loading")}</p>
+                        <p className="text-sm text-main/70">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
 
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm text-brand mb-2">
+                    <p className="text-sm text-main mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
                     <textarea
@@ -180,7 +180,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         onChange={(e) => setReviewFeedback(e.target.value)}
                         placeholder={t("gestionnaire.decline.placeholder")}
                         rows={3}
-                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-brand bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
                     <div className="flex justify-end">
                         <button
@@ -192,12 +192,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                             {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
                         </button>
                     </div>
-                    {reviewError && <p className="text-red-700 text-sm mt-2" role="alert">{reviewError}</p>}
+                    {reviewError && <p className={`${textError} text-sm mt-2`} role="alert">{reviewError}</p>}
                 </div>
             )}
 
             {actionState === "error" && (
-                <p className="text-red-700 text-sm mt-2" role="alert">
+                <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>
             )}

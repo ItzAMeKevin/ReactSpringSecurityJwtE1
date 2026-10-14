@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import Field from "../Field.jsx";
-import { inputField, btnOutline, btnModalPrimary } from "../../../styles/classes.js";
+import { inputField, btnOutline, btnModalPrimary, textError } from "../../../styles/classes.js";
 
 const FormJobOffer = ({onSuccess, onCancel}) => {
 
@@ -92,10 +92,12 @@ const FormJobOffer = ({onSuccess, onCancel}) => {
 
     return (
         <form onSubmit={handleSubmit} noValidate>
-            {error && <p className="text-red-600 mb-4">{error}</p>}
+            {error && <p className={`${textError} mb-4`}>{error}</p>}
             <div className="space-y-4">
                 <Field label={t("personalSpaceEmployer.fields.title")} name="title" required placeholder={t("personalSpaceEmployer.placeholders.title")} error={fieldErrors.title} className={inputField}/>
-                <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea" required placeholder={t("personalSpaceEmployer.placeholders.description")} className={`min-h-16 resize-y ${inputField}`} error={fieldErrors.description}/>
+                <Field label={t("personalSpaceEmployer.fields.description")} name="description" as="textarea"
+                       required placeholder={t("personalSpaceEmployer.placeholders.description")}
+                       className={`min-h-16 resize-y ${inputField}`} error={fieldErrors.description}/>
                 <Field label={t("personalSpaceEmployer.fields.requirements")} name="requirements" required placeholder={t("personalSpaceEmployer.placeholders.requirements")} className={inputField} error={fieldErrors.requirements}/>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.salary")} name="salary" type="number" min="0" step="0.01" required placeholder={t("personalSpaceEmployer.placeholders.salary")} suffix="/hr" className={inputField} error={fieldErrors.salary}/>
@@ -110,7 +112,7 @@ const FormJobOffer = ({onSuccess, onCancel}) => {
                         ))}
                     </Field>
                 </div>
-                <h2 className="text-brand font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
+                <h2 className="text-black font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.city")} name="city" required placeholder={t("personalSpaceEmployer.placeholders.city")} className={inputField} error={fieldErrors.city}/>
                     <Field label={t("personalSpaceEmployer.fields.country")} name="country" required placeholder={t("personalSpaceEmployer.placeholders.country")} className={inputField} error={fieldErrors.country}/>

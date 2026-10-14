@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { btnAccept, btnRefuse } from "../../../styles/classes.js";
+import { btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const { t } = useTranslation();
@@ -33,7 +33,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
 
     return (
         <div className={`bg-white rounded-xl shadow-sm p-5 border transition-all duration-500 ${
-            isHighlighted ? "border-brand ring-2 ring-brand/30" : "border-brand/10"
+            isHighlighted ? "border-black ring-2 ring-brand/30" : "border-brand/10"
         }`}>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
@@ -69,7 +69,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                 </div>
             </div>
             {actionError && (
-                <p className="text-red-700 text-sm mt-2" role="alert">{actionError}</p>
+                <p className={`${textError} text-sm mt-2`} role="alert">{actionError}</p>
             )}
         </div>
     );

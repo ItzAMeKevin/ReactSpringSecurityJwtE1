@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useManagerNotificationsContext } from "../context/ManagerNotificationsContext.jsx";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
+import { textError } from "../styles/classes.js";
 
 const ManagerNotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -59,12 +60,12 @@ const ManagerNotificationBell = () => {
 
     const renderContent = () => {
         if (status === "loading") {
-            return <p className="text-sm text-brand/70 p-3">{t("notifications.loading")}</p>;
+            return <p className="text-sm text-black p-3">{t("notifications.loading")}</p>;
         }
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );
@@ -72,7 +73,7 @@ const ManagerNotificationBell = () => {
 
         if (status === "empty") {
             return (
-                <p className="text-sm text-brand/70 p-3">{t("notifications.empty")}</p>
+                <p className="text-sm text-black p-3">{t("notifications.empty")}</p>
             );
         }
 
@@ -83,8 +84,8 @@ const ManagerNotificationBell = () => {
                         key={`${notification.source}-${notification.id}`}
                         className={`px-3 py-3 text-sm transition-colors border-b border-brand/10 flex items-center justify-between gap-4 ${
                             notification.isRead
-                                ? "bg-white text-brand/70 hover:bg-white/80"
-                                : "bg-blue-100 text-brand hover:bg-blue-150 font-medium"
+                                ? "bg-white text-black hover:bg-white/80"
+                                : "bg-blue-100 text-black hover:bg-blue-150 font-medium"
                         }`}
                     >
                         <div className="flex-1 min-w-0">
@@ -142,7 +143,7 @@ const ManagerNotificationBell = () => {
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
                     <div className="p-3 border-b border-brand/10">
-                        <h3 className="text-brand font-bold">{t("notifications.managerTitle")}</h3>
+                        <h3 className="text-black font-bold">{t("notifications.managerTitle")}</h3>
                     </div>
                     {renderContent()}
                 </div>

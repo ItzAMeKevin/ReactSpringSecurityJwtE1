@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
 import { downloadFile } from "../utils/downloadFile.js";
+import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -31,12 +32,12 @@ const NotificationBell = () => {
 
     const renderContent = () => {
         if (status === "loading") {
-            return <p className="text-sm text-brand/70 p-3">{t("notifications.loading")}</p>;
+            return <p className="text-sm text-black p-3">{t("notifications.loading")}</p>;
         }
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );
@@ -44,7 +45,7 @@ const NotificationBell = () => {
 
         if (status === "empty") {
             return (
-                <p className="text-sm text-brand/70 p-3">{t("notifications.empty")}</p>
+                <p className="text-sm text-black p-3">{t("notifications.empty")}</p>
             );
         }
 
@@ -61,12 +62,12 @@ const NotificationBell = () => {
                             className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
                                 notification.isRead
                                     ? "bg-white/40 text-brand/70 hover:bg-white/60"
-                                    : "bg-blue-50 text-brand hover:bg-blue-100 font-medium"
+                                    : "bg-blue-50 text-black hover:bg-blue-100 font-medium"
                             }`}
                         >
                             <p className="">{localizedNotif.title}</p>
                             {localizedNotif.message && (
-                                <p className="text-xs text-brand/60 mt-1 ">
+                                <p className="text-xs text-black mt-1">
                                     {localizedNotif.message}
                                 </p>
                             )}
@@ -80,7 +81,7 @@ const NotificationBell = () => {
                                 </button>
                             )}
                             {notification.createdAt && (
-                                <p className="text-xs text-brand/50 mt-1">
+                                <p className="text-xs text-black mt-1">
                                     {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
@@ -125,7 +126,7 @@ const NotificationBell = () => {
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
                     <div className="p-3 border-b border-brand/10">
-                        <h3 className="text-brand font-bold">{t("notifications.title")}</h3>
+                        <h3 className="text-black font-bold">{t("notifications.title")}</h3>
                     </div>
                     {renderContent()}
                 </div>
