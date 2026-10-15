@@ -27,7 +27,9 @@ public class StudentService {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
         boolean hasValidatedCv = studentCvRepository
-                .existsByStudentCredentialsEmailAndStatus(studentEmail, Status.ACCEPTED);
+                .findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(studentEmail)
+                .map(cv -> cv.getStatus() == Status.ACCEPTED)
+                .orElse(false);
         if (!hasValidatedCv) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "no validated CV");
         }
