@@ -64,9 +64,9 @@ const NotificationBell = () => {
                                     : "bg-blue-50 text-[#4b1113] hover:bg-blue-100 font-medium"
                             }`}
                         >
-                            <p className="line-clamp-2">{localizedNotif.title}</p>
+                            <p className="">{localizedNotif.title}</p>
                             {localizedNotif.message && (
-                                <p className="text-xs text-[#4b1113]/60 mt-1 line-clamp-2">
+                                <p className="text-xs text-[#4b1113]/60 mt-1 ">
                                     {localizedNotif.message}
                                 </p>
                             )}

@@ -11,7 +11,7 @@ const fileToBase64 = (file) =>
         reader.readAsDataURL(file);
     });
 
-const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
+const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
@@ -115,7 +115,9 @@ const ManagerCvListItem = ({ cv, onAccept, onDecline }) => {
     };
 
     return (
-        <div className="rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3">
+        <div className={`rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3 transition-all duration-500 ${
+            isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
+        }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                     <p className="text-[#4b1113] font-medium truncate">{cv.fileName}</p>

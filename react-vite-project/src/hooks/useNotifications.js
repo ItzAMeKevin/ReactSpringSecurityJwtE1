@@ -17,10 +17,14 @@ const useNotifications = () => {
                 return;
             }
             const data = await response.json();
-            setNotifications(data);
-            const unread = data.filter((n) => !n.isRead).length;
+            const enrichedData = data.map((n) => ({
+                ...n,
+                actionUrl: n.type === "CV_REJECTED" && n.studentCv ? `/student-cv/${n.studentCv.id}/review` : null,
+            }));
+            setNotifications(enrichedData);
+            const unread = enrichedData.filter((n) => !n.isRead).length;
             setUnreadCount(unread);
-            setStatus(data.length === 0 ? "empty" : "ready");
+            setStatus(enrichedData.length === 0 ? "empty" : "ready");
         } catch (error) {
             console.error("Erreur lors du chargement des notifications :", error);
             setStatus("error");

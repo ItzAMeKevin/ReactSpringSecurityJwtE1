@@ -32,7 +32,7 @@ public class StudentCv {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private CvStatus status;
+    private Status status;
 
     @Column(nullable = false, updatable = false)
     private Instant uploadedAt;
@@ -54,7 +54,7 @@ public class StudentCv {
     void onCreate() {
         this.uploadedAt = Instant.now();
         if (this.status == null) {
-            this.status = CvStatus.PENDING;
+            this.status = Status.PENDING;
         }
     }
 }

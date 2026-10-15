@@ -4,10 +4,12 @@ import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.OfferStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
+import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
+import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
@@ -38,6 +40,12 @@ class EmployerServiceTest {
 
     @Mock
     private JobOfferMapper jobOfferMapper;
+
+    @Mock
+    private ManagerRepository managerRepository;
+
+    @Mock
+    private ManagerNotificationRepository managerNotificationRepository;
 
     @InjectMocks
     private EmployerService employerService;
@@ -121,7 +129,7 @@ class EmployerServiceTest {
         JobOfferDetailDTO expected = new JobOfferDetailDTO(
                 1L, "Titre", "Desc", "Preq",
                 adresse,
-                "60000$", OfferStatus.WAITING,
+                "60000$", Status.WAITING,
                 LocalDate.now(), LocalDate.of(2025, 3, 1),
                 12, Programe.TECHNIQUES_INFORMATIQUE, "ACME Inc."
         );
