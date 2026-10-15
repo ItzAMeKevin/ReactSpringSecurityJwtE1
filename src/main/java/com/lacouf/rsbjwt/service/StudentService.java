@@ -24,17 +24,16 @@ public class StudentService {
     private final JobOfferMapper jobOfferMapper;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) {
-        boolean hasValidatedCv = studentCvRepository.
-                existsByStudentCredentialsEmailAndStatus(studentEmail, Status.ACCEPTED);
+        Student student = studentRepository.findByCredentialsEmail(studentEmail)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+        boolean hasValidatedCv = studentCvRepository
+                .existsByStudentCredentialsEmailAndStatus(studentEmail, Status.ACCEPTED);
         if (!hasValidatedCv) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "no validated CV");
         }
-        Student student = studentRepository.findByCredentialsEmail(studentEmail)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
         return jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, student.getPrograme())
                 .stream()
                 .map(jobOfferMapper::toDto)
                 .toList();
-
     }
 }
