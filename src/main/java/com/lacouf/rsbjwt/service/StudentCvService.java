@@ -120,4 +120,19 @@ public class StudentCvService {
                 .map(CvMetaDataDto::toCvMetaDataDto)
                 .toList();
     }
+
+    public void setDefaultCv(Long cvId) {
+        StudentCv cv = studentCvRepository.findById(cvId)
+                .orElseThrow(UserNotFoundException::new);
+
+        StudentCv currentDefaultCv = studentCvRepository.findByStudentIdAndIsDefaultTrue(cv.getStudent().getId())
+                .orElse(null);
+        if (currentDefaultCv != null) {
+            currentDefaultCv.setIsDefault(false);
+            studentCvRepository.save(currentDefaultCv);
+        }
+        
+        cv.setIsDefault(true);
+        studentCvRepository.save(cv);
+    }
 }

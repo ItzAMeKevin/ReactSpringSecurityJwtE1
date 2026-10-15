@@ -61,7 +61,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        if (userAppService.getUserByEmail("l@l.com") == null) {
             ManagerCreateDto manager = new ManagerCreateDto();
             manager.setFirstName("Gerard");
             manager.setLastname("Biblio");
@@ -70,9 +69,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             manager.setRole(Role.MANAGER);
             manager.setPassword(passwordEncoder.encode("bib"));
             userAppService.inscription(manager);
-        }
 
-        if (userAppService.getUserByEmail("ll@l.com") == null) {
             StudentCreateDto student = new StudentCreateDto();
             student.setFirstName("Isidor");
             student.setLastname("Teurteur");
@@ -82,9 +79,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             student.setRole(Role.STUDENT);
             student.setPrograme(Programe.SOINS_INFIRMIERS);
             userAppService.inscription(student);
-        }
 
-        if (userAppService.getUserByEmail("lll@l.com") == null) {
+
+        
             EmployerCreateDto employer = new EmployerCreateDto();
             employer.setFirstName("Chandeuse");
             employer.setLastname("Lixor");
@@ -105,7 +102,6 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             employer.setAdresseDTO(adresse);
 
             userAppService.inscription(employer);
-        }
 
         EmployerRepository employers = employerRepository.getIfAvailable();
         StudentRepository students = studentRepository.getIfAvailable();

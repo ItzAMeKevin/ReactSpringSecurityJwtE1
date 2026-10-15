@@ -67,4 +67,17 @@ public class StudentCvController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
+
+    @PutMapping("/{cvId}/set-default")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<Void> setDefaultCv(@PathVariable Long cvId) {
+        try {
+            studentCvService.setDefaultCv(cvId);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (InvalidCvException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 }
