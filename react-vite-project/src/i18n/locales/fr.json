@@ -138,6 +138,11 @@
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
     "noJobOffers": "Aucune offre de stage publiée",
+    "statuts": {
+      "WAITING": "En attente",
+      "ACCEPTED": "Acceptée",
+      "DECLINED": "Refusée"
+    },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "submit": "Publier l'offre",
     "fields": {

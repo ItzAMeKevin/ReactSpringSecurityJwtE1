@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
-import { cardItem, textError } from "../../../styles/classes.js";
+import { cardItem, statusBadge, statusBadgeColor, textError } from "../../../styles/classes.js";
 
 const ListJobOffer = ({refreshKey}) => {
     const {t} = useTranslation();
@@ -47,7 +47,14 @@ const ListJobOffer = ({refreshKey}) => {
         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
                 <li key={offer.id ?? i} className={`${cardItem} p-4`}>
-                    <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                    <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                        {offer.status && (
+                            <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                                {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                            </span>
+                        )}
+                    </div>
                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
                     <p className="mt-2 line-clamp-3">{offer.description}</p>
                     <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">

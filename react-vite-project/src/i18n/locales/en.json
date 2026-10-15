@@ -139,6 +139,11 @@
     "close": "Close",
     "jobOffers": "My internship offers",
     "noJobOffers": "You have no internship offers yet.",
+    "statuts": {
+      "WAITING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    },
     "offerCreated": "Internship offer published successfully.",
     "submit": "Publish offer",
     "fields": {

@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnRefuse, textError, textMuted } from "../../../styles/classes.js";
+import { cardItem, btnSmPrimary, btnRefuse, statusBadge, statusBadgeColor, textError, textMuted } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -40,15 +40,8 @@ const CvPreview = ({ file }) => {
     );
 };
 
-const STATUS_STYLES = {
-    PENDING: "bg-yellow-100 text-yellow-800",
-    ACCEPTED: "bg-green-100 text-green-800",
-    DECLINED: "bg-red-100 text-red-800",
-};
-
 const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) => {
     const { t } = useTranslation();
-    const statusStyle = STATUS_STYLES[cv.status] ?? "bg-gray-100 text-gray-700";
     const isDeclined = cv.status === "DECLINED";
     const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -135,7 +128,7 @@ const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) 
                 <div className="min-w-0 flex items-center gap-2">
                     <span className="text-main font-medium truncate">{cv.fileName}</span>
                     {cv.status && (
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${statusStyle}`}>
+                        <span className={`${statusBadge} ${statusBadgeColor(cv.status)}`}>
                             {t(`televerser.statuts.${cv.status}`, cv.status)}
                         </span>
                     )}

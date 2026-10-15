@@ -26,6 +26,21 @@ export const btnRefuse = "bg-red-700 text-white text-sm font-bold py-1.5 px-3 bo
 /** CV / offer list item card */
 export const cardItem = "rounded-xl border border-brand/20 bg-white/40 px-4 py-3 transition-all duration-500";
 
+// ── Status badges ─────────────────────────────────────────────────────────────
+
+/** Base shape of a status badge (CV / offer) */
+export const statusBadge = "shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full";
+
+/** Badge colors by status — WAITING (offers) and PENDING (CVs) share the "waiting" look */
+const STATUS_COLORS = {
+    PENDING: "bg-yellow-100 text-yellow-800",
+    WAITING: "bg-yellow-100 text-yellow-800",
+    ACCEPTED: "bg-green-100 text-green-800",
+    DECLINED: "bg-red-100 text-red-800",
+};
+
+export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";
+
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 /** Full-page wrapper for all dashboard pages */
