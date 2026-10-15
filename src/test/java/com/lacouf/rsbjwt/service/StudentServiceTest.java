@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
+import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
@@ -48,6 +49,7 @@ public class StudentServiceTest {
     private Student student;
     private JobOffer jobOffer;
     private JobOfferDetailDTO jobOfferDetailDTO;
+    private StudentCv acceptedCv;
     private static final String STUDENT_EMAIL = "student@test.com";
 
     @BeforeEach
@@ -74,15 +76,18 @@ public class StudentServiceTest {
                 LocalDate.now(), LocalDate.of(2025, 9, 1),
                 16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp"
         );
+
+        acceptedCv = mock(StudentCv.class);
     }
 
     @Test
     @DisplayName("getAcceptedJobOffers retourne les offres quand le CV est validé")
     void getAcceptedJobOffers_returnsOffers_whenCvAccepted() {
-        when(studentCvRepository.existsByStudentCredentialsEmailAndStatus(STUDENT_EMAIL, Status.ACCEPTED))
-                .thenReturn(true);
+        when(acceptedCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
+        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
+                .thenReturn(Optional.of(acceptedCv));
         when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
@@ -91,32 +96,34 @@ public class StudentServiceTest {
 
         assertEquals(1, result.size());
         assertEquals("Dev Java", result.get(0).title());
-        verify(studentCvRepository).existsByStudentCredentialsEmailAndStatus(STUDENT_EMAIL, Status.ACCEPTED);
+        verify(studentRepository).findByCredentialsEmail(STUDENT_EMAIL);
+        verify(studentCvRepository).findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL);
         verify(jobOfferRepository).findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE);
-
     }
 
     @Test
     @DisplayName("getAcceptedJobOffers lance 403 quand aucun CV validé")
     void getAcceptedJobOffers_throwsForbidden_whenNoCvAccepted() {
-        when(studentCvRepository.existsByStudentCredentialsEmailAndStatus(STUDENT_EMAIL, Status.ACCEPTED))
-                .thenReturn(false);
+        when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
+                .thenReturn(Optional.of(student));
+        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
+                .thenReturn(Optional.empty());
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
                 () -> studentService.getAcceptedJobOffers(STUDENT_EMAIL));
 
         assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
         verifyNoInteractions(jobOfferRepository);
-        verifyNoInteractions(studentRepository);
     }
 
     @Test
     @DisplayName("getAcceptedJobOffers retourne liste vide si aucune offre pour le programme")
     void getAcceptedJobOffers_returnsEmpty_whenNoOffersForProgram() {
-        when(studentCvRepository.existsByStudentCredentialsEmailAndStatus(STUDENT_EMAIL, Status.ACCEPTED))
-                .thenReturn(true);
+        when(acceptedCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
+        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
+                .thenReturn(Optional.of(acceptedCv));
         when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of());
 
@@ -124,5 +131,19 @@ public class StudentServiceTest {
 
         assertTrue(result.isEmpty());
         verifyNoInteractions(jobOfferMapper);
+    }
+
+    @Test
+    @DisplayName("getAcceptedJobOffers lance 404 quand l'étudiant n'existe pas")
+    void getAcceptedJobOffers_throws404_whenStudentNotFound() {
+        when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
+                .thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> studentService.getAcceptedJobOffers(STUDENT_EMAIL));
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+        verifyNoInteractions(studentCvRepository);
+        verifyNoInteractions(jobOfferRepository);
     }
 }
