@@ -15,4 +15,6 @@ public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
     List<StudentCv> findByStudentCredentialsEmailOrderByUploadedAtDesc(String studentEmail);
 
     List<StudentCv> findAllByStatusOrderByUploadedAtAsc(Status status);
+
+    boolean existsByStudentCredentialsEmailAndStatus(String studentEmail, Status status);
 }
