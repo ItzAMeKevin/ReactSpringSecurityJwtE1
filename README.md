@@ -34,4 +34,21 @@
 
 ## Prochain Scrum Master pour le sprint 3
 
+## Point d'action 1
+
+- **Spécifique** : Faire un merge de main dans la branche avant de merger dans main
+- **Mesurable** : Tous les pull requests doivent être à jour avec main avant d'être fusionnés
+- **Atteignable** : Avec un git merge main
+- **Réaliste** : Évite les merge conflicts et facilite la maintenance
+- **Temporel** : Jusqu'à la fin du projet
+
+## Point d'action 2
+
+- **Spécifique** : Lire le code apres la revue, éliminer les classes dupliquées et centraliser le code commun
+- **Mesurable** : 100% des classes dupliquées supprimées et code commun centralisé
+- **Atteignable** : En suivant la défininition de done et en utilisant des outils de refactoring
+- **Réaliste** : Avec le processus de revue de code et les tests unitaires, cela est faisable
+- **Temporel** : Avant de commencer une tâche de développement, pour éviter la duplication de code
+
+
 **Leon**
