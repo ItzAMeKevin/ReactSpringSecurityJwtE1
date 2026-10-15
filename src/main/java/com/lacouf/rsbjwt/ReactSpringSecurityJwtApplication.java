@@ -61,36 +61,36 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-            ManagerCreateDto manager = new ManagerCreateDto();
-            manager.setFirstName("Gerard");
-            manager.setLastname("Biblio");
-            manager.setMatricule("PROF-001");
-            manager.setEmail("l@l.com");
-            manager.setRole(Role.MANAGER);
-            manager.setPassword(passwordEncoder.encode("bib"));
-            userAppService.inscription(manager);
+            ManagerCreateDto managerDto = new ManagerCreateDto();
+            managerDto.setFirstName("Gerard");
+            managerDto.setLastname("Biblio");
+            managerDto.setMatricule("PROF-001");
+            managerDto.setEmail("l@l.com");
+            managerDto.setRole(Role.MANAGER);
+            managerDto.setPassword(passwordEncoder.encode("bib"));
+            userAppService.inscription(managerDto);
 
-            StudentCreateDto student = new StudentCreateDto();
-            student.setFirstName("Isidor");
-            student.setLastname("Teurteur");
-            student.setMatricule("ETUD-001");
-            student.setEmail("ll@l.com");
-            student.setPassword(passwordEncoder.encode("bib"));
-            student.setRole(Role.STUDENT);
-            student.setPrograme(Programe.SOINS_INFIRMIERS);
-            userAppService.inscription(student);
+            StudentCreateDto studentDto = new StudentCreateDto();
+            studentDto.setFirstName("Isidor");
+            studentDto.setLastname("Teurteur");
+            studentDto.setMatricule("ETUD-001");
+            studentDto.setEmail("ll@l.com");
+            studentDto.setPassword(passwordEncoder.encode("bib"));
+            studentDto.setRole(Role.STUDENT);
+            studentDto.setPrograme(Programe.SOINS_INFIRMIERS);
+            userAppService.inscription(studentDto);
 
 
         
-            EmployerCreateDto employer = new EmployerCreateDto();
-            employer.setFirstName("Chandeuse");
-            employer.setLastname("Lixor");
-            employer.setEmail("lll@l.com");
-            employer.setRole(Role.EMPLOYER);
-            employer.setCompanyName("Lixor Inc.");
-            employer.setPhoneNumber("514-555-1234");
-            employer.setEmployerWorkId("EMP-001");
-            employer.setPassword(passwordEncoder.encode("bib"));
+            EmployerCreateDto employerDto = new EmployerCreateDto();
+            employerDto.setFirstName("Chandeuse");
+            employerDto.setLastname("Lixor");
+            employerDto.setEmail("lll@l.com");
+            employerDto.setRole(Role.EMPLOYER);
+            employerDto.setCompanyName("Lixor Inc.");
+            employerDto.setPhoneNumber("514-555-1234");
+            employerDto.setEmployerWorkId("EMP-001");
+            employerDto.setPassword(passwordEncoder.encode("bib"));
 
 
             AdresseDTO adresse = new AdresseDTO();
@@ -99,9 +99,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             adresse.setRue("123 rue Principale");
             adresse.setNumeroCivic("123");
             adresse.setCodePostal("H0H 0H0");
-            employer.setAdresseDTO(adresse);
+            employerDto.setAdresseDTO(adresse);
 
-            userAppService.inscription(employer);
+            userAppService.inscription(employerDto);
 
         EmployerRepository employers = employerRepository.getIfAvailable();
         StudentRepository students = studentRepository.getIfAvailable();

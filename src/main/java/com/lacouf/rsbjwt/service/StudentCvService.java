@@ -125,14 +125,14 @@ public class StudentCvService {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(UserNotFoundException::new);
 
-        StudentCv currentDefaultCv = studentCvRepository.findByStudentIdAndIsDefaultTrue(cv.getStudent().getId())
+        StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndDefaultTrue(cv.getStudent().getId())
                 .orElse(null);
         if (currentDefaultCv != null) {
-            currentDefaultCv.setIsDefault(false);
+            currentDefaultCv.setDefault(false);
             studentCvRepository.save(currentDefaultCv);
         }
         
-        cv.setIsDefault(true);
+        cv.setDefault(true);
         studentCvRepository.save(cv);
     }
 }
