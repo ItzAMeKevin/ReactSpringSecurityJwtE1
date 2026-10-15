@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from "./NotificationBell.jsx";
 import ManagerNotificationBell from "./ManagerNotificationBell.jsx";
+import roseLogo from "../utils/img/rose1.svg";
 
 function Header({user}) {
     const { t, i18n } = useTranslation();
@@ -14,7 +15,10 @@ function Header({user}) {
 
     return (
         <header className="header">
-            <h1>{t("header.title")}</h1>
+            <div className="brand">
+                <img src={roseLogo} alt="Logo" className="logo" height={40} width={40}/>
+                <h1>{t("header.title")}</h1>
+            </div>
             <nav style={{ display: "flex", alignItems: "center" }}>
                 <ul className="nav-links">
                     <li><Link to="/">{t("header.accueil")}</Link></li>
