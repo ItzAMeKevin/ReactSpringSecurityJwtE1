@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
+import {useLocation, useNavigate} from "react-router-dom";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -20,6 +21,8 @@ const fileToBase64 = (file) =>
 
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
+    const location = useLocation();
+    const navigate = useNavigate();
     const inputRef = useRef(null);
     const [fileError, setFileError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -28,6 +31,14 @@ const PersonalSpaceStudent = () => {
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
+    const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
+
+    useEffect(() => {
+        if (location.state?.feedbackCvId) {
+            setOpenFeedbackCvId(location.state.feedbackCvId);
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location.key, location.state?.feedbackCvId]);
 
     useEffect(() => {
         const loadCvList = async () => {
@@ -164,6 +175,10 @@ const PersonalSpaceStudent = () => {
                                 isOpen={openCvId === cv.id}
                                 onToggle={() =>
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
+                                }
+                                isFeedbackOpen={openFeedbackCvId === cv.id}
+                                onToggleFeedback={() =>
+                                    setOpenFeedbackCvId((current) => (current === cv.id ? null : cv.id))
                                 }
                             />
                         ))}

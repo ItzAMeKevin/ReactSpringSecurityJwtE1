@@ -83,6 +83,11 @@
     "afficher": "Show",
     "apercuIndisponible": "Preview not available",
     "chargementApercu": "Loading preview...",
+    "voirFeedback": "View feedback",
+    "masquerFeedback": "Hide feedback",
+    "feedbackTitre": "Manager's comment:",
+    "chargementFeedback": "Loading feedback...",
+    "erreurFeedback": "Unable to load the feedback.",
     "chargement": "Loading your CVs...",
     "aucunCv": "No CV uploaded yet.",
     "erreurChargement": "Unable to load your CVs. Please try again later.",
@@ -209,7 +214,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "downloadReview": "Download feedback",
+    "voirFeedback": "View feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "New CV to validate",

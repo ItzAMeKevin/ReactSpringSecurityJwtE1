@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
-import { downloadFile } from "../utils/downloadFile.js";
 import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
     const { notifications, status, unreadCount, markAsRead } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
-    const REVIEW_FILENAME = "cv_review.pdf";
 
     const handleNotificationClick = (notificationId, isRead) => {
         if (!isRead) {
@@ -17,13 +17,11 @@ const NotificationBell = () => {
         }
     };
 
-    const handleDownloadReview = async (e, actionUrl) => {
+    const handleViewFeedback = (e, notification) => {
         e.stopPropagation();
-        try {
-            await downloadFile(actionUrl, REVIEW_FILENAME);
-        } catch (error) {
-            console.error("Erreur lors du téléchargement du review:", error);
-        }
+        handleNotificationClick(notification.id, notification.isRead);
+        setIsOpen(false);
+        navigate("/etudiant", { state: { feedbackCvId: notification.feedbackCvId } });
     };
 
     const toggleDropdown = () => {
@@ -71,13 +69,13 @@ const NotificationBell = () => {
                                     {localizedNotif.message}
                                 </p>
                             )}
-                            {notification.actionUrl && (
+                            {notification.feedbackCvId && (
                                 <button
                                     type="button"
-                                    onClick={(e) => handleDownloadReview(e, notification.actionUrl)}
+                                    onClick={(e) => handleViewFeedback(e, notification)}
                                     className="mt-2 bg-brand text-white text-xs font-medium py-1 px-2 rounded hover:bg-brand-hover transition-colors"
                                 >
-                                    {t("notifications.downloadReview")}
+                                    {t("notifications.voirFeedback")}
                                 </button>
                             )}
                             {notification.createdAt && (
