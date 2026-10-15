@@ -22,6 +22,16 @@
 
 ➡️ **Formulation SMART** : « Au début de chaque rencontre, vérifier que 100 % des tâches *in progress* sont bien assignées à quelqu'un. »
 
-## Prochain Scrum Master pour le sprint 2
+## Critères de DONE
 
-**Prodigio**
+- Tous les critères de succès sont remplis à 100 %.
+- Les tests sont réalisés avec une couverture minimale de 80 %.
+- L'application est bilingue.
+- L'ensemble du travail a été révisé et corrigé si nécessaire.
+- Demander a l'IAG de te produire une review après la verification humaine.
+- La branche est propre et fusionnée dans la branche `main`.
+- La branche est supprimée.
+
+## Prochain Scrum Master pour le sprint 3
+
+**Leon**
