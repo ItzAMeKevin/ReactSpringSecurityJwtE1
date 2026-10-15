@@ -32,6 +32,7 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
+
     "submit": "Register"
   },
   "errors": {
@@ -197,6 +198,9 @@
       "none": "No pending internship offers.",
       "company": "Company",
       "weeks": "wks"
+    },
+    "accept": {
+      "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
       "title": "Write your feedback before confirming the rejection.",

@@ -8,6 +8,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
+    const reviewInputRef = useRef(null);
 
     const [isOpen, setIsOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -196,7 +197,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                 </div>
             )}
 
-            {actionState === "error" && (
+            {actionState === "acceptError" && (
+                <p className={`${textError} text-sm mt-2`} role="alert">
+                    {t("gestionnaire.accept.errorProcessing")}
+                </p>
+            )}
+            {actionState === "declineError" && (
                 <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>

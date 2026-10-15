@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/student-cv")
 @RequiredArgsConstructor
-public class StudentCvController {
+public class StudentController {
 
     private final StudentCvService studentCvService;
 

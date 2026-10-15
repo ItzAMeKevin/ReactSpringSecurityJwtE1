@@ -198,6 +198,9 @@
       "company": "Entreprise",
       "weeks": "sem."
     },
+    "accept": {
+      "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
+    },
     "decline": {
       "title": "Écrivez votre feedback avant de confirmer le refus.",
       "placeholder": "Expliquez pourquoi le CV a été refusé...",
@@ -238,5 +241,4 @@
     "MANAGER": "Manager",
     "EMPLOYER": "Employer"
   }
-
 }
