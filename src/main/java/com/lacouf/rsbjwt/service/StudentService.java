@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
-import com.lacouf.rsbjwt.mapper.StudentMapper;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
