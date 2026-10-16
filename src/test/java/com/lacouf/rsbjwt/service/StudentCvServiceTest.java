@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
@@ -73,7 +73,7 @@ public class StudentCvServiceTest {
         assertNotNull(result);
         assertEquals("cv.pdf", result.getFileName());
         assertEquals("application/pdf", result.getContentType());
-        assertEquals(CvStatus.PENDING, result.getStatus());
+        assertEquals(Status.PENDING, result.getStatus());
         verify(studentCvRepository, times(1)).save(any(StudentCv.class));
     }
 
@@ -204,7 +204,7 @@ public class StudentCvServiceTest {
         cv1.setFileName("cv_recent.pdf");
         cv1.setContentType("application/pdf");
         cv1.setSize(1024);
-        cv1.setStatus(CvStatus.PENDING);
+        cv1.setStatus(Status.PENDING);
         cv1.setUploadedAt(Instant.now());
         cv1.setStudent(testStudent);
 
@@ -213,7 +213,7 @@ public class StudentCvServiceTest {
         cv2.setFileName("cv_ancien.pdf");
         cv2.setContentType("application/pdf");
         cv2.setSize(2048);
-        cv2.setStatus(CvStatus.ACCEPTED);
+        cv2.setStatus(Status.ACCEPTED);
         cv2.setUploadedAt(Instant.now().minusSeconds(3600));
         cv2.setStudent(testStudent);
 
@@ -227,9 +227,9 @@ public class StudentCvServiceTest {
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals("cv_recent.pdf", result.get(0).getFileName());
-        assertEquals(CvStatus.PENDING, result.get(0).getStatus());
+        assertEquals(Status.PENDING, result.get(0).getStatus());
         assertEquals("cv_ancien.pdf", result.get(1).getFileName());
-        assertEquals(CvStatus.ACCEPTED, result.get(1).getStatus());
+        assertEquals(Status.ACCEPTED, result.get(1).getStatus());
         verify(studentCvRepository, times(1)).findByStudentCredentialsEmailOrderByUploadedAtDesc(email);
     }
 
@@ -261,18 +261,59 @@ public class StudentCvServiceTest {
     }
 
     @Test
+    void testGetCvContentOwnerReturnsBytes() {
+        String email = "student@test.com";
+        StudentCv cv = new StudentCv();
+        cv.setContent(validPdfContent);
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(10L, testStudent.getId()))
+                .thenReturn(Optional.of(cv));
+
+        byte[] result = studentCvService.getCvContent(10L, email);
+
+        assertArrayEquals(validPdfContent, result);
+    }
+
+    @Test
+    void testGetCvContentOfAnotherStudentThrows() {
+        String email = "student@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(99L, testStudent.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(InvalidCvException.class, () ->
+                studentCvService.getCvContent(99L, email));
+    }
+
+    @Test
+    void testGetCvContentStudentNotFoundThrows() {
+        String email = "unknown@test.com";
+
+        when(studentRepository.findByCredentialsEmail(email))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () ->
+                studentCvService.getCvContent(10L, email));
+        verify(studentCvRepository, never()).findByIdAndStudent_Id(any(), any());
+    }
+
+    @Test
     void testGetReviewFileOwnerReturnsContent() {
         String email = "student@test.com";
         StudentCv cv = new StudentCv();
         cv.setStudent(testStudent);
-        cv.setReviewContent(new byte[]{1, 2, 3});
+        cv.setReviewFeedback("Le format du CV n'est pas correct.");
 
         when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(testStudent));
 
-        byte[] result = studentCvService.getReviewFile(5L, email);
+        String result = studentCvService.getReviewFile(5L, email);
 
-        assertArrayEquals(new byte[]{1, 2, 3}, result);
+        assertEquals("Le format du CV n'est pas correct.", result);
     }
 
     @Test

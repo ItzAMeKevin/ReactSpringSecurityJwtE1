@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -17,7 +18,9 @@ public class EmployerNotification {
     private String title;
     private String message;
     private boolean isRead = false;
-    private Instant createdAt = Instant.now();
+
+    @CreationTimestamp
+    private Instant createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employer_id")

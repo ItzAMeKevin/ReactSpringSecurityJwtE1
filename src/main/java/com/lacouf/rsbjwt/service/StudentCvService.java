@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.CvStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
@@ -70,7 +70,7 @@ public class StudentCvService {
         cv.setContentType(PDF_CONTENT_TYPE);
         cv.setContent(content);
         cv.setSize(content.length);
-        cv.setStatus(CvStatus.PENDING);
+        cv.setStatus(Status.PENDING);
         cv.setStudent(student);
 
         return studentCvRepository.save(cv);
@@ -92,7 +92,7 @@ public class StudentCvService {
         }
     }
 
-    public byte[] getReviewFile(Long cvId, String authenticatedEmail) {
+    public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new RuntimeException("CV not found"));
 
@@ -101,7 +101,15 @@ public class StudentCvService {
             throw new RuntimeException("Access denied");
         }
 
-        return cv.getReviewContent();
+        return cv.getReviewFeedback();
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] getCvContent(Long cvId, String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new InvalidCvException("CV not found"))
+                .getContent();
     }
 
     private static String sanitizeFileName(String fileName) {

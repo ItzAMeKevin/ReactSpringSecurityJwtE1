@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/student-cv")
 @RequiredArgsConstructor
-public class StudentCvController {
+public class StudentController {
 
     private final StudentCvService studentCvService;
 
@@ -52,17 +52,30 @@ public class StudentCvController {
         }
     }
 
+    @GetMapping("/{cvId}/content")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<byte[]> getCvContent(@PathVariable Long cvId, Authentication authentication) {
+        try {
+            byte[] content = studentCvService.getCvContent(cvId, authentication.getName());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(content);
+        } catch (InvalidCvException | UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/{cvId}/review")
     @PreAuthorize("hasAuthority('STUDENT')")
-    public ResponseEntity<byte[]> getReviewFile(@PathVariable Long cvId, Authentication authentication) {
+    public ResponseEntity<String> getReviewFile(@PathVariable Long cvId, Authentication authentication) {
         try {
-            byte[] reviewContent = studentCvService.getReviewFile(cvId, authentication.getName());
-            if (reviewContent == null || reviewContent.length == 0) {
+            String feedback = studentCvService.getReviewFile(cvId, authentication.getName());
+            if (feedback == null || feedback.isBlank()) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(reviewContent);
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(feedback);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

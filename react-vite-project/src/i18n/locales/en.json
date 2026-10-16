@@ -32,6 +32,7 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
+
     "submit": "Register"
   },
   "errors": {
@@ -51,8 +52,7 @@
     "startingDatePast": "Starting date cannot be in the past.",
     "digitsOnly": "Enter digits only.",
     "positiveNumber": "Enter a whole number greater than 0.",
-    "identifiantTaken": "This identifier is already assigned.",
-    "offerNotEditable": "This offer can no longer be edited."
+    "identifiantTaken": "This identifier is already assigned."
   },
   "header": {
     "title": "ZeROSE",
@@ -64,10 +64,15 @@
     "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "greeting": "Hello"
+    "greeting": "Hello",
+    "roles": {
+      "STUDENT": "Student",
+      "MANAGER": "Manager",
+      "EMPLOYER": "Employer"
+    }
   },
   "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
+    "choisirFichier": "Upload your CV",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
@@ -78,12 +83,19 @@
     "masquer": "Hide",
     "afficher": "Show",
     "apercuIndisponible": "Preview not available",
-    "erreurChargementCvs": "Unable to load your CVs. Please try again later.",
-    "aucunCv": "You haven't uploaded any CV yet.",
-    "status": {
+    "chargementApercu": "Loading preview...",
+    "voirFeedback": "View feedback",
+    "masquerFeedback": "Hide feedback",
+    "feedbackTitre": "Manager's comment:",
+    "chargementFeedback": "Loading feedback...",
+    "erreurFeedback": "Unable to load the feedback.",
+    "chargement": "Loading your CVs...",
+    "aucunCv": "No CV uploaded yet.",
+    "erreurChargement": "Unable to load your CVs. Please try again later.",
+    "statuts": {
       "PENDING": "Pending",
       "ACCEPTED": "Accepted",
-      "REJECTED": "Rejected"
+      "DECLINED": "Declined"
     }
   },
   "about": {
@@ -127,13 +139,13 @@
     "close": "Close",
     "jobOffers": "My internship offers",
     "noJobOffers": "You have no internship offers yet.",
-    "offerCreated": "Internship offer published successfully.",
-    "submit": "Publish offer",
-    "status": {
+    "statuts": {
       "WAITING": "Pending",
       "ACCEPTED": "Accepted",
-      "REFUSED": "Refused"
+      "DECLINED": "Declined"
     },
+    "offerCreated": "Internship offer published successfully.",
+    "submit": "Publish offer",
     "fields": {
       "title": "Title",
       "description": "Description",
@@ -163,29 +175,16 @@
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
     },
-    "editAndResubmit": "Edit and resubmit",
-    "editJobOffer": "Edit job offer",
-    "resubmit": "Resubmit offer",
-    "offerResubmitted": "Offer resubmitted. It is awaiting validation again."
-  },
-  "personalSpaceManager": {
-    "title": "Manager space",
-    "pendingOffers": "Pending offers",
-    "noPendingOffers": "No offers are waiting for validation.",
-    "view": "View",
-    "accept": "Accept",
-    "refuse": "Refuse",
-    "close": "Close",
-    "retry": "Try again",
-    "actions": "Actions",
-    "notice": {
-      "accepted": "The offer \"{{title}}\" was accepted. The employer has been notified.",
-      "refused": "The offer \"{{title}}\" was refused. The employer has been notified."
+    "confirmClose": {
+      "title": "Close the form?",
+      "message": "Unsaved data will be lost.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "gestionnaire": {
     "title": "Manager Space",
-    "pendingCvs": "CVs pending validation",
+    "cvSection": "CVs pending validation",
     "loadingCvs": "Loading pending CVs...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
@@ -197,17 +196,24 @@
       "errorLoading": "Unable to load CV preview.",
       "loading": "Loading preview..."
     },
+    "offres": {
+      "title": "Pending internship offers",
+      "loading": "Loading offers...",
+      "error": "Error loading offers.",
+      "none": "No pending internship offers.",
+      "company": "Company",
+      "weeks": "wks"
+    },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
-      "title": "Upload the CV review (PDF) before confirming the rejection.",
-      "chooseFile": "Choose a file",
+      "title": "Write your feedback before confirming the rejection.",
+      "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
       "processing": "Sending...",
-      "errorNoFile": "You must upload a CV review before confirming the rejection.",
-      "errorPdfOnly": "Only PDF files are accepted.",
-      "errorProcessing": "An error occurred while declining this CV. Please try again."
+      "errorNoFeedback": "You must write feedback before confirming the rejection.",
+      "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },
   "notifications": {
@@ -217,7 +223,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "downloadReview": "Download feedback",
+    "voirFeedback": "View feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "New CV to validate",
@@ -235,5 +241,11 @@
         "title": "Review ready"
       }
     }
+  },
+  "roles": {
+    "STUDENT": "Étudiant",
+    "MANAGER": "Gestionnaire",
+    "EMPLOYER": "Employeur"
   }
+
 }

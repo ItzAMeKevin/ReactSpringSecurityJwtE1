@@ -53,7 +53,6 @@ public class SecurityConfiguration {
     private static final String EMPLOYER_PATH = "/employer/**";
 
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

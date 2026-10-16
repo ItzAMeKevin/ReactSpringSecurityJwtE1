@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
+import { cardItem, statusBadge, statusBadgeColor, textError } from "../../../styles/classes.js";
 
-const ListJobOffer = ({refreshKey, onEdit}) => {
+const ListJobOffer = ({refreshKey}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -11,13 +12,6 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
         programs.find((p) => p.enumName === enumName)?.name ?? enumName;
-    const statusLabel = (status) =>
-        t(`personalSpaceEmployer.status.${status}`, {defaultValue: status});
-    const statusStyles = {
-        WAITING: "bg-yellow-100 text-yellow-800",
-        ACCEPTED: "bg-green-100 text-green-800",
-        REFUSED: "bg-red-100 text-red-800",
-    };
 
     useEffect(() => {
         let cancelled = false;
@@ -43,41 +37,36 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
         };
     }, [refreshKey, t]);
 
-    if (loading) return <p className="text-[#4b1113]">...</p>;
-    if (error) return <p className="text-red-600">{error}</p>;
+    if (loading) return <p className="text-black">...</p>;
+    if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) {
-        return <p className="text-[#4b1113]">{t("personalSpaceEmployer.noJobOffers")}</p>;
+        return <p className="text-black">{t("personalSpaceEmployer.noJobOffers")}</p>;
     }
 
     return (
         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
-                <li key={offer.id ?? i} className="rounded border border-[#4b1113] bg-white p-4 shadow">
-                    <span className={`w-fit rounded px-2 py-0.5 text-xs font-bold ${statusStyles[offer.status] ?? "bg-gray-100 text-gray-800"}`}>
-                        {statusLabel(offer.status)}
-                    </span>
-                    <h3 className="text-lg font-bold text-[#4b1113]">{offer.title}</h3>
+                <li key={offer.id ?? i} className={`${cardItem} p-4`}>
+                    <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                        {offer.status && (
+                            <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                                {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                            </span>
+                        )}
+                    </div>
                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
                     <p className="mt-2 line-clamp-3">{offer.description}</p>
                     <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.salary")}</dt>
+                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
                         <dd>{offer.salary}</dd>
-                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                         <dd>{offer.startingDate}</dd>
-                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                         <dd>{offer.durationInWeeks}</dd>
-                        <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.address")}</dt>
+                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
                         <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
                     </dl>
-                    {offer.status === "REFUSED" && onEdit && (
-                        <button
-                            type="button"
-                            className="mt-4 bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300"
-                            onClick={() => onEdit(offer)}
-                        >
-                            {t("personalSpaceEmployer.editAndResubmit")}
-                        </button>
-                    )}
                 </li>
             ))}
         </ul>

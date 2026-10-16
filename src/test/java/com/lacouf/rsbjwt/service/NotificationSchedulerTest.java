@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.model.NotificationStatus;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.NotificationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ public class NotificationSchedulerTest {
 
     private Notification failedNotification(int retryCount) {
         Notification notification = new Notification();
-        notification.setStatus(NotificationStatus.FAILED);
+        notification.setStatus(Status.FAILED);
         notification.setRetryCount(retryCount);
         return notification;
     }
@@ -38,13 +38,13 @@ public class NotificationSchedulerTest {
         // ARRANGE
         Notification notification = failedNotification(1);
         when(notificationRepository.findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(
-                eq(NotificationStatus.FAILED), any(Instant.class))).thenReturn(List.of(notification));
+                eq(Status.FAILED), any(Instant.class))).thenReturn(List.of(notification));
 
         // ACT
         notificationScheduler.retryFailedNotifications();
 
         // ASSERT
-        assertEquals(NotificationStatus.SENT, notification.getStatus());
+        assertEquals(Status.SENT, notification.getStatus());
         assertEquals(2, notification.getRetryCount());
         assertNotNull(notification.getLastRetryAt());
         assertNotNull(notification.getSentAt());
@@ -56,13 +56,13 @@ public class NotificationSchedulerTest {
         // ARRANGE
         Notification notification = failedNotification(3);
         when(notificationRepository.findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(
-                eq(NotificationStatus.FAILED), any(Instant.class))).thenReturn(List.of(notification));
+                eq(Status.FAILED), any(Instant.class))).thenReturn(List.of(notification));
 
         // ACT
         notificationScheduler.retryFailedNotifications();
 
         // ASSERT
-        assertEquals(NotificationStatus.FAILED, notification.getStatus());
+        assertEquals(Status.FAILED, notification.getStatus());
         assertEquals(3, notification.getRetryCount());
         verify(notificationRepository, never()).save(any());
     }
@@ -71,7 +71,7 @@ public class NotificationSchedulerTest {
     void retryFailedNotifications_nothingToRetry_savesNothing() {
         // ARRANGE
         when(notificationRepository.findAllByStatusAndLastRetryAtBeforeOrderByCreatedAtAsc(
-                eq(NotificationStatus.FAILED), any(Instant.class))).thenReturn(List.of());
+                eq(Status.FAILED), any(Instant.class))).thenReturn(List.of());
 
         // ACT
         notificationScheduler.retryFailedNotifications();

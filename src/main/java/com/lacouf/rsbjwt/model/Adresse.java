@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,13 +28,11 @@ public class Adresse {
     private String codePostal;
 
     @Builder
-    public Adresse(String pays,  String ville,
-                    String rue, String numeroCivic, String codePostal) {
-        this.pay =  pays;
+    public Adresse(String pays, String ville, String rue, String numeroCivic, String codePostal) {
+        this.pay = pays;
         this.ville = ville;
         this.rue = rue;
         this.numeroCivic = numeroCivic;
         this.codePostal = codePostal;
-        }
-
+    }
 }

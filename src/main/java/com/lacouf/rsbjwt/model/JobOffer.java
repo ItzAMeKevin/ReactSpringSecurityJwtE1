@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.model;
 
-
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
-
 
 @Entity
 @Getter
@@ -30,13 +28,11 @@ public class JobOffer {
     @Column(nullable = false)
     private String prerequisites;
 
-
-
     private String salary;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OfferStatus status;
+    private Status status;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -44,6 +40,7 @@ public class JobOffer {
 
     @Column(nullable = false)
     private LocalDate startingDate;
+
     @Column(nullable = false)
     private int durationInWeeks;
 
@@ -61,7 +58,7 @@ public class JobOffer {
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     Adresse adresse, String salary,
-                    LocalDate startingDate, int durationInWeeks, Programe programe,Employer employer) {
+                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
@@ -79,7 +76,7 @@ public class JobOffer {
             publicationDate = LocalDate.now();
         }
         if (status == null) {
-            status = OfferStatus.WAITING;
+            status = Status.WAITING;
         }
     }
 }

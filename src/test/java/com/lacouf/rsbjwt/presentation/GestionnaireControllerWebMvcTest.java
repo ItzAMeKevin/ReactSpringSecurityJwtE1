@@ -7,9 +7,10 @@ import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
-import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
-import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
+import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Base64;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +51,7 @@ class GestionnaireControllerWebMvcTest {
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
+    private JobOfferDto testOfferDto;
 
     @MockitoBean
     private GestionnaireService gestionnaireService;
@@ -73,18 +75,19 @@ class GestionnaireControllerWebMvcTest {
     private JobOfferRepository jobOfferRepository;
 
     @MockitoBean
-    private StudentCvRepository studentCvRepository;
+    private EmployerNotificationRepository employerNotificationRepository;
 
     @MockitoBean
-    private EmployerNotificationRepository employerNotificationRepository;
+    private ManagerNotificationRepository managerNotificationRepository;
+
+    @MockitoBean
+    private StudentCvRepository studentCvRepository;
 
     @MockitoBean
     private NotificationRepository notificationRepository;
 
     @MockitoBean
     private PasswordEncoder passwordEncoder;
-
-    private JobOfferDetailDTO testOfferDto;
 
     @BeforeEach
     void setUp() {
@@ -93,88 +96,16 @@ class GestionnaireControllerWebMvcTest {
                 .build();
         objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+
         AdresseDTO adresse = new AdresseDTO("Canada", "Montreal", "Rue Principale", "123", "H1A1A1");
-        testOfferDto = new JobOfferDetailDTO(
-                1L,
-                "Dev Java",
-                "Développement d'applications Java",
-                "Connaissance de Java et Spring Boot",
-                adresse,
-                "50000",
-                null,
-                LocalDate.now(),
-                LocalDate.now().plusMonths(1),
-                12,
-                null,
-                "Acme Corp"
+        testOfferDto = new JobOfferDto(
+                1L, "Dev Java", "Développement backend", "Java, Spring",
+                adresse, "20$/h", LocalDate.of(2025, 9, 1),
+                16, "Acme Corp", LocalDate.of(2025, 1, 1)
         );
     }
 
-    @Test
-    @DisplayName("GET /gestionnaire/offres/pending returns 200 with list")
-    @WithMockUser(authorities = "MANAGER")
-    void getPendingOffers_returnsOk() throws Exception {
-        when(gestionnaireService.getPendingOffers()).thenReturn(List.of(testOfferDto));
-
-        mockMvc.perform(get("/gestionnaire/offres/pending"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].title").value("Dev Java"))
-                .andExpect(jsonPath("$[0].companyName").value("Acme Corp"));
-    }
-
-    @Test
-    @DisplayName("GET /gestionnaire/offres/pending returns 200 with empty list")
-    @WithMockUser(authorities = "MANAGER")
-    void getPendingOffers_empty_returnsOk() throws Exception {
-        when(gestionnaireService.getPendingOffers()).thenReturn(List.of());
-
-        mockMvc.perform(get("/gestionnaire/offres/pending"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isEmpty());
-    }
-
-    @Test
-    @DisplayName("PUT /gestionnaire/offres/{id}/accept returns 200 when found")
-    @WithMockUser(authorities = "MANAGER")
-    void acceptOffer_found_returnsOk() throws Exception {
-        when(gestionnaireService.acceptOffer(1L)).thenReturn(Optional.of(testOfferDto));
-
-        mockMvc.perform(put("/gestionnaire/offres/1/accept"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Dev Java"));
-    }
-
-    @Test
-    @DisplayName("PUT /gestionnaire/offres/{id}/accept returns 404 when not found")
-    @WithMockUser(authorities = "MANAGER")
-    void acceptOffer_notFound_returns404() throws Exception {
-        when(gestionnaireService.acceptOffer(99L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(put("/gestionnaire/offres/99/accept"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("PUT /gestionnaire/offres/{id}/refuse returns 200 when found")
-    @WithMockUser(authorities = "MANAGER")
-    void refuseOffer_found_returnsOk() throws Exception {
-        when(gestionnaireService.refuseOffer(1L)).thenReturn(Optional.of(testOfferDto));
-
-        mockMvc.perform(put("/gestionnaire/offres/1/refuse"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Dev Java"));
-    }
-
-    @Test
-    @DisplayName("PUT /gestionnaire/offres/{id}/refuse returns 404 when not found")
-    @WithMockUser(authorities = "MANAGER")
-    void refuseOffer_notFound_returns404() throws Exception {
-        when(gestionnaireService.refuseOffer(99L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(put("/gestionnaire/offres/99/refuse"))
-                .andExpect(status().isNotFound());
-    }
+    // ── CV Management ─────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("GET /gestionnaire/cv/pending returns 200 and list of pending CVs")
@@ -244,28 +175,145 @@ class GestionnaireControllerWebMvcTest {
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 204 on success")
     void declineCv_success_returnsNoContent() throws Exception {
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
-                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doNothing().when(gestionnaireService).declineCv(eq(1L), any(CvUploadDto.class));
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Le CV ne respecte pas le format.");
+        doNothing().when(gestionnaireService).declineCv(eq(1L), any(CvDeclineFeedbackDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/1/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reviewRequest)))
+                        .content(objectMapper.writeValueAsString(feedbackRequest)))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 404 when CV not found")
     void declineCv_notFound_returns404() throws Exception {
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
-                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(CvUploadDto.class));
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Feedback");
+        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(CvDeclineFeedbackDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/99/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reviewRequest)))
+                        .content(objectMapper.writeValueAsString(feedbackRequest)))
+                .andExpect(status().isNotFound());
+    }
+
+    // ── Job Offer Management ──────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("GET /gestionnaire/offres/pending returns 200 with list")
+    @WithMockUser(authorities = "MANAGER")
+    void getPendingOffers_returnsOk() throws Exception {
+        when(gestionnaireService.getPendingOffers()).thenReturn(List.of(testOfferDto));
+
+        mockMvc.perform(get("/gestionnaire/offres/pending"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].title").value("Dev Java"))
+                .andExpect(jsonPath("$[0].companyName").value("Acme Corp"));
+    }
+
+    @Test
+    @DisplayName("GET /gestionnaire/offres/pending returns 200 with empty list")
+    @WithMockUser(authorities = "MANAGER")
+    void getPendingOffers_empty_returnsOk() throws Exception {
+        when(gestionnaireService.getPendingOffers()).thenReturn(List.of());
+
+        mockMvc.perform(get("/gestionnaire/offres/pending"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/{id}/accept returns 200 when found")
+    @WithMockUser(authorities = "MANAGER")
+    void acceptOffer_found_returnsOk() throws Exception {
+        when(gestionnaireService.acceptOffer(1L)).thenReturn(Optional.of(testOfferDto));
+
+        mockMvc.perform(put("/gestionnaire/offres/1/accept"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Dev Java"));
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/{id}/accept returns 404 when not found")
+    @WithMockUser(authorities = "MANAGER")
+    void acceptOffer_notFound_returns404() throws Exception {
+        when(gestionnaireService.acceptOffer(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/gestionnaire/offres/99/accept"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/{id}/refuse returns 200 when found")
+    @WithMockUser(authorities = "MANAGER")
+    void refuseOffer_found_returnsOk() throws Exception {
+        when(gestionnaireService.refuseOffer(1L)).thenReturn(Optional.of(testOfferDto));
+
+        mockMvc.perform(put("/gestionnaire/offres/1/refuse"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Dev Java"));
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/{id}/refuse returns 404 when not found")
+    @WithMockUser(authorities = "MANAGER")
+    void refuseOffer_notFound_returns404() throws Exception {
+        when(gestionnaireService.refuseOffer(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/gestionnaire/offres/99/refuse"))
+                .andExpect(status().isNotFound());
+    }
+
+    // ── Manager Notifications (job-offer events) ──────────────────────────────
+
+    @Test
+    @DisplayName("GET /gestionnaire/offres/notifications returns 200 with list")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void getNotifications_returnsOk() throws Exception {
+        ManagerNotificationDto notif = new ManagerNotificationDto(
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L);
+        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of(notif));
+
+        mockMvc.perform(get("/gestionnaire/offres/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Nouvelle offre"));
+    }
+
+    @Test
+    @DisplayName("GET /gestionnaire/offres/notifications returns 200 with empty list")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void getNotifications_empty_returnsOk() throws Exception {
+        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of());
+
+        mockMvc.perform(get("/gestionnaire/offres/notifications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/notifications/{id}/read returns 200 when found")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void markAsRead_found_returnsOk() throws Exception {
+        ManagerNotificationDto notif = new ManagerNotificationDto(
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L);
+        when(gestionnaireService.markNotificationAsRead("manager@test.com", 1L))
+                .thenReturn(Optional.of(notif));
+
+        mockMvc.perform(put("/gestionnaire/offres/notifications/1/read"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.isRead").value(true));
+    }
+
+    @Test
+    @DisplayName("PUT /gestionnaire/offres/notifications/{id}/read returns 404 when not found")
+    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
+    void markAsRead_notFound_returns404() throws Exception {
+        when(gestionnaireService.markNotificationAsRead("manager@test.com", 99L))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/gestionnaire/offres/notifications/99/read"))
                 .andExpect(status().isNotFound());
     }
 }

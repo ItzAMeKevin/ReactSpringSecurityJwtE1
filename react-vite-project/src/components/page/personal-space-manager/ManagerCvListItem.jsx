@@ -1,15 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
-import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
-
-const fileToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(",")[1]);
-        reader.onerror = () => reject(reader.error);
-        reader.readAsDataURL(file);
-    });
+import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
@@ -25,7 +18,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
 
     const [actionState, setActionState] = useState("idle");
     const [isDeclining, setIsDeclining] = useState(false);
-    const [reviewFile, setReviewFile] = useState(null);
+    const [reviewFeedback, setReviewFeedback] = useState("");
     const [reviewError, setReviewError] = useState(null);
 
     useEffect(() => {
@@ -75,53 +68,32 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
             await onAccept(cv.id);
         } catch (error) {
             console.error("Erreur lors de l'acceptation du CV :", error);
-            setActionState("acceptError");
+            setActionState("error");
         }
-    };
-
-    const handleReviewFileChange = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) {
-            setReviewFile(null);
-            return;
-        }
-        if (file.type !== "application/pdf") {
-            setReviewError(t("gestionnaire.decline.errorPdfOnly"));
-            setReviewFile(null);
-            event.target.value = "";
-            return;
-        }
-        setReviewError(null);
-        setReviewFile(file);
     };
 
     const handleConfirmDecline = async () => {
-        if (!reviewFile) {
-            setReviewError(t("gestionnaire.decline.errorNoFile"));
+        if (!reviewFeedback.trim()) {
+            setReviewError(t("gestionnaire.decline.errorNoFeedback"));
             return;
         }
         setActionState("processing");
         try {
-            const content = await fileToBase64(reviewFile);
-            await onDecline(cv.id, {
-                fileName: reviewFile.name,
-                contentType: reviewFile.type,
-                content,
-            });
+            await onDecline(cv.id, { feedback: reviewFeedback.trim() });
         } catch (error) {
             console.error("Erreur lors du refus du CV :", error);
-            setActionState("declineError");
+            setActionState("error");
         }
     };
 
     return (
-        <div className={`rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3 transition-all duration-500 ${
+        <div className={`${cardItem} ${
             isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-[#4b1113] font-medium truncate">{cv.fileName}</p>
-                    <p className="text-sm text-[#4b1113]/70 truncate">
+                    <p className="text-main font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-main/70 truncate">
                         {cv.studentFirstName} {cv.studentLastName}
                         {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
                     </p>
@@ -131,11 +103,11 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                     <button
                         type="button"
                         onClick={handleDownload}
-                        className="bg-blue-100 text-blue-800 py-1.5 px-3 rounded-md hover:bg-blue-200 transition-colors flex items-center"
+                        className={`${btnSmPrimary} flex items-center`}
                     >
                         <svg
-                            width="16"
-                            height="16"
+                            width="19"
+                            height="19"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -152,7 +124,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={handleToggle}
                         aria-expanded={isOpen}
-                        className="bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
+                        className={btnSmPrimary}
                     >
                         {isOpen ? t("gestionnaire.masquer") : t("gestionnaire.consulter")}
                     </button>
@@ -160,7 +132,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={handleAccept}
                         disabled={actionState === "processing" || isDeclining}
-                        className="bg-[#B3FFD9] text-[#4b1113] text-sm font-bold py-1.5 px-3 rounded-md hover:bg-[#8DCCAD] transition-colors disabled:opacity-60"
+                        className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
@@ -168,7 +140,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         type="button"
                         onClick={() => setIsDeclining((current) => !current)}
                         disabled={actionState === "processing"}
-                        className="bg-red-100 text-red-800 text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-200 transition-colors disabled:opacity-60"
+                        className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
                     </button>
@@ -177,7 +149,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
 
             {isOpen && (
                 <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-                    {previewError && <p className="text-red-700 text-sm" role="alert">{previewError}</p>}
+                    {previewError && <p className={`${textError} text-sm`} role="alert">{previewError}</p>}
                     {!previewError && previewUrl && containerWidth && (
                         <Document
                             file={previewUrl}
@@ -194,54 +166,44 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-[#4b1113]/70">{t("gestionnaire.preview.loading")}</p>
+                        <p className="text-sm text-main/70">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
 
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm text-[#4b1113] mb-2">
+                    <p className="text-sm text-main mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
-                    <input
-                        ref={reviewInputRef}
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleReviewFileChange}
-                        className="hidden"
+                    <textarea
+                        value={reviewFeedback}
+                        onChange={(e) => setReviewFeedback(e.target.value)}
+                        placeholder={t("gestionnaire.decline.placeholder")}
+                        rows={3}
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
-                    <div className="flex flex-wrap items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={() => reviewInputRef.current?.click()}
-                            className="bg-white border border-red-300 text-red-800 text-sm font-medium py-1.5 px-3 rounded-md hover:bg-red-100 transition-colors"
-                        >
-                            {t("gestionnaire.decline.chooseFile")}
-                        </button>
-                        {reviewFile && (
-                            <span className="text-sm text-[#4b1113]">{reviewFile.name}</span>
-                        )}
+                    <div className="flex justify-end">
                         <button
                             type="button"
                             onClick={handleConfirmDecline}
                             disabled={actionState === "processing"}
-                            className="bg-red-700 text-white text-sm font-bold py-1.5 px-3 rounded-md hover:bg-red-800 transition-colors disabled:opacity-60"
+                            className={btnRefuse}
                         >
                             {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
                         </button>
                     </div>
-                    {reviewError && <p className="text-red-700 text-sm mt-2" role="alert">{reviewError}</p>}
+                    {reviewError && <p className={`${textError} text-sm mt-2`} role="alert">{reviewError}</p>}
                 </div>
             )}
 
             {actionState === "acceptError" && (
-                <p className="text-red-700 text-sm mt-2" role="alert">
+                <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.accept.errorProcessing")}
                 </p>
             )}
             {actionState === "declineError" && (
-                <p className="text-red-700 text-sm mt-2" role="alert">
+                <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>
             )}

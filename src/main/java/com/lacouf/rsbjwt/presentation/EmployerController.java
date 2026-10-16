@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;

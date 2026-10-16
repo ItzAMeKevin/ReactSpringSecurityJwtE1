@@ -35,7 +35,7 @@ public class Notification {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private NotificationStatus status = NotificationStatus.PENDING;
+    private Status status = Status.PENDING;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
@@ -65,7 +65,7 @@ public class Notification {
     void onCreate() {
         this.createdAt = Instant.now();
         if (this.status == null) {
-            this.status = NotificationStatus.PENDING;
+            this.status = Status.PENDING;
         }
         if (this.retryCount == null) {
             this.retryCount = 0;
