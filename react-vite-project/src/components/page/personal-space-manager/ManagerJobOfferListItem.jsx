@@ -1,6 +1,6 @@
 import {useState, useRef, useEffect} from "react";
 import { useTranslation } from "react-i18next";
-import smoothScrollToElement from "../../utils/smoothScrollToElement.js";
+import smoothScrollToElement from "../../../utils/smoothScrollToElement.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const {t} = useTranslation();
