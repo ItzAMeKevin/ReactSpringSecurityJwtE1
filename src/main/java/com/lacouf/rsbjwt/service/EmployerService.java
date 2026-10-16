@@ -49,14 +49,20 @@ public class EmployerService {
     private void notifyManagers(JobOffer offer) {
         try {
             List<Manager> managers = managerRepository.findAll();
+            String companyName = offer.getEmployer() != null ? offer.getEmployer().getCompanyName() : "";
+            String offerTitle = offer.getTitle() != null ? offer.getTitle() : "";
+            String program = offer.getPrograme() != null ? offer.getPrograme().name() : "";
             List<ManagerNotification> notifs = managers.stream()
                     .map(manager -> new ManagerNotification(
                             "Nouvelle offre de stage",
-                            "L'entreprise \"" + offer.getEmployer().getCompanyName()
-                                    + "\" a déposé une offre : \"" + offer.getTitle()
-                                    + "\" (" + offer.getPrograme() + ")",
+                            "L'entreprise \"" + companyName
+                                    + "\" a déposé une offre : \"" + offerTitle
+                                    + "\" (" + program + ")",
                             offer.getId(),
-                            manager
+                            manager,
+                            companyName,
+                            offerTitle,
+                            program
                     ))
                     .toList();
             managerNotificationRepository.saveAll(notifs);

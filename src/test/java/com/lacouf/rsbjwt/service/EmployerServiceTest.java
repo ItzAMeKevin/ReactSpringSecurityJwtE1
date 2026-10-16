@@ -2,10 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
-import com.lacouf.rsbjwt.model.Employer;
-import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Programe;
+import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
@@ -17,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -71,6 +69,12 @@ class EmployerServiceTest {
                 .numeroCivic("100").codePostal("H2X 1Y5")
                 .build();
     }
+    private JobOfferCreateDTO validCreateDto() {
+        return new JobOfferCreateDTO(
+                "Titre", "Desc", "Preq", adresse, "60000$",
+                LocalDate.of(2025, 3, 1), 12, Programe.TECHNIQUES_INFORMATIQUE);
+    }
+
 
     //               getJobOffres
 
@@ -173,5 +177,100 @@ class EmployerServiceTest {
 
         verify(jobOfferRepository, never()).save(any());
         verify(jobOfferMapper, never()).toEntity(any());
+    }
+
+    @Test
+    @DisplayName("addJobOffer crée une notification par gestionnaire")
+    void addJobOffer_notifiesAllManagers() {
+        // Arrange
+        String email = "marie@acme.com";
+        jobOffer.setPrograme(Programe.TECHNIQUES_INFORMATIQUE);
+        jobOffer.setEmployer(employer);
+
+        Manager m1 = mock(Manager.class, RETURNS_DEEP_STUBS);
+        Manager m2 = mock(Manager.class, RETURNS_DEEP_STUBS);
+
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
+        when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
+        when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
+        when(managerRepository.findAll()).thenReturn(List.of(m1, m2));
+
+        // Act
+        employerService.addJobOffer(validCreateDto(), email);
+
+        // Assert
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<ManagerNotification>> captor = ArgumentCaptor.forClass(List.class);
+        verify(managerNotificationRepository).saveAll(captor.capture());
+
+        List<ManagerNotification> saved = captor.getValue();
+        assertEquals(2, saved.size());
+        assertEquals(m1, saved.get(0).getManager());
+        assertEquals(m2, saved.get(1).getManager());
+
+        ManagerNotification n = saved.get(0);
+        assertEquals("Nouvelle offre de stage", n.getTitle());
+        assertEquals(jobOffer.getId(), n.getOfferId());
+        assertEquals("ACME Inc.", n.getCompanyName());
+        assertEquals("Développeur Java", n.getOfferTitle());
+        assertEquals("TECHNIQUES_INFORMATIQUE", n.getProgram());
+        assertEquals(
+                "L'entreprise \"ACME Inc.\" a déposé une offre : \"Développeur Java\" (TECHNIQUES_INFORMATIQUE)",
+                n.getMessage());
+        assertFalse(n.isRead());
+    }
+
+    @Test
+    @DisplayName("addJobOffer sauvegarde une liste vide s'il n'y a aucun gestionnaire")
+    void addJobOffer_noManagers_savesEmptyList() {
+        // Arrange
+        String email = "marie@acme.com";
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
+        when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
+        when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
+        when(managerRepository.findAll()).thenReturn(List.of());
+
+        // Act
+        employerService.addJobOffer(validCreateDto(), email);
+
+        // Assert
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<ManagerNotification>> captor = ArgumentCaptor.forClass(List.class);
+        verify(managerNotificationRepository).saveAll(captor.capture());
+        assertTrue(captor.getValue().isEmpty());
+    }
+
+    @Test
+    @DisplayName("addJobOffer réussit même si la notification échoue")
+    void addJobOffer_notificationFailure_doesNotBreakCreation() {
+        // Arrange
+        String email = "marie@acme.com";
+        JobOfferDetailDTO expected = mock(JobOfferDetailDTO.class);
+
+        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
+        when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
+        when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
+        when(managerRepository.findAll()).thenThrow(new RuntimeException("DB down"));
+        when(jobOfferMapper.toDto(jobOffer)).thenReturn(expected);
+
+        // Act
+        JobOfferDetailDTO result = employerService.addJobOffer(validCreateDto(), email);
+
+        // Assert
+        assertSame(expected, result);
+        verify(jobOfferRepository).save(jobOffer);
+        verifyNoInteractions(managerNotificationRepository);
+    }
+
+    @Test
+    @DisplayName("addJobOffer ne notifie personne si l'employeur est introuvable")
+    void addJobOffer_employerNotFound_noNotification() {
+        // Arrange
+        when(employerRepository.findByCredentialsEmail("x@test.com")).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(EmployerNotFoundException.class,
+                () -> employerService.addJobOffer(validCreateDto(), "x@test.com"));
+        verifyNoInteractions(managerRepository, managerNotificationRepository);
     }
 }
