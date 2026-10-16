@@ -170,7 +170,9 @@
       "error": "Erreur lors du chargement des offres.",
       "none": "Aucune offre de stage en attente.",
       "company": "Entreprise",
-      "weeks": "sem."
+      "weeks": "sem.",
+      "readMore": "En savoir plus",
+      "showLess": "Voir moins"
     },
     "decline": {
       "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",

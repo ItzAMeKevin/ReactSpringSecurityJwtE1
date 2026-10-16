@@ -9,4 +9,7 @@ export default defineConfig({
     server: {
         port: 3000, // Specify the development server port
     },
+    test : {
+        environment: 'jsdom',
+    }
 });

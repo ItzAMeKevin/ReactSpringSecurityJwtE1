@@ -170,7 +170,9 @@
       "error": "Error loading offers.",
       "none": "No pending internship offers.",
       "company": "Company",
-      "weeks": "wks"
+      "weeks": "wks",
+      "readMore": "Read more",
+      "showLess": "Show less"
     },
     "decline": {
       "title": "Upload the CV review (PDF) before confirming the rejection.",
