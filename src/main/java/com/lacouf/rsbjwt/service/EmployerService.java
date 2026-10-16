@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lacouf.rsbjwt.model.Status;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +77,25 @@ public class EmployerService {
     public Employer findEmployerByEmail(String email) {
         return employerRepository.findByCredentialsEmail(email)
                 .orElseThrow(() -> new EmployerNotFoundException(email));
+    }
+
+    @Transactional
+    public Optional<JobOfferDetailDTO> updateRefusedJobOffer(Long id, JobOfferCreateDTO dto, String employerEmail) {
+        return jobOfferRepository.findByIdAndEmployerCredentialsEmail(id, employerEmail).map(offer -> {
+            if (offer.getStatus() != Status.DECLINED) {
+                throw new IllegalStateException("Seules les offres refusées peuvent être modifiées.");
+            }
+            JobOffer updated = jobOfferMapper.toEntity(dto);
+            offer.setTitle(updated.getTitle());
+            offer.setDescription(updated.getDescription());
+            offer.setPrerequisites(updated.getPrerequisites());
+            offer.setSalary(updated.getSalary());
+            offer.setStartingDate(updated.getStartingDate());
+            offer.setDurationInWeeks(updated.getDurationInWeeks());
+            offer.setPrograme(updated.getPrograme());
+            offer.setAdresse(updated.getAdresse());
+            offer.setStatus(Status.WAITING);
+            return jobOfferMapper.toDto(jobOfferRepository.save(offer));
+        });
     }
 }

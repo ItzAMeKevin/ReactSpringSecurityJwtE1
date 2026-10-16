@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/student-cv")
 @RequiredArgsConstructor
-public class StudentController {
+public class StudentCvController {
 
     private final StudentCvService studentCvService;
 
