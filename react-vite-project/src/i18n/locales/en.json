@@ -32,6 +32,7 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
+
     "submit": "Register"
   },
   "errors": {
@@ -71,7 +72,7 @@
     }
   },
   "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
+    "choisirFichier": "Upload your CV",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
@@ -81,7 +82,21 @@
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
     "afficher": "Show",
-    "appercuIndisponible": "Preview not available"
+    "apercuIndisponible": "Preview not available",
+    "chargementApercu": "Loading preview...",
+    "voirFeedback": "View feedback",
+    "masquerFeedback": "Hide feedback",
+    "feedbackTitre": "Manager's comment:",
+    "chargementFeedback": "Loading feedback...",
+    "erreurFeedback": "Unable to load the feedback.",
+    "chargement": "Loading your CVs...",
+    "aucunCv": "No CV uploaded yet.",
+    "erreurChargement": "Unable to load your CVs. Please try again later.",
+    "statuts": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    }
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
@@ -124,6 +139,11 @@
     "close": "Close",
     "jobOffers": "My internship offers",
     "noJobOffers": "You have no internship offers yet.",
+    "statuts": {
+      "WAITING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    },
     "offerCreated": "Internship offer published successfully.",
     "submit": "Publish offer",
     "fields": {
@@ -184,6 +204,9 @@
       "company": "Company",
       "weeks": "wks"
     },
+    "accept": {
+      "errorProcessing": "An error occurred while accepting this CV. Please try again."
+    },
     "decline": {
       "title": "Write your feedback before confirming the rejection.",
       "placeholder": "Explain why the CV was rejected...",
@@ -200,7 +223,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "downloadReview": "Download feedback",
+    "voirFeedback": "View feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "New CV to validate",

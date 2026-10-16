@@ -104,6 +104,14 @@ public class StudentCvService {
         return cv.getReviewFeedback();
     }
 
+    @Transactional(readOnly = true)
+    public byte[] getCvContent(Long cvId, String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new InvalidCvException("CV not found"))
+                .getContent();
+    }
+
     private static String sanitizeFileName(String fileName) {
         String normalized = fileName.replace('\\', '_').replace('/', '_').trim();
         if (normalized.isEmpty() || normalized.length() > 255) {

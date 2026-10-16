@@ -71,7 +71,7 @@
     }
   },
   "televerser": {
-    "choisirFichier": "Téléverser votre CV en format PDF",
+    "choisirFichier": "Téléverser votre CV",
     "fichierChoisi": "Fichier sélectionné",
     "erreurTypeFichier": "Seuls les fichiers pdf sont acceptés.",
     "envoieEnCours": "Envoi en cours...",
@@ -81,7 +81,21 @@
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
     "afficher": "Afficher",
-    "appercuIndisponible": "Aperçu indisponible"
+    "apercuIndisponible": "Aperçu indisponible",
+    "chargementApercu": "Chargement de l'aperçu...",
+    "voirFeedback": "Voir le feedback",
+    "masquerFeedback": "Masquer le feedback",
+    "feedbackTitre": "Commentaire du gestionnaire :",
+    "chargementFeedback": "Chargement du feedback...",
+    "erreurFeedback": "Impossible de charger le feedback.",
+    "chargement": "Chargement de vos CVs...",
+    "aucunCv": "Aucun CV téléversé pour l'instant.",
+    "erreurChargement": "Impossible de charger vos CVs. Réessayez plus tard.",
+    "statuts": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Accepté",
+      "DECLINED": "Refusé"
+    }
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",
@@ -124,6 +138,11 @@
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
     "noJobOffers": "Aucune offre de stage publiée",
+    "statuts": {
+      "WAITING": "En attente",
+      "ACCEPTED": "Acceptée",
+      "DECLINED": "Refusée"
+    },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "submit": "Publier l'offre",
     "fields": {
@@ -184,6 +203,9 @@
       "company": "Entreprise",
       "weeks": "sem."
     },
+    "accept": {
+      "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
+    },
     "decline": {
       "title": "Écrivez votre feedback avant de confirmer le refus.",
       "placeholder": "Expliquez pourquoi le CV a été refusé...",
@@ -200,7 +222,7 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
-    "downloadReview": "Télécharger la revue",
+    "voirFeedback": "Voir le feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "Nouveau CV à valider",
@@ -224,5 +246,4 @@
     "MANAGER": "Manager",
     "EMPLOYER": "Employer"
   }
-
 }

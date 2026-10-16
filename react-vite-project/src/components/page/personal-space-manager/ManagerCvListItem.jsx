@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
-import { fetchBlobUrl, downloadFile } from "../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../styles/classes.js";
+import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
+    const reviewInputRef = useRef(null);
 
     const [isOpen, setIsOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -91,8 +92,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-black font-medium truncate">{cv.fileName}</p>
-                    <p className="text-sm text-black truncate">
+                    <p className="text-main font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-main/70 truncate">
                         {cv.studentFirstName} {cv.studentLastName}
                         {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
                     </p>
@@ -105,8 +106,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         className={`${btnSmPrimary} flex items-center`}
                     >
                         <svg
-                            width="16"
-                            height="16"
+                            width="19"
+                            height="19"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -165,14 +166,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         </Document>
                     )}
                     {!previewError && !previewUrl && (
-                        <p className="text-sm text-black">{t("gestionnaire.preview.loading")}</p>
+                        <p className="text-sm text-main/70">{t("gestionnaire.preview.loading")}</p>
                     )}
                 </div>
             )}
 
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
-                    <p className="text-sm text-black mb-2">
+                    <p className="text-sm text-main mb-2">
                         {t("gestionnaire.decline.title")}
                     </p>
                     <textarea
@@ -180,7 +181,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                         onChange={(e) => setReviewFeedback(e.target.value)}
                         placeholder={t("gestionnaire.decline.placeholder")}
                         rows={3}
-                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-black bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
                     <div className="flex justify-end">
                         <button
@@ -196,7 +197,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
                 </div>
             )}
 
-            {actionState === "error" && (
+            {actionState === "acceptError" && (
+                <p className={`${textError} text-sm mt-2`} role="alert">
+                    {t("gestionnaire.accept.errorProcessing")}
+                </p>
+            )}
+            {actionState === "declineError" && (
                 <p className={`${textError} text-sm mt-2`} role="alert">
                     {t("gestionnaire.decline.errorProcessing")}
                 </p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { btnAccept, btnRefuse, textError } from "../../styles/classes.js";
+import { btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const { t } = useTranslation();
@@ -37,16 +37,16 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         }`}>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-black text-lg">{offer.title}</h3>
-                    <p className="text-sm text-black mt-1">
+                    <h3 className="font-semibold text-main text-lg">{offer.title}</h3>
+                    <p className="text-sm text-main/70 mt-1">
                         {t("gestionnaire.offres.company")}: <span
                         className="font-medium">{offer.companyName}</span>
                     </p>
-                    <p className="text-sm text-black mt-1">
+                    <p className="text-sm text-main/70 mt-1">
                         {offer.startingDate} · {offer.durationInWeeks} {t("gestionnaire.offres.weeks")}
                     </p>
                     {offer.description && (
-                        <p className="text-sm text-black mt-2 line-clamp-2">{offer.description}</p>
+                        <p className="text-sm text-main/70 mt-2 line-clamp-2">{offer.description}</p>
                     )}
                 </div>
                 <div className="flex flex-col gap-2 shrink-0">

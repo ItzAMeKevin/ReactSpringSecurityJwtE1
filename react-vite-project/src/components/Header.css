@@ -14,6 +14,16 @@
     z-index: 100;
 }
 
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand h1 {
+    margin: 0;
+}
+
 .nav-links {
     list-style: none;
     display: flex;

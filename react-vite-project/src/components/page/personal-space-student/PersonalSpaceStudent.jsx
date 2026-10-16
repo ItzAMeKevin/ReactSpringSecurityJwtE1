@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
-import {useRef, useState} from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { useEffect, useRef, useState } from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
-import { btnAcceptLg, pageWrapper, pageInner, textError, textSuccess } from "../../../styles/classes.js";
+import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -20,6 +21,8 @@ const fileToBase64 = (file) =>
 
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
+    const location = useLocation();
+    const navigate = useNavigate();
     const inputRef = useRef(null);
     const [fileError, setFileError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -28,6 +31,33 @@ const PersonalSpaceStudent = () => {
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
+    const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
+
+    useEffect(() => {
+        if (location.state?.feedbackCvId) {
+            setOpenFeedbackCvId(location.state.feedbackCvId);
+            navigate(location.pathname, { replace: true, state: null });
+        }
+    }, [location.key, location.state?.feedbackCvId]);
+
+    useEffect(() => {
+        const loadCvList = async () => {
+            try {
+                const response = await fetcher("/student-cv");
+                if (!response.ok) {
+                    setListError(t("televerser.erreurChargement"));
+                    return;
+                }
+                setCvList(await response.json());
+            } catch (error) {
+                console.error("Erreur lors du chargement des CVs :", error);
+                setListError(t("televerser.erreurChargement"));
+            } finally {
+                setIsLoadingList(false);
+            }
+        };
+        void loadCvList();
+    }, [t]);
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
@@ -124,25 +154,36 @@ const PersonalSpaceStudent = () => {
                     <p className={textError}>{t("televerser.envoieErreur")}</p>
                 )}
 
-                {cvList.length > 0 && (
-                    <div className="w-full mt-10">
-                        <h2 className="text-black font-semibold mb-3">
-                            {t("televerser.mesCvs")}
-                        </h2>
-                        <div className="flex flex-col gap-3">
-                            {cvList.map((cv) => (
-                                <CvListItem
-                                    key={cv.id}
-                                    cv={cv}
-                                    isOpen={openCvId === cv.id}
-                                    onToggle={() =>
-                                        setOpenCvId((current) => (current === cv.id ? null : cv.id))
-                                    }
-                                />
-                            ))}
-                        </div>
+                <div className="w-full mx-auto mt-10">
+                    <h2 className="text-main text-center text-xl font-bold mb-3">
+                        {t("televerser.mesCvs")}
+                    </h2>
+                    {isLoadingList && (
+                        <p className={`${textMuted} text-sm`}>{t("televerser.chargement")}</p>
+                    )}
+                    {listError && (
+                        <p className={`${textError} text-sm`} role="alert">{listError}</p>
+                    )}
+                    {!isLoadingList && !listError && cvList.length === 0 && (
+                        <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
+                    )}
+                    <div className="flex flex-col gap-3">
+                        {cvList.map((cv) => (
+                            <CvListItem
+                                key={cv.id}
+                                cv={cv}
+                                isOpen={openCvId === cv.id}
+                                onToggle={() =>
+                                    setOpenCvId((current) => (current === cv.id ? null : cv.id))
+                                }
+                                isFeedbackOpen={openFeedbackCvId === cv.id}
+                                onToggleFeedback={() =>
+                                    setOpenFeedbackCvId((current) => (current === cv.id ? null : cv.id))
+                                }
+                            />
+                        ))}
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
