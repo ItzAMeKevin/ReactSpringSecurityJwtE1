@@ -9,7 +9,7 @@ import ErrorPage from "./components/ErrorPage.jsx";
 import Logout from "./components/auth/Logout.jsx";
 import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
 import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
-import PersonalSpaceManager from "./components/page/PersonalSpaceManager.jsx";
+import PersonalSpaceManager from "./components/page/personal-space-manager/PersonalSpaceManager.jsx";
 import PersonalSpaceEmployer from "./components/page/personal-space-employer/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";

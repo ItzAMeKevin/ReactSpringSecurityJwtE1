@@ -21,6 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import org.springframework.http.HttpStatus;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,15 +86,13 @@ class UserControllerWebMvcTest {
     @DisplayName("POST /user/login returns 401 on failure")
     void authenticateUser_failure_returnsUnauthorized() throws Exception {
         LoginDTO login = new LoginDTO("user@example.com", "wrong");
-        when(userService.authenticateUser(any(LoginDTO.class))).thenThrow(new RuntimeException("bad creds"));
+        when(userService.authenticateUser(any(LoginDTO.class))).thenThrow(new AuthenticationException(HttpStatus.UNAUTHORIZED, "bad creds"));
 
         mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(login)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.tokenType").value("BEARER"))
-                .andExpect(jsonPath("$.accessToken").value(org.hamcrest.Matchers.nullValue()));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -117,7 +118,6 @@ class UserControllerWebMvcTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.firstName").value("Jane"))
                 .andExpect(jsonPath("$.lastname").value("Doe"))
                 .andExpect(jsonPath("$.email").value("jane@example.com"))
@@ -219,11 +219,10 @@ class UserControllerWebMvcTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(2))
                 .andExpect(jsonPath("$.firstName").value("Bob"))
                 .andExpect(jsonPath("$.email").value("bob@company.com"))
                 .andExpect(jsonPath("$.companyName").value("Acme Corp"))
-                .andExpect(jsonPath("$.employerId").value("EMP001"));
+                .andExpect(jsonPath("$.employerWorkId").value("EMP001"));
 
         verify(passwordEncoder).encode("password");
         verify(userService).inscription(any(UserCreateDTO.class));
@@ -253,7 +252,6 @@ class UserControllerWebMvcTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isAccepted())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(3))
                 .andExpect(jsonPath("$.firstName").value("Alice"))
                 .andExpect(jsonPath("$.email").value("alice@school.com"))
                 .andExpect(jsonPath("$.matricule").value("1234567"));

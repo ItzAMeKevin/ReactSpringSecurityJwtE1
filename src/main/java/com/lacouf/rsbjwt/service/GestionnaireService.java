@@ -16,7 +16,7 @@ import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,14 +69,11 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void declineCv(Long cvId, CvUploadDto reviewRequest) {
+    public void declineCv(Long cvId, CvDeclineFeedbackDto feedbackRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
-        byte[] reviewContent = Base64.getDecoder().decode(reviewRequest.getContent());
         cv.setStatus(Status.DECLINED);
-        cv.setReviewContent(reviewContent);
-        cv.setReviewFileName(reviewRequest.getFileName());
-        cv.setReviewContentType(reviewRequest.getContentType());
+        cv.setReviewFeedback(feedbackRequest.getFeedback());
         studentCvRepository.save(cv);
         Student student = cv.getStudent();
         cvNotificationService.notifyStudentOnCvDeclined(student, cv);

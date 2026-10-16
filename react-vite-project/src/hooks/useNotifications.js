@@ -19,7 +19,7 @@ const useNotifications = () => {
             const data = await response.json();
             const enrichedData = data.map((n) => ({
                 ...n,
-                actionUrl: n.type === "CV_REJECTED" && n.studentCv ? `/student-cv/${n.studentCv.id}/review` : null,
+                feedbackCvId: n.type === "CV_REJECTED" && n.studentCv ? n.studentCv.id : null,
             }));
             setNotifications(enrichedData);
             const unread = enrichedData.filter((n) => !n.isRead).length;

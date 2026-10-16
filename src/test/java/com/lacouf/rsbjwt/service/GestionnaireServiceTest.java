@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,22 +121,17 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void declineCv_success_setStatusAndReviewAndCreatesNotification() {
+    void declineCv_success_setStatusAndFeedbackAndCreatesNotification() {
         // ARRANGE
-        byte[] reviewBytes = new byte[] {1, 2 ,3};
-        String base64Review = Base64.getEncoder().encodeToString(reviewBytes);
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf", base64Review);
-
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Le format du CV n'est pas correct.");
         when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
 
         // ACT
-        gestionnaireService.declineCv(10L, reviewRequest);
+        gestionnaireService.declineCv(10L, feedbackRequest);
 
         // ASSERT
         assertEquals(Status.DECLINED, testCv.getStatus());
-        assertArrayEquals(reviewBytes, testCv.getReviewContent());
-        assertEquals("review.pdf", testCv.getReviewFileName());
-        assertEquals("application/pdf", testCv.getReviewContentType());
+        assertEquals("Le format du CV n'est pas correct.", testCv.getReviewFeedback());
         verify(studentCvRepository, times(1)).save(testCv);
         verify(cvNotificationService, times(1)).notifyStudentOnCvDeclined(testStudent, testCv);
     }
@@ -145,13 +139,11 @@ public class GestionnaireServiceTest {
     @Test
     void declineCv_notFound_throwsInvalidCvException() {
         // ARRANGE
-        String base64Review = Base64.getEncoder().encodeToString(new byte[]{1});
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf", base64Review);
-
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Feedback");
         when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
 
         // ACT & ASSERT
-        assertThrows(InvalidCvException.class, () -> gestionnaireService.declineCv(99L, reviewRequest));
+        assertThrows(InvalidCvException.class, () -> gestionnaireService.declineCv(99L, feedbackRequest));
         verify(studentCvRepository, never()).save(any());
         verify(cvNotificationService, never()).notifyStudentOnCvDeclined(any(), any());
     }

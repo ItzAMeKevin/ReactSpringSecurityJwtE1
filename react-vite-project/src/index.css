@@ -7,6 +7,16 @@
   --color-mint-dots: #fca5a5;
   --color-mint-bg: #fff1f2;
   --color-slate: #1e293b;
+
+  /* App design tokens */
+  --color-brand: #0051b6;
+  --color-brand-hover: #032880;
+  --color-brand-soft: #506fd5;
+  --color-main: #000000;
+
+  --color-accept: #009840;
+  --color-accept-hover: #006230;
+  --color-surface: #f3ebe3;
 }
 
 @layer components {
@@ -40,6 +50,18 @@
 
   .lang-btn {
     @apply rounded px-2 py-1 text-sm text-slate;
+  }
+
+  /* Polka-dot texture for light backgrounds (brand-colored dots) */
+  .dots-bg {
+    background-image: radial-gradient(rgba(75, 17, 19, 0.22) 1.2px, transparent 1.3px);
+    background-size: 18px 18px;
+  }
+
+  /* Polka-dot texture for dark backgrounds (white dots) */
+  .dots-bg-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.3px);
+    background-size: 18px 18px;
   }
 }
 

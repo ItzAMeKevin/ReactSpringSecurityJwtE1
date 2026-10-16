@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
-import { downloadFile } from "../utils/downloadFile.js";
+import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
     const { notifications, status, unreadCount, markAsRead } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
-    const REVIEW_FILENAME = "cv_review.pdf";
 
     const handleNotificationClick = (notificationId, isRead) => {
         if (!isRead) {
@@ -16,13 +17,11 @@ const NotificationBell = () => {
         }
     };
 
-    const handleDownloadReview = async (e, actionUrl) => {
+    const handleViewFeedback = (e, notification) => {
         e.stopPropagation();
-        try {
-            await downloadFile(actionUrl, REVIEW_FILENAME);
-        } catch (error) {
-            console.error("Erreur lors du téléchargement du review:", error);
-        }
+        handleNotificationClick(notification.id, notification.isRead);
+        setIsOpen(false);
+        navigate("/etudiant", { state: { feedbackCvId: notification.feedbackCvId } });
     };
 
     const toggleDropdown = () => {
@@ -31,12 +30,12 @@ const NotificationBell = () => {
 
     const renderContent = () => {
         if (status === "loading") {
-            return <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.loading")}</p>;
+            return <p className="text-sm text-black p-3">{t("notifications.loading")}</p>;
         }
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );
@@ -44,7 +43,7 @@ const NotificationBell = () => {
 
         if (status === "empty") {
             return (
-                <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.empty")}</p>
+                <p className="text-sm text-black p-3">{t("notifications.empty")}</p>
             );
         }
 
@@ -60,27 +59,27 @@ const NotificationBell = () => {
                             }
                             className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
                                 notification.isRead
-                                    ? "bg-white/40 text-[#4b1113]/70 hover:bg-white/60"
-                                    : "bg-blue-50 text-[#4b1113] hover:bg-blue-100 font-medium"
+                                    ? "bg-white/40 text-brand/70 hover:bg-white/60"
+                                    : "bg-blue-50 text-black hover:bg-blue-100 font-medium"
                             }`}
                         >
                             <p className="">{localizedNotif.title}</p>
                             {localizedNotif.message && (
-                                <p className="text-xs text-[#4b1113]/60 mt-1 ">
+                                <p className="text-xs text-black mt-1">
                                     {localizedNotif.message}
                                 </p>
                             )}
-                            {notification.actionUrl && (
+                            {notification.feedbackCvId && (
                                 <button
                                     type="button"
-                                    onClick={(e) => handleDownloadReview(e, notification.actionUrl)}
-                                    className="mt-2 bg-[#4b1113] text-white text-xs font-medium py-1 px-2 rounded hover:bg-[#3a0d0f] transition-colors"
+                                    onClick={(e) => handleViewFeedback(e, notification)}
+                                    className="mt-2 bg-brand text-white text-xs font-medium py-1 px-2 rounded hover:bg-brand-hover transition-colors"
                                 >
-                                    {t("notifications.downloadReview")}
+                                    {t("notifications.voirFeedback")}
                                 </button>
                             )}
                             {notification.createdAt && (
-                                <p className="text-xs text-[#4b1113]/50 mt-1">
+                                <p className="text-xs text-black mt-1">
                                     {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
@@ -123,9 +122,9 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-[#4b1113]/20 z-50">
-                    <div className="p-3 border-b border-[#4b1113]/10">
-                        <h3 className="text-[#4b1113] font-bold">{t("notifications.title")}</h3>
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
+                    <div className="p-3 border-b border-brand/10">
+                        <h3 className="text-black font-bold">{t("notifications.title")}</h3>
                     </div>
                     {renderContent()}
                 </div>
