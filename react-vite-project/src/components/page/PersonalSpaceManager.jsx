@@ -57,7 +57,7 @@ const PersonalSpaceManager = () => {
 
     const removeFromList = ((cvId) => {
         setPendingCvs((current) => current.filter((cv) => cv.id !== cvId));
-    };
+    });
 
     const handleAccept = async (cvId) => {
         const response = await fetcher(`/gestionnaire/cv/${cvId}/accept`, {
