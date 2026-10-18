@@ -245,5 +245,12 @@
     "STUDENT": "Student",
     "MANAGER": "Manager",
     "EMPLOYER": "Employer"
+  },
+
+  "etudiantOffres": {
+    "title": "Offres de stage disponibles",
+    "loading": "Chargement des offres...",
+    "noAcceptedCv": "Votre CV doit être accepté pour voir les offres de stage.",
+    "noOffers": "Aucune offre de stage disponible pour votre programme."
   }
 }

@@ -7,6 +7,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
+import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -183,6 +184,13 @@ const PersonalSpaceStudent = () => {
                             />
                         ))}
                     </div>
+                </div>
+
+                <div className="w-full mx-auto mt-10">
+                    <h2 className="text-main text-center text-xl font-bold mb-3">
+                        {t("etudiantOffres.title")}
+                    </h2>
+                    <StudentJobOfferList />
                 </div>
             </div>
         </div>
