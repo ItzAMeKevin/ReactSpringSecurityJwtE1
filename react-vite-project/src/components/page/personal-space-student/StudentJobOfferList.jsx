@@ -11,8 +11,10 @@ const StudentJobOfferList = () => {
     const [noAcceptedCv, setNoAcceptedCv] = useState(false);
 
     const programs = t("inscription.programsList", { returnObjects: true });
-    const programName = (enumName) =>
-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+    const programName = (enumName) => {
+        if (!Array.isArray(programs)) return enumName;
+        return programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+    };
 
     useEffect(() => {
         let cancelled = false;
@@ -29,6 +31,7 @@ const StudentJobOfferList = () => {
                 }
                 if (!res.ok) throw new Error(`${res.status}`);
                 const data = await res.json();
+                if (!Array.isArray(data)) throw new Error("invalid response");
                 if (!cancelled) setOffers(data);
             } catch {
                 if (!cancelled) setError(t("errors.generic"));
@@ -51,12 +54,14 @@ const StudentJobOfferList = () => {
     return (
         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
-                <li key={offer.id ?? i} className={`${cardItem} p-4`}>
+                <li key={offer.id ?? `fallback-${i}`} className={`${cardItem} p-4`}>
                     <div className="flex items-start justify-between gap-2">
                         <h3 className="text-lg font-bold text-black">{offer.title}</h3>
-                        <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                            {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                        </span>
+                        {offer.status && (
+                            <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                                {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                            </span>
+                        )}
                     </div>
                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
                     <p className="mt-2 line-clamp-3">{offer.description}</p>
@@ -68,7 +73,11 @@ const StudentJobOfferList = () => {
                         <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                         <dd>{offer.durationInWeeks}</dd>
                         <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                        <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
+                        <dd>
+                            {offer.location
+                                ? `${offer.location.numeroCivic ?? '—'} ${offer.location.rue ?? '—'}, ${offer.location.ville ?? '—'}, ${offer.location.pays ?? '—'}`
+                                : '—'}
+                        </dd>
                     </dl>
                 </li>
             ))}

@@ -54,9 +54,10 @@ describe('StudentJobOfferList', () => {
         fetcher.mockResolvedValue({ ok: false, status: 403 });
         render(<StudentJobOfferList />);
         expect(await screen.findByText('etudiantOffres.noAcceptedCv')).toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
     });
 
-    it('shows offer title when fetch succeeds', async () => {
+    it('shows offer details when fetch succeeds', async () => {
         fetcher.mockResolvedValue({
             ok: true,
             status: 200,
@@ -64,6 +65,13 @@ describe('StudentJobOfferList', () => {
         });
         render(<StudentJobOfferList />);
         expect(await screen.findByText('Dev Web Intern')).toBeInTheDocument();
+        expect(screen.getByText('Computer Science')).toBeInTheDocument();
+        expect(screen.getByText('personalSpaceEmployer.statuts.ACCEPTED')).toBeInTheDocument();
+        expect(screen.getByText('20$/h')).toBeInTheDocument();
+        expect(screen.getByText('2026-09-01')).toBeInTheDocument();
+        expect(screen.getByText('12')).toBeInTheDocument();
+        expect(screen.getByText('123 Main St, Montreal, Canada')).toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
     });
 
     it('shows noOffers message when fetch returns empty list', async () => {
@@ -74,11 +82,44 @@ describe('StudentJobOfferList', () => {
         });
         render(<StudentJobOfferList />);
         expect(await screen.findByText('etudiantOffres.noOffers')).toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
     });
 
     it('shows error message when fetch fails', async () => {
         fetcher.mockResolvedValue({ ok: false, status: 500 });
         render(<StudentJobOfferList />);
         expect(await screen.findByText('errors.generic')).toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
+    });
+
+    it('shows error when response is not an array', async () => {
+        fetcher.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => ({ message: 'not an array' })
+        });
+        render(<StudentJobOfferList />);
+        expect(await screen.findByText('errors.generic')).toBeInTheDocument();
+    });
+
+    it('renders safely when offer has no status or location', async () => {
+        fetcher.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => [{
+                id: 2,
+                title: 'No Status Offer',
+                programe: 'TECHNIQUES_INFORMATIQUE',
+                description: 'Test',
+                salary: '15$/h',
+                startingDate: '2026-01-01',
+                durationInWeeks: 8,
+                status: null,
+                location: null
+            }]
+        });
+        render(<StudentJobOfferList />);
+        expect(await screen.findByText('No Status Offer')).toBeInTheDocument();
+        expect(screen.getByText('—')).toBeInTheDocument();
     });
 });

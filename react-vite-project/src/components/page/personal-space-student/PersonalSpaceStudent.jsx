@@ -39,7 +39,7 @@ const PersonalSpaceStudent = () => {
             setOpenFeedbackCvId(location.state.feedbackCvId);
             navigate(location.pathname, { replace: true, state: null });
         }
-    }, [location.key, location.state?.feedbackCvId]);
+    }, [location.key, location.state?.feedbackCvId, navigate, location.pathname]);
 
     useEffect(() => {
         const loadCvList = async () => {
