@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
-import { cardItem, statusBadge, statusBadgeColor, textError, textMuted } from "../../../styles/classes.js";
+import { textError, textMuted } from "../../../styles/classes.js";
+import StudentJobOfferListItem from "./StudentJobOfferListItem.jsx";
 
 const StudentJobOfferList = () => {
     const { t } = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [noAcceptedCv, setNoAcceptedCv] = useState(false);
-
-    const programs = t("inscription.programsList", { returnObjects: true });
-    const programName = (enumName) => {
-        if (!Array.isArray(programs)) return enumName;
-        return programs.find((p) => p.enumName === enumName)?.name ?? enumName;
-    };
+    const [noAcceptedCv, setNoAcceptedCv] = useState(false)
 
     useEffect(() => {
         let cancelled = false;
@@ -52,37 +47,13 @@ const StudentJobOfferList = () => {
     if (offers.length === 0) return <p className={`${textMuted} text-sm`}>{t("etudiantOffres.noOffers")}</p>;
 
     return (
-        <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
+        <ul className="grid w-full max-w-4xl grid-cols-1 items-start gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
-                <li key={offer.id ?? `fallback-${i}`} className={`${cardItem} p-4`}>
-                    <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-lg font-bold text-black">{offer.title}</h3>
-                        {offer.status && (
-                            <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                                {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                            </span>
-                        )}
-                    </div>
-                    <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
-                    <p className="mt-2 line-clamp-3">{offer.description}</p>
-                    <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
-                        <dd>{offer.salary}</dd>
-                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
-                        <dd>{offer.startingDate}</dd>
-                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
-                        <dd>{offer.durationInWeeks}</dd>
-                        <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                        <dd>
-                            {offer.location
-                                ? `${offer.location.numeroCivic ?? '—'} ${offer.location.rue ?? '—'}, ${offer.location.ville ?? '—'}, ${offer.location.pays ?? '—'}`
-                                : '—'}
-                        </dd>
-                    </dl>
-                </li>
+                <StudentJobOfferListItem key={offer.id ?? `fallback-${i}`} offer={offer} />
             ))}
         </ul>
     );
 };
+
 
 export default StudentJobOfferList;

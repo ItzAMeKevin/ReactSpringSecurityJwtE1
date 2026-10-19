@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 const t = (key, options) => {
@@ -32,6 +32,8 @@ const mockOffer = {
     title: 'Dev Web Intern',
     programe: 'TECHNIQUES_INFORMATIQUE',
     description: 'A great internship',
+    prerequisites: 'Java and Spring',
+    companyName: 'Acme Corp',
     salary: '20$/h',
     startingDate: '2026-09-01',
     durationInWeeks: 12,
@@ -57,7 +59,7 @@ describe('StudentJobOfferList', () => {
         expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
     });
 
-    it('shows offer details when fetch succeeds', async () => {
+    it('shows offer summary when collapsed', async () => {
         fetcher.mockResolvedValue({
             ok: true,
             status: 200,
@@ -67,11 +69,63 @@ describe('StudentJobOfferList', () => {
         expect(await screen.findByText('Dev Web Intern')).toBeInTheDocument();
         expect(screen.getByText('Computer Science')).toBeInTheDocument();
         expect(screen.getByText('personalSpaceEmployer.statuts.ACCEPTED')).toBeInTheDocument();
+        expect(screen.getByText('Acme Corp')).toBeInTheDocument();
+        expect(screen.getByText('2026-09-01 · 12 etudiantOffres.weeks')).toBeInTheDocument();
+        expect(screen.getByText('A great internship')).toBeInTheDocument();
+        expect(screen.getByText('etudiantOffres.readMore')).toHaveAttribute('aria-expanded', 'false');
+        expect(screen.queryByText('Java and Spring')).not.toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
+    });
+
+    it('shows full offer details after clicking read more', async () => {
+        fetcher.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => [mockOffer]
+        });
+        render(<StudentJobOfferList />);
+        fireEvent.click(await screen.findByText('etudiantOffres.readMore'));
+
+        expect(screen.getByText('Java and Spring')).toBeInTheDocument();
         expect(screen.getByText('20$/h')).toBeInTheDocument();
         expect(screen.getByText('2026-09-01')).toBeInTheDocument();
-        expect(screen.getByText('12')).toBeInTheDocument();
+        expect(screen.getByText('12 etudiantOffres.weeks')).toBeInTheDocument();
         expect(screen.getByText('123 Main St, Montreal, Canada')).toBeInTheDocument();
-        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');
+    });
+
+    it('toggles details with read more / show less', async () => {
+        fetcher.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => [mockOffer]
+        });
+        render(<StudentJobOfferList />);
+
+        fireEvent.click(await screen.findByText('etudiantOffres.readMore'));
+        expect(screen.getByText('Java and Spring')).toBeInTheDocument();
+        expect(screen.getByText('etudiantOffres.showLess')).toHaveAttribute('aria-expanded', 'true');
+
+        fireEvent.click(screen.getByText('etudiantOffres.showLess'));
+        expect(screen.queryByText('Java and Spring')).not.toBeInTheDocument();
+        expect(screen.getByText('etudiantOffres.readMore')).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    it('expands only the clicked offer', async () => {
+        fetcher.mockResolvedValue({
+            ok: true,
+            status: 200,
+            json: async () => [
+                mockOffer,
+                { ...mockOffer, id: 2, title: 'Second Offer', prerequisites: 'Python' }
+            ]
+        });
+        render(<StudentJobOfferList />);
+        const buttons = await screen.findAllByText('etudiantOffres.readMore');
+        expect(buttons).toHaveLength(2);
+
+        fireEvent.click(buttons[0]);
+        expect(screen.getByText('Java and Spring')).toBeInTheDocument();
+        expect(screen.queryByText('Python')).not.toBeInTheDocument();
     });
 
     it('shows noOffers message when fetch returns empty list', async () => {
@@ -120,6 +174,8 @@ describe('StudentJobOfferList', () => {
         });
         render(<StudentJobOfferList />);
         expect(await screen.findByText('No Status Offer')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText('etudiantOffres.readMore'));
         expect(screen.getByText('—')).toBeInTheDocument();
     });
 });
