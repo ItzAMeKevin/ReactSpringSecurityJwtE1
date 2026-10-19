@@ -273,7 +273,8 @@ class GestionnaireControllerWebMvcTest {
     @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void getNotifications_returnsOk() throws Exception {
         ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L);
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L,
+                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
         when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of(notif));
 
         mockMvc.perform(get("/gestionnaire/offres/notifications"))
@@ -297,7 +298,8 @@ class GestionnaireControllerWebMvcTest {
     @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void markAsRead_found_returnsOk() throws Exception {
         ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L);
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L,
+                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
         when(gestionnaireService.markNotificationAsRead("manager@test.com", 1L))
                 .thenReturn(Optional.of(notif));
 

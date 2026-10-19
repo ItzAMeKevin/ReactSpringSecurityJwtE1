@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.EmployerNotification;
+import com.lacouf.rsbjwt.model.ManagerNotification;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
@@ -24,10 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class GestionnaireService {
+    private static final String JOB_OFFER_UPLOADED = "JOB_OFFER_UPLOADED";
+    private static final Pattern OFFER_MESSAGE_PATTERN = Pattern.compile(
+            "L'entreprise \"(.*?)\" a déposé une offre : \"(.*?)\" \\((.*?)\\)"
+    );
 
     private final JobOfferRepository jobOfferRepository;
     private final EmployerNotificationRepository employerNotificationRepository;
@@ -37,7 +44,6 @@ public class GestionnaireService {
     private final GestionnaireMapper gestionnaireMapper;
     private final CvNotificationService cvNotificationService;
 
-    // ── CV Management ──────────────────────────────────────────────────────────
 
     public List<PendingCvDto> getPendingCvs() {
         return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)
@@ -73,7 +79,6 @@ public class GestionnaireService {
         cvNotificationService.notifyStudentOnCvDeclined(student, cv);
     }
 
-    // ── Job Offer Management ───────────────────────────────────────────────────
 
     public List<JobOfferDto> getPendingOffers() {
         return jobOfferRepository.findAllByStatus(Status.WAITING)
@@ -110,31 +115,101 @@ public class GestionnaireService {
         });
     }
 
-    // ── Manager Notifications ──────────────────────────────────────────────────
 
+    @Transactional(readOnly = true)
     public List<ManagerNotificationDto> getNotifications(String managerEmail) {
         return managerRepository.findByCredentialsEmail(managerEmail)
                 .map(manager -> managerNotificationRepository
                         .findAllByManager_IdOrderByCreatedAtDesc(manager.getId())
                         .stream()
-                        .map(n -> new ManagerNotificationDto(
-                                n.getId(), n.getTitle(), n.getMessage(),
-                                n.isRead(), n.getCreatedAt(), n.getOfferId()))
+                        .map(this::toNotificationDto)
                         .toList())
                 .orElse(List.of());
     }
 
+    @Transactional
     public Optional<ManagerNotificationDto> markNotificationAsRead(String managerEmail, Long notifId) {
         return managerRepository.findByCredentialsEmail(managerEmail).flatMap(manager ->
                 managerNotificationRepository.findByIdAndManager_Id(notifId, manager.getId())
                         .map(notif -> {
                             notif.markAsRead();
                             managerNotificationRepository.save(notif);
-                            return new ManagerNotificationDto(
-                                    notif.getId(), notif.getTitle(), notif.getMessage(),
-                                    notif.isRead(), notif.getCreatedAt(), notif.getOfferId());
+                            return toNotificationDto(notif);
                         }));
     }
+
+    private ManagerNotificationDto toNotificationDto(ManagerNotification notif) {
+        OfferInfo info = resolveOfferInfo(notif);
+        return new ManagerNotificationDto(
+                notif.getId(),
+                notif.getTitle(),
+                notif.getMessage(),
+                notif.isRead(),
+                notif.getCreatedAt(),
+                notif.getOfferId(),
+                JOB_OFFER_UPLOADED,
+                info.company(),
+                info.title(),
+                info.program()
+        );
+    }
+
+    private OfferInfo resolveOfferInfo(ManagerNotification notif) {
+        OfferInfo info = new OfferInfo(
+                nullToEmpty(notif.getCompanyName()),
+                nullToEmpty(notif.getOfferTitle()),
+                nullToEmpty(notif.getProgram())
+        );
+        if (!info.isComplete()) {
+            info = info.fillMissingFrom(offerInfoFromDatabase(notif.getOfferId()));
+        }
+        if (!info.isComplete()) {
+            info = info.fillMissingFrom(offerInfoFromMessage(notif.getMessage()));
+        }
+        return info;
+    }
+
+    private OfferInfo offerInfoFromDatabase(Long offerId) {
+        if (offerId == null) {
+            return OfferInfo.EMPTY;
+        }
+        return jobOfferRepository.findById(offerId)
+                .map(offer -> new OfferInfo(
+                        offer.getEmployer() == null ? "" : nullToEmpty(offer.getEmployer().getCompanyName()),
+                        nullToEmpty(offer.getTitle()),
+                        offer.getPrograme() == null ? "" : offer.getPrograme().name()
+                ))
+                .orElse(OfferInfo.EMPTY);
+    }
+
+    private OfferInfo offerInfoFromMessage(String message) {
+        Matcher matcher = OFFER_MESSAGE_PATTERN.matcher(nullToEmpty(message));
+        return matcher.find()
+                ? new OfferInfo(matcher.group(1), matcher.group(2), matcher.group(3))
+                : OfferInfo.EMPTY;
+    }
+
+    private record OfferInfo(String company, String title, String program) {
+
+        static final OfferInfo EMPTY = new OfferInfo("", "", "");
+
+        boolean isComplete() {
+            return !company.isEmpty() && !title.isEmpty() && !program.isEmpty();
+        }
+
+        OfferInfo fillMissingFrom(OfferInfo other) {
+            return new OfferInfo(
+                    company.isEmpty() ? other.company : company,
+                    title.isEmpty() ? other.title : title,
+                    program.isEmpty() ? other.program : program
+            );
+        }
+    }
+
+    private static String nullToEmpty(String value) {
+        return value == null ? "" : value;
+    }
+
 
     // ── Helpers ────────────────────────────────────────────────────────────────
 

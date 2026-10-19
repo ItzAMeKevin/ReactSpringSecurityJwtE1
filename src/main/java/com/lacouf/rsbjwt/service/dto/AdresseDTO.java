@@ -31,4 +31,5 @@ public class AdresseDTO {
             message = "Format de code postal canadien invalide (ex: H3B 1K9)"
     )
     private String codePostal;
+
 }

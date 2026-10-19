@@ -31,10 +31,21 @@ const ManagerNotificationBell = () => {
     };
 
 
-    const getNotificationMessage = (notification) => {
-        if (notification.source === "jobOffer") {
-            return notification.message || "";
+    const parseStoredOfferMessage = (storedMessage) => {
+        const match = (storedMessage || "").match(
+            /L'entreprise "(.+?)" a déposé une offre : "(.+?)" \((.+?)\)/
+        );
+        if (!match) {
+            return { company: "", offerTitle: "", program: "" };
         }
+        return {
+            company: match[1],
+            offerTitle: match[2],
+            program: match[3],
+        };
+    };
+
+    const getNotificationMessage = (notification) => {
         const { message } = getLocalizedNotification(notification, t);
         if (notification.type === "CV_UPLOADED") {
             return message
@@ -43,6 +54,13 @@ const ManagerNotificationBell = () => {
                 .replace("{matricule}", notification.studentMatricule || "")
                 .replace("{fileName}", notification.cvFileName || "")
                 .replace("{uploadedAt}", new Date(notification.uploadedAt).toLocaleDateString(i18n.language));
+        }
+        if (notification.type === "JOB_OFFER_UPLOADED") {
+            const parsed = parseStoredOfferMessage(notification.message);
+            return message
+                .replace("{company}", notification.company || parsed.company || "")
+                .replace("{offerTitle}", notification.offerTitle || parsed.offerTitle || "")
+                .replace("{program}", notification.program || parsed.program || "");
         }
         return message;
     };
@@ -95,6 +113,11 @@ const ManagerNotificationBell = () => {
                                 </span>
                             </div>
                             <p className="mt-1">{getNotificationMessage(notification)}</p>
+                            {notification.createdAt && (
+                                <p className="text-xs text-[#4b1113]/50 mt-1">
+                                    {formatDateTime(notification.createdAt)}
+                                </p>
+                            )}
                         </div>
                         <button
                             type="button"

@@ -7,6 +7,10 @@ public record ManagerNotificationDto(
         String title,
         String message,
         boolean isRead,
-       Instant createdAt,
-        Long offerId
+        Instant createdAt,
+        Long offerId,
+        String type,
+        String company,
+        String offerTitle,
+        String program
 ) {}
