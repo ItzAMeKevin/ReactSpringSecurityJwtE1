@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
+const t = (key, options) => {
+    if (key === 'inscription.programsList' && options?.returnObjects) {
+        return [{ enumName: 'TECHNIQUES_INFORMATIQUE', name: 'Computer Science' }];
+    }
+    return key;
+};
+
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
-        t: (key, options) => {
-            if (key === 'inscription.programsList' && options?.returnObjects) {
-                return [{ enumName: 'TECHNIQUES_INFORMATIQUE', name: 'Computer Science' }];
-            }
-            return key;
-        }
-    })
+    useTranslation: () => ({ t })
 }));
 
 vi.mock('../../../utils/fetcher.js', () => ({

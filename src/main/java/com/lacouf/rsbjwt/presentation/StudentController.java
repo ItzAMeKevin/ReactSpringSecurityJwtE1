@@ -1,8 +1,11 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.security.exception.NoValidatedCvException;
+import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -22,7 +25,12 @@ public class StudentController {
     @GetMapping("/offres")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<List<JobOfferDetailDTO>> getAcceptedOffers(Authentication authentication) {
-        return ResponseEntity.ok(studentService.getAcceptedJobOffers(authentication.getName()));
+       try{
+           return ResponseEntity.ok(studentService.getAcceptedJobOffers(authentication.getName()));
+       } catch (NoValidatedCvException e) {
+              return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+       } catch (UserNotFoundException e) {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+       }
     }
-
 }
