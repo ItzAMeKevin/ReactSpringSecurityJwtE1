@@ -1,0 +1,151 @@
+[33mcommit 7a2ec78a91c01b436b9061d7d86322414028c682[m
+Author: prodiigiio <pvalitiana@gmail.com>
+Date:   Sun Oct 18 16:47:30 2026 -0400
+
+    fix(etudiant): defensive rendering and expanded tests per code review
+
+[1mdiff --git a/react-vite-project/src/components/page/personal-space-student/PersonalSpaceStudent.jsx b/react-vite-project/src/components/page/personal-space-student/PersonalSpaceStudent.jsx[m
+[1mindex d7b7dc2..e912b4f 100644[m
+[1m--- a/react-vite-project/src/components/page/personal-space-student/PersonalSpaceStudent.jsx[m
+[1m+++ b/react-vite-project/src/components/page/personal-space-student/PersonalSpaceStudent.jsx[m
+[36m@@ -39,7 +39,7 @@[m [mconst PersonalSpaceStudent = () => {[m
+             setOpenFeedbackCvId(location.state.feedbackCvId);[m
+             navigate(location.pathname, { replace: true, state: null });[m
+         }[m
+[31m-    }, [location.key, location.state?.feedbackCvId]);[m
+[32m+[m[32m    }, [location.key, location.state?.feedbackCvId, navigate, location.pathname]);[m
+ [m
+     useEffect(() => {[m
+         const loadCvList = async () => {[m
+[1mdiff --git a/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.jsx b/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.jsx[m
+[1mindex 817fd26..e7bf038 100644[m
+[1m--- a/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.jsx[m
+[1m+++ b/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.jsx[m
+[36m@@ -11,8 +11,10 @@[m [mconst StudentJobOfferList = () => {[m
+     const [noAcceptedCv, setNoAcceptedCv] = useState(false);[m
+ [m
+     const programs = t("inscription.programsList", { returnObjects: true });[m
+[31m-    const programName = (enumName) =>[m
+[31m-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;[m
+[32m+[m[32m    const programName = (enumName) => {[m
+[32m+[m[32m        if (!Array.isArray(programs)) return enumName;[m
+[32m+[m[32m        return programs.find((p) => p.enumName === enumName)?.name ?? enumName;[m
+[32m+[m[32m    };[m
+ [m
+     useEffect(() => {[m
+         let cancelled = false;[m
+[36m@@ -29,6 +31,7 @@[m [mconst StudentJobOfferList = () => {[m
+                 }[m
+                 if (!res.ok) throw new Error(`${res.status}`);[m
+                 const data = await res.json();[m
+[32m+[m[32m                if (!Array.isArray(data)) throw new Error("invalid response");[m
+                 if (!cancelled) setOffers(data);[m
+             } catch {[m
+                 if (!cancelled) setError(t("errors.generic"));[m
+[36m@@ -51,12 +54,14 @@[m [mconst StudentJobOfferList = () => {[m
+     return ([m
+         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">[m
+             {offers.map((offer, i) => ([m
+[31m-                <li key={offer.id ?? i} className={`${cardItem} p-4`}>[m
+[32m+[m[32m                <li key={offer.id ?? `fallback-${i}`} className={`${cardItem} p-4`}>[m
+                     <div className="flex items-start justify-between gap-2">[m
+                         <h3 className="text-lg font-bold text-black">{offer.title}</h3>[m
+[31m-                        <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>[m
+[31m-                            {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}[m
+[31m-                        </span>[m
+[32m+[m[32m                        {offer.status && ([m
+[32m+[m[32m                            <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>[m
+[32m+[m[32m                                {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}[m
+[32m+[m[32m                            </span>[m
+[32m+[m[32m                        )}[m
+                     </div>[m
+                     <p className="text-sm text-gray-600">{programName(offer.programe)}</p>[m
+                     <p className="mt-2 line-clamp-3">{offer.description}</p>[m
+[36m@@ -68,7 +73,11 @@[m [mconst StudentJobOfferList = () => {[m
+                         <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>[m
+                         <dd>{offer.durationInWeeks}</dd>[m
+                         <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>[m
+[31m-                        <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>[m
+[32m+[m[32m                        <dd>[m
+[32m+[m[32m                            {offer.location[m
+[32m+[m[32m                                ? `${offer.location.numeroCivic ?? '—'} ${offer.location.rue ?? '—'}, ${offer.location.ville ?? '—'}, ${offer.location.pays ?? '—'}`[m
+[32m+[m[32m                                : '—'}[m
+[32m+[m[32m                        </dd>[m
+                     </dl>[m
+                 </li>[m
+             ))}[m
+[1mdiff --git a/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.test.jsx b/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.test.jsx[m
+[1mindex 41fa158..42aa5a7 100644[m
+[1m--- a/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.test.jsx[m
+[1m+++ b/react-vite-project/src/components/page/personal-space-student/StudentJobOfferList.test.jsx[m
+[36m@@ -54,9 +54,10 @@[m [mdescribe('StudentJobOfferList', () => {[m
+         fetcher.mockResolvedValue({ ok: false, status: 403 });[m
+         render(<StudentJobOfferList />);[m
+         expect(await screen.findByText('etudiantOffres.noAcceptedCv')).toBeInTheDocument();[m
+[32m+[m[32m        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');[m
+     });[m
+ [m
+[31m-    it('shows offer title when fetch succeeds', async () => {[m
+[32m+[m[32m    it('shows offer details when fetch succeeds', async () => {[m
+         fetcher.mockResolvedValue({[m
+             ok: true,[m
+             status: 200,[m
+[36m@@ -64,6 +65,13 @@[m [mdescribe('StudentJobOfferList', () => {[m
+         });[m
+         render(<StudentJobOfferList />);[m
+         expect(await screen.findByText('Dev Web Intern')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('Computer Science')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('personalSpaceEmployer.statuts.ACCEPTED')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('20$/h')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('2026-09-01')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('12')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('123 Main St, Montreal, Canada')).toBeInTheDocument();[m
+[32m+[m[32m        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');[m
+     });[m
+ [m
+     it('shows noOffers message when fetch returns empty list', async () => {[m
+[36m@@ -74,11 +82,44 @@[m [mdescribe('StudentJobOfferList', () => {[m
+         });[m
+         render(<StudentJobOfferList />);[m
+         expect(await screen.findByText('etudiantOffres.noOffers')).toBeInTheDocument();[m
+[32m+[m[32m        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');[m
+     });[m
+ [m
+     it('shows error message when fetch fails', async () => {[m
+         fetcher.mockResolvedValue({ ok: false, status: 500 });[m
+         render(<StudentJobOfferList />);[m
+         expect(await screen.findByText('errors.generic')).toBeInTheDocument();[m
+[32m+[m[32m        expect(fetcher).toHaveBeenCalledWith('/etudiant/offres');[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    it('shows error when response is not an array', async () => {[m
+[32m+[m[32m        fetcher.mockResolvedValue({[m
+[32m+[m[32m            ok: true,[m
+[32m+[m[32m            status: 200,[m
+[32m+[m[32m            json: async () => ({ message: 'not an array' })[m
+[32m+[m[32m        });[m
+[32m+[m[32m        render(<StudentJobOfferList />);[m
+[32m+[m[32m        expect(await screen.findByText('errors.generic')).toBeInTheDocument();[m
+[32m+[m[32m    });[m
+[32m+[m
+[32m+[m[32m    it('renders safely when offer has no status or location', async () => {[m
+[32m+[m[32m        fetcher.mockResolvedValue({[m
+[32m+[m[32m            ok: true,[m
+[32m+[m[32m            status: 200,[m
+[32m+[m[32m            json: async () => [{[m
+[32m+[m[32m                id: 2,[m
+[32m+[m[32m                title: 'No Status Offer',[m
+[32m+[m[32m                programe: 'TECHNIQUES_INFORMATIQUE',[m
+[32m+[m[32m                description: 'Test',[m
+[32m+[m[32m                salary: '15$/h',[m
+[32m+[m[32m                startingDate: '2026-01-01',[m
+[32m+[m[32m                durationInWeeks: 8,[m
+[32m+[m[32m                status: null,[m
+[32m+[m[32m                location: null[m
+[32m+[m[32m            }][m
+[32m+[m[32m        });[m
+[32m+[m[32m        render(<StudentJobOfferList />);[m
+[32m+[m[32m        expect(await screen.findByText('No Status Offer')).toBeInTheDocument();[m
+[32m+[m[32m        expect(screen.getByText('—')).toBeInTheDocument();[m
+     });[m
+ });[m
