@@ -56,7 +56,6 @@ const CvListItem = ({
                         isFeedbackOpen,
                         onToggleFeedback,
                         isDefault,
-                        hasDefault,
                         onToggleDefault,
                     }) => {
     const { t } = useTranslation();

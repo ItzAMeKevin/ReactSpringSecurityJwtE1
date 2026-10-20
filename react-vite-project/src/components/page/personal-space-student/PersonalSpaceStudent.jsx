@@ -203,6 +203,8 @@ const PersonalSpaceStudent = () => {
                                 onToggleFeedback={() =>
                                     setOpenFeedbackCvId((current) => (current === cv.id ? null : cv.id))
                                 }
+                                isDefault={defaultCvId === cv.id}
+                                onToggleDefault={() => handleToggleDefault(cv.id)}
                             />
                         ))}
                     </div>
