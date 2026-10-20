@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -55,6 +56,11 @@ public class JobOffer {
     @Column(nullable = false)
     private Programe programe;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_cv_id"))
+    private List<StudentCv> appliedCvs;
+    
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     Adresse adresse, String salary,

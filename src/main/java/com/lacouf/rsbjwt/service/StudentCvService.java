@@ -1,8 +1,12 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
+import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -29,6 +33,7 @@ public class StudentCvService {
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final JobOfferRepository jobOfferRepository;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -119,5 +124,23 @@ public class StudentCvService {
                 .stream()
                 .map(CvMetaDataDto::toCvMetaDataDto)
                 .toList();
+    }
+
+    @Transactional
+    public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
+        JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("Offre non trouvée"));
+        
+        List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
+        
+        if(appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
+            throw new OffrerException("Le CV a déjà été utilisé pour postuler à cette offre.");
+        } else {
+            StudentCv studentCv;
+            studentCv = studentCvRepository.findById(cvDto.getId())
+                    .orElseThrow(() -> new CvException("CV non trouvé"));
+            appliedCvs.add(studentCv);
+            jobOffer.setAppliedCvs(appliedCvs);
+            jobOfferRepository.save(jobOffer);
+        }
     }
 }
