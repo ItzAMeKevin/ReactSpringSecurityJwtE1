@@ -69,7 +69,7 @@ public class StudentCv {
         this.uploadedAt = Instant.now();
         if (this.status == null) {
             this.status = Status.PENDING;
-            this.isDefault = true;
+            this.isDefault = false;
         }
     }
 }
