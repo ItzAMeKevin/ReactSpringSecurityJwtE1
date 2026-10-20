@@ -273,7 +273,7 @@ public class StudentCvServiceTest {
         selectedCv.setDefault(false);
 
         when(studentCvRepository.findById(2L)).thenReturn(Optional.of(selectedCv));
-        when(studentCvRepository.findByStudent_IdAndDefaultTrue(testStudent.getId()))
+        when(studentCvRepository.findByStudent_IdAndIsDefaultTrue(testStudent.getId()))
                 .thenReturn(Optional.of(currentDefaultCv));
 
         studentCvService.setDefaultCv(2L);
@@ -291,7 +291,7 @@ public class StudentCvServiceTest {
         selectedCv.setStudent(testStudent);
 
         when(studentCvRepository.findById(2L)).thenReturn(Optional.of(selectedCv));
-        when(studentCvRepository.findByStudent_IdAndDefaultTrue(testStudent.getId()))
+        when(studentCvRepository.findByStudent_IdAndIsDefaultTrue(testStudent.getId()))
                 .thenReturn(Optional.empty());
 
         studentCvService.setDefaultCv(2L);
@@ -308,7 +308,7 @@ public class StudentCvServiceTest {
         assertThrows(UserNotFoundException.class,
                 () -> studentCvService.setDefaultCv(99L));
 
-        verify(studentCvRepository, never()).findByStudent_IdAndDefaultTrue(any());
+        verify(studentCvRepository, never()).findByStudent_IdAndIsDefaultTrue(any());
         verify(studentCvRepository, never()).save(any(StudentCv.class));
     }
 
