@@ -59,7 +59,7 @@ public class JobOffer {
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
             inverseJoinColumns = @JoinColumn(name = "student_cv_id"))
-    private List<StudentCv> appliedCvs;
+    private List<StudentCv> appliedCvs = new java.util.ArrayList<>();
     
     @Builder
     public JobOffer(String title, String description, String prerequisites,

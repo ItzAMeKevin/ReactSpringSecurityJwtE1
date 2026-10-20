@@ -12,16 +12,16 @@ import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
 
     private final JobOfferRepository jobOfferRepository;
-    private final StudentCvRepository  studentCvRepository;
-    private final StudentRepository  studentRepository;
+    private final StudentCvRepository studentCvRepository;
+    private final StudentRepository studentRepository;
     private final JobOfferMapper jobOfferMapper;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) {
@@ -34,9 +34,14 @@ public class StudentService {
         if (!hasValidatedCv) {
             throw new NoValidatedCvException();
         }
+
+        Set<Long> appliedOfferIds =
+                jobOfferRepository.findAppliedOfferIdsByStudentId(student.getId());
+
         return jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, student.getPrograme())
                 .stream()
-                .map(jobOfferMapper::toDto)
+                .map(offer -> jobOfferMapper.toDto(offer)
+                        .withApplied(appliedOfferIds.contains(offer.getId())))
                 .toList();
     }
 }
