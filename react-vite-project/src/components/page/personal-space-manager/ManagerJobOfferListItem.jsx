@@ -1,6 +1,7 @@
 import {useState, useRef, useEffect} from "react";
 import { useTranslation } from "react-i18next";
 import smoothScrollToElement from "../../../utils/smoothScrollToElement.js";
+import { cardItem, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const {t} = useTranslation();
@@ -65,53 +66,51 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         }
     };
     return (
-        <div ref={cardRef} className={`bg-white rounded-xl shadow-sm p-5 border transition-all duration-500 ${
-            isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
-        }`}>
+        <div ref={cardRef} className={`${cardItem} ${isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''}`}>
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-[#4b1113] text-lg">{offer.title}</h3>
-                    <p className="text-sm text-[#4b1113]/70 mt-1">
+                    <h3 className="font-semibold text-main text-lg">{offer.title}</h3>
+                    <p className="text-sm text-main/70 mt-1">
                         {t("gestionnaire.offres.company")}: <span className="font-medium">{offer.companyName}</span>
                     </p>
-                    <p className="text-sm text-[#4b1113]/70 mt-1">
+                    <p className="text-sm text-main/70 mt-1">
                         {offer.startingDate} · {offer.durationInWeeks} {t("gestionnaire.offres.weeks")}
                     </p>
 
                     {offer.description && (
-                        <p className={`text-sm text-[#4b1113]/70 mt-2 whitespace-pre-line ${expanded ? '' : 'line-clamp-2'}`}>
+                        <p className={`text-sm text-main/70 mt-2 whitespace-pre-line ${expanded ? '' : 'line-clamp-2'}`}>
                             {offer.description}
                         </p>
                     )}
 
                     {expanded && (
-                        <dl className="mt-4 grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-[max-content_1fr] border-t border-[#4b1113]/10 pt-4">
+                        <dl className="mt-4 grid grid-cols-1 gap-x-4 gap-y-3 text-sm sm:grid-cols-[max-content_1fr] border-t border-main/10 pt-4">
                             {offer.prerequisites && (
                                 <>
-                                    <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.requirements")}</dt>
-                                    <dd className="text-[#4b1113]/70 whitespace-pre-line">{offer.prerequisites}</dd>
+                                    <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.requirements")}</dt>
+                                    <dd className="text-main/70 whitespace-pre-line">{offer.prerequisites}</dd>
                                 </>
                             )}
                             {offer.programe && (
                                 <>
-                                    <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.programe")}</dt>
-                                    <dd className="text-[#4b1113]/70">{programName(offer.programe)}</dd>
+                                    <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.programe")}</dt>
+                                    <dd className="text-main/70">{programName(offer.programe)}</dd>
                                 </>
                             )}
                             {offer.salary != null && (
                                 <>
-                                    <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.salary")}</dt>
-                                    <dd className="text-[#4b1113]/70">{offer.salary} $/h</dd>
+                                    <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
+                                    <dd className="text-main/70">{offer.salary} $/h</dd>
                                 </>
                             )}
-                            <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.startingDate")}</dt>
-                            <dd className="text-[#4b1113]/70">{offer.startingDate}</dd>
-                            <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
-                            <dd className="text-[#4b1113]/70">{offer.durationInWeeks} {t("gestionnaire.offres.weeks")}</dd>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                            <dd className="text-main/70">{offer.startingDate}</dd>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                            <dd className="text-main/70">{offer.durationInWeeks} {t("gestionnaire.offres.weeks")}</dd>
                             {address && (
                                 <>
-                                    <dt className="font-bold text-[#4b1113]">{t("personalSpaceEmployer.fields.address")}</dt>
-                                    <dd className="text-[#4b1113]/70">{address}</dd>
+                                    <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
+                                    <dd className="text-main/70">{address}</dd>
                                 </>
                             )}
                         </dl>
@@ -121,7 +120,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         type="button"
                         onClick={() => setExpanded((prev) => !prev)}
                         aria-expanded={expanded}
-                        className="text-sm font-medium text-[#4b1113] underline underline-offset-2 hover:text-[#3a0d0f] mt-2 cursor-pointer"
+                        className="text-sm font-medium text-main underline underline-offset-2 hover:text-main/80 mt-2 cursor-pointer"
                     >
                         {expanded ? t("gestionnaire.offres.showLess") : t("gestionnaire.offres.readMore")}
                     </button>
@@ -132,7 +131,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         type="button"
                         onClick={handleAccept}
                         disabled={processing !== null}
-                        className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800 transition-colors text-sm font-medium disabled:opacity-50"
+                        className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
@@ -140,14 +139,14 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         type="button"
                         onClick={handleRefuse}
                         disabled={processing !== null}
-                        className="bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#3a0d0f] transition-colors text-sm font-medium disabled:opacity-50"
+                        className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
                     </button>
                 </div>
             </div>
             {actionError && (
-                <p className="text-red-700 text-sm mt-2" role="alert">{actionError}</p>
+                <p className={`${textError} text-sm mt-2`} role="alert">{actionError}</p>
             )}
         </div>
     );
