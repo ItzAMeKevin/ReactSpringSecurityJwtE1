@@ -3,7 +3,16 @@ import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnRefuse, statusBadge, statusBadgeColor, textError, textMuted } from "../../../styles/classes.js";
+import {
+    cardItem,
+    btnSmPrimary,
+    btnRefuse,
+    statusBadge,
+    statusBadgeColor,
+    textError,
+    textMuted,
+    btnSmSelectedSoft
+} from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -149,7 +158,7 @@ const CvListItem = ({
                             type="button"
                             disabled={isDefault}
                             onClick={onToggleDefault}
-                            className={isDefault ? btnSmSelected : btnSmPrimary}
+                            className={isDefault ? btnSmSelectedSoft : btnSmPrimary}
                         >
                             {isDefault
                                 ? t("televerser.defaultActif")
