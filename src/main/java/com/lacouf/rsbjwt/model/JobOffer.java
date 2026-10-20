@@ -22,10 +22,10 @@ public class JobOffer {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String prerequisites;
 
     private String salary;

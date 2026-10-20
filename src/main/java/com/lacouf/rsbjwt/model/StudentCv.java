@@ -52,14 +52,8 @@ public class StudentCv {
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 
-    @Column(nullable = true)
-    private byte[] reviewContent;
-
-    @Column(nullable = true, length = 255)
-    private String reviewFileName;
-
-    @Column(nullable = true, length = 255)
-    private String reviewContentType;
+    @Column(nullable = true, length = 2000)
+    private String reviewFeedback;
 
     @Column(nullable = true)
     private boolean isDefault;

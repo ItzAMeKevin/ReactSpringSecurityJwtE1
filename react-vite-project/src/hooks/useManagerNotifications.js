@@ -20,7 +20,11 @@ const useManagerNotifications = (enabled = true) => {
                 return;
             }
             const cvNotifs = (await cvRes.json()).map((n) => ({ ...n, source: "cv" }));
-            const offerNotifs = (await offerRes.json()).map((n) => ({ ...n, source: "jobOffer" }));
+            const offerNotifs = (await offerRes.json()).map((n) => ({
+                ...n,
+                source: "jobOffer",
+                type: n.type || "JOB_OFFER_UPLOADED",
+            }));
             const all = [...cvNotifs, ...offerNotifs];
             setNotifications(all);
             setUnreadCount(all.filter((n) => !n.isRead).length);

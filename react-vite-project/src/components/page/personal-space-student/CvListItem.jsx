@@ -1,6 +1,9 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
+import fetcher from "../../../utils/fetcher.js";
+import { fetchBlobUrl } from "../../../utils/downloadFile.js";
+import { cardItem, btnSmPrimary, btnRefuse, statusBadge, statusBadgeColor, textError, textMuted } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -37,32 +40,130 @@ const CvPreview = ({ file }) => {
     );
 };
 
-const CvListItem = ({ cv, isOpen, onToggle }) => {
+const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) => {
     const { t } = useTranslation();
+    const isDeclined = cv.status === "DECLINED";
+    const cardRef = useRef(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewError, setPreviewError] = useState(false);
+    const [feedback, setFeedback] = useState(null);
+    const [feedbackError, setFeedbackError] = useState(false);
+
+    useEffect(() => {
+        if (!isFeedbackOpen) return;
+        cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (feedback !== null) return;
+        let cancelled = false;
+        setFeedbackError(false);
+        fetcher(`/student-cv/${cv.id}/review`)
+            .then(async (response) => {
+                if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                const text = await response.text();
+                if (!cancelled) setFeedback(text);
+            })
+            .catch((error) => {
+                console.error("Erreur lors du chargement du feedback :", error);
+                if (!cancelled) setFeedbackError(true);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isFeedbackOpen, cv.id, feedback]);
+
+    useEffect(() => {
+        if (!isOpen || cv.file || previewUrl) return;
+        let cancelled = false;
+        setPreviewError(false);
+        fetchBlobUrl(`/student-cv/${cv.id}/content`)
+            .then((url) => {
+                if (cancelled) {
+                    URL.revokeObjectURL(url);
+                } else {
+                    setPreviewUrl(url);
+                }
+            })
+            .catch((error) => {
+                console.error("Erreur lors du chargement de l'aperçu :", error);
+                if (!cancelled) setPreviewError(true);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isOpen, cv.id, cv.file, previewUrl]);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
+
+    const renderPreview = () => {
+        if (cv.file) return <CvPreview file={cv.file} />;
+        if (previewUrl) return <CvPreview file={previewUrl} />;
+        return (
+            <p className={`mt-3 text-sm ${previewError ? textError : textMuted}`}>
+                {previewError ? t("televerser.apercuIndisponible") : t("televerser.chargementApercu")}
+            </p>
+        );
+    };
+
+    const renderFeedback = () => {
+        if (feedbackError) {
+            return <p className={`text-sm ${textError}`}>{t("televerser.erreurFeedback")}</p>;
+        }
+        if (feedback === null) {
+            return <p className={`text-sm ${textMuted}`}>{t("televerser.chargementFeedback")}</p>;
+        }
+        return (
+            <>
+                <p className="text-sm font-semibold text-red-800">{t("televerser.feedbackTitre")}</p>
+                <p className="text-sm text-black mt-1 whitespace-pre-line break-words">{feedback}</p>
+            </>
+        );
+    };
 
     return (
-        <div className="rounded-xl border border-[#4b1113]/20 bg-white/40 px-4 py-3">
-            <div className="flex items-center justify-between gap-4">
-                <span className="text-[#4b1113] font-medium truncate">{cv.fileName}</span>
-                <button
-                    type="button"
-                    onClick={onToggle}
-                    aria-expanded={isOpen}
-                    className="shrink-0 bg-[#4b1113] text-white text-sm font-medium py-1.5 px-3 rounded-md hover:bg-[#3a0d0f] transition-colors"
-                >
-                    {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
-                </button>
+        <div ref={cardRef} className={`${cardItem} border-2`}>
+            <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0 flex items-center gap-2">
+                    <span className="text-main font-medium truncate">{cv.fileName}</span>
+                    {cv.status && (
+                        <span className={`${statusBadge} ${statusBadgeColor(cv.status)}`}>
+                            {t(`televerser.statuts.${cv.status}`, cv.status)}
+                        </span>
+                    )}
+                </div>
+                <div className="flex shrink-0 gap-2">
+                    {isDeclined && (
+                        <button
+                            type="button"
+                            onClick={onToggleFeedback}
+                            aria-expanded={isFeedbackOpen}
+                            className={btnSmPrimary}
+                        >
+                            {isFeedbackOpen ? t("televerser.masquerFeedback") : t("televerser.voirFeedback")}
+                        </button>
+                    )}
+                    <button
+                        type="button"
+                        onClick={onToggle}
+                        aria-expanded={isOpen}
+                        className={`${btnSmPrimary}`}
+                    >
+                        {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
+                    </button>
+                </div>
             </div>
 
-            {isOpen && (
-                cv.file ? (
-                    <CvPreview file={cv.file} />
-                ) : (
-                    <p className="mt-3 text-sm text-[#4b1113]/70">
-                        {t("televerser.apercuIndisponible")}
-                    </p>
-                )
+            {isDeclined && isFeedbackOpen && (
+                <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                    {renderFeedback()}
+                </div>
             )}
+
+            <div className="w-full">
+                {isOpen && renderPreview()}
+            </div>
         </div>
     );
 };
