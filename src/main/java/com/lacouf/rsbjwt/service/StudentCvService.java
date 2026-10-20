@@ -129,6 +129,7 @@ public class StudentCvService {
                 .toList();
     }
 
+    @Transactional
     public void setDefaultCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(UserNotFoundException::new);
@@ -139,7 +140,7 @@ public class StudentCvService {
             currentDefaultCv.setDefault(false);
             studentCvRepository.save(currentDefaultCv);
         }
-        
+
         cv.setDefault(true);
         studentCvRepository.save(cv);
     }

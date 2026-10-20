@@ -54,7 +54,6 @@ public class GestionnaireController {
     public ResponseEntity<Void> acceptCv(@PathVariable Long cvId) {
         try {
             gestionnaireService.acceptCv(cvId);
-            studentCvService.setDefaultCv(cvId);
             return ResponseEntity.noContent().build();
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
