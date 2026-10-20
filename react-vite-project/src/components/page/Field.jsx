@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { textError } from "../../styles/classes.js";
 
 export const labelClass = "form-label";
 
@@ -17,6 +18,7 @@ const Field = ({
   as = "input",
   suffix,
   className,
+  defaultValue,
   children,
 }) => {
   const { t } = useTranslation();
@@ -31,6 +33,7 @@ const Field = ({
     min,
     step,
     maxLength,
+    defaultValue,
     className: controlClassName,
   };
 
@@ -52,7 +55,7 @@ const Field = ({
         )}
       </div>
       {error && (
-        <p className="mt-1 text-sm text-red-600" role="alert">{t(error)}</p>
+        <p className={`mt-1 text-sm ${textError}`} role="alert">{t(error)}</p>
       )}
     </div>
   );

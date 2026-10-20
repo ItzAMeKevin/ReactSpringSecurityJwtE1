@@ -14,10 +14,10 @@ import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.event.CvUploadedEvent;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -97,7 +97,7 @@ public class StudentCvService {
         }
     }
 
-    public byte[] getReviewFile(Long cvId, String authenticatedEmail) {
+    public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new RuntimeException("CV not found"));
 
@@ -106,7 +106,15 @@ public class StudentCvService {
             throw new RuntimeException("Access denied");
         }
 
-        return cv.getReviewContent();
+        return cv.getReviewFeedback();
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] getCvContent(Long cvId, String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new InvalidCvException("CV not found"))
+                .getContent();
     }
 
     private static String sanitizeFileName(String fileName) {

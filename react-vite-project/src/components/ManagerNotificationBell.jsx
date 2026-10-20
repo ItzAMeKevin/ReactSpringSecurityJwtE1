@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useManagerNotificationsContext } from "../context/ManagerNotificationsContext.jsx";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
+import { textError } from "../styles/classes.js";
 
 const ManagerNotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -30,10 +31,21 @@ const ManagerNotificationBell = () => {
     };
 
 
-    const getNotificationMessage = (notification) => {
-        if (notification.source === "jobOffer") {
-            return notification.message || "";
+    const parseStoredOfferMessage = (storedMessage) => {
+        const match = (storedMessage || "").match(
+            /L'entreprise "(.+?)" a déposé une offre : "(.+?)" \((.+?)\)/
+        );
+        if (!match) {
+            return { company: "", offerTitle: "", program: "" };
         }
+        return {
+            company: match[1],
+            offerTitle: match[2],
+            program: match[3],
+        };
+    };
+
+    const getNotificationMessage = (notification) => {
         const { message } = getLocalizedNotification(notification, t);
         if (notification.type === "CV_UPLOADED") {
             return message
@@ -42,6 +54,13 @@ const ManagerNotificationBell = () => {
                 .replace("{matricule}", notification.studentMatricule || "")
                 .replace("{fileName}", notification.cvFileName || "")
                 .replace("{uploadedAt}", new Date(notification.uploadedAt).toLocaleDateString(i18n.language));
+        }
+        if (notification.type === "JOB_OFFER_UPLOADED") {
+            const parsed = parseStoredOfferMessage(notification.message);
+            return message
+                .replace("{company}", notification.company || parsed.company || "")
+                .replace("{offerTitle}", notification.offerTitle || parsed.offerTitle || "")
+                .replace("{program}", notification.program || parsed.program || "");
         }
         return message;
     };
@@ -59,12 +78,12 @@ const ManagerNotificationBell = () => {
 
     const renderContent = () => {
         if (status === "loading") {
-            return <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.loading")}</p>;
+            return <p className="text-sm text-black p-3">{t("notifications.loading")}</p>;
         }
 
         if (status === "error") {
             return (
-                <p className="text-sm text-red-700 p-3" role="alert">
+                <p className={`text-sm ${textError} p-3`} role="alert">
                     {t("notifications.error")}
                 </p>
             );
@@ -72,7 +91,7 @@ const ManagerNotificationBell = () => {
 
         if (status === "empty") {
             return (
-                <p className="text-sm text-[#4b1113]/70 p-3">{t("notifications.empty")}</p>
+                <p className="text-sm text-black p-3">{t("notifications.empty")}</p>
             );
         }
 
@@ -81,10 +100,10 @@ const ManagerNotificationBell = () => {
                 {notifications.map((notification) => (
                     <li
                         key={`${notification.source}-${notification.id}`}
-                        className={`px-3 py-3 text-sm transition-colors border-b border-[#4b1113]/10 flex items-center justify-between gap-4 ${
+                        className={`px-3 py-3 text-sm transition-colors border-b border-brand/10 flex items-center justify-between gap-4 ${
                             notification.isRead
-                                ? "bg-white text-[#4b1113]/70 hover:bg-white/80"
-                                : "bg-blue-100 text-[#4b1113] hover:bg-blue-150 font-medium"
+                                ? "bg-white text-black hover:bg-white/80"
+                                : "bg-blue-100 text-black hover:bg-blue-150 font-medium"
                         }`}
                     >
                         <div className="flex-1 min-w-0">
@@ -94,11 +113,16 @@ const ManagerNotificationBell = () => {
                                 </span>
                             </div>
                             <p className="mt-1">{getNotificationMessage(notification)}</p>
+                            {notification.createdAt && (
+                                <p className="text-xs text-[#4b1113]/50 mt-1">
+                                    {formatDateTime(notification.createdAt)}
+                                </p>
+                            )}
                         </div>
                         <button
                             type="button"
                             onClick={(e) => handleConsulter(e, notification)}
-                            className="shrink-0 bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#3a0d0f] transition-colors font-medium text-sm"
+                            className="shrink-0 bg-brand text-white px-4 py-2 rounded hover:bg-brand-hover transition-colors font-medium text-sm"
                         >
                             {t("gestionnaire.consulter")}
                         </button>
@@ -140,9 +164,9 @@ const ManagerNotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-[#4b1113]/20 z-50">
-                    <div className="p-3 border-b border-[#4b1113]/10">
-                        <h3 className="text-[#4b1113] font-bold">{t("notifications.managerTitle")}</h3>
+                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
+                    <div className="p-3 border-b border-brand/10">
+                        <h3 className="text-black font-bold">{t("notifications.managerTitle")}</h3>
                     </div>
                     {renderContent()}
                 </div>

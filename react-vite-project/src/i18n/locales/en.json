@@ -32,6 +32,7 @@
       { "enumName": "TECHNIQUE_GENIE_PHYSIQUE", "code": "244.A0", "name": "Physical Engineering Technology" },
       { "enumName": "TECHNIQUES_LOGISTIQUE_TRANSPORT", "code": "410.A0", "name": "Transport Logistics Technology" }
     ],
+
     "submit": "Register"
   },
   "errors": {
@@ -63,10 +64,15 @@
     "gestionnaire": "Manager",
     "logout": "Logout",
     "login": "Login",
-    "greeting": "Hello"
+    "greeting": "Hello",
+    "roles": {
+      "STUDENT": "Student",
+      "MANAGER": "Manager",
+      "EMPLOYER": "Employer"
+    }
   },
   "televerser": {
-    "choisirFichier": "CHOOSE A FILE",
+    "choisirFichier": "Upload your CV",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
@@ -76,7 +82,21 @@
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide",
     "afficher": "Show",
-    "appercuIndisponible": "Preview not available"
+    "apercuIndisponible": "Preview not available",
+    "chargementApercu": "Loading preview...",
+    "voirFeedback": "View feedback",
+    "masquerFeedback": "Hide feedback",
+    "feedbackTitre": "Manager's comment:",
+    "chargementFeedback": "Loading feedback...",
+    "erreurFeedback": "Unable to load the feedback.",
+    "chargement": "Loading your CVs...",
+    "aucunCv": "No CV uploaded yet.",
+    "erreurChargement": "Unable to load your CVs. Please try again later.",
+    "statuts": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    }
   },
   "about": {
     "subtitle": "Student Internship Opportunity Network",
@@ -119,6 +139,11 @@
     "close": "Close",
     "jobOffers": "My internship offers",
     "noJobOffers": "You have no internship offers yet.",
+    "statuts": {
+      "WAITING": "Pending",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined"
+    },
     "offerCreated": "Internship offer published successfully.",
     "submit": "Publish offer",
     "fields": {
@@ -149,10 +174,17 @@
       "postalCode": "e.g. H1A1A1",
       "civicNumber": "e.g. 123",
       "street": "e.g. Main Street"
+    },
+    "confirmClose": {
+      "title": "Close the form?",
+      "message": "Unsaved data will be lost.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
     }
   },
   "gestionnaire": {
     "title": "Manager Space",
+    "cvSection": "CVs pending validation",
     "loadingCvs": "Loading pending CVs...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
@@ -170,15 +202,19 @@
       "error": "Error loading offers.",
       "none": "No pending internship offers.",
       "company": "Company",
-      "weeks": "wks"
+      "weeks": "wks",
+      "readMore": "Read more",
+      "showLess": "Show less"
+    },
+    "accept": {
+      "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
-      "title": "Upload the CV review (PDF) before confirming the rejection.",
-      "chooseFile": "Choose a file",
+      "title": "Write your feedback before confirming the rejection.",
+      "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
       "processing": "Sending...",
-      "errorNoFile": "You must upload a CV review before confirming the rejection.",
-      "errorPdfOnly": "Only PDF files are accepted.",
+      "errorNoFeedback": "You must write feedback before confirming the rejection.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },
@@ -189,7 +225,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "downloadReview": "Download feedback",
+    "voirFeedback": "View feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "New CV to validate",
@@ -205,7 +241,36 @@
       },
       "CV_REVIEW_READY": {
         "title": "Review ready"
+      },
+      "JOB_OFFER_UPLOADED": {
+        "title": "New internship offer",
+        "message": "Company {company} has posted a new internship offer: {offerTitle} ({program}). Please review and approve the offer."
+      },
+      "JOB_OFFER_ACCEPTED": {
+        "title": "Your internship offer has been accepted",
+        "message": "Your internship offer has been validated by a manager."
+      },
+      "JOB_OFFER_REJECTED": {
+        "title": "Your internship offer has been rejected",
+        "message": "Please review the feedback and resubmit your offer."
       }
     }
+  },
+  "roles": {
+    "STUDENT": "Étudiant",
+    "MANAGER": "Gestionnaire",
+    "EMPLOYER": "Employeur"
+  },
+
+  "etudiantOffres": {
+    "title": "Available internship offers",
+    "loading": "Loading offers...",
+    "noAcceptedCv": "Your CV must be accepted to view internship offers.",
+    "noOffers": "No internship offers available for your program.",
+    "company": "Company",
+    "weeks": "wks",
+    "readMore": "Read more",
+    "showLess": "Show less"
   }
+
 }

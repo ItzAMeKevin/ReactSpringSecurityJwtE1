@@ -10,7 +10,7 @@ import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -176,28 +175,26 @@ class GestionnaireControllerWebMvcTest {
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 204 on success")
     void declineCv_success_returnsNoContent() throws Exception {
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
-                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doNothing().when(gestionnaireService).declineCv(eq(1L), any(CvUploadDto.class));
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Le CV ne respecte pas le format.");
+        doNothing().when(gestionnaireService).declineCv(eq(1L), any(CvDeclineFeedbackDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/1/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reviewRequest)))
+                        .content(objectMapper.writeValueAsString(feedbackRequest)))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/cv/{cvId}/decline returns 404 when CV not found")
     void declineCv_notFound_returns404() throws Exception {
-        CvUploadDto reviewRequest = new CvUploadDto("review.pdf", "application/pdf",
-                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3}));
-        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(CvUploadDto.class));
+        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Feedback");
+        doThrow(new UserNotFoundException()).when(gestionnaireService).declineCv(eq(99L), any(CvDeclineFeedbackDto.class));
 
         mockMvc.perform(put("/gestionnaire/cv/99/decline")
                         .with(user("manager").authorities(new SimpleGrantedAuthority("MANAGER")))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reviewRequest)))
+                        .content(objectMapper.writeValueAsString(feedbackRequest)))
                 .andExpect(status().isNotFound());
     }
 
@@ -276,7 +273,8 @@ class GestionnaireControllerWebMvcTest {
     @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void getNotifications_returnsOk() throws Exception {
         ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L);
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L,
+                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
         when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of(notif));
 
         mockMvc.perform(get("/gestionnaire/offres/notifications"))
@@ -300,7 +298,8 @@ class GestionnaireControllerWebMvcTest {
     @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void markAsRead_found_returnsOk() throws Exception {
         ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L);
+                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L,
+                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
         when(gestionnaireService.markNotificationAsRead("manager@test.com", 1L))
                 .thenReturn(Optional.of(notif));
 

@@ -63,10 +63,15 @@
     "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
-    "greeting": "Bonjour"
+    "greeting": "Bonjour",
+    "roles": {
+      "STUDENT": "Étudiant",
+      "MANAGER": "Gestionnaire",
+      "EMPLOYER": "Employeur"
+    }
   },
   "televerser": {
-    "choisirFichier": "CHOISIR UN FICHIER",
+    "choisirFichier": "Téléverser votre CV",
     "fichierChoisi": "Fichier sélectionné",
     "erreurTypeFichier": "Seuls les fichiers pdf sont acceptés.",
     "envoieEnCours": "Envoi en cours...",
@@ -76,7 +81,21 @@
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
     "afficher": "Afficher",
-    "appercuIndisponible": "Aperçu indisponible"
+    "apercuIndisponible": "Aperçu indisponible",
+    "chargementApercu": "Chargement de l'aperçu...",
+    "voirFeedback": "Voir le feedback",
+    "masquerFeedback": "Masquer le feedback",
+    "feedbackTitre": "Commentaire du gestionnaire :",
+    "chargementFeedback": "Chargement du feedback...",
+    "erreurFeedback": "Impossible de charger le feedback.",
+    "chargement": "Chargement de vos CVs...",
+    "aucunCv": "Aucun CV téléversé pour l'instant.",
+    "erreurChargement": "Impossible de charger vos CVs. Réessayez plus tard.",
+    "statuts": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Accepté",
+      "DECLINED": "Refusé"
+    }
   },
   "about": {
     "subtitle": "Réseau d'Opportunités de Stages pour Étudiants",
@@ -119,6 +138,11 @@
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
     "noJobOffers": "Aucune offre de stage publiée",
+    "statuts": {
+      "WAITING": "En attente",
+      "ACCEPTED": "Acceptée",
+      "DECLINED": "Refusée"
+    },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "submit": "Publier l'offre",
     "fields": {
@@ -149,10 +173,17 @@
       "postalCode": "ex. H1A1A1",
       "civicNumber": "ex. 123",
       "street": "ex. Rue Principale"
+    },
+    "confirmClose": {
+      "title": "Fermer le formulaire ?",
+      "message": "Les données non sauvegardées seront perdues.",
+      "cancel": "Annuler",
+      "confirm": "Confirmer"
     }
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
+    "cvSection": "CVs en attente de validation",
     "loadingCvs": "Chargement des CV en attente...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",
@@ -170,15 +201,19 @@
       "error": "Erreur lors du chargement des offres.",
       "none": "Aucune offre de stage en attente.",
       "company": "Entreprise",
-      "weeks": "sem."
+      "weeks": "sem.",
+      "readMore": "En savoir plus",
+      "showLess": "Voir moins"
+    },
+    "accept": {
+      "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
     },
     "decline": {
-      "title": "Téléversez la revue du CV (PDF) avant de confirmer le refus.",
-      "chooseFile": "Choisir un fichier",
+      "title": "Écrivez votre feedback avant de confirmer le refus.",
+      "placeholder": "Expliquez pourquoi le CV a été refusé...",
       "confirmDecline": "Confirmer le refus",
       "processing": "Envoi en cours...",
-      "errorNoFile": "Vous devez téléverser une revue du CV avant de confirmer le refus.",
-      "errorPdfOnly": "Seuls les fichiers pdf sont acceptés.",
+      "errorNoFeedback": "Vous devez écrire un feedback avant de confirmer le refus.",
       "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
     }
   },
@@ -189,7 +224,7 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
-    "downloadReview": "Télécharger la revue",
+    "voirFeedback": "Voir le feedback",
     "types": {
       "CV_UPLOADED": {
         "title": "Nouveau CV à valider",
@@ -205,7 +240,35 @@
       },
       "CV_REVIEW_READY": {
         "title": "Revue prête"
+      },
+      "JOB_OFFER_UPLOADED": {
+        "title": "Nouvelle offre de stage",
+        "message": "L'entreprise {company} a déposé une nouvelle offre de stage : {offerTitle} ({program}). Veuillez examiner et approuver l'offre."
+      },
+      "JOB_OFFER_ACCEPTED": {
+        "title": "Votre offre de stage a été acceptée",
+        "message": "Votre offre de stage a été validée par un gestionnaire."
+      },
+      "JOB_OFFER_REJECTED": {
+        "title": "Votre offre de stage a été refusée",
+        "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
       }
     }
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "MANAGER": "Manager",
+    "EMPLOYER": "Employer"
+  },
+
+  "etudiantOffres": {
+    "title": "Offres de stage disponibles",
+    "loading": "Chargement des offres...",
+    "noAcceptedCv": "Votre CV doit être accepté pour voir les offres de stage.",
+    "noOffers": "Aucune offre de stage disponible pour votre programme.",
+    "company": "Entreprise",
+    "weeks": "sem.",
+    "readMore": "En savoir plus",
+    "showLess": "Voir moins"
   }
 }

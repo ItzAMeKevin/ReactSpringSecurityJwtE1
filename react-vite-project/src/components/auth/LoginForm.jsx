@@ -2,6 +2,7 @@ import {useState, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
 import {useTranslation} from "react-i18next";
+import {btnPrimary} from "../../styles/classes.js";
 
 
 const LoginForm = ({user, setUser, setError}) => {
@@ -127,7 +128,7 @@ const LoginForm = ({user, setUser, setError}) => {
                 className="pointer-events-none absolute inset-y-0 left-0 w-full md:w-[58%]"
                 style={{ clipPath: "polygon(0 0, 100% 0, 78% 100%, 0 100%)" }}
             >
-              <div className="absolute inset-0 bg-mint" />
+              <div className="absolute inset-0 bg-brand" />
               <div
                   className="absolute -inset-[50%] opacity-25"
                   style={{
@@ -206,7 +207,7 @@ const LoginForm = ({user, setUser, setError}) => {
                       )}
                     </div>
 
-                    <button type="submit" className="btn-primary mt-2">
+                    <button type="submit" className={`${btnPrimary} mt-2`}>
                       {t("login.submit")}
                     </button>
                   </form>
