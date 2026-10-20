@@ -40,8 +40,18 @@ const CvPreview = ({ file }) => {
     );
 };
 
-const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) => {
+const CvListItem = ({
+                        cv,
+                        isOpen,
+                        onToggle,
+                        isFeedbackOpen,
+                        onToggleFeedback,
+                        isDefault,
+                        hasDefault,
+                        onToggleDefault,
+                    }) => {
     const { t } = useTranslation();
+    const isAccepted = cv.status === "ACCEPTED";
     const isDeclined = cv.status === "DECLINED";
     const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -134,6 +144,20 @@ const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) 
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
+                    {isAccepted &&(
+                        <button
+                            type="button"
+                            disabled={isDefault}
+                            onClick={onToggleDefault}
+                            className={isDefault ? btnSmSelected : btnSmPrimary}
+                        >
+                            {isDefault
+                                ? t("televerser.defaultActif")
+                                : t("televerser.default")}
+                        </button>
+
+
+                    )}
                     {isDeclined && (
                         <button
                             type="button"

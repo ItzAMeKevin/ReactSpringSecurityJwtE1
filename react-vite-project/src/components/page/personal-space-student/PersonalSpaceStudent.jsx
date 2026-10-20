@@ -32,6 +32,7 @@ const PersonalSpaceStudent = () => {
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
     const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
+    const [defaultCvId, setDefaultCvId] = useState(null);
 
     useEffect(() => {
         if (location.state?.feedbackCvId) {
@@ -48,7 +49,11 @@ const PersonalSpaceStudent = () => {
                     setListError(t("televerser.erreurChargement"));
                     return;
                 }
-                setCvList(await response.json());
+                const data = await response.json();
+                setCvList(data);
+                const current = data.find((cv) => cv.isDefault);
+                setDefaultCvId(current ? current.id : null);
+
             } catch (error) {
                 console.error("Erreur lors du chargement des CVs :", error);
                 setListError(t("televerser.erreurChargement"));
@@ -58,6 +63,24 @@ const PersonalSpaceStudent = () => {
         };
         void loadCvList();
     }, [t]);
+    const handleToggleDefault = async (cvId) => {
+        if (defaultCvId === cvId) return;
+
+        const previousId = defaultCvId;
+        setDefaultCvId(cvId);
+
+        try {
+            const response = await fetcher(`/student-cv/${cvId}/set-default`, {
+                method: "PUT",
+            });
+            if (!response.ok) {
+                setDefaultCvId(previousId); // rollback
+            }
+        } catch (error) {
+            console.error("Erreur lors du changement de CV par défaut :", error);
+            setDefaultCvId(previousId);
+        }
+    };
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
