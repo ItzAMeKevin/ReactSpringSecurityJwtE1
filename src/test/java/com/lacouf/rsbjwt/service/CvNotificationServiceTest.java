@@ -195,4 +195,55 @@ public class CvNotificationServiceTest {
         // ACT & ASSERT
         assertDoesNotThrow(() -> cvNotificationService.notifyStudentOnCvDeclined(testStudent, testCv));
     }
+
+    @Test
+    void notifyStudentOnCvDecision_acceptedCv_createsAcceptedNotification() {
+        // ARRANGE
+        testCv.setStatus(Status.ACCEPTED);
+        when(studentCvRepository.findById(7L)).thenReturn(Optional.of(testCv));
+
+        // ACT
+        cvNotificationService.notifyStudentOnCvDecision(7L);
+
+        // ASSERT
+        Notification saved = captureSavedNotification();
+        assertSame(testStudent, saved.getStudent());
+        assertEquals(NotificationType.CV_ACCEPTED, saved.getType());
+    }
+
+    @Test
+    void notifyStudentOnCvDecision_declinedCv_createsRejectedNotification() {
+        // ARRANGE
+        testCv.setStatus(Status.DECLINED);
+        when(studentCvRepository.findById(7L)).thenReturn(Optional.of(testCv));
+
+        // ACT
+        cvNotificationService.notifyStudentOnCvDecision(7L);
+
+        // ASSERT
+        assertEquals(NotificationType.CV_REJECTED, captureSavedNotification().getType());
+    }
+
+    @Test
+    void notifyStudentOnCvDecision_pendingCv_savesNothing() {
+        // ARRANGE
+        testCv.setStatus(Status.PENDING);
+        when(studentCvRepository.findById(7L)).thenReturn(Optional.of(testCv));
+
+        // ACT
+        cvNotificationService.notifyStudentOnCvDecision(7L);
+
+        // ASSERT
+        verify(notificationRepository, never()).save(any());
+    }
+
+    @Test
+    void notifyStudentOnCvDecision_unknownCv_throwsIllegalState() {
+        // ARRANGE
+        when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(IllegalStateException.class, () -> cvNotificationService.notifyStudentOnCvDecision(99L));
+        verify(notificationRepository, never()).save(any());
+    }
 }

@@ -271,6 +271,12 @@
     "company": "Entreprise",
     "weeks": "sem.",
     "readMore": "En savoir plus",
-    "showLess": "Voir moins"
+    "showLess": "Voir moins",
+    "apply": "Postuler",
+    "applying": "Envoi en cours...",
+    "applied": "Candidature envoyée",
+    "applySuccess": "Votre candidature a été envoyée avec succès.",
+    "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
+    "noValidatedCv": "Vous devez avoir un CV validé pour postuler."
   }
 }

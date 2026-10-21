@@ -272,7 +272,13 @@
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "apply": "Apply",
+    "applying": "Sending...",
+    "applied": "Application sent",
+    "applySuccess": "Your application was sent successfully.",
+    "applyError": "An error occurred while sending your application.",
+    "noValidatedCv": "You need a validated CV to apply."
   }
 
 }

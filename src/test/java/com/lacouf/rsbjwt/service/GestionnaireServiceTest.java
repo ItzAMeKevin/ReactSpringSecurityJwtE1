@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.event.CvDecisionEvent;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,7 @@ public class GestionnaireServiceTest {
     private StudentCvRepository studentCvRepository;
 
     @Mock
-    private CvNotificationService cvNotificationService;
+    private ApplicationEventPublisher eventPublisher;
 
     @Mock
     private GestionnaireMapper gestionnaireMapper;
@@ -108,7 +110,7 @@ public class GestionnaireServiceTest {
     }
 
     @Test
-    void acceptCv_success_setStatusAndCreatesNotification() {
+    void acceptCv_success_setStatusAndPublishesDecisionEvent() {
         // ARRANGE
         when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
 
@@ -117,11 +119,11 @@ public class GestionnaireServiceTest {
 
         // ASSERT
         assertEquals(Status.ACCEPTED, testCv.getStatus());
-        verify(cvNotificationService, times(1)).notifyStudentOnCvAccepted(testStudent, testCv);
+        verify(eventPublisher, times(1)).publishEvent(new CvDecisionEvent(10L));
     }
 
     @Test
-    void declineCv_success_setStatusAndFeedbackAndCreatesNotification() {
+    void declineCv_success_setStatusAndFeedbackAndPublishesDecisionEvent() {
         // ARRANGE
         CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Le format du CV n'est pas correct.");
         when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
@@ -133,7 +135,7 @@ public class GestionnaireServiceTest {
         assertEquals(Status.DECLINED, testCv.getStatus());
         assertEquals("Le format du CV n'est pas correct.", testCv.getReviewFeedback());
         verify(studentCvRepository, times(1)).save(testCv);
-        verify(cvNotificationService, times(1)).notifyStudentOnCvDeclined(testStudent, testCv);
+        verify(eventPublisher, times(1)).publishEvent(new CvDecisionEvent(10L));
     }
 
     @Test
@@ -145,7 +147,7 @@ public class GestionnaireServiceTest {
         // ACT & ASSERT
         assertThrows(InvalidCvException.class, () -> gestionnaireService.declineCv(99L, feedbackRequest));
         verify(studentCvRepository, never()).save(any());
-        verify(cvNotificationService, never()).notifyStudentOnCvDeclined(any(), any());
+        verify(eventPublisher, never()).publishEvent(any(Object.class));
     }
 }
 

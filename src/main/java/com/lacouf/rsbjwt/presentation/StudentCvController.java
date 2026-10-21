@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/student-cv")
 @RequiredArgsConstructor
@@ -91,6 +92,16 @@ public class StudentCvController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (InvalidCvException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping("/{offerID}/appliquer")
+    public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {
+        try {
+            studentCvService.applyToJobOffer(offerID, cvDto);
+            return ResponseEntity.ok("Candidature soumise avec succès.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue lors de la candidature.");
         }
     }
 }
