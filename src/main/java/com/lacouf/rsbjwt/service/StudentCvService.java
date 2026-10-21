@@ -130,11 +130,12 @@ public class StudentCvService {
     }
 
     @Transactional
-    public void setDefaultCv(Long cvId) {
-        StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(UserNotFoundException::new);
+    public void setDefaultCv(Long cvId, String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        StudentCv cv = studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new InvalidCvException("CV not found"));
 
-        StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndIsDefaultTrue(cv.getStudent().getId())
+        StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndIsDefaultTrue(student.getId())
                 .orElse(null);
         if (currentDefaultCv != null) {
             currentDefaultCv.setDefault(false);
