@@ -68,6 +68,18 @@ public class CvNotificationService {
     }
 
     @Transactional
+    public void notifyStudentOnCvDecision(Long cvId) {
+        StudentCv cv = studentCvRepository.findById(cvId)
+            .orElseThrow(() -> new IllegalStateException("CV not found with id: " + cvId));
+
+        switch (cv.getStatus()) {
+            case ACCEPTED -> notifyStudentOnCvAccepted(cv.getStudent(), cv);
+            case DECLINED -> notifyStudentOnCvDeclined(cv.getStudent(), cv);
+            default -> log.warn("No decision notification for CV {} with status {}", cvId, cv.getStatus());
+        }
+    }
+
+    @Transactional
     public void notifyStudentOnCvAccepted(Student student, StudentCv cv) {
         try {
             String title = "Votre CV a ete accepte";
