@@ -74,11 +74,13 @@ public class GestionnaireController {
     // ── Job Offer Management ──────────────────────────────────────────────────
 
     @GetMapping("/offres/pending")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<List<JobOfferDto>> getPendingOffers() {
         return ResponseEntity.ok(gestionnaireService.getPendingOffers());
     }
 
     @PutMapping("/offres/{id}/accept")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
         return gestionnaireService.acceptOffer(id)
                 .map(ResponseEntity::ok)
@@ -86,6 +88,7 @@ public class GestionnaireController {
     }
 
     @PutMapping("/offres/{id}/refuse")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) {
         return gestionnaireService.refuseOffer(id)
                 .map(ResponseEntity::ok)

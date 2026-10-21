@@ -262,6 +262,17 @@
     "STUDENT": "Étudiant",
     "MANAGER": "Gestionnaire",
     "EMPLOYER": "Employeur"
+  },
+
+  "etudiantOffres": {
+    "title": "Available internship offers",
+    "loading": "Loading offers...",
+    "noAcceptedCv": "Your CV must be accepted to view internship offers.",
+    "noOffers": "No internship offers available for your program.",
+    "company": "Company",
+    "weeks": "wks",
+    "readMore": "Read more",
+    "showLess": "Show less"
   }
 
 }
