@@ -83,9 +83,9 @@ public class StudentCvController {
 
     @PutMapping("/{cvId}/set-default")
     @PreAuthorize("hasAuthority('STUDENT')")
-    public ResponseEntity<Void> setDefaultCv(@PathVariable Long cvId) {
+    public ResponseEntity<Void> setDefaultCv(@PathVariable Long cvId, Authentication authentication) {
         try {
-            studentCvService.setDefaultCv(cvId);
+            studentCvService.setDefaultCv(cvId, authentication.getName());
             return ResponseEntity.ok().build();
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
