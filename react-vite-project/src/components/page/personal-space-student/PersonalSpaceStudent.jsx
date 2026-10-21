@@ -34,6 +34,7 @@ const PersonalSpaceStudent = () => {
     const [listError, setListError] = useState(null);
     const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
     const [defaultCvId, setDefaultCvId] = useState(null);
+    const [defaultError, setDefaultError] = useState(null);
 
     useEffect(() => {
         if (location.state?.feedbackCvId) {
@@ -64,10 +65,12 @@ const PersonalSpaceStudent = () => {
         };
         void loadCvList();
     }, [t]);
+
     const handleToggleDefault = async (cvId) => {
         if (defaultCvId === cvId) return;
 
         const previousId = defaultCvId;
+        setDefaultError(null);
         setDefaultCvId(cvId);
 
         try {
@@ -75,11 +78,13 @@ const PersonalSpaceStudent = () => {
                 method: "PUT",
             });
             if (!response.ok) {
-                setDefaultCvId(previousId); // rollback
+                setDefaultCvId(previousId);
+                setDefaultError(t("errors.generic"));
             }
         } catch (error) {
             console.error("Erreur lors du changement de CV par défaut :", error);
             setDefaultCvId(previousId);
+            setDefaultError(t("errors.generic"));
         }
     };
 
@@ -190,6 +195,9 @@ const PersonalSpaceStudent = () => {
                     )}
                     {!isLoadingList && !listError && cvList.length === 0 && (
                         <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
+                    )}
+                    {defaultError && (
+                        <p className={`${textError} text-sm`} role="alert">{defaultError}</p>
                     )}
                     <div className="flex flex-col gap-3">
                         {cvList.map((cv) => (

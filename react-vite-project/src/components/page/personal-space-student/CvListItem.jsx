@@ -152,19 +152,16 @@ const CvListItem = ({
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                    {isAccepted &&(
+                    {isAccepted && (
                         <button
                             type="button"
                             disabled={isDefault}
                             onClick={onToggleDefault}
+                            aria-pressed={isDefault}
                             className={isDefault ? btnSmSelectedSoft : btnSmPrimary}
                         >
-                            {isDefault
-                                ? t("televerser.defaultActif")
-                                : t("televerser.default")}
+                            {isDefault ? t("televerser.defaultActif") : t("televerser.default")}
                         </button>
-
-
                     )}
                     {isDeclined && (
                         <button
