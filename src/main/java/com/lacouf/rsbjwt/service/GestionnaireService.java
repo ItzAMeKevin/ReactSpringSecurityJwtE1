@@ -4,7 +4,6 @@ import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.EmployerNotification;
 import com.lacouf.rsbjwt.model.ManagerNotification;
-import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
@@ -17,8 +16,10 @@ import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.event.CvDecisionEvent;
 import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +43,7 @@ public class GestionnaireService {
     private final ManagerNotificationRepository managerNotificationRepository;
     private final StudentCvRepository studentCvRepository;
     private final GestionnaireMapper gestionnaireMapper;
-    private final CvNotificationService cvNotificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     public List<PendingCvDto> getPendingCvs() {
@@ -64,8 +65,7 @@ public class GestionnaireService {
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
         cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
-        Student student = cv.getStudent();
-        cvNotificationService.notifyStudentOnCvAccepted(student, cv);
+        eventPublisher.publishEvent(new CvDecisionEvent(cv.getId()));
     }
 
     @Transactional
@@ -75,8 +75,7 @@ public class GestionnaireService {
         cv.setStatus(Status.DECLINED);
         cv.setReviewFeedback(feedbackRequest.getFeedback());
         studentCvRepository.save(cv);
-        Student student = cv.getStudent();
-        cvNotificationService.notifyStudentOnCvDeclined(student, cv);
+        eventPublisher.publishEvent(new CvDecisionEvent(cv.getId()));
     }
 
 
