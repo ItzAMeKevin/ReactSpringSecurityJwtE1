@@ -3,6 +3,10 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
+import com.lacouf.rsbjwt.model.JobOffer;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -35,6 +39,9 @@ public class StudentCvServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
+
+    @Mock
+    private JobOfferRepository jobOfferRepository;
 
     @InjectMocks
     private StudentCvService studentCvService;
@@ -336,5 +343,71 @@ public class StudentCvServiceTest {
 
         assertThrows(RuntimeException.class,
                 () -> studentCvService.getReviewFile(5L, "student@test.com"));
+    }
+
+    @Test
+    void testApplyToJobOfferAddsCvAndSavesOffer() throws CvException, OffrerException {
+        JobOffer jobOffer = new JobOffer();
+        jobOffer.setId(10L);
+        jobOffer.setAppliedCvs(new java.util.ArrayList<>());
+
+        StudentCv cv = new StudentCv();
+        cv.setId(5L);
+        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
+
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.of(jobOffer));
+        when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
+
+        studentCvService.applyToJobOffer(10L, cvDto);
+
+        assertEquals(List.of(cv), jobOffer.getAppliedCvs());
+        verify(jobOfferRepository).save(jobOffer);
+    }
+
+    @Test
+    void testApplyToJobOfferThrowsWhenOfferDoesNotExist() {
+        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.empty());
+
+        OffrerException exception = assertThrows(OffrerException.class,
+                () -> studentCvService.applyToJobOffer(10L, cvDto));
+
+        assertEquals("Offre non trouvée", exception.getMessage());
+        verifyNoInteractions(studentCvRepository);
+        verify(jobOfferRepository, never()).save(any());
+    }
+
+    @Test
+    void testApplyToJobOfferThrowsWhenCvDoesNotExist() {
+        JobOffer jobOffer = new JobOffer();
+        jobOffer.setAppliedCvs(new java.util.ArrayList<>());
+        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
+
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.of(jobOffer));
+        when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
+
+        CvException exception = assertThrows(CvException.class,
+                () -> studentCvService.applyToJobOffer(10L, cvDto));
+
+        assertEquals("CV non trouvé", exception.getMessage());
+        verify(jobOfferRepository, never()).save(any());
+    }
+
+    @Test
+    void testApplyToJobOfferThrowsWhenCvWasAlreadyUsed() {
+        StudentCv appliedCv = new StudentCv();
+        appliedCv.setId(5L);
+        JobOffer jobOffer = new JobOffer();
+        jobOffer.setAppliedCvs(new java.util.ArrayList<>(List.of(appliedCv)));
+        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
+
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.of(jobOffer));
+
+        OffrerException exception = assertThrows(OffrerException.class,
+                () -> studentCvService.applyToJobOffer(10L, cvDto));
+
+        assertEquals("Le CV a déjà été utilisé pour postuler à cette offre.", exception.getMessage());
+        verifyNoInteractions(studentCvRepository);
+        verify(jobOfferRepository, never()).save(any());
     }
 }

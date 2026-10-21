@@ -1,14 +1,36 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cardItem, statusBadge, statusBadgeColor } from "../../../styles/classes.js";
+import fetcher from "../../../utils/fetcher.js";
 
 const dtClass = "text-sm font-bold text-black";
 const ddClass = "text-sm leading-relaxed text-gray-700";
 
-const StudentJobOfferListItem = ({ offer }) => {
+const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
+    const [applyState, setApplyState] = useState("idle");
     const detailsId = useId();
+
+    const hasApplied = Boolean(offer.applied) || applyState === "success";
+    const canApply = Boolean(acceptedCv) && !hasApplied && applyState !== "sending";
+
+    const handleApply = async () => {
+        if (!canApply) return;
+        setApplyState("sending");
+        try {
+            const res = await fetcher(`/student-cv/${offer.id}/appliquer?offerID=${offer.id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(acceptedCv),
+            });
+            setApplyState(res.ok ? "success" : "error");
+        } catch (e) {
+            console.error("Erreur lors de la candidature :", e);
+            setApplyState("error");
+        }
+    };
+
 
     const programs = t("inscription.programsList", { returnObjects: true });
     const programName = (enumName) => {
@@ -30,11 +52,18 @@ const StudentJobOfferListItem = ({ offer }) => {
         <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
             <div className="flex items-start justify-between gap-3">
                 <h3 className="text-lg font-bold text-black">{offer.title}</h3>
-                {offer.status && (
-                    <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                        {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                    </span>
-                )}
+                <div className="flex flex-col items-end gap-1">
+                    {offer.status && (
+                        <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                            {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                        </span>
+                    )}
+                    {hasApplied && (
+                        <span className={`${statusBadge} bg-green-100 text-green-800`}>
+                            {t("etudiantOffres.applied")}
+                        </span>
+                    )}
+                </div>
             </div>
 
             <p className="mt-1 text-sm text-gray-600">{programName(offer.programe)}</p>
@@ -80,6 +109,35 @@ const StudentJobOfferListItem = ({ offer }) => {
                             <dt className={dtClass}>{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd className={ddClass}>{address ?? "—"}</dd>
                         </div>
+                    </div>
+                    <div className="border-t border-gray-200 pt-4">
+                        <button
+                            type="button"
+                            onClick={handleApply}
+                            disabled={!canApply}
+                            className="rounded-md bg-[#4b1113] px-4 py-2 text-sm font-semibold text-white
+                                       hover:bg-[#3a0d0f] disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            {hasApplied
+                                ? t("etudiantOffres.applied")
+                                : applyState === "sending"
+                                    ? t("etudiantOffres.applying")
+                                    : t("etudiantOffres.apply")}
+                        </button>
+
+                        {!acceptedCv && !hasApplied && (
+                            <p className="mt-2 text-sm text-gray-600">{t("etudiantOffres.noValidatedCv")}</p>
+                        )}
+                        {applyState === "success" && (
+                            <p className="mt-2 text-sm font-medium text-green-700" role="status">
+                                {t("etudiantOffres.applySuccess")}
+                            </p>
+                        )}
+                        {applyState === "error" && (
+                            <p className="mt-2 text-sm font-medium text-red-700" role="alert">
+                                {t("etudiantOffres.applyError")}
+                            </p>
+                        )}
                     </div>
                 </dl>
             )}
