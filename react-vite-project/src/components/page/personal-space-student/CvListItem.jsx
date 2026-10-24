@@ -3,7 +3,16 @@ import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnRefuse, statusBadge, statusBadgeColor, textError, textMuted } from "../../../styles/classes.js";
+import {
+    cardItem,
+    btnSmPrimary,
+    btnRefuse,
+    statusBadge,
+    statusBadgeColor,
+    textError,
+    textMuted,
+    btnSmSelectedSoft
+} from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
     const [numPages, setNumPages] = useState(0);
@@ -40,8 +49,17 @@ const CvPreview = ({ file }) => {
     );
 };
 
-const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) => {
+const CvListItem = ({
+                        cv,
+                        isOpen,
+                        onToggle,
+                        isFeedbackOpen,
+                        onToggleFeedback,
+                        isDefault,
+                        onToggleDefault,
+                    }) => {
     const { t } = useTranslation();
+    const isAccepted = cv.status === "ACCEPTED";
     const isDeclined = cv.status === "DECLINED";
     const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -134,6 +152,17 @@ const CvListItem = ({ cv, isOpen, onToggle, isFeedbackOpen, onToggleFeedback }) 
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
+                    {isAccepted && (
+                        <button
+                            type="button"
+                            disabled={isDefault}
+                            onClick={onToggleDefault}
+                            aria-pressed={isDefault}
+                            className={isDefault ? btnSmSelectedSoft : btnSmPrimary}
+                        >
+                            {isDefault ? t("televerser.defaultActif") : t("televerser.default")}
+                        </button>
+                    )}
                     {isDeclined && (
                         <button
                             type="button"

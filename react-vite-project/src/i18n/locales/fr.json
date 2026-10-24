@@ -80,6 +80,8 @@
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
+    "default": "Définir par défaut",
+    "defaultActif": "Par défaut",
     "afficher": "Afficher",
     "apercuIndisponible": "Aperçu indisponible",
     "chargementApercu": "Chargement de l'aperçu...",

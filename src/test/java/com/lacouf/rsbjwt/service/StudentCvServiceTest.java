@@ -268,6 +268,93 @@ public class StudentCvServiceTest {
     }
 
     @Test
+    void testSetDefaultCvReplacesCurrentDefault() {
+        StudentCv currentDefaultCv = new StudentCv();
+        currentDefaultCv.setId(1L);
+        currentDefaultCv.setStudent(testStudent);
+        currentDefaultCv.setDefault(true);
+
+        StudentCv selectedCv = new StudentCv();
+        selectedCv.setId(2L);
+        selectedCv.setStudent(testStudent);
+        selectedCv.setDefault(false);
+
+        when(studentRepository.findByCredentialsEmail("student@test.com"))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(2L, testStudent.getId()))
+                .thenReturn(Optional.of(selectedCv));
+        when(studentCvRepository.findByStudent_IdAndIsDefaultTrue(testStudent.getId()))
+                .thenReturn(Optional.of(currentDefaultCv));
+
+        studentCvService.setDefaultCv(2L, "student@test.com");
+
+        assertFalse(currentDefaultCv.isDefault());
+        assertTrue(selectedCv.isDefault());
+        verify(studentCvRepository).save(currentDefaultCv);
+        verify(studentCvRepository).save(selectedCv);
+    }
+
+    @Test
+    void testSetDefaultCvWhenNoCurrentDefaultExists() {
+        StudentCv selectedCv = new StudentCv();
+        selectedCv.setId(2L);
+        selectedCv.setStudent(testStudent);
+
+        when(studentRepository.findByCredentialsEmail("student@test.com"))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(2L, testStudent.getId()))
+                .thenReturn(Optional.of(selectedCv));
+        when(studentCvRepository.findByStudent_IdAndIsDefaultTrue(testStudent.getId()))
+                .thenReturn(Optional.empty());
+
+        studentCvService.setDefaultCv(2L, "student@test.com");
+
+        assertTrue(selectedCv.isDefault());
+        verify(studentCvRepository).save(selectedCv);
+        verify(studentCvRepository, times(1)).save(any(StudentCv.class));
+    }
+
+    @Test
+    void testSetDefaultCvUnknownCvThrows() {
+        when(studentRepository.findByCredentialsEmail("student@test.com"))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(99L, testStudent.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(InvalidCvException.class,
+                () -> studentCvService.setDefaultCv(99L, "student@test.com"));
+
+        verify(studentCvRepository, never()).findByStudent_IdAndIsDefaultTrue(any());
+        verify(studentCvRepository, never()).save(any(StudentCv.class));
+    }
+
+    @Test
+    void testSetDefaultCvOfAnotherStudentCannotModifyDefaults() {
+        when(studentRepository.findByCredentialsEmail("student@test.com"))
+                .thenReturn(Optional.of(testStudent));
+        when(studentCvRepository.findByIdAndStudent_Id(2L, testStudent.getId()))
+                .thenReturn(Optional.empty());
+
+        assertThrows(InvalidCvException.class,
+                () -> studentCvService.setDefaultCv(2L, "student@test.com"));
+
+        verify(studentCvRepository, never()).findByStudent_IdAndIsDefaultTrue(any());
+        verify(studentCvRepository, never()).save(any(StudentCv.class));
+    }
+
+    @Test
+    void testSetDefaultCvUnknownStudentIsRejectedBeforeCvLookup() {
+        when(studentRepository.findByCredentialsEmail("unknown@test.com"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class,
+                () -> studentCvService.setDefaultCv(2L, "unknown@test.com"));
+
+        verify(studentCvRepository, never()).findByIdAndStudent_Id(any(), any());
+        verify(studentCvRepository, never()).save(any(StudentCv.class));
+    }
+
+    @Test
     void testGetCvContentOwnerReturnsBytes() {
         String email = "student@test.com";
         StudentCv cv = new StudentCv();

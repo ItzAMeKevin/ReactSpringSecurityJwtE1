@@ -17,6 +17,10 @@
   --color-accept: #009840;
   --color-accept-hover: #006230;
   --color-surface: #f3ebe3;
+
+  --color-selected-bg: #e6ecfb;
+  --color-selected-border: #0051b6;
+  --color-selected-text: #0051b6;
 }
 
 @layer components {

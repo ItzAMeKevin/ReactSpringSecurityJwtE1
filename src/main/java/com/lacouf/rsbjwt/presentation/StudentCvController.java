@@ -82,8 +82,21 @@ public class StudentCvController {
         }
     }
 
+    @PutMapping("/{cvId}/set-default")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<Void> setDefaultCv(@PathVariable Long cvId, Authentication authentication) {
+        try {
+            studentCvService.setDefaultCv(cvId, authentication.getName());
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (InvalidCvException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     @PostMapping("/{offerID}/appliquer")
-    public ResponseEntity<String> appliquerOffre (@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {
+    public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {
         try {
             studentCvService.applyToJobOffer(offerID, cvDto);
             return ResponseEntity.ok("Candidature soumise avec succès.");
@@ -91,5 +104,4 @@ public class StudentCvController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue lors de la candidature.");
         }
     }
-    
 }

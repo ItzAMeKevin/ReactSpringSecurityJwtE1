@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class CvMetaDataDto {
     private long size;
     private Status status;
     private Instant uploadedAt;
+    @JsonProperty("isDefault")
+    private boolean isDefault;
 
     public static CvMetaDataDto toCvMetaDataDto(StudentCv cv){
         return CvMetaDataDto.builder()
@@ -30,6 +33,7 @@ public class CvMetaDataDto {
                 .size(cv.getSize())
                 .status(cv.getStatus())
                 .uploadedAt(cv.getUploadedAt())
+                .isDefault(cv.isDefault())
                 .build();
     }
 }

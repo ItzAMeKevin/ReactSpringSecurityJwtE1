@@ -135,16 +135,32 @@ public class StudentCvService {
     }
 
     @Transactional
+    public void setDefaultCv(Long cvId, String authenticatedEmail) {
+        Student student = findStudentByEmail(authenticatedEmail);
+        StudentCv cv = studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new InvalidCvException("CV not found"));
+
+        StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndIsDefaultTrue(student.getId())
+                .orElse(null);
+        if (currentDefaultCv != null) {
+            currentDefaultCv.setDefault(false);
+            studentCvRepository.save(currentDefaultCv);
+        }
+
+        cv.setDefault(true);
+        studentCvRepository.save(cv);
+    }
+
+    @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
         JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("Offre non trouvée"));
-        
+
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
-        
-        if(appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
+
+        if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
             throw new OffrerException("Le CV a déjà été utilisé pour postuler à cette offre.");
         } else {
-            StudentCv studentCv;
-            studentCv = studentCvRepository.findById(cvDto.getId())
+            StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
                     .orElseThrow(() -> new CvException("CV non trouvé"));
             appliedCvs.add(studentCv);
             jobOffer.setAppliedCvs(appliedCvs);

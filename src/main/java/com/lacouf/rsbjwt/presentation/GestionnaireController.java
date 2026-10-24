@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
@@ -23,6 +24,7 @@ import java.util.List;
 public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
+    private final StudentCvService studentCvService;
 
     // ── CV Management ─────────────────────────────────────────────────────────
 
