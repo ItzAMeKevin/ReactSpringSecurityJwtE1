@@ -1,20 +1,25 @@
 package com.lacouf.rsbjwt;
 
 import com.lacouf.rsbjwt.model.*;
-import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.repository.EmployerRepository;
+import com.lacouf.rsbjwt.repository.JobOfferRepository;
+import com.lacouf.rsbjwt.repository.StudentCvRepository;
+import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.EmployerCreateDto;
 import com.lacouf.rsbjwt.service.dto.ManagerCreateDto;
 import com.lacouf.rsbjwt.service.dto.StudentCreateDto;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
@@ -75,6 +80,18 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             userAppService.inscription(student);
         }
 
+        if (userAppService.getUserByEmail("etudiant.ti@l.com") == null) {
+            StudentCreateDto studentTI = new StudentCreateDto();
+            studentTI.setFirstName("Jean");
+            studentTI.setLastname("Tremblay");
+            studentTI.setMatricule("ETUD-TI-001");
+            studentTI.setEmail("etudiant.ti@l.com");
+            studentTI.setPassword(passwordEncoder.encode("bib"));
+            studentTI.setRole(Role.STUDENT);
+            studentTI.setPrograme(Programe.TECHNIQUES_INFORMATIQUE);
+            userAppService.inscription(studentTI);
+        }
+
         if (userAppService.getUserByEmail("lll@l.com") == null) {
             EmployerCreateDto employer = new EmployerCreateDto();
             employer.setFirstName("Jean-Philippe");
@@ -107,7 +124,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         Employer employer = employers.findByCredentialsEmail("lll@l.com").orElse(null);
         Student student = students.findByCredentialsEmail("ll@l.com").orElse(null);
-        if (employer == null || student == null) {
+        Student studentTI = students.findByCredentialsEmail("etudiant.ti@l.com").orElse(null);
+        if (employer == null || student == null || studentTI == null) {
             return;
         }
 
@@ -116,10 +134,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         seedJobOffer(jobOffers, employer,
                 "Developpeur full-stack Java/React",
                 "Participez au developpement d'une application web moderne au sein de notre equipe de 12 developpeurs. " +
-                "Vous contribuerez a la conception d'APIs REST avec Spring Boot et a la creation d'interfaces " +
-                "utilisateur dynamiques avec React. Travail en methodologie Agile (Scrum, sprints de 2 semaines).",
+                        "Vous contribuerez a la conception d'APIs REST avec Spring Boot et a la creation d'interfaces " +
+                        "utilisateur dynamiques avec React. Travail en methodologie Agile (Scrum, sprints de 2 semaines).",
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
-                "Atout: connaissance de Docker et des tests unitaires.",
+                        "Atout: connaissance de Docker et des tests unitaires.",
                 "22$/h",
                 LocalDate.of(2026, 5, 4), 15, Status.ACCEPTED);
 
@@ -127,17 +145,17 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         seedJobOffer(jobOffers, employer,
                 "Developpeur back-end Spring Boot",
                 "Rejoignez notre equipe infrastructure pour concevoir et maintenir des microservices haute performance. " +
-                "Vous travaillerez sur la securite des APIs (JWT, OAuth2), l'optimisation de requetes SQL, " +
-                "et la mise en place de pipelines CI/CD. Mentorat assure par un developpeur senior.",
+                        "Vous travaillerez sur la securite des APIs (JWT, OAuth2), l'optimisation de requetes SQL, " +
+                        "et la mise en place de pipelines CI/CD. Mentorat assure par un developpeur senior.",
                 "Spring Boot, REST, JWT, PostgreSQL, Maven. " +
-                "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
+                        "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
                 "20$/h",
                 LocalDate.of(2026, 9, 1), 15, Status.WAITING);
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login
         seedCv(studentCvs, student, "cv-sophie-web.pdf", Status.ACCEPTED,
-                buildCvStream(
+                wrapPdfStream(buildCvStream(
                         "Sophie Tremblay",
                         "ll@l.com  |  514-555-0192  |  Montreal, QC",
                         new String[]{
@@ -159,12 +177,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                 "  Application full-stack: React + Spring Security + PostgreSQL",
                                 "  Authentification par roles (etudiant, employeur, gestionnaire)"
                         }
-                )
+                ))
         );
 
         // PENDING: the manager reviews and accepts/declines this one during the demo
         seedCv(studentCvs, student, "cv-sophie-backend.pdf", Status.PENDING,
-                buildCvStream(
+                wrapPdfStream(buildCvStream(
                         "Sophie Tremblay",
                         "ll@l.com  |  514-555-0192  |  Montreal, QC",
                         new String[]{
@@ -186,11 +204,15 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                                 "  Spring Boot + JWT + PostgreSQL, deploye sur Docker",
                                 "  Documentation Swagger / OpenAPI 3.0"
                         }
-                )
+                ))
         );
+
+        seedCv(studentCvs, studentTI, "CV_JEAN_T_Test.pdf", Status.PENDING,
+                loadCvFromClasspath("/CVTest/CV_JEAN_T_Test.pdf"));
     }
 
     // ---- Seed helpers ----
+
 
     private void seedJobOffer(JobOfferRepository repo, Employer employer, String title,
                               String description, String prerequisites, String salary,
@@ -216,13 +238,12 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     }
 
     private void seedCv(StudentCvRepository repo, Student student, String fileName,
-                        Status status, String streamContent) {
+                        Status status, byte[] content) {
         boolean alreadyExists = repo.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
                 .stream()
                 .anyMatch(cv -> cv.getFileName().equals(fileName));
         if (alreadyExists) return;
 
-        byte[] content = wrapPdfStream(streamContent);
         StudentCv cv = new StudentCv();
         cv.setFileName(fileName);
         cv.setContentType("application/pdf");
@@ -233,26 +254,50 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         repo.save(cv);
     }
 
+    private byte[] loadCvFromClasspath(String resourcePath) throws IOException {
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new IllegalStateException(
+                        "PDF introuvable dans le classpath : " + resourcePath);
+            }
+            return is.readAllBytes();
+        }
+    }
+
     // ---- PDF builders ----
 
     private String buildCvStream(String name, String contact,
-                                  String[] education, String[] skills, String[] experience) {
+                                 String[] education, String[] skills, String[] experience) {
         StringBuilder s = new StringBuilder();
         int y = 740;
 
-        pdfLine(s, name,    14, 72, y); y -= 20;
-        pdfLine(s, contact,  9, 72, y); y -= 24;
+        pdfLine(s, name, 14, 72, y);
+        y -= 20;
+        pdfLine(s, contact, 9, 72, y);
+        y -= 24;
 
-        pdfLine(s, "FORMATION",   11, 72, y); y -= 16;
-        for (String e : education)   { pdfLine(s, e,  9, 82, y); y -= 14; }
+        pdfLine(s, "FORMATION", 11, 72, y);
+        y -= 16;
+        for (String e : education) {
+            pdfLine(s, e, 9, 82, y);
+            y -= 14;
+        }
         y -= 8;
 
-        pdfLine(s, "COMPETENCES", 11, 72, y); y -= 16;
-        for (String sk : skills)     { pdfLine(s, sk, 9, 82, y); y -= 14; }
+        pdfLine(s, "COMPETENCES", 11, 72, y);
+        y -= 16;
+        for (String sk : skills) {
+            pdfLine(s, sk, 9, 82, y);
+            y -= 14;
+        }
         y -= 8;
 
-        pdfLine(s, "EXPERIENCE PROFESSIONNELLE", 11, 72, y); y -= 16;
-        for (String ex : experience) { pdfLine(s, ex, 9, 82, y); y -= 14; }
+        pdfLine(s, "EXPERIENCE PROFESSIONNELLE", 11, 72, y);
+        y -= 16;
+        for (String ex : experience) {
+            pdfLine(s, ex, 9, 82, y);
+            y -= 14;
+        }
 
         return s.toString();
     }
@@ -260,9 +305,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private void pdfLine(StringBuilder s, String text, int fontSize, int x, int y) {
         String safe = text.replaceAll("[^\\x20-\\x7E]", "?");
         s.append("BT /F1 ").append(fontSize).append(" Tf ")
-         .append(x).append(" ").append(y).append(" Td (")
-         .append(safe.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)"))
-         .append(") Tj ET\n");
+                .append(x).append(" ").append(y).append(" Td (")
+                .append(safe.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)"))
+                .append(") Tj ET\n");
     }
 
     private byte[] wrapPdfStream(String streamContent) {
