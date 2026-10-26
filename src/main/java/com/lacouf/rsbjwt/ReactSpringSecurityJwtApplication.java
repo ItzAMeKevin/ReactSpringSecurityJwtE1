@@ -207,8 +207,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 ))
         );
 
-        seedCv(studentCvs, studentTI, "CV_JEAN_T_Test.pdf", Status.PENDING,
-                loadCvFromClasspath("/CVTest/CV_JEAN_T_Test.pdf"));
+
+        seedCv(studentCvs, studentTI, "CV_JEAN_T_Test2.pdf", Status.ACCEPTED,
+                loadCvFromClasspath("/CVTest/CV_JEAN_T_Test1.pdf"));
     }
 
     // ---- Seed helpers ----

@@ -67,6 +67,7 @@ function App() {
       Digit1: ["l@l.com", "bib"],
       Digit2: ["ll@l.com", "bib"],
       Digit3: ["lll@l.com", "bib"],
+      Digit4: ["etudiant.ti@l.com", "bib"],
     };
 
     const handleShortcut = (event) => {
