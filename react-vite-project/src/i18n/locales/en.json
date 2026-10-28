@@ -279,6 +279,23 @@
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
     "noValidatedCv": "You need a validated CV to apply."
+  },
+
+  "employeurCandidats": {
+    "voirCandidats": "View candidates",
+    "masquerCandidats": "Hide candidates",
+    "loading": "Loading candidates...",
+    "aucunCandidats": "No applications received yet.",
+    "erreurChargement": "An error occurred while loading candidates, please try again later.",
+    "voirCv": "View CV",
+    "statuts": {
+      "PENDING": "Under review",
+      "ACCEPTED": "Candidate selected",
+      "DECLINED": "Candidate not selected"
+    },
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "erreurStatut": "Unable to update status."
   }
 
 }

@@ -278,5 +278,23 @@
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler."
+  },
+
+  "employeurCandidats": {
+    "voirCandidats": "Voir les candidats",
+    "masquerCandidats": "Masquer les candidats",
+    "loading": "Chargement des candidats...",
+    "aucunCandidats": "Aucune candidature reçue pour le moment.",
+    "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
+    "voirCv": "Voir le CV",
+    "statuts": {
+      "PENDING": "En attente d'évaluation",
+      "ACCEPTED": "Candidat retenu",
+      "DECLINED": "Candidat non retenu"
+    },
+    "accepter": "Accepter",
+    "refuser": "Refuser",
+    "erreurStatut": "Impossible de mettre à jour le statut."
+
   }
 }
