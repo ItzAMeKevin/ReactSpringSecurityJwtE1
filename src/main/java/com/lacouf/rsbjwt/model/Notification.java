@@ -8,68 +8,46 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
+
 @Entity
 @Table(name = "notifications")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private NotificationType notificationType;
+
+    @NotNull
+    private Long referenceId;
 
     @NotBlank
-    @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = true, length = 1000)
     private String message;
 
-    @Column(nullable = false)
-    private boolean isRead = false;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private NotificationType type;
+    @Builder.Default
+    private Status status = Status.UNREAD;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private Status status = Status.PENDING;
+    @NotNull
+    private Instant creationDate;
 
-    @Column(nullable = false, updatable = false)
-    private Instant createdAt;
-
-    @Column(nullable = true)
-    private Instant sentAt;
-
-    @Column(nullable = true)
-    private Integer retryCount = 0;
-
-    @Column(nullable = true)
-    private Instant lastRetryAt;
-
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = true)
-    private Student student;
-
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = true)
-    private Manager manager;
-
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_cv_id", nullable = true)
-    private StudentCv studentCv;
-
-    @PrePersist
-    void onCreate() {
-        this.createdAt = Instant.now();
-        if (this.status == null) {
-            this.status = Status.PENDING;
-        }
-        if (this.retryCount == null) {
-            this.retryCount = 0;
-        }
+    @PrePersist 
+    public void prePersist() {
+        this.creationDate = Instant.now();
+        this.status = Status.UNREAD;
     }
 }
 
