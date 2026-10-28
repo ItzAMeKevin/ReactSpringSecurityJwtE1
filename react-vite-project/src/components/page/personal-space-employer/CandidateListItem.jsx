@@ -1,5 +1,6 @@
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {fetchBlobUrl} from "../../../utils/downloadFile.js";
 import fetcher from "../../../utils/fetcher.js";
 import {
     cardItem,
@@ -17,6 +18,13 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
     const [updating, setUpdating] = useState(false);
+    const blobUrlRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+        };
+    }, []);
 
     const handleStatusChange = async (newStatus) => {
         setUpdating(true);
@@ -45,12 +53,10 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
         }
 
         try {
-            const res = await fetcher(`/employer/candidates/${candidate.cvId}/cv`, {method: "GET"});
-            if (!res.ok) throw new Error();
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
+            const url = await fetchBlobUrl(`/employer/candidates/${candidate.cvId}/cv`);
+            if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+            blobUrlRef.current = url;
             previewWindow.location.href = url;
-            setTimeout(() => URL.revokeObjectURL(url), 60_000);
         } catch {
             previewWindow.close();
             setCvError(t("employeurCandidats.erreurCv"));

@@ -30,7 +30,7 @@ const CandidateList = ({offerId}) => {
 
         load();
         return () => { cancelled = true; };
-    }, [offerId, t]);
+    }, [offerId]);
 
     const handleStatusChange = (cvId, newStatus) => {
         setCandidates((prev) =>

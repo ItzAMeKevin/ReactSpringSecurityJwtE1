@@ -41,7 +41,7 @@ const ListJobOffer = ({refreshKey}) => {
         return () => {
             cancelled = true;
         };
-    }, [refreshKey, t]);
+    }, [refreshKey]);
 
     if (loading) return <p className={textMuted}>{t("personalSpaceEmployer.loading")}</p>;
     if (error) return <p className={textError}>{error}</p>;
