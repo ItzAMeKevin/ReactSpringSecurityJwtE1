@@ -140,6 +140,7 @@
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
     "jobOffers": "My internship offers",
+    "loading": "Loading offers...",
     "noJobOffers": "You have no internship offers yet.",
     "statuts": {
       "WAITING": "Pending",
@@ -259,9 +260,9 @@
     }
   },
   "roles": {
-    "STUDENT": "Étudiant",
-    "MANAGER": "Gestionnaire",
-    "EMPLOYER": "Employeur"
+    "STUDENT": "Student",
+    "MANAGER": "Manager",
+    "EMPLOYER": "Employer"
   },
 
   "etudiantOffres": {
@@ -282,12 +283,15 @@
   },
 
   "employeurCandidats": {
+    "titreCandidats": "Candidates",
     "voirCandidats": "View candidates",
     "masquerCandidats": "Hide candidates",
     "loading": "Loading candidates...",
     "aucunCandidats": "No applications received yet.",
     "erreurChargement": "An error occurred while loading candidates, please try again later.",
     "voirCv": "View CV",
+    "popupBloque": "The CV could not open. Please allow pop-ups in your browser.",
+    "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
       "ACCEPTED": "Candidate selected",

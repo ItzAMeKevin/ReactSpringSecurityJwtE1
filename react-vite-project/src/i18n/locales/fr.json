@@ -10,7 +10,7 @@
     },
     "fields": {
       "nom": "Nom",
-      "prenom": "Prenom",
+      "prenom": "Prénom",
       "courriel": "Courriel",
       "motDePasse": "Mot de passe",
       "confirmation": "Confirmation de mot de passe",
@@ -21,7 +21,7 @@
       "adresse": "Adresse",
       "codePostal": "Code postal",
       "ville": "Ville",
-      "telephone": "téléphone",
+      "telephone": "Téléphone",
       "identifiant": "NEQ"
     },
     "programsList": [
@@ -139,6 +139,7 @@
     "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
+    "loading": "Chargement des offres...",
     "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
       "WAITING": "En attente",
@@ -258,9 +259,9 @@
     }
   },
   "roles": {
-    "STUDENT": "Student",
-    "MANAGER": "Manager",
-    "EMPLOYER": "Employer"
+    "STUDENT": "Étudiant",
+    "MANAGER": "Professeur",
+    "EMPLOYER": "Employeur"
   },
 
   "etudiantOffres": {
@@ -281,12 +282,15 @@
   },
 
   "employeurCandidats": {
+    "titreCandidats": "Candidats",
     "voirCandidats": "Voir les candidats",
     "masquerCandidats": "Masquer les candidats",
     "loading": "Chargement des candidats...",
     "aucunCandidats": "Aucune candidature reçue pour le moment.",
     "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
     "voirCv": "Voir le CV",
+    "popupBloque": "Le CV n'a pas pu s'ouvrir. Autorisez les pop-ups dans votre navigateur.",
+    "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",
       "ACCEPTED": "Candidat retenu",
@@ -295,6 +299,5 @@
     "accepter": "Accepter",
     "refuser": "Refuser",
     "erreurStatut": "Impossible de mettre à jour le statut."
-
   }
 }
