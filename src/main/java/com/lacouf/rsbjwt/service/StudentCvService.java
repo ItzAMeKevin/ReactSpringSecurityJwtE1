@@ -2,10 +2,12 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
+import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
@@ -34,6 +36,7 @@ public class StudentCvService {
     private final StudentRepository studentRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final JobOfferRepository jobOfferRepository;
+    private final JobApplicationRepository jobApplicationRepository;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -165,6 +168,12 @@ public class StudentCvService {
             appliedCvs.add(studentCv);
             jobOffer.setAppliedCvs(appliedCvs);
             jobOfferRepository.save(jobOffer);
+
+            JobApplication application = new JobApplication();
+            application.setJobOffer(jobOffer);
+            application.setStudentCv(studentCv);
+            application.setStatus(Status.PENDING);
+            jobApplicationRepository.save(application);
         }
     }
 }

@@ -43,6 +43,9 @@ public class StudentCvServiceTest {
     @Mock
     private JobOfferRepository jobOfferRepository;
 
+    @Mock
+    private com.lacouf.rsbjwt.repository.JobApplicationRepository jobApplicationRepository;
+
     @InjectMocks
     private StudentCvService studentCvService;
 
@@ -449,6 +452,7 @@ public class StudentCvServiceTest {
 
         assertEquals(List.of(cv), jobOffer.getAppliedCvs());
         verify(jobOfferRepository).save(jobOffer);
+        verify(jobApplicationRepository).save(any());
     }
 
     @Test
