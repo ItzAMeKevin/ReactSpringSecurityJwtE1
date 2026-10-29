@@ -2,20 +2,18 @@ package com.lacouf.rsbjwt.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
 @Entity
 @Table(name = "notifications")
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Notification {
 
@@ -24,30 +22,39 @@ public class Notification {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Column(nullable = false)
     private NotificationType notificationType;
 
     @NotNull
+    @Column(nullable = false)
     private Long referenceId;
 
-    @NotBlank
-    private String message;
+    @Enumerated(EnumType.STRING)
+    private NotificationMessage message;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @Builder.Default
     private Status status = Status.UNREAD;
 
     @NotNull
-    private Instant creationDate;
+    @Column(nullable = false)
+    @Builder.Default
+    private Instant creationDate = Instant.now();
 
     @PrePersist 
     public void prePersist() {
-        this.creationDate = Instant.now();
-        this.status = Status.UNREAD;
+        if (this.creationDate == null) {
+            this.creationDate = Instant.now();
+        }
+        if (this.status == null) {
+            this.status = Status.UNREAD;
+        }
     }
 }
 
