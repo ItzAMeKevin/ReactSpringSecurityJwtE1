@@ -5,9 +5,7 @@ import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.EmployerNotification;
 import com.lacouf.rsbjwt.model.ManagerNotification;
 import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.EmployerNotificationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -23,7 +21,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;

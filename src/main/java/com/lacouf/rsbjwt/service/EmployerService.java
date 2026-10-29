@@ -8,7 +8,6 @@ import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.ManagerNotification;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;

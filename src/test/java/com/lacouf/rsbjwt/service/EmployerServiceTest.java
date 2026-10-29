@@ -5,7 +5,6 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
