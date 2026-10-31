@@ -279,7 +279,12 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You need a validated CV to apply."
+    "noValidatedCv": "You need a validated CV to apply.",
+    "applicationStatuts": {
+      "PENDING": "Application sent",
+      "ACCEPTED": "Application accepted",
+      "DECLINED": "Application declined"
+    }
   },
 
   "employeurCandidats": {
@@ -299,7 +304,15 @@
     },
     "accepter": "Accept",
     "refuser": "Decline",
-    "erreurStatut": "Unable to update status."
-  }
+    "erreurStatut": "Unable to update status.",
 
+    "confirmation": {
+      "titre": "Decision confirmation",
+      "accepter": "Accept {{nom}}'s application?",
+      "refuser": "Decline {{nom}}'s application?",
+      "motifLabel": "Message or reason (optional)",
+      "confirmer": "Confirm",
+      "annuler": "Cancel"
+    }
+  }
 }

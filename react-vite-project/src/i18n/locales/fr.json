@@ -278,7 +278,12 @@
     "applied": "Candidature envoyée",
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler."
+    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "applicationStatuts": {
+      "PENDING": "Candidature envoyée",
+      "ACCEPTED": "Candidature acceptée",
+      "DECLINED": "Candidature refusée"
+    }
   },
 
   "employeurCandidats": {
@@ -298,6 +303,15 @@
     },
     "accepter": "Accepter",
     "refuser": "Refuser",
-    "erreurStatut": "Impossible de mettre à jour le statut."
+    "erreurStatut": "Impossible de mettre à jour le statut.",
+
+    "confirmation": {
+      "titre": "Confirmation de la décision",
+      "accepter": "Accepter la candidature de {{nom}} ?",
+      "refuser": "Refuser la candidature de {{nom}} ?",
+      "motifLabel": "Message ou motif (optionnel)",
+      "confirmer": "Confirmer",
+      "annuler": "Annuler"
+    }
   }
 }

@@ -1,11 +1,8 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
-import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.Programe;
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
-import com.lacouf.rsbjwt.model.StudentCv;
+import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
@@ -46,6 +43,9 @@ public class StudentServiceTest {
     @Mock
     private JobOfferMapper jobOfferMapper;
 
+    @Mock
+    private JobApplicationRepository jobApplicationRepository;
+
     @InjectMocks
     private StudentService studentService;
 
@@ -81,6 +81,24 @@ public class StudentServiceTest {
         );
 
         latestCv = mock(StudentCv.class);
+    }
+    private JobApplication application(JobOffer offer, Status status) {
+        JobApplication application = new JobApplication();
+        application.setJobOffer(offer);
+        application.setStatus(status);
+        return application;
+    }
+
+    private JobOffer offerWithId(Long id) {
+        JobOffer offer = new JobOffer();
+        offer.setId(id);
+        return offer;
+    }
+
+    private JobOfferDetailDTO dtoFor(Long id) {
+        return new JobOfferDetailDTO(id, "Titre", "Description", "Prerequis", null, "20$/h",
+                Status.ACCEPTED, LocalDate.now(), LocalDate.of(2025, 9, 1),
+                16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp");
     }
 
     @Test
@@ -162,4 +180,46 @@ public class StudentServiceTest {
 
         verifyNoInteractions(jobOfferRepository);
     }
+
+    @ParameterizedTest(name = "une candidature {0} est transmise dans applicationStatus")
+    @EnumSource(Status.class)
+    @DisplayName("getAcceptedJobOffers : transmet le statut de la candidature")
+    void getAcceptedJobOffers_exposesApplicationStatus(Status applicationStatus) {
+        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
+        when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL)).thenReturn(Optional.of(student));
+        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
+                .thenReturn(Optional.of(latestCv));
+        when(jobApplicationRepository.findByStudentIdWithOffer(1L))
+                .thenReturn(List.of(application(jobOffer, applicationStatus)));
+        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+                .thenReturn(List.of(jobOffer));
+        when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
+
+        List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
+
+        assertTrue(result.get(0).applied());
+        assertEquals(applicationStatus, result.get(0).applicationStatus());
+    }
+
+    @Test
+    @DisplayName("getAcceptedJobOffers : garde la candidature la plus récente quand il y en a plusieurs sur la même offre")
+    void getAcceptedJobOffers_keepsMostRecentApplication_whenDuplicates() {
+        JobOffer offer = offerWithId(10L);
+        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
+        when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL)).thenReturn(Optional.of(student));
+        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
+                .thenReturn(Optional.of(latestCv));
+        when(jobApplicationRepository.findByStudentIdWithOffer(1L)).thenReturn(List.of(
+                application(offer, Status.DECLINED),
+                application(offer, Status.PENDING)));
+        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+                .thenReturn(List.of(offer));
+        when(jobOfferMapper.toDto(offer)).thenReturn(dtoFor(10L));
+
+        List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
+
+        assertEquals(1, result.size());
+        assertEquals(Status.DECLINED, result.get(0).applicationStatus());
+    }
 }
+
