@@ -95,7 +95,7 @@
     "aucunCv": "No CV uploaded yet.",
     "erreurChargement": "Unable to load your CVs. Please try again later.",
     "statuts": {
-      "PENDING": "Pending",
+      "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
       "DECLINED": "Declined"
     }
@@ -142,7 +142,7 @@
     "jobOffers": "My internship offers",
     "noJobOffers": "You have no internship offers yet.",
     "statuts": {
-      "WAITING": "Pending",
+      "WAITING": "Pending validation",
       "ACCEPTED": "Accepted",
       "DECLINED": "Declined"
     },
@@ -187,7 +187,7 @@
   "gestionnaire": {
     "title": "Manager Space",
     "cvSection": "CVs pending validation",
-    "loadingCvs": "Loading pending CVs...",
+    "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
     "consulter": "View",
@@ -199,10 +199,10 @@
       "loading": "Loading preview..."
     },
     "offres": {
-      "title": "Pending internship offers",
+      "title": "Internship offers pending validation",
       "loading": "Loading offers...",
       "error": "Error loading offers.",
-      "none": "No pending internship offers.",
+      "none": "No internship offers pending validation.",
       "company": "Company",
       "weeks": "wks",
       "readMore": "Read more",
@@ -222,7 +222,6 @@
   },
   "notifications": {
     "title": "Notifications",
-    "managerTitle": "CVs to Review",
     "ariaLabel": "Notifications",
     "loading": "Loading...",
     "error": "Error loading notifications.",

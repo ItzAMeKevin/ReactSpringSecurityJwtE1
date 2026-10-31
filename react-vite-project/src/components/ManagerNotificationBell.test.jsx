@@ -10,7 +10,7 @@ const mockNavigate = vi.hoisted(() => vi.fn());
 
 
 const translations = vi.hoisted(() => ({
-    "notifications.managerTitle": "CVs à réviser",
+    "notifications.title": "Notifications",
     "notifications.loading": "Chargement...",
     "notifications.error": "Erreur lors du chargement des notifications.",
     "notifications.empty": "Aucune notification.",
@@ -104,7 +104,7 @@ describe("ManagerNotificationBell - ouverture du menu", () => {
         renderBell();
 
         expect(screen.getByRole("button", { name: "Notifications" })).toHaveAttribute("aria-expanded", "false");
-        expect(screen.queryByText("CVs à réviser")).not.toBeInTheDocument();
+        expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument();
     });
 
     it("should open the dropdown when clicking the bell", () => {
@@ -113,7 +113,7 @@ describe("ManagerNotificationBell - ouverture du menu", () => {
         openDropdown();
 
         expect(screen.getByRole("button", { name: "Notifications" })).toHaveAttribute("aria-expanded", "true");
-        expect(screen.getByText("CVs à réviser")).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Notifications" })).toBeInTheDocument();
     });
 
     it("should close the dropdown when clicking the bell a second time", () => {
@@ -122,7 +122,7 @@ describe("ManagerNotificationBell - ouverture du menu", () => {
         openDropdown();
         openDropdown();
 
-        expect(screen.queryByText("CVs à réviser")).not.toBeInTheDocument();
+        expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument();
     });
 });
 
@@ -305,7 +305,7 @@ describe("ManagerNotificationBell - bouton Consulter", () => {
 
         fireEvent.click(screen.getByRole("button", { name: "Consulter" }));
 
-        await waitFor(() => expect(screen.queryByText("CVs à réviser")).not.toBeInTheDocument());
+        await waitFor(() => expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument());
     });
 
     it("should still navigate when markAsRead fails", async () => {

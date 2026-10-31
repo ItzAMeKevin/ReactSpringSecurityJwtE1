@@ -94,7 +94,7 @@
     "aucunCv": "Aucun CV téléversé pour l'instant.",
     "erreurChargement": "Impossible de charger vos CVs. Réessayez plus tard.",
     "statuts": {
-      "PENDING": "En attente",
+      "PENDING": "En attente de validation",
       "ACCEPTED": "Accepté",
       "DECLINED": "Refusé"
     }
@@ -141,7 +141,7 @@
     "jobOffers": "Mes offres de stage",
     "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
-      "WAITING": "En attente",
+      "WAITING": "En attente de validation",
       "ACCEPTED": "Acceptée",
       "DECLINED": "Refusée"
     },
@@ -186,7 +186,7 @@
   "gestionnaire": {
     "title": "Espace gestionnaire",
     "cvSection": "CVs en attente de validation",
-    "loadingCvs": "Chargement des CV en attente...",
+    "loadingCvs": "Chargement des CV en attente de validation...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",
     "consulter": "Consulter",
@@ -198,10 +198,10 @@
       "loading": "Chargement de l'aperçu..."
     },
     "offres": {
-      "title": "Offres de stage en attente",
+      "title": "Offres de stage en attente de validation",
       "loading": "Chargement des offres...",
       "error": "Erreur lors du chargement des offres.",
-      "none": "Aucune offre de stage en attente.",
+      "none": "Aucune offre de stage en attente de validation.",
       "company": "Entreprise",
       "weeks": "sem.",
       "readMore": "En savoir plus",
@@ -221,7 +221,6 @@
   },
   "notifications": {
     "title": "Notifications",
-    "managerTitle": "CVs à réviser",
     "ariaLabel": "Notifications",
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",

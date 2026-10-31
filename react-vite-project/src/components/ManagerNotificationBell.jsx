@@ -166,7 +166,7 @@ const ManagerNotificationBell = () => {
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
                     <div className="p-3 border-b border-brand/10">
-                        <h3 className="text-black font-bold">{t("notifications.managerTitle")}</h3>
+                        <h3 className="text-black font-bold">{t("notifications.title")}</h3>
                     </div>
                     {renderContent()}
                 </div>
