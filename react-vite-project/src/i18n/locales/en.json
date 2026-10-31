@@ -86,8 +86,6 @@
     "afficher": "Show",
     "apercuIndisponible": "Preview not available",
     "chargementApercu": "Loading preview...",
-    "voirFeedback": "View feedback",
-    "masquerFeedback": "Hide feedback",
     "feedbackTitre": "Manager's comment:",
     "chargementFeedback": "Loading feedback...",
     "erreurFeedback": "Unable to load the feedback.",

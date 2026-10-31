@@ -32,13 +32,13 @@ const PersonalSpaceStudent = () => {
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
-    const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
+    const [scrollToFeedbackCvId, setScrollToFeedbackCvId] = useState(null);
     const [defaultCvId, setDefaultCvId] = useState(null);
     const [defaultError, setDefaultError] = useState(null);
 
     useEffect(() => {
         if (location.state?.feedbackCvId) {
-            setOpenFeedbackCvId(location.state.feedbackCvId);
+            setScrollToFeedbackCvId(location.state.feedbackCvId);
             navigate(location.pathname, { replace: true, state: null });
         }
     }, [location.key, location.state?.feedbackCvId, navigate, location.pathname]);
@@ -208,10 +208,7 @@ const PersonalSpaceStudent = () => {
                                 onToggle={() =>
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
                                 }
-                                isFeedbackOpen={openFeedbackCvId === cv.id}
-                                onToggleFeedback={() =>
-                                    setOpenFeedbackCvId((current) => (current === cv.id ? null : cv.id))
-                                }
+                                scrollToFeedback={scrollToFeedbackCvId === cv.id}
                                 isDefault={defaultCvId === cv.id}
                                 onToggleDefault={() => handleToggleDefault(cv.id)}
                             />

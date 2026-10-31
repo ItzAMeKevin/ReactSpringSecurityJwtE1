@@ -11,7 +11,9 @@ vi.mock('react-pdf', () => ({
     pdfjs: { GlobalWorkerOptions: {} }
 }));
 
-vi.mock('../../../utils/fetcher.js', () => ({ default: vi.fn() }));
+vi.mock('../../../utils/fetcher.js', () => ({
+    default: vi.fn(() => Promise.resolve({ ok: true, text: () => Promise.resolve('Ajoutez vos stages.') }))
+}));
 vi.mock('../../../utils/downloadFile.js', () => ({
     fetchBlobUrl: vi.fn(),
     downloadFile: vi.fn()
@@ -28,6 +30,7 @@ vi.mock('../../../styles/classes.js', () => ({
     textMuted: 'text-muted',
 }));
 
+import fetcher from '../../../utils/fetcher.js';
 import CvListItem from './CvListItem.jsx';
 
 const baseCv = { id: 1, fileName: 'cv.pdf', status: 'ACCEPTED' };
@@ -35,8 +38,7 @@ const baseProps = {
     cv: baseCv,
     isOpen: false,
     onToggle: vi.fn(),
-    isFeedbackOpen: false,
-    onToggleFeedback: vi.fn(),
+    scrollToFeedback: false,
     isDefault: false,
     onToggleDefault: vi.fn(),
 };
@@ -114,11 +116,26 @@ describe('CvListItem — general rendering', () => {
         expect(baseProps.onToggle).toHaveBeenCalledTimes(1);
     });
 
-    it('shows feedback button only for DECLINED CVs', () => {
-        const { rerender } = render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} />);
-        expect(screen.getByText('televerser.voirFeedback')).toBeInTheDocument();
-
-        rerender(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'ACCEPTED' }} />);
+    it('always shows feedback for DECLINED CVs, without a toggle button', async () => {
+        render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} />);
+        expect(await screen.findByText('Ajoutez vos stages.')).toBeInTheDocument();
+        expect(fetcher).toHaveBeenCalledWith('/student-cv/1/review');
         expect(screen.queryByText('televerser.voirFeedback')).not.toBeInTheDocument();
+        expect(screen.queryByText('televerser.masquerFeedback')).not.toBeInTheDocument();
+    });
+
+    it.each(['ACCEPTED', 'PENDING'])('does not load feedback for %s CVs', (status) => {
+        render(<CvListItem {...baseProps} cv={{ ...baseCv, status }} />);
+        expect(fetcher).not.toHaveBeenCalled();
+        expect(screen.queryByText('televerser.feedbackTitre')).not.toBeInTheDocument();
+    });
+
+    it('scrolls to the card when scrollToFeedback is true', async () => {
+        const scrollIntoView = vi.fn();
+        Element.prototype.scrollIntoView = scrollIntoView;
+        render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} scrollToFeedback={true} />);
+        await screen.findByText('Ajoutez vos stages.');
+        expect(scrollIntoView).toHaveBeenCalledTimes(1);
+        delete Element.prototype.scrollIntoView;
     });
 });

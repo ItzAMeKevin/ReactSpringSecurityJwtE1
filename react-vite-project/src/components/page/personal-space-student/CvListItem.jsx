@@ -53,8 +53,7 @@ const CvListItem = ({
                         cv,
                         isOpen,
                         onToggle,
-                        isFeedbackOpen,
-                        onToggleFeedback,
+                        scrollToFeedback,
                         isDefault,
                         onToggleDefault,
                     }) => {
@@ -68,9 +67,13 @@ const CvListItem = ({
     const [feedbackError, setFeedbackError] = useState(false);
 
     useEffect(() => {
-        if (!isFeedbackOpen) return;
-        cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        if (feedback !== null) return;
+        if (scrollToFeedback) {
+            cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+    }, [scrollToFeedback]);
+
+    useEffect(() => {
+        if (!isDeclined) return;
         let cancelled = false;
         setFeedbackError(false);
         fetcher(`/student-cv/${cv.id}/review`)
@@ -86,7 +89,7 @@ const CvListItem = ({
         return () => {
             cancelled = true;
         };
-    }, [isFeedbackOpen, cv.id, feedback]);
+    }, [isDeclined, cv.id]);
 
     useEffect(() => {
         if (!isOpen || cv.file || previewUrl) return;
@@ -163,16 +166,6 @@ const CvListItem = ({
                             {isDefault ? t("televerser.defaultActif") : t("televerser.default")}
                         </button>
                     )}
-                    {isDeclined && (
-                        <button
-                            type="button"
-                            onClick={onToggleFeedback}
-                            aria-expanded={isFeedbackOpen}
-                            className={btnSmPrimary}
-                        >
-                            {isFeedbackOpen ? t("televerser.masquerFeedback") : t("televerser.voirFeedback")}
-                        </button>
-                    )}
                     <button
                         type="button"
                         onClick={onToggle}
@@ -184,7 +177,7 @@ const CvListItem = ({
                 </div>
             </div>
 
-            {isDeclined && isFeedbackOpen && (
+            {isDeclined && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
                     {renderFeedback()}
                 </div>
