@@ -40,9 +40,6 @@ public class JobApplication {
 
     @PrePersist
     void onCreate() {
-        if (appliedAt == null) {
-            appliedAt = Instant.now();
-        }
         if (status == null) {
             status = Status.PENDING;
         }
