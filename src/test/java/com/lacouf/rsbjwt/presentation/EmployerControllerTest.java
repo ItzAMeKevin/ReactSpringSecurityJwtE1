@@ -38,6 +38,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -112,7 +113,6 @@ class EmployerControllerTest {
         userCreateDTO.setPhoneNumber("514-555-1234");
         userCreateDTO.setEmployerWorkId("EMP001");
 
-
         jobOfferCreateDTO = new JobOfferCreateDTO(
                 "Développeur Java",
                 "Description du poste",
@@ -138,8 +138,9 @@ class EmployerControllerTest {
                 Programe.TECHNIQUES_INFORMATIQUE,
                 "ACME Inc."
         );
-
     }
+
+    // ===== POST /employer/addJobOffer =====
 
     @Test
     @DisplayName("Post /employer/addJobOffer")
@@ -162,13 +163,11 @@ class EmployerControllerTest {
                 .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
         verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class), anyString());
-
     }
 
     @Test
     void addJobOffer_devraitRetourner400SiBodyInvalide() throws Exception {
         // ===== ARRANGE =====
-
 
         // ===== ACT =====
         mockMvc.perform(post("/employer/addJobOffer")
@@ -178,15 +177,15 @@ class EmployerControllerTest {
                 // ===== assert=====
                 .andExpect(status().isBadRequest());   // 400
 
-
         verify(employerService, never()).addJobOffer(any(), anyString());
     }
+
+    // ===== GET /employer =====
 
     @Test
     void getJobOffer_devraitRetournerLaListeDuService() throws Exception {
         // ───── ARRANGE ─────
         List<JobOfferDetailDTO> expected = List.of(
-
                 new JobOfferDetailDTO(
                         1L,
                         "Développeur Java",
@@ -218,7 +217,6 @@ class EmployerControllerTest {
         );
         when(employerService.getJobOffres(anyString())).thenReturn(expected);
 
-
         // ===== ACT =====
         mockMvc.perform(get("/employer")
                         .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
@@ -228,6 +226,47 @@ class EmployerControllerTest {
 
         verify(employerService).getJobOffres(anyString());
     }
+
+    // ===== PUT /employer/updateJobOffer/{id} =====
+
+    @Test
+    void updateJobOffer_ok_returns200() throws Exception {
+        when(employerService.updateRefusedJobOffer(eq(1L), any(JobOfferCreateDTO.class), anyString()))
+                .thenReturn(Optional.of(jobOfferDetailDTO));
+
+        mockMvc.perform(put("/employer/updateJobOffer/1")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    void updateJobOffer_notFound_returns404() throws Exception {
+        when(employerService.updateRefusedJobOffer(eq(1L), any(JobOfferCreateDTO.class), anyString()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(put("/employer/updateJobOffer/1")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateJobOffer_conflict_returns409() throws Exception {
+        when(employerService.updateRefusedJobOffer(eq(1L), any(JobOfferCreateDTO.class), anyString()))
+                .thenThrow(new IllegalStateException());
+
+        mockMvc.perform(put("/employer/updateJobOffer/1")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
+                .andExpect(status().isConflict());
+    }
+
+    // ===== GET /employer/{offerId}/candidates =====
 
     @Test
     @DisplayName("GET /employer/{id}/candidates retourne la liste")
@@ -268,6 +307,20 @@ class EmployerControllerTest {
     }
 
     @Test
+    void getCandidates_notFound_returns404() throws Exception {
+        when(employerService.getCandidates(1L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
+        mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getCandidates_error_returns500() throws Exception {
+        when(employerService.getCandidates(1L, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
+        mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isInternalServerError());
+    }
+
+    // ===== PUT /employer/{offerId}/candidates/{cvId}/status =====
+
+    @Test
     @DisplayName("PUT /employer/{id}/candidates/{cvId}/status met à jour le statut")
     void updateCandidateStatus_ok() throws Exception {
         CandidateDto updated = new CandidateDto(
@@ -282,36 +335,6 @@ class EmployerControllerTest {
                         .content(jsonMapper.writeValueAsString(new UpdateCandidateStatusDto(Status.ACCEPTED))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("ACCEPTED"));
-    }
-
-    @Test
-    @DisplayName("GET /employer/candidates/{cvId}/cv retourne un PDF")
-    void getCandidateCv_returnsPdf() throws Exception {
-        when(employerService.getCandidateCv(5L, "marie@acme.com")).thenReturn(new byte[]{37, 80, 68, 70});
-
-        mockMvc.perform(get("/employer/candidates/5/cv")
-                        .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF));
-    }
-    private static RequestPostProcessor employer() {
-        return user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"));
-    }
-
-    private String statusBody() throws Exception {
-        return jsonMapper.writeValueAsString(new UpdateCandidateStatusDto(Status.ACCEPTED));
-    }
-
-    @Test
-    void getCandidates_notFound_returns404() throws Exception {
-        when(employerService.getCandidates(1L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
-        mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getCandidates_error_returns500() throws Exception {
-        when(employerService.getCandidates(1L, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
-        mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -346,6 +369,19 @@ class EmployerControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    // ===== GET /employer/candidates/{cvId}/cv =====
+
+    @Test
+    @DisplayName("GET /employer/candidates/{cvId}/cv retourne un PDF")
+    void getCandidateCv_returnsPdf() throws Exception {
+        when(employerService.getCandidateCv(5L, "marie@acme.com")).thenReturn(new byte[]{37, 80, 68, 70});
+
+        mockMvc.perform(get("/employer/candidates/5/cv")
+                        .with(user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF));
+    }
+
     @Test
     void getCandidateCv_notOwned_returns404() throws Exception {
         when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
@@ -362,5 +398,15 @@ class EmployerControllerTest {
     void getCandidateCv_error_returns500() throws Exception {
         when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
         mockMvc.perform(get("/employer/candidates/5/cv").with(employer())).andExpect(status().isInternalServerError());
+    }
+
+    // ===== helpers =====
+
+    private static RequestPostProcessor employer() {
+        return user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"));
+    }
+
+    private String statusBody() throws Exception {
+        return jsonMapper.writeValueAsString(new UpdateCandidateStatusDto(Status.ACCEPTED));
     }
 }
