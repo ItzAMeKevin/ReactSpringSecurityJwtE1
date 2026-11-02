@@ -121,7 +121,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
                 "22$/h",
-                LocalDate.of(2026, 5, 4), 15, Status.ACCEPTED);
+                LocalDate.of(2026, 5, 4), 15, Status.WAITING);
 
         // WAITING: the manager reviews and accepts this one during the demo
         seedJobOffer(jobOffers, employer,

@@ -37,12 +37,21 @@ const Inscription = () => {
       params.programe = data.programme;
     }
     if (role === "employer") {
+      const match = /^\s*(\d+\S*)\s+(.+)$/.exec(data.adresse ?? "");
+      if (!match) {
+        setErrors((prev) => ({ ...prev, adresse: "errors.addressFormat" }));
+        return;
+      }
       params.companyName = data.nomEntreprise;
-      params.address = data.adresse;
-      params.postalCode = data.codePostal;
-      params.city = data.ville;
       params.phoneNumber = data.telephone;
-      params.employerId = data.identifiant;
+      params.employerWorkId = data.identifiant;
+      params.adresseDTO = {
+        pays: "Canada",
+        ville: data.ville,
+        rue: match[2].trim(),
+        numeroCivic: match[1],
+        codePostal: data.codePostal,
+      };
     }
 
     try {

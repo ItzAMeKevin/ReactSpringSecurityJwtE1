@@ -102,6 +102,7 @@ const LoginForm = ({user, setUser, setError}) => {
         throw new Error("Failed to fetch user info");
       }
       const userData = await userResponse.json();
+      setUser({ ...userData, isLoggedIn: true });
 
       // Navigate to role-specific page
       const role = userData.role;

@@ -43,7 +43,7 @@ public class UserAppService {
 
     public UserCreateDTO getMe(String token) {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
-        String email = jwtTokenProvider.getEmailFromJWT(token);
+        String email = jwtTokenProvider.getEmailFromJWT(token).trim().toLowerCase();
         User user = userAppRepository.findUserAppByEmail(email).orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
 
