@@ -207,7 +207,13 @@
       "company": "Company",
       "weeks": "wks",
       "readMore": "Read more",
-      "showLess": "Show less"
+      "showLess": "Show less",
+      "confirmation": {
+        "accepter": "Accept the offer \u201c{{title}}\u201d?",
+        "refuser": "Decline the offer \u201c{{title}}\u201d?",
+        "confirmer": "Confirm",
+        "annuler": "Cancel"
+      }
     },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."

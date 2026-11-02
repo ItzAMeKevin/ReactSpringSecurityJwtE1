@@ -1,12 +1,13 @@
 import {useState, useRef, useEffect} from "react";
 import { useTranslation } from "react-i18next";
 import smoothScrollToElement from "../../../utils/smoothScrollToElement.js";
-import { cardItem, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
+import { cardItem, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
     const {t} = useTranslation();
     const [actionError, setActionError] = useState(null);
     const [processing, setProcessing] = useState(null);
+    const [pendingAction, setPendingAction] = useState(null);
     const cardRef = useRef(null);
     const [expanded, setExpanded] = useState(false);
 
@@ -42,23 +43,22 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         }
     }, [isHighlighted]);
 
-    const handleAccept = async () => {
+    const isAccept = pendingAction === "accept";
+
+    const openConfirm = (action) => {
         setActionError(null);
-        setProcessing("accept");
-        try {
-            await onAccept(offer.id);
-        } catch {
-            setActionError(t("gestionnaire.decline.errorProcessing"));
-        } finally {
-            setProcessing(null);
-        }
+        setPendingAction(action);
     };
 
-    const handleRefuse = async () => {
+    const cancelConfirm = () => setPendingAction(null);
+
+    const handleConfirm = async () => {
         setActionError(null);
-        setProcessing("refuse");
+        setProcessing(pendingAction);
         try {
-            await onRefuse(offer.id);
+            if (isAccept) await onAccept(offer.id);
+            else await onRefuse(offer.id);
+            setPendingAction(null);
         } catch {
             setActionError(t("gestionnaire.decline.errorProcessing"));
         } finally {
@@ -129,22 +129,51 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                 <div className="flex flex-col gap-2 shrink-0">
                     <button
                         type="button"
-                        onClick={handleAccept}
-                        disabled={processing !== null}
+                        onClick={() => openConfirm("accept")}
+                        disabled={!!(processing || pendingAction)}
                         className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
                     <button
                         type="button"
-                        onClick={handleRefuse}
-                        disabled={processing !== null}
+                        onClick={() => openConfirm("refuse")}
+                        disabled={!!(processing || pendingAction)}
                         className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
                     </button>
                 </div>
             </div>
+
+            {pendingAction && (
+                <div className="mt-3 flex flex-col gap-2 border-t pt-3" role="group"
+                     aria-label={t("gestionnaire.offres.confirmation.confirmer")}>
+                    <p className="text-sm font-semibold text-black">
+                        {t(`gestionnaire.offres.confirmation.${isAccept ? "accepter" : "refuser"}`,
+                            {title: offer.title})}
+                    </p>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            className={isAccept ? btnAccept : btnRefuse}
+                            disabled={!!processing}
+                            onClick={handleConfirm}
+                        >
+                            {t("gestionnaire.offres.confirmation.confirmer")}
+                        </button>
+                        <button
+                            type="button"
+                            className={btnSmPrimary}
+                            disabled={!!processing}
+                            onClick={cancelConfirm}
+                        >
+                            {t("gestionnaire.offres.confirmation.annuler")}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {actionError && (
                 <p className={`${textError} text-sm mt-2`} role="alert">{actionError}</p>
             )}
