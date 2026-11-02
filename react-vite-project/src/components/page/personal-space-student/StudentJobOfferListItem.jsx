@@ -20,7 +20,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
         if (!canApply) return;
         setApplyState("sending");
         try {
-            const res = await fetcher(`/student-cv/${offer.id}/appliquer?offerID=${offer.id}`, {
+            const res = await fetcher(`/student-cv/${acceptedCv.id}/appliquer?offerID=${offer.id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedCv),
