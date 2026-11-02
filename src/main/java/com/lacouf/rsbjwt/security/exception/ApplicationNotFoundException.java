@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.security.exception;
 
-public class ApplicationNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ApplicationNotFoundException extends APIException {
     public ApplicationNotFoundException() {
-        super("Candidature introuvable");
+        super(HttpStatus.NOT_FOUND, "applicationNotFound");
     }
 }
