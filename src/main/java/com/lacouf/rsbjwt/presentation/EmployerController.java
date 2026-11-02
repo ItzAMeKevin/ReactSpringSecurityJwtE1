@@ -71,7 +71,7 @@ public class EmployerController {
             Authentication authentication) {
         try {
             return ResponseEntity.ok(
-                    employerService.updateCandidateStatus(offerId, cvId, request.getStatus(), authentication.getName()));
+                    employerService.updateCandidateStatus(offerId, cvId, request.status(), authentication.getName()));
         } catch (ApplicationNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
