@@ -172,7 +172,6 @@ public class StudentCvService {
             JobApplication application = new JobApplication();
             application.setJobOffer(jobOffer);
             application.setStudentCv(studentCv);
-            application.setStatus(Status.PENDING);
             jobApplicationRepository.save(application);
         }
     }
