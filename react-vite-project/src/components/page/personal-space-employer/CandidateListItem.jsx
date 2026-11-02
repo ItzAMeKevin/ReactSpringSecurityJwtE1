@@ -34,11 +34,6 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
         setPendingStatus(status);
     };
 
-    const closeConfirm = () => {
-        setPendingStatus(null);
-        setMessage("");
-    };
-
     const cancelConfirm = () => {
         setPendingStatus(null);
         setMessage("");
