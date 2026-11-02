@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.ManagerNotification;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
@@ -23,8 +24,6 @@ import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.lacouf.rsbjwt.model.Status;
 
 import java.time.Instant;
 import java.util.ArrayList;
