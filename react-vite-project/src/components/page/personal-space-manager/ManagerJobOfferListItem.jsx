@@ -43,6 +43,8 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         }
     }, [isHighlighted]);
 
+    const isAccept = pendingAction === "accept";
+
     const openConfirm = (action) => {
         setActionError(null);
         setPendingAction(action);
@@ -54,7 +56,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         setActionError(null);
         setProcessing(pendingAction);
         try {
-            if (pendingAction === "accept") await onAccept(offer.id);
+            if (isAccept) await onAccept(offer.id);
             else await onRefuse(offer.id);
             setPendingAction(null);
         } catch {
@@ -128,7 +130,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                     <button
                         type="button"
                         onClick={() => openConfirm("accept")}
-                        disabled={processing !== null || pendingAction !== null}
+                        disabled={!!(processing || pendingAction)}
                         className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
@@ -136,7 +138,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                     <button
                         type="button"
                         onClick={() => openConfirm("refuse")}
-                        disabled={processing !== null || pendingAction !== null}
+                        disabled={!!(processing || pendingAction)}
                         className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
@@ -148,16 +150,14 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                 <div className="mt-3 flex flex-col gap-2 border-t pt-3" role="group"
                      aria-label={t("gestionnaire.offres.confirmation.confirmer")}>
                     <p className="text-sm font-semibold text-black">
-                        {t(pendingAction === "accept"
-                            ? "gestionnaire.offres.confirmation.accepter"
-                            : "gestionnaire.offres.confirmation.refuser",
+                        {t(`gestionnaire.offres.confirmation.${isAccept ? "accepter" : "refuser"}`,
                             {title: offer.title})}
                     </p>
                     <div className="flex gap-2">
                         <button
                             type="button"
-                            className={pendingAction === "accept" ? btnAccept : btnRefuse}
-                            disabled={processing !== null}
+                            className={isAccept ? btnAccept : btnRefuse}
+                            disabled={!!processing}
                             onClick={handleConfirm}
                         >
                             {t("gestionnaire.offres.confirmation.confirmer")}
@@ -165,7 +165,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
                         <button
                             type="button"
                             className={btnSmPrimary}
-                            disabled={processing !== null}
+                            disabled={!!processing}
                             onClick={cancelConfirm}
                         >
                             {t("gestionnaire.offres.confirmation.annuler")}
