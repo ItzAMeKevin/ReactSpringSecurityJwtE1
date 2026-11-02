@@ -72,7 +72,7 @@ const ListJobOffer = ({refreshKey}) => {
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pay}</dd>
+                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
                         </dl>
                         <button
                             type="button"
