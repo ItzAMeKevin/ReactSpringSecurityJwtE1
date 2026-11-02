@@ -90,7 +90,7 @@ const LoginForm = ({user, setUser, setError}) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        setAuthError(errorData.message || "Connexion échouée");
+        setAuthError(errorData.message ? t(errorData.message) : t("errors.authenticationFailed"));
         return;
       }
       const data = await response.json();
@@ -116,7 +116,7 @@ const LoginForm = ({user, setUser, setError}) => {
         navigate("/");
       }
     } catch(error) {
-      setAuthError(error.message || "Server error occurred");
+      setAuthError(error.message || t("errors.generic"));
       console.log(error.message);
     }
   }

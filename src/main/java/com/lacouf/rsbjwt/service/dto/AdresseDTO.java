@@ -4,31 +4,32 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @NoArgsConstructor
-public class AdresseDTO {
+public class AdresseDTO extends GenericDto {
 
-    @NotBlank(message = "Le pays est obligatoire")
+    @NotBlank(message = "errors.countryRequired")
     private String pays;
 
-    @NotBlank(message = "La ville est obligatoire")
+    @NotBlank(message = "errors.cityRequired")
     private String ville;
 
-    @NotBlank(message = "La rue est obligatoire")
+    @NotBlank(message = "errors.streetRequired")
     private String rue;
 
-    @NotBlank(message = "Le numéro civique est obligatoire")
+    @NotBlank(message = "errors.civicNumberRequired")
     private String numeroCivic;
 
-    @NotBlank(message = "Le code postal est obligatoire")
-    @Size(min = 6, max = 7, message = "Le code postal doit contenir 6 ou 7 caractères")
+    @NotBlank(message = "errors.postalCodeRequired")
+    @Size(min = 6, max = 7, message = "errors.postalCodeLength")
     @Pattern(
             regexp = "^[A-Za-z]\\d[A-Za-z][ ]?\\d[A-Za-z]\\d$",
-            message = "Format de code postal canadien invalide (ex: H3B 1K9)"
+            message = "errors.postalCodeFormat"
     )
     private String codePostal;
 

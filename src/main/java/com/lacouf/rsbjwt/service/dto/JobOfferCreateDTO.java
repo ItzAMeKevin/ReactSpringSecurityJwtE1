@@ -18,22 +18,22 @@ import java.time.LocalDate;
 @SuperBuilder
 public class JobOfferCreateDTO extends GenericDto {
 
-    @NotBlank(message = "Le titre est obligatoire")
+    @NotBlank(message = "errors.titleRequired")
     private String title;
 
-    @NotBlank(message = "La description est obligatoire")
+    @NotBlank(message = "errors.descriptionRequired")
     private String description;
 
-    @NotBlank(message = "Les prérequis sont obligatoires")
+    @NotBlank(message = "errors.prerequisitesRequired")
     private String prerequisites;
 
-    @NotNull(message = "L'adresse est obligatoire")
+    @NotNull(message = "errors.addressRequired")
     @Valid
     private AdresseDTO adresse;
 
     private String salary;
 
-    @NotNull(message = "La date de début est obligatoire")
+    @NotNull(message = "errors.startingDateRequired")
     private LocalDate startingDate;
 
     @Positive

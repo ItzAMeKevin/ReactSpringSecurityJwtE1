@@ -52,14 +52,14 @@ public class GestionnaireService {
 
     public byte[] getCvContent(Long cvId) {
         return studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("CV not found"))
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
                 .getContent();
     }
 
     @Transactional
     public void acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("CV not found"));
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
         cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         eventPublisher.publishEvent(new CvDecisionEvent(cv.getId()));
@@ -68,7 +68,7 @@ public class GestionnaireService {
     @Transactional
     public void declineCv(Long cvId, CvDeclineFeedbackDto feedbackRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("CV not found"));
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
         cv.setStatus(Status.DECLINED);
         cv.setReviewFeedback(feedbackRequest.getFeedback());
         studentCvRepository.save(cv);

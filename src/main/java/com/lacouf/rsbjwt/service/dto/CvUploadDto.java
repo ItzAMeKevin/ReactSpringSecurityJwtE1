@@ -5,22 +5,23 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CvUploadDto {
+@SuperBuilder
+public class CvUploadDto extends GenericDto {
 
-    @NotBlank(message = "Le nom du fichier est obligatoire.")
-    @Size(max = 255, message = "Le nom du fichier est trop long.")
+    @NotBlank(message = "errors.fileNameRequired")
+    @Size(max = 255, message = "errors.fileNameTooLong")
     private String fileName;
 
-    @NotBlank(message = "Le type de fichier est requis.")
+    @NotBlank(message = "errors.fileTypeRequired")
     private String contentType;
 
-    @NotBlank(message = "Le contenu du fichier est requis.")
-    @Size(max = 7_000_000, message = "Le contenu du fichier est trop volumineux.")
+    @NotBlank(message = "errors.fileContentRequired")
+    @Size(max = 7_000_000, message = "errors.fileContentTooLarge")
     private String content;
 }
-
 

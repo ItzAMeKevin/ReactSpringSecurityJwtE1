@@ -56,7 +56,7 @@ public class StudentCvService {
 
     private void validatePdfContentType(String contentType) {
         if (!PDF_CONTENT_TYPE.equalsIgnoreCase(contentType)) {
-            throw new InvalidCvException("Seuls les PDF sont acceptés.");
+            throw new InvalidCvException("errors.pdfOnly");
         }
     }
 
@@ -65,7 +65,7 @@ public class StudentCvService {
         try {
             content = Base64.getDecoder().decode(base64Content);
         } catch (IllegalArgumentException e) {
-            throw new InvalidCvException("Le contenu Base64 est invalide.");
+            throw new InvalidCvException("errors.invalidBase64");
         }
         validatePdfContent(content);
         return content;
@@ -92,20 +92,20 @@ public class StudentCvService {
 
     private void validatePdfContent(byte[] content) {
         if (content.length == 0 || content.length > MAX_CV_SIZE_BYTES) {
-            throw new InvalidCvException("Le fichier doit faire entre 1 octet et 5 Mo.");
+            throw new InvalidCvException("errors.cvSize");
         }
         if (!isPdfSignatureValid(content)) {
-            throw new InvalidCvException("Le contenu fourni n'est pas un PDF.");
+            throw new InvalidCvException("errors.invalidPdf");
         }
     }
 
     public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new RuntimeException("CV not found"));
+                .orElseThrow(() -> new RuntimeException("errors.cvNotFound"));
 
         Student student = findStudentByEmail(authenticatedEmail);
         if (!cv.getStudent().getId().equals(student.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new RuntimeException("errors.accessDenied");
         }
 
         return cv.getReviewFeedback();
@@ -115,14 +115,14 @@ public class StudentCvService {
     public byte[] getCvContent(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
-                .orElseThrow(() -> new InvalidCvException("CV not found"))
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
                 .getContent();
     }
 
     private static String sanitizeFileName(String fileName) {
         String normalized = fileName.replace('\\', '_').replace('/', '_').trim();
         if (normalized.isEmpty() || normalized.length() > 255) {
-            throw new InvalidCvException("Le nom de fichier est invalide.");
+            throw new InvalidCvException("errors.invalidFileName");
         }
         return normalized;
     }
@@ -140,7 +140,7 @@ public class StudentCvService {
     public void setDefaultCv(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv cv = studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
-                .orElseThrow(() -> new InvalidCvException("CV not found"));
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
 
         StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndIsDefaultTrue(student.getId())
                 .orElse(null);
@@ -155,15 +155,15 @@ public class StudentCvService {
 
     @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
-        JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("Offre non trouvée"));
+        JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("errors.offerNotFound"));
 
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
 
         if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
-            throw new OffrerException("Le CV a déjà été utilisé pour postuler à cette offre.");
+            throw new OffrerException("errors.cvAlreadyApplied");
         } else {
             StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
-                    .orElseThrow(() -> new CvException("CV non trouvé"));
+                    .orElseThrow(() -> new CvException("errors.cvNotFound"));
             appliedCvs.add(studentCv);
             jobOffer.setAppliedCvs(appliedCvs);
             jobOfferRepository.save(jobOffer);
