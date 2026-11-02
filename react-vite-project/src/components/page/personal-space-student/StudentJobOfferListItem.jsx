@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {cardItem, statusBadge, statusBadgeColor} from "../../../styles/classes.js";
+import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../styles/classes.js";
 import fetcher from "../../../utils/fetcher.js";
 
 const dtClass = "text-sm font-bold text-black";
@@ -111,8 +111,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                             type="button"
                             onClick={handleApply}
                             disabled={!canApply}
-                            className="rounded-md bg-[#4b1113] px-4 py-2 text-sm font-semibold text-white
-                                       hover:bg-[#3a0d0f] disabled:cursor-not-allowed disabled:opacity-50"
+                            className={`${btnSmPrimary} disabled:cursor-not-allowed disabled:opacity-50`}
                         >
                             {hasApplied
                                 ? t("etudiantOffres.applied")
