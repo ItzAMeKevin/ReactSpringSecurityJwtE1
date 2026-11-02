@@ -206,7 +206,13 @@
       "company": "Entreprise",
       "weeks": "sem.",
       "readMore": "En savoir plus",
-      "showLess": "Voir moins"
+      "showLess": "Voir moins",
+      "confirmation": {
+        "accepter": "Accepter l'offre «\u00a0{{title}}\u00a0»\u00a0?",
+        "refuser": "Refuser l'offre «\u00a0{{title}}\u00a0»\u00a0?",
+        "confirmer": "Confirmer",
+        "annuler": "Annuler"
+      }
     },
     "accept": {
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
