@@ -71,8 +71,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             student.setEmail("ll@l.com");
             student.setPassword(passwordEncoder.encode("bib"));
             student.setRole(Role.STUDENT);
-            student.setPrograme(Programe.SOINS_INFIRMIERS);
+            student.setPrograme(Programe.TECHNIQUES_INFORMATIQUE);
             userAppService.inscription(student);
+        }
+        if (userAppService.getUserByEmail("llll@l.com") == null) {
+            StudentCreateDto student2 = new StudentCreateDto();
+            student2.setFirstName("Lucas");
+            student2.setLastname("Gagnon");
+            student2.setMatricule("2441587");
+            student2.setEmail("llll@l.com");
+            student2.setPassword(passwordEncoder.encode("bib"));
+            student2.setRole(Role.STUDENT);
+            student2.setPrograme(Programe.TECHNIQUES_INFORMATIQUE);
+            userAppService.inscription(student2);
+        }
+        if (userAppService.getUserByEmail("aa@a.com") == null) {
+            StudentCreateDto student2 = new StudentCreateDto();
+            student2.setFirstName("Mika");
+            student2.setLastname("Amara");
+            student2.setMatricule("2121212");
+            student2.setEmail("aa@a.com");
+            student2.setPassword(passwordEncoder.encode("bib"));
+            student2.setRole(Role.STUDENT);
+            student2.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            userAppService.inscription(student2);
         }
 
         if (userAppService.getUserByEmail("lll@l.com") == null) {
@@ -111,6 +133,30 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             return;
         }
 
+        Student student2 = students.findByCredentialsEmail("llll@l.com").orElse(null);
+        if (student2 != null) {
+            seedCv(studentCvs, student2, "cv-lucas.pdf", Status.ACCEPTED,
+                    buildCvStream(
+                            "Lucas Gagnon",
+                            "llll@l.com  |  514-555-0148  |  Montreal, QC",
+                            new String[]{"Techniques de l'informatique - Cegep Andre-Laurendeau (2024 - present)"},
+                            new String[]{"Langages: Java, JavaScript, SQL", "Outils: Git, Docker, Postman"},
+                            new String[]{"Projet academique - Application de gestion de stages (2025)"}
+                    ));
+        }
+
+        Student student3 = students.findByCredentialsEmail("aa@a.com").orElse(null);
+        if (student3 != null) {
+            seedCv(studentCvs, student3, "cv-mika.pdf", Status.ACCEPTED,
+                    buildCvStream(
+                            "Mika Amara",
+                            "aa@a.com  |  514-555-0148  |  Montreal, QC",
+                            new String[]{"Techniques de genie civil - Cegep Andre-Laurendeau (2024 - present)"},
+                            new String[]{"Langages: Java, JavaScript, SQL", "Outils: Git, Docker, Postman"},
+                            new String[]{"Projet academique - Application de gestion de stages (2025)"}
+                    ));
+        }
+
         // --- Seed job offers ---
         // ACCEPTED: immediately visible to the student in the demo
         seedJobOffer(jobOffers, employer,
@@ -120,7 +166,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "utilisateur dynamiques avec React. Travail en methodologie Agile (Scrum, sprints de 2 semaines).",
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
-                "22$/h",
+                "22",
                 LocalDate.of(2026, 5, 4), 15, Status.WAITING);
 
         // WAITING: the manager reviews and accepts this one during the demo
@@ -131,8 +177,24 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "et la mise en place de pipelines CI/CD. Mentorat assure par un developpeur senior.",
                 "Spring Boot, REST, JWT, PostgreSQL, Maven. " +
                 "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
-                "20$/h",
+                "20",
                 LocalDate.of(2026, 9, 1), 15, Status.WAITING);
+
+        seedJobOffer(jobOffers, employer,
+                "Developpeur front-end React",
+                "Integrez notre equipe produit pour developper des interfaces React accessibles et performantes. " +
+                        "Vous collaborerez avec les designers UX et participerez aux revues de code.",
+                "React, TypeScript, HTML/CSS, Git. Atout: Vitest ou Jest.",
+                "21",
+                LocalDate.of(2026, 9, 1), 15, Status.WAITING);
+
+        seedJobOffer(jobOffers, employer,
+                "Technicien support TI",
+                "Offrez un soutien de premier niveau aux utilisateurs, gerez les tickets et participez " +
+                        "au deploiement de postes de travail.",
+                "Notions de reseaux, Windows/Linux, bon sens du service a la clientele.",
+                "19",
+                LocalDate.of(2026, 9, 1), 12, Status.WAITING);
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login
