@@ -32,16 +32,9 @@ public class JobApplication {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Status status;
+    private Status status = Status.PENDING;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant appliedAt;
-
-    @PrePersist
-    void onCreate() {
-        if (status == null) {
-            status = Status.PENDING;
-        }
-    }
 }
