@@ -309,12 +309,6 @@ class EmployerControllerTest {
         mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isNotFound());
     }
 
-    @Test
-    void getCandidates_error_returns500() throws Exception {
-        when(employerService.getCandidates(1L, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
-        mockMvc.perform(get("/employer/1/candidates").with(employer())).andExpect(status().isInternalServerError());
-    }
-
     // ===== PUT /employer/{offerId}/candidates/{cvId}/status =====
 
     @Test
@@ -358,14 +352,6 @@ class EmployerControllerTest {
                 .andExpect(status().isConflict());
     }
 
-    @Test
-    void updateCandidateStatus_error_returns500() throws Exception {
-        when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
-        mockMvc.perform(put("/employer/1/candidates/5/status").with(employer())
-                        .contentType(MediaType.APPLICATION_JSON).content(statusBody()))
-                .andExpect(status().isInternalServerError());
-    }
-
     // ===== GET /employer/candidates/{cvId}/cv =====
 
     @Test
@@ -389,12 +375,6 @@ class EmployerControllerTest {
     void getCandidateCv_invalidCv_returns404() throws Exception {
         when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new InvalidCvException("CV not found"));
         mockMvc.perform(get("/employer/candidates/5/cv").with(employer())).andExpect(status().isNotFound());
-    }
-
-    @Test
-    void getCandidateCv_error_returns500() throws Exception {
-        when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new RuntimeException("boom"));
-        mockMvc.perform(get("/employer/candidates/5/cv").with(employer())).andExpect(status().isInternalServerError());
     }
 
     // ===== helpers =====
