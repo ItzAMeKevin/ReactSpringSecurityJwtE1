@@ -8,7 +8,7 @@ import { textError } from "../styles/classes.js";
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { notifications, status, unreadCount, markAsRead } = useNotifications();
+    const { notifications, status, unreadCount, markAsRead, refetch } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
 
     const handleNotificationClick = (notificationId, isRead) => {
@@ -25,6 +25,7 @@ const NotificationBell = () => {
     };
 
     const toggleDropdown = () => {
+        if (!isOpen) refetch();
         setIsOpen((current) => !current);
     };
 
@@ -78,9 +79,9 @@ const NotificationBell = () => {
                                     {t("notifications.voirFeedback")}
                                 </button>
                             )}
-                            {notification.createdAt && (
+                            {notification.date && (
                                 <p className="text-xs text-black mt-1">
-                                    {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
+                                    {new Date(notification.date).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
                         </li>

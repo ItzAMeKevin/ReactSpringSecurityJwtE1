@@ -3,6 +3,22 @@ import fetcher from "../utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
+const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
+
+const normalizeNotification = (n) => {
+    const event = n.message?.match(EVENT_KEY_PATTERN)?.[1] ?? null;
+    return {
+        id: n.id,
+        category: n.notificationType,
+        event,
+        referenceId: n.referenceId,
+        message: event ? null : n.message,
+        isRead: n.status === "READ",
+        date: n.creationDate,
+        feedbackCvId: event === "CV_DECLINED" ? n.referenceId : null,
+    };
+};
+
 const useNotifications = () => {
     const [notifications, setNotifications] = useState([]);
     const [status, setStatus] = useState("loading");
@@ -11,20 +27,15 @@ const useNotifications = () => {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const response = await fetcher("/etudiant/notifications");
+            const response = await fetcher("/notifications");
             if (!response.ok) {
                 setStatus("error");
                 return;
             }
-            const data = await response.json();
-            const enrichedData = data.map((n) => ({
-                ...n,
-                feedbackCvId: n.type === "CV_REJECTED" && n.studentCv ? n.studentCv.id : null,
-            }));
-            setNotifications(enrichedData);
-            const unread = enrichedData.filter((n) => !n.isRead).length;
-            setUnreadCount(unread);
-            setStatus(enrichedData.length === 0 ? "empty" : "ready");
+            const data = (await response.json()).map(normalizeNotification);
+            setNotifications(data);
+            setUnreadCount(data.filter((n) => !n.isRead).length);
+            setStatus(data.length === 0 ? "empty" : "ready");
         } catch (error) {
             console.error("Erreur lors du chargement des notifications :", error);
             setStatus("error");
@@ -47,8 +58,8 @@ const useNotifications = () => {
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
-                method: "PUT",
+            const response = await fetcher(`/notifications?notificationId=${notificationId}`, {
+                method: "PATCH",
             });
             if (!response.ok) {
                 console.error("Erreur lors du marquage de la notification comme lue");

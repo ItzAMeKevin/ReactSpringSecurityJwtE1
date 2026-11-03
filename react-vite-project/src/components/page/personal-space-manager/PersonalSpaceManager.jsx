@@ -4,13 +4,11 @@ import { useLocation } from "react-router-dom";
 import fetcher from "../../../utils/fetcher.js";
 import ManagerCvListItem from "./ManagerCvListItem.jsx";
 import ManagerJobOfferListItem from "./ManagerJobOfferListItem.jsx";
-import { useManagerNotificationsContext } from "../../../context/ManagerNotificationsContext.jsx";
 import { pageWrapper, pageTitle, sectionTitle, textMuted, textError } from "../../../styles/classes.js";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
     const location = useLocation();
-    const { removeNotificationsByCvId, removeNotificationsByOfferId } = useManagerNotificationsContext();
     const [pendingCvs, setPendingCvs] = useState([]);
     const [status, setStatus] = useState("loading");
     const [highlightedCvId, setHighlightedCvId] = useState(null);
@@ -86,7 +84,6 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors de l'acceptation du CV");
         }
         removeFromList(cvId);
-        removeNotificationsByCvId(cvId);
     });
 
     const handleDecline = (async (cvId, reviewPayload) => {
@@ -99,21 +96,18 @@ const PersonalSpaceManager = () => {
             throw new Error("Erreur lors du refus du CV");
         }
         removeFromList(cvId);
-        removeNotificationsByCvId(cvId);
     });
 
     const handleAcceptOffer = async (offerId) => {
         const response = await fetcher(`/gestionnaire/offres/${offerId}/accept`, { method: "PUT" });
         if (!response.ok) throw new Error("Erreur lors de l'acceptation de l'offre");
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
-        removeNotificationsByOfferId(offerId);
     };
 
     const handleRefuseOffer = async (offerId) => {
         const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, { method: "PUT" });
         if (!response.ok) throw new Error("Erreur lors du refus de l'offre");
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
-        removeNotificationsByOfferId(offerId);
     };
 
     const isLoaded = status === "loaded";

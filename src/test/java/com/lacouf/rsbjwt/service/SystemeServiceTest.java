@@ -31,11 +31,12 @@ class SystemeServiceTest {
     void getsNotificationsOrEmptyList() {
         when(authentication.getName()).thenReturn("user@test.com");
         NotificationDto dto = NotificationDto.builder().id(1L).build();
-        when(repository.findByUserEmail("user@test.com")).thenReturn(Optional.of(List.of(new Notification())));
+        when(repository.findByUser_Credentials_Email("user@test.com")).thenReturn(List.of(new Notification()));
         when(mapper.toDtoList(anyList())).thenReturn(List.of(dto));
         assertEquals(List.of(dto), service.getNotifications(authentication));
 
-        when(repository.findByUserEmail("user@test.com")).thenReturn(Optional.empty());
+        when(repository.findByUser_Credentials_Email("user@test.com")).thenReturn(List.of());
+        when(mapper.toDtoList(List.of())).thenReturn(List.of());
         assertTrue(service.getNotifications(authentication).isEmpty());
     }
 
@@ -44,14 +45,14 @@ class SystemeServiceTest {
         when(authentication.getName()).thenReturn("user@test.com");
         Notification notification = new Notification();
         NotificationDto dto = NotificationDto.builder().id(1L).build();
-        when(repository.findByIdAndUserEmail(1L, "user@test.com")).thenReturn(Optional.of(notification));
+        when(repository.findByIdAndUser_Credentials_Email(1L, "user@test.com")).thenReturn(Optional.of(notification));
         when(repository.save(notification)).thenReturn(notification);
         when(mapper.toDto(notification)).thenReturn(dto);
 
         assertEquals(dto, service.updateNotificationStatus(authentication, 1L));
         assertEquals(Status.READ, notification.getStatus());
 
-        when(repository.findByIdAndUserEmail(2L, "user@test.com")).thenReturn(Optional.empty());
+        when(repository.findByIdAndUser_Credentials_Email(2L, "user@test.com")).thenReturn(Optional.empty());
         assertThrows(NotificationNotFound.class,
                 () -> service.updateNotificationStatus(authentication, 2L));
     }

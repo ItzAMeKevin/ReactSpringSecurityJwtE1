@@ -17,8 +17,9 @@ const translations = vi.hoisted(() => ({
     "notifications.voirFeedback": "Voir le feedback",
     "notifications.types.CV_ACCEPTED.title": "Votre CV a été accepté",
     "notifications.types.CV_ACCEPTED.message": "Votre CV a été validé par un gestionnaire.",
-    "notifications.types.CV_REJECTED.title": "Votre CV a été refusé",
-    "notifications.types.CV_REJECTED.message": "Veuillez consulter le commentaire et téléverser un nouveau CV.",
+    "notifications.types.CV_DECLINED.title": "Votre CV a été refusé",
+    "notifications.types.CV_DECLINED.message": "Veuillez consulter le commentaire et téléverser un nouveau CV.",
+    "notifications.categories.JOB_OFFER": "Offre de stage",
 }));
 
 vi.mock("react-i18next", () => ({
@@ -37,23 +38,26 @@ vi.mock("../hooks/useNotifications.js", () => ({
 }));
 
 
+// Format normalisé par useNotifications
 const acceptedNotification = {
     id: 1,
-    type: "CV_ACCEPTED",
-    title: "Votre CV a ete accepte",
-    message: "brut",
+    category: "CV",
+    event: "CV_ACCEPTED",
+    referenceId: 10,
+    message: null,
     isRead: false,
-    createdAt: "2026-10-15T14:30:00Z",
+    date: "2026-10-15T14:30:00Z",
     feedbackCvId: null,
 };
 
 const rejectedNotification = {
     id: 2,
-    type: "CV_REJECTED",
-    title: "Votre CV a ete refuse",
-    message: "brut",
+    category: "CV",
+    event: "CV_DECLINED",
+    referenceId: 55,
+    message: null,
     isRead: false,
-    createdAt: "2026-10-16T09:00:00Z",
+    date: "2026-10-16T09:00:00Z",
     feedbackCvId: 55,
 };
 
@@ -63,6 +67,7 @@ const setHook = (overrides = {}) => {
         status: "ready",
         unreadCount: 0,
         markAsRead: vi.fn(),
+        refetch: vi.fn(),
         ...overrides,
     };
     useNotifications.mockReturnValue(value);
@@ -112,6 +117,23 @@ describe("NotificationBell - ouverture du menu", () => {
         openDropdown();
 
         expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument();
+    });
+
+    it("should refetch the notifications when opening the dropdown", () => {
+        const hook = renderBell();
+
+        openDropdown();
+
+        expect(hook.refetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not refetch the notifications when closing the dropdown", () => {
+        const hook = renderBell();
+
+        openDropdown();
+        openDropdown();
+
+        expect(hook.refetch).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -197,16 +219,16 @@ describe("NotificationBell - décision sur le CV", () => {
         renderBell({ notifications: [acceptedNotification], unreadCount: 1 });
         openDropdown();
 
-        const expected = new Date(acceptedNotification.createdAt).toLocaleDateString("fr");
+        const expected = new Date(acceptedNotification.date).toLocaleDateString("fr");
         expect(screen.getByText(expected)).toBeInTheDocument();
     });
 
-    it("should fall back to the raw title and message for an unknown type", () => {
-        const unknown = { id: 9, type: "TYPE_INCONNU", title: "Titre brut", message: "Message brut", isRead: false };
+    it("should fall back to the category and the raw message for an unknown event", () => {
+        const unknown = { id: 9, category: "JOB_OFFER", event: null, message: "Message brut", isRead: false };
         renderBell({ notifications: [unknown], unreadCount: 1 });
         openDropdown();
 
-        expect(screen.getByText("Titre brut")).toBeInTheDocument();
+        expect(screen.getByText("Offre de stage")).toBeInTheDocument();
         expect(screen.getByText("Message brut")).toBeInTheDocument();
     });
 

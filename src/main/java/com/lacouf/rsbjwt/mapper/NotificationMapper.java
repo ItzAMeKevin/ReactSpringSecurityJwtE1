@@ -17,6 +17,7 @@ public interface NotificationMapper {
     List<NotificationDto> toDtoList(List<Notification> notifications);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Notification toEntity(NotificationDto notificationDto);
 
 

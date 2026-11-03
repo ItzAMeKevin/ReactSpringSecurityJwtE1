@@ -3,7 +3,6 @@ import './Header.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from "./NotificationBell.jsx";
-import ManagerNotificationBell from "./ManagerNotificationBell.jsx";
 import roseLogo from "../utils/img/rose1.svg";
 
 function Header({user}) {
@@ -40,8 +39,7 @@ function Header({user}) {
                             </button>
                         </li>
                     ))}
-                    {user?.isLoggedIn && isStudent() && <li><NotificationBell /></li>}
-                    {user?.isLoggedIn && isManager() && <li><ManagerNotificationBell /></li>}
+                    {user?.isLoggedIn && <li><NotificationBell /></li>}
                 </ul>
                 {user?.isLoggedIn && (
                     <p className="user-greeting">

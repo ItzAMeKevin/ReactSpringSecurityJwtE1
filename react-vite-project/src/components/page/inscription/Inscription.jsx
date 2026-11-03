@@ -53,7 +53,7 @@ const Inscription = () => {
       });
 
       if (res.ok) {
-        navigate(role === "employer" ? "/login": "/");
+        navigate("/login", { state: { inscriptionSuccess: true } });
         return;
       }
 

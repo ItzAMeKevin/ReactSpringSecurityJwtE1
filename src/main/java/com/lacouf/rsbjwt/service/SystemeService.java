@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -26,14 +25,12 @@ public class SystemeService{
 
     public List<NotificationDto> getNotifications(Authentication authentication) {
         String userEmail = authentication.getName();
-        return notificationRepository.findByUserEmail(userEmail)
-                .map(notificationMapper::toDtoList)
-                .orElse(Collections.emptyList());
+        return notificationMapper.toDtoList(notificationRepository.findByUser_Credentials_Email(userEmail));
     }
 
     public NotificationDto updateNotificationStatus(Authentication authentication, Long notificationId) throws NotificationNotFound {
         String userEmail = authentication.getName();
-        return notificationRepository.findByIdAndUserEmail(notificationId, userEmail)
+        return notificationRepository.findByIdAndUser_Credentials_Email(notificationId, userEmail)
                 .map(notification -> {
                     notification.setStatus(Status.READ);
                     return notificationMapper.toDto(notificationRepository.save(notification));

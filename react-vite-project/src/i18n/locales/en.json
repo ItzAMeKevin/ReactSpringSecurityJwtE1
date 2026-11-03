@@ -161,7 +161,8 @@
     "firstTime": "First time?",
     "signUp": "Sign up",
     "invalidEmail": "Invalid email",
-    "invalidPassword": "Invalid password"
+    "invalidPassword": "Invalid password",
+    "inscriptionSuccess": "Your account was created successfully. You can now log in."
   },
   "personalSpaceEmployer": {
     "title": "Employer space",
@@ -256,31 +257,34 @@
     "error": "Error loading notifications.",
     "empty": "No notifications.",
     "voirFeedback": "View feedback",
+    "categories": {
+      "CV": "CV",
+      "JOB_OFFER": "Internship offer",
+      "INTERVIEW": "Interview",
+      "CONTRACT": "Contract"
+    },
     "types": {
       "CV_UPLOADED": {
-        "title": "New CV to validate",
-        "message": "Student {firstName} {lastName} (ID: {matricule}) uploaded a new CV: {fileName} on {uploadedAt}. Please review and approve the document."
+        "title": "CV uploaded",
+        "message": "Your CV has been uploaded and is pending validation."
       },
       "CV_ACCEPTED": {
         "title": "Your CV has been accepted",
         "message": "Your CV has been validated by a manager."
       },
-      "CV_REJECTED": {
+      "CV_DECLINED": {
         "title": "Your CV has been rejected",
         "message": "Please review the feedback and upload a new CV."
       },
-      "CV_REVIEW_READY": {
-        "title": "Review ready"
-      },
-      "JOB_OFFER_UPLOADED": {
-        "title": "New internship offer",
-        "message": "Company {company} has posted a new internship offer: {offerTitle} ({program}). Please review and approve the offer."
+      "JOB_OFFER_CREATED": {
+        "title": "Internship offer submitted",
+        "message": "Your internship offer has been submitted and is pending validation."
       },
       "JOB_OFFER_ACCEPTED": {
         "title": "Your internship offer has been accepted",
         "message": "Your internship offer has been validated by a manager."
       },
-      "JOB_OFFER_REJECTED": {
+      "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
       }
