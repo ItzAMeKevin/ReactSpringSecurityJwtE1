@@ -62,12 +62,6 @@ class EmployerControllerWebMvcTest {
     private JobOfferRepository jobOfferRepository;
 
     @MockitoBean
-    private EmployerNotificationRepository employerNotificationRepository;
-
-    @MockitoBean
-    private ManagerNotificationRepository managerNotificationRepository;
-
-    @MockitoBean
     private StudentCvRepository studentCvRepository;
 
     @MockitoBean
@@ -96,9 +90,9 @@ class EmployerControllerWebMvcTest {
 
         testOfferDetailDto = new JobOfferDetailDTO(
                 1L, "Dev Java", "Description", "Java, Spring",
-                adresse, "20$/h", Status.WAITING,
+                adresse, "20$/h", Status.PENDING,
                 LocalDate.of(2025, 1, 1), LocalDate.of(2025, 9, 1),
-                16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp"
+                16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp", false
         );
 
         JobOfferCreateDTO createDTO = new JobOfferCreateDTO(

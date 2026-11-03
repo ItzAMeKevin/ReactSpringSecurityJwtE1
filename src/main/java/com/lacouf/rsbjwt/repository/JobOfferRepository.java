@@ -15,15 +15,27 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     List<JobOffer> findAllByStatus(Status status);
     List<JobOffer> getJobOffersByEmployerId(Long employerId);
     List<JobOffer> findAllByStatusAndPrograme(Status status, Programe programe);
-    Optional<JobOffer> findByIdAndEmployerCredentialsEmail(Long id, String email);
 
     @Query("""
-        SELECT DISTINCT jo.id
+        SELECT DISTINCT jo
         FROM JobOffer jo
         JOIN jo.appliedCvs cv
-        WHERE cv.student.id = :studentId
+        JOIN cv.student student
+        WHERE jo.id = :id
+          AND student.credentials.email = :studentEmail
         """)
-    Set<Long> findAppliedOfferIdsByStudentId(@Param("studentId") Long studentId);
+    Optional<JobOffer> findByIdAndStudentCredentialsEmail(
+            @Param("id") Long id,
+            @Param("studentEmail") String studentEmail);
 
-    Optional<JobOffer> findByIdAndStudent_Credentials_Email(Long id, String studentEmail);
+    Optional<JobOffer> findByIdAndEmployerCredentialsEmail(Long id, String employerEmail);
+
+    @Query("""
+        SELECT DISTINCT jo
+        FROM JobOffer jo
+        JOIN jo.appliedCvs cv
+        WHERE jo.status = com.lacouf.rsbjwt.model.Status.ACCEPTED
+          AND cv.student.id = :studentId
+        """)
+    List<JobOffer> findAcceptedJobOffersByStudentId(@Param("studentId") Long studentId);
 }

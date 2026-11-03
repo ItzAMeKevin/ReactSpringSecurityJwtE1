@@ -123,7 +123,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "22$/h",
                 LocalDate.of(2026, 5, 4), 15, Status.ACCEPTED);
 
-        // WAITING: the manager reviews and accepts this one during the demo
+        // PENDING: the manager reviews and accepts this one during the demo
         seedJobOffer(jobOffers, employer,
                 "Developpeur back-end Spring Boot",
                 "Rejoignez notre equipe infrastructure pour concevoir et maintenir des microservices haute performance. " +
@@ -132,7 +132,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Spring Boot, REST, JWT, PostgreSQL, Maven. " +
                 "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
                 "20$/h",
-                LocalDate.of(2026, 9, 1), 15, Status.WAITING);
+                LocalDate.of(2026, 9, 1), 15, Status.PENDING);
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login

@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +23,17 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final JobOfferMapper jobOfferMapper;
 
-    public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) {
+    public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws NoValidatedCvException, UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
-                .orElseThrow(UserNotFoundException::new);
-        boolean hasValidatedCv = studentCvRepository
-                .findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(studentEmail)
-                .map(cv -> cv.getStatus() == Status.ACCEPTED)
-                .orElse(false);
-        if (!hasValidatedCv) {
+                .orElseThrow(() -> new UserNotFoundException());
+
+        if (!studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)) {
             throw new NoValidatedCvException();
         }
 
-        Set<Long> appliedOfferIds =
-                jobOfferRepository.findAppliedOfferIdsByStudentId(student.getId());
+        List<JobOfferDetailDTO> acceptedJobOffers = jobOfferMapper
+        .toDtoList(jobOfferRepository.findAcceptedJobOffersByStudentId(student.getId()));
 
-        return jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, student.getPrograme())
-                .stream()
-                .map(offer -> jobOfferMapper.toDto(offer)
-                        .withApplied(appliedOfferIds.contains(offer.getId())))
-                .toList();
+        return acceptedJobOffers;
     }
 }

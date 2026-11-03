@@ -84,7 +84,8 @@
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
-    "noValidatedCv": "You must have a validated CV to apply."
+    "noValidatedCv": "You must have a validated CV to apply.",
+    "jobOfferUpdateFailed": "Only declined offers can be modified."
   },
   "header": {
     "title": "ZeROSE",

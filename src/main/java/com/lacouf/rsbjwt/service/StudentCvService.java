@@ -13,15 +13,20 @@ import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
-import com.lacouf.rsbjwt.service.event.CvUploadedEvent;
+
 import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+
+import com.lacouf.rsbjwt.model.Notification;
+import com.lacouf.rsbjwt.model.NotificationType;
+import com.lacouf.rsbjwt.repository.NotificationRepository;
 
 
 /////////////////////                                WTF????                  ////////////////////////////////
@@ -34,8 +39,8 @@ public class StudentCvService {
 
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final JobOfferRepository jobOfferRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -44,7 +49,12 @@ public class StudentCvService {
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
 
-        eventPublisher.publishEvent(new CvUploadedEvent(savedCv.getId()));
+        this.notificationRepository.save(Notification.builder()
+                .message("notification.types.CV_UPLOADED.message")
+                .user(student)
+                .notificationType(NotificationType.CV)
+                .referenceId(savedCv.getId())
+                .build());
 
         return CvMetaDataDto.toCvMetaDataDto(savedCv);
     }

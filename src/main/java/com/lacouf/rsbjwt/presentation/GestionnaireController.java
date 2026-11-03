@@ -1,5 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
+import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
@@ -81,17 +83,27 @@ public class GestionnaireController {
 
     @PutMapping("/offres/{id}/accept")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
-        return gestionnaireService.acceptOffer(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build()));
+    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        try {
+            JobOfferDto jobOffer = gestionnaireService.acceptOffer(id);
+            return ResponseEntity.ok(jobOffer);
+        } catch (JobOfferNotFoundException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
+        } catch (InvalidStateTransitionException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.invalidStateTransition").build());
+        }        
     }
 
     @PutMapping("/offres/{id}/refuse")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) {
-        return gestionnaireService.refuseOffer(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build()));
+    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        try {
+            JobOfferDto jobOffer = gestionnaireService.refuseOffer(id);
+            return ResponseEntity.ok(jobOffer);
+        } catch (JobOfferNotFoundException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
+        } catch (InvalidStateTransitionException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.invalidStateTransition").build());
+        }
     }
 }

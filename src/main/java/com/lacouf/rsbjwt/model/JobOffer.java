@@ -82,7 +82,7 @@ public class JobOffer {
             publicationDate = LocalDate.now();
         }
         if (status == null) {
-            status = Status.WAITING;
+            status = Status.PENDING;
         }
     }
 }

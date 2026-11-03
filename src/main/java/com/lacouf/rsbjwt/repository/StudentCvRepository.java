@@ -2,10 +2,13 @@ package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+
+import com.lacouf.rsbjwt.model.Student;
 
 public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
     List<StudentCv> findAllByStudent_IdOrderByUploadedAtDesc(Long studentId);
@@ -19,5 +22,7 @@ public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
     List<StudentCv> findAllByStatusOrderByUploadedAtAsc(Status status);
 
     Optional<StudentCv> findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(String studentEmail);
+
+    boolean existsByStudentAndStatus(Student student, Status status);
 
 }

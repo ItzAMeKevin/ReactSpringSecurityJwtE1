@@ -123,12 +123,12 @@ class EmployerControllerTest {
                 "Spring Boot, JPA",
                 adresseDTO,
                 "60000$",
-                Status.WAITING,
+                Status.PENDING,
                 LocalDate.now(),
                 LocalDate.of(2025, 3, 1),
                 12,
                 Programe.TECHNIQUES_INFORMATIQUE,
-                "ACME Inc."
+                "ACME Inc.", false
         );
 
     }
@@ -150,7 +150,7 @@ class EmployerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.title").value("Développeur Java"))
-                .andExpect(jsonPath("$.status").value("WAITING"))
+                .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
         verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class), anyString());
@@ -186,12 +186,12 @@ class EmployerControllerTest {
                         "Spring Boot, JPA",
                         adresseDTO,
                         "60000$",
-                        Status.WAITING,
+                        Status.PENDING,
                         LocalDate.now(),
                         LocalDate.of(2025, 3, 1),
                         12,
                         Programe.TECHNIQUES_INFORMATIQUE,
-                        "ACME Inc."
+                        "ACME Inc.", false
                 ),
                 new JobOfferDetailDTO(
                         2L,
@@ -205,7 +205,7 @@ class EmployerControllerTest {
                         LocalDate.of(2025, 4, 1),
                         6,
                         Programe.TECHNIQUES_INFORMATIQUE,
-                        "ACME Inc."
+                        "ACME Inc.", false
                 )
         );
         when(employerService.getJobOffres(anyString())).thenReturn(expected);

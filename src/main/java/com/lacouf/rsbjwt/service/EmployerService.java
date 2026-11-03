@@ -45,31 +45,14 @@ public class EmployerService {
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);
         jobOfferEntity.setEmployer(employer);
         JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
-        notifyManagers(savedOffer);
+        Notification notification = Notification.builder()
+                .message("notification.types.JOB_OFFER_CREATED.message")
+                .user(employer)
+                .notificationType(NotificationType.JOB_OFFER)
+                .referenceId(savedOffer.getId())
+                .build();
+        notificationRepository.save(notification);
         return jobOfferMapper.toDto(savedOffer);
-    }
-
-    private void notifyManagers(JobOffer offer) {
-        try {
-            List<Manager> managers = managerRepository.findAll();
-            List<Notification> notifs = managers.stream()
-                    .map(manager -> Notification.builder()
-                            .user(manager)
-                            .notificationType(NotificationType.JOB_OFFER)
-                            .referenceId(offer.getId())
-                            .build())
-                    .toList();
-            notificationRepository.saveAll(notifs);
-            managers.forEach(manager -> sendEmailStub(manager, offer));
-        } catch (Exception e) {
-            System.err.println("[NOTIFICATION-ERROR] Failed to notify managers: " + e.getMessage());
-        }
-    }
-
-    private void sendEmailStub(Manager manager, JobOffer offer) {
-        System.out.println("[EMAIL-STUB] To: " + manager.getCredentials().getEmail()
-                + " | Offre: " + offer.getTitle()
-                + " | Entreprise: " + offer.getEmployer().getCompanyName());
     }
 
     public Employer findEmployerByEmail(String email) {
@@ -81,7 +64,7 @@ public class EmployerService {
     public Optional<JobOfferDetailDTO> updateRefusedJobOffer(Long id, JobOfferCreateDTO dto, String employerEmail) {
         return jobOfferRepository.findByIdAndEmployerCredentialsEmail(id, employerEmail).map(offer -> {
             if (offer.getStatus() != Status.DECLINED) {
-                throw new IllegalStateException("Seules les offres refusées peuvent être modifiées.");
+                throw new IllegalStateException("errors.jobOfferUpdateFailed");
             }
             JobOffer updated = jobOfferMapper.toEntity(dto);
             offer.setTitle(updated.getTitle());
@@ -92,7 +75,7 @@ public class EmployerService {
             offer.setDurationInWeeks(updated.getDurationInWeeks());
             offer.setPrograme(updated.getPrograme());
             offer.setAdresse(updated.getAdresse());
-            offer.setStatus(Status.WAITING);
+            offer.setStatus(Status.PENDING);
             return jobOfferMapper.toDto(jobOfferRepository.save(offer));
         });
     }
