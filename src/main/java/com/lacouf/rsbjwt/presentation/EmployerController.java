@@ -58,8 +58,6 @@ public class EmployerController {
             return ResponseEntity.ok(employerService.getCandidates(offerId, authentication.getName()));
         } catch (ApplicationNotFoundException e) {
             return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -78,8 +76,6 @@ public class EmployerController {
             return ResponseEntity.badRequest().build();
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -94,8 +90,6 @@ public class EmployerController {
                     .body(content);
         } catch (ApplicationNotFoundException | InvalidCvException e) {
             return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
