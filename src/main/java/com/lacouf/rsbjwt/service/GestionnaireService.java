@@ -1,12 +1,14 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.CvMapper;
+import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.EmployerNotification;
-import com.lacouf.rsbjwt.model.ManagerNotification;
+
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
+import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -15,7 +17,7 @@ import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.event.CvDecisionEvent;
-import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
+import com.lacouf.rsbjwt.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -35,18 +37,23 @@ public class GestionnaireService {
     );
 
     private final JobOfferRepository jobOfferRepository;
-    private final EmployerNotificationRepository employerNotificationRepository;
+
     private final ManagerRepository managerRepository;
-    private final ManagerNotificationRepository managerNotificationRepository;
+    private final NotificationRepository notificationRepository;
+
     private final StudentCvRepository studentCvRepository;
-    private final GestionnaireMapper gestionnaireMapper;
+
+    private final NotificationMapper notificationMapper;
+    private final CvMapper cvMapper;
+
+
     private final ApplicationEventPublisher eventPublisher;
 
 
     public List<PendingCvDto> getPendingCvs() {
         return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)
                 .stream()
-                .map(gestionnaireMapper::toPendingCvDto)
+                .map(cvMapper::toDto)
                 .toList();
     }
 
@@ -88,7 +95,7 @@ public class GestionnaireService {
         return jobOfferRepository.findById(id).map(offer -> {
             offer.setStatus(Status.ACCEPTED);
             jobOfferRepository.save(offer);
-            employerNotificationRepository.save(new EmployerNotification(
+            notificationRepository.save(new Notification(
                     "Offre acceptée",
                     "Votre offre \"" + offer.getTitle() + "\" a été acceptée.",
                     offer.getEmployer()
