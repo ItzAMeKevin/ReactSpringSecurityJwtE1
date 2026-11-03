@@ -83,7 +83,8 @@
     "offerNotFound": "Offer not found.",
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
-    "userNotFound": "User not found."
+    "userNotFound": "User not found.",
+    "noValidatedCv": "You must have a validated CV to apply."
   },
   "header": {
     "title": "ZeROSE",
