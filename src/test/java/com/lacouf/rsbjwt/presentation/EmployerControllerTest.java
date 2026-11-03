@@ -2,7 +2,6 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
-import com.lacouf.rsbjwt.model.Role;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
@@ -16,12 +15,10 @@ import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import com.lacouf.rsbjwt.service.dto.UpdateCandidateStatusDto;
-import com.lacouf.rsbjwt.service.dto.UserCreateDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -83,7 +80,6 @@ class EmployerControllerTest {
     private MockMvc mockMvc;
 
     private AdresseDTO adresseDTO;
-    private UserCreateDTO userCreateDTO;
     private JobOfferCreateDTO jobOfferCreateDTO;
     private JobOfferDetailDTO jobOfferDetailDTO;
 
@@ -101,17 +97,6 @@ class EmployerControllerTest {
                 .numeroCivic("100")
                 .codePostal("H2X 1Y5")
                 .build();
-
-        UserCreateDTO userCreateDTO = new UserCreateDTO();
-        userCreateDTO.setFirstName("Marie");
-        userCreateDTO.setLastname("Tremblay");
-        userCreateDTO.setEmail("marie@acme.com");
-        userCreateDTO.setPassword("password123");
-        userCreateDTO.setRole(Role.EMPLOYER);
-        userCreateDTO.setCompanyName("ACME Inc.");
-        userCreateDTO.setAdresseDTO(adresseDTO);
-        userCreateDTO.setPhoneNumber("514-555-1234");
-        userCreateDTO.setEmployerWorkId("EMP001");
 
         jobOfferCreateDTO = new JobOfferCreateDTO(
                 "Développeur Java",
@@ -163,6 +148,18 @@ class EmployerControllerTest {
                 .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
         verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class), anyString());
+    }
+
+    @Test
+    @DisplayName("POST /employer/addJobOffer retourne 403 pour un non-employeur")
+    void addJobOffer_wrongRole_returns403() throws Exception {
+        mockMvc.perform(post("/employer/addJobOffer")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
+                .andExpect(status().isForbidden());
+
+        verify(employerService, never()).addJobOffer(any(), anyString());
     }
 
     @Test
