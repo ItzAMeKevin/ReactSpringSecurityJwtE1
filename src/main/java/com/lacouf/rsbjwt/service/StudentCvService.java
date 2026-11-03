@@ -102,11 +102,11 @@ public class StudentCvService {
 
     public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new RuntimeException("CV not found"));
+                .orElseThrow(() -> new InvalidCvException("CV non trouvé"));
 
         Student student = findStudentByEmail(authenticatedEmail);
         if (!cv.getStudent().getId().equals(student.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new InvalidCvException("Accès refusé");
         }
 
         return cv.getReviewFeedback();
@@ -128,7 +128,7 @@ public class StudentCvService {
         return normalized;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CvMetaDataDto> listCvs(String authenticatedEmail) {
         findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail)
@@ -162,17 +162,15 @@ public class StudentCvService {
 
         if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
             throw new OffrerException("Le CV a déjà été utilisé pour postuler à cette offre.");
-        } else {
-            StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
-                    .orElseThrow(() -> new CvException("CV non trouvé"));
-            appliedCvs.add(studentCv);
-            jobOffer.setAppliedCvs(appliedCvs);
-            jobOfferRepository.save(jobOffer);
-
-            JobApplication application = new JobApplication();
-            application.setJobOffer(jobOffer);
-            application.setStudentCv(studentCv);
-            jobApplicationRepository.save(application);
         }
+        StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
+                .orElseThrow(() -> new CvException("CV non trouvé"));
+        appliedCvs.add(studentCv);
+        jobOfferRepository.save(jobOffer);
+
+        JobApplication application = new JobApplication();
+        application.setJobOffer(jobOffer);
+        application.setStudentCv(studentCv);
+        jobApplicationRepository.save(application);
     }
 }
