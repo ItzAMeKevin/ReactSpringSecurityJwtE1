@@ -424,14 +424,14 @@ public class StudentCvServiceTest {
         when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(testStudent));
 
-        assertThrows(RuntimeException.class, () -> studentCvService.getReviewFile(5L, email));
+        assertThrows(InvalidCvException.class, () -> studentCvService.getReviewFile(5L, email));
     }
 
     @Test
     void testGetReviewFileUnknownCvThrows() {
         when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,
+        assertThrows(InvalidCvException.class,
                 () -> studentCvService.getReviewFile(5L, "student@test.com"));
     }
 
