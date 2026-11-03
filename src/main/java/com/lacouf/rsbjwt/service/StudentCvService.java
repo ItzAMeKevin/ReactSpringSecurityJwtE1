@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
@@ -41,6 +42,7 @@ public class StudentCvService {
     private final StudentRepository studentRepository;
     private final JobOfferRepository jobOfferRepository;
     private final NotificationRepository notificationRepository;
+    private final CvMetaDataMapper cvMetaDataMapper;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -56,7 +58,7 @@ public class StudentCvService {
                 .referenceId(savedCv.getId())
                 .build());
 
-        return CvMetaDataDto.toCvMetaDataDto(savedCv);
+        return cvMetaDataMapper.toDto(savedCv);
     }
 
     private Student findStudentByEmail(String email) {
@@ -140,28 +142,9 @@ public class StudentCvService {
     @Transactional
     public List<CvMetaDataDto> listCvs(String authenticatedEmail) {
         findStudentByEmail(authenticatedEmail);
-        return studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail)
-                .stream()
-                .map(CvMetaDataDto::toCvMetaDataDto)
-                .toList();
+        return  cvMetaDataMapper.toDtoList(studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail));
     }
 
-    @Transactional
-    public void setDefaultCv(Long cvId, String authenticatedEmail) {
-        Student student = findStudentByEmail(authenticatedEmail);
-        StudentCv cv = studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
-
-        StudentCv currentDefaultCv = studentCvRepository.findByStudent_IdAndIsDefaultTrue(student.getId())
-                .orElse(null);
-        if (currentDefaultCv != null) {
-            currentDefaultCv.setDefault(false);
-            studentCvRepository.save(currentDefaultCv);
-        }
-
-        cv.setDefault(true);
-        studentCvRepository.save(cv);
-    }
 
     @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {

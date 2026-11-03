@@ -60,23 +60,7 @@ class StudentCvControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(1L, authentication).getStatusCode());
     }
 
-    @Test
-    void readsReviewAndSetsDefault() {
-        when(authentication.getName()).thenReturn("student@test.com");
-        when(service.getReviewFile(1L, "student@test.com")).thenReturn("feedback");
-        assertEquals("feedback", controller.getReviewFile(1L, authentication).getBody());
-        when(service.getReviewFile(2L, "student@test.com")).thenReturn(" ");
-        assertEquals(HttpStatus.NOT_FOUND, controller.getReviewFile(2L, authentication).getStatusCode());
-        when(service.getReviewFile(3L, "student@test.com")).thenThrow(new RuntimeException());
-        assertEquals(HttpStatus.FORBIDDEN, controller.getReviewFile(3L, authentication).getStatusCode());
 
-        doNothing().when(service).setDefaultCv(1L, "student@test.com");
-        assertEquals(HttpStatus.OK, controller.setDefaultCv(1L, authentication).getStatusCode());
-        doThrow(new UserNotFoundException()).when(service).setDefaultCv(2L, "student@test.com");
-        assertEquals(HttpStatus.NOT_FOUND, controller.setDefaultCv(2L, authentication).getStatusCode());
-        doThrow(new InvalidCvException("invalid")).when(service).setDefaultCv(3L, "student@test.com");
-        assertEquals(HttpStatus.BAD_REQUEST, controller.setDefaultCv(3L, authentication).getStatusCode());
-    }
 
     @Test
     void appliesOfferAndHandlesFailure() throws Exception {

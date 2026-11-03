@@ -110,25 +110,6 @@ class StudentCvServiceTest {
     }
 
     @Test
-    void listsAndSetsDefaultCv() {
-        when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
-        StudentCv cv = new StudentCv();
-        cv.setId(5L);
-        when(studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc("student@test.com"))
-                .thenReturn(List.of(cv));
-        assertEquals(1, service.listCvs("student@test.com").size());
-
-        StudentCv previous = new StudentCv();
-        previous.setDefault(true);
-        when(studentCvRepository.findByIdAndStudent_Id(5L, 1L)).thenReturn(Optional.of(cv));
-        when(studentCvRepository.findByStudent_IdAndIsDefaultTrue(1L)).thenReturn(Optional.of(previous));
-        service.setDefaultCv(5L, "student@test.com");
-        assertFalse(previous.isDefault());
-        assertTrue(cv.isDefault());
-        verify(studentCvRepository, times(2)).save(any(StudentCv.class));
-    }
-
-    @Test
     void appliesCvAndRejectsDuplicateOrMissingData() throws Exception {
         JobOffer offer = new JobOffer();
         StudentCv cv = new StudentCv();

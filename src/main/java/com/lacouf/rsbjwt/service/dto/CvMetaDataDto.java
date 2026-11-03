@@ -22,18 +22,7 @@ public class CvMetaDataDto extends GenericDto {
     private long size;
     private Status status;
     private Instant uploadedAt;
-    @JsonProperty("isDefault")
-    private boolean isDefault;
 
-    public static CvMetaDataDto toCvMetaDataDto(StudentCv cv){
-        return CvMetaDataDto.builder()
-                .id(cv.getId())
-                .fileName(cv.getFileName())
-                .contentType(cv.getContentType())
-                .size(cv.getSize())
-                .status(cv.getStatus())
-                .uploadedAt(cv.getUploadedAt())
-                .isDefault(cv.isDefault())
-                .build();
-    }
+
+
 }

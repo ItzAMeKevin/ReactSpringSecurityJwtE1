@@ -15,7 +15,6 @@ public interface StudentCvRepository extends JpaRepository<StudentCv, Long> {
 
     Optional<StudentCv> findByIdAndStudent_Id(Long id, Long studentId);
 
-    Optional<StudentCv> findByStudent_IdAndIsDefaultTrue(Long studentId);
 
     List<StudentCv> findByStudentCredentialsEmailOrderByUploadedAtDesc(String studentEmail);
 

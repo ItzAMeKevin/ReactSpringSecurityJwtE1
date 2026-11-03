@@ -55,15 +55,12 @@ public class StudentCv {
     @Column(nullable = true, length = 2000)
     private String reviewFeedback;
 
-    @Column(nullable = true)
-    private boolean isDefault;
-
     @PrePersist
     void onCreate() {
         this.uploadedAt = Instant.now();
         if (this.status == null) {
             this.status = Status.PENDING;
-            this.isDefault = false;
+
         }
     }
 }
