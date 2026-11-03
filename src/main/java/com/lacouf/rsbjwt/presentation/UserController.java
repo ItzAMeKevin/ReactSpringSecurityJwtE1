@@ -37,14 +37,14 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(new AuthErrorResponse(
-							"Invalid email or password",
+							"errors.authenticationFailed",
 							"AUTH_FAILED"
 					));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(new AuthErrorResponse(
-							"Something went wrong. Please try again later.",
+							"errors.generic",
 							"SERVER_ERROR"
 					));
 		}
