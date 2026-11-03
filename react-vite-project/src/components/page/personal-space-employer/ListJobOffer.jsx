@@ -76,19 +76,20 @@ const ListJobOffer = ({refreshKey}) => {
                         </dl>
                         <button
                             type="button"
-                            className={`${btnSmPrimary} mt-3`}
+                            className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
                             onClick={() => handleToggleCandidates(offer.id)}
+                            disabled={offer.status !== "ACCEPTED"}
                         >
                             {selectedOfferId === offer.id
                                 ? t("employeurCandidats.masquerCandidats")
                                 : t("employeurCandidats.voirCandidats")}
                         </button>
+                        {selectedOfferId === offer.id && (
+                            <CandidateList offerId={offer.id} />
+                        )}
                     </li>
                 ))}
             </ul>
-            {selectedOfferId && (
-                <CandidateList offerId={selectedOfferId} />
-            )}
         </div>
     );
 };
