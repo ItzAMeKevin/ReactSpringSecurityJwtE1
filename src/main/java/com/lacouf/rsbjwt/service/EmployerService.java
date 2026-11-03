@@ -5,7 +5,6 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Manager;
-import com.lacouf.rsbjwt.model.ManagerNotification;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.ManagerRepository;
@@ -27,7 +26,7 @@ public class EmployerService {
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
     private final ManagerRepository managerRepository;
-    private final ManagerNotificationRepository managerNotificationRepository;
+    private final NotificationRepository notificationRepository;
 
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
         Employer employer = findEmployerByEmail(employerEmail);

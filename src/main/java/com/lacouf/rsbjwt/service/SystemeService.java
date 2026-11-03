@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class NotificationService{
+public class SystemeService{
 
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
