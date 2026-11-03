@@ -265,8 +265,8 @@
     },
     "types": {
       "CV_UPLOADED": {
-        "title": "CV uploaded",
-        "message": "Your CV has been uploaded and is pending validation."
+        "title": "New CV to validate",
+        "message": "A student uploaded a new CV. Please review and validate it."
       },
       "CV_ACCEPTED": {
         "title": "Your CV has been accepted",
@@ -277,8 +277,8 @@
         "message": "Please review the feedback and upload a new CV."
       },
       "JOB_OFFER_CREATED": {
-        "title": "Internship offer submitted",
-        "message": "Your internship offer has been submitted and is pending validation."
+        "title": "New internship offer to validate",
+        "message": "An employer submitted a new internship offer. Please review and validate it."
       },
       "JOB_OFFER_ACCEPTED": {
         "title": "Your internship offer has been accepted",

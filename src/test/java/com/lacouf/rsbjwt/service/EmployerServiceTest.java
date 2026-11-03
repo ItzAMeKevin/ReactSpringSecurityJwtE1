@@ -26,8 +26,7 @@ class EmployerServiceTest {
     @Mock private JobOfferRepository jobOfferRepository;
     @Mock private EmployerRepository employerRepository;
     @Mock private JobOfferMapper jobOfferMapper;
-    @Mock private ManagerRepository managerRepository;
-    @Mock private NotificationRepository notificationRepository;
+    @Mock private SystemeService systemeService;
     @InjectMocks private EmployerService service;
 
     private Employer employer() {
@@ -55,7 +54,7 @@ class EmployerServiceTest {
     }
 
     @Test
-    void addsOfferAndNotification() {
+    void addsOfferAndNotifiesManagers() {
         Employer employer = employer();
         JobOffer offer = new JobOffer();
         offer.setId(3L);
@@ -66,7 +65,7 @@ class EmployerServiceTest {
 
         assertEquals(3L, service.addJobOffer(request(), "employer@test.com").getId());
         assertSame(employer, offer.getEmployer());
-        verify(notificationRepository).save(any(Notification.class));
+        verify(systemeService).notifyManagers(NotificationType.JOB_OFFER, 3L, "notification.types.JOB_OFFER_CREATED.message");
     }
 
     @Test

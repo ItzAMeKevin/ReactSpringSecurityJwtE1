@@ -4,13 +4,9 @@ import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.Manager;
-import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +24,7 @@ public class EmployerService {
     private final JobOfferRepository jobOfferRepository;
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
-    private final ManagerRepository managerRepository;
-    private final NotificationRepository notificationRepository;
+    private final SystemeService systemeService;
 
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
         Employer employer = findEmployerByEmail(employerEmail);
@@ -45,13 +40,7 @@ public class EmployerService {
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);
         jobOfferEntity.setEmployer(employer);
         JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
-        Notification notification = Notification.builder()
-                .message("notification.types.JOB_OFFER_CREATED.message")
-                .user(employer)
-                .notificationType(NotificationType.JOB_OFFER)
-                .referenceId(savedOffer.getId())
-                .build();
-        notificationRepository.save(notification);
+        systemeService.notifyManagers(NotificationType.JOB_OFFER, savedOffer.getId(), "notification.types.JOB_OFFER_CREATED.message");
         return jobOfferMapper.toDto(savedOffer);
     }
 

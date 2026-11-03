@@ -25,12 +25,9 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import com.lacouf.rsbjwt.model.Notification;
 import com.lacouf.rsbjwt.model.NotificationType;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
 
 
-/////////////////////                                WTF????                  ////////////////////////////////
 @Service
 @RequiredArgsConstructor
 public class StudentCvService {
@@ -41,7 +38,7 @@ public class StudentCvService {
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
     private final JobOfferRepository jobOfferRepository;
-    private final NotificationRepository notificationRepository;
+    private final SystemeService systemeService;
     private final CvMetaDataMapper cvMetaDataMapper;
 
     @Transactional
@@ -51,12 +48,7 @@ public class StudentCvService {
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
 
-        this.notificationRepository.save(Notification.builder()
-                .message("notification.types.CV_UPLOADED.message")
-                .user(student)
-                .notificationType(NotificationType.CV)
-                .referenceId(savedCv.getId())
-                .build());
+        systemeService.notifyManagers(NotificationType.CV, savedCv.getId(), "notification.types.CV_UPLOADED.message");
 
         return cvMetaDataMapper.toDto(savedCv);
     }

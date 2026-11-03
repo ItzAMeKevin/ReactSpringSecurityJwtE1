@@ -2,12 +2,16 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
 import com.lacouf.rsbjwt.mapper.NotificationMapper;
+import com.lacouf.rsbjwt.model.Manager;
 import com.lacouf.rsbjwt.model.Notification;
+import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
+import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.repository.NotificationRepository;
 import com.lacouf.rsbjwt.service.dto.NotificationDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,6 +28,7 @@ class SystemeServiceTest {
 
     @Mock private NotificationRepository repository;
     @Mock private NotificationMapper mapper;
+    @Mock private ManagerRepository managerRepository;
     @Mock private Authentication authentication;
     @InjectMocks private SystemeService service;
 
@@ -38,6 +43,29 @@ class SystemeServiceTest {
         when(repository.findByUser_Credentials_Email("user@test.com")).thenReturn(List.of());
         when(mapper.toDtoList(List.of())).thenReturn(List.of());
         assertTrue(service.getNotifications(authentication).isEmpty());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void notifiesEveryManager() {
+        Manager first = new Manager();
+        Manager second = new Manager();
+        when(managerRepository.findAll()).thenReturn(List.of(first, second));
+
+        service.notifyManagers(NotificationType.CV, 5L, "notification.types.CV_UPLOADED.message");
+
+        ArgumentCaptor<List<Notification>> captor = ArgumentCaptor.forClass(List.class);
+        verify(repository).saveAll(captor.capture());
+        List<Notification> saved = captor.getValue();
+        assertEquals(2, saved.size());
+        assertSame(first, saved.get(0).getUser());
+        assertSame(second, saved.get(1).getUser());
+        saved.forEach(notification -> {
+            assertEquals(NotificationType.CV, notification.getNotificationType());
+            assertEquals(5L, notification.getReferenceId());
+            assertEquals("notification.types.CV_UPLOADED.message", notification.getMessage());
+            assertEquals(Status.UNREAD, notification.getStatus());
+        });
     }
 
     @Test

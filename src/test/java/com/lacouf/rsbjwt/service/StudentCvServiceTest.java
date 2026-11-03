@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Base64;
@@ -28,7 +31,8 @@ class StudentCvServiceTest {
     @Mock private StudentCvRepository studentCvRepository;
     @Mock private StudentRepository studentRepository;
     @Mock private JobOfferRepository jobOfferRepository;
-    @Mock private NotificationRepository notificationRepository;
+    @Mock private SystemeService systemeService;
+    @Spy private CvMetaDataMapper cvMetaDataMapper = Mappers.getMapper(CvMetaDataMapper.class);
     @InjectMocks private StudentCvService service;
 
     private final Student student = student(1L);
@@ -46,7 +50,7 @@ class StudentCvServiceTest {
     }
 
     @Test
-    void uploadsValidPdfAndCreatesNotification() {
+    void uploadsValidPdfAndNotifiesManagers() {
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
         when(studentCvRepository.save(any(StudentCv.class))).thenAnswer(invocation -> {
             StudentCv cv = invocation.getArgument(0);
@@ -58,7 +62,7 @@ class StudentCvServiceTest {
 
         assertEquals("cv.pdf", result.getFileName());
         assertEquals(Status.PENDING, result.getStatus());
-        verify(notificationRepository).save(any(Notification.class));
+        verify(systemeService).notifyManagers(NotificationType.CV, 5L, "notification.types.CV_UPLOADED.message");
     }
 
     @Test

@@ -264,8 +264,8 @@
     },
     "types": {
       "CV_UPLOADED": {
-        "title": "CV téléversé",
-        "message": "Votre CV a été téléversé et est en attente de validation."
+        "title": "Nouveau CV à valider",
+        "message": "Un étudiant a téléversé un nouveau CV. Veuillez le consulter et le valider."
       },
       "CV_ACCEPTED": {
         "title": "Votre CV a été accepté",
@@ -276,8 +276,8 @@
         "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
       },
       "JOB_OFFER_CREATED": {
-        "title": "Offre de stage soumise",
-        "message": "Votre offre de stage a été soumise et est en attente de validation."
+        "title": "Nouvelle offre de stage à valider",
+        "message": "Un employeur a soumis une nouvelle offre de stage. Veuillez l'examiner et la valider."
       },
       "JOB_OFFER_ACCEPTED": {
         "title": "Votre offre de stage a été acceptée",
