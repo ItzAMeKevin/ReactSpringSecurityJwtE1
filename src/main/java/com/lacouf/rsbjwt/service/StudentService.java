@@ -51,8 +51,9 @@ public class StudentService {
         return jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, student.getPrograme())
                 .stream()
                 .map(offer -> jobOfferMapper.toDto(offer)
-                        .withApplied(applicationStatuses.containsKey(offer.getId()))
-                        .withApplicationStatus(applicationStatuses.get(offer.getId())))
+                        .withApplication(
+                                applicationStatuses.containsKey(offer.getId()),
+                                applicationStatuses.get(offer.getId())))
                 .toList();
     }
 }
