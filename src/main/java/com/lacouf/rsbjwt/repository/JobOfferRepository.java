@@ -15,7 +15,13 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     List<JobOffer> findAllByStatus(Status status);
     List<JobOffer> getJobOffersByEmployerId(Long employerId);
     List<JobOffer> findAllByStatusAndPrograme(Status status, Programe programe);
-    Optional<JobOffer> findByIdAndEmployerCredentialsEmail(Long id, String email);
+    @Query("""
+        SELECT jo FROM JobOffer jo
+        LEFT JOIN FETCH jo.appliedCvs cv
+        LEFT JOIN FETCH cv.student
+        WHERE jo.id = :id AND jo.employer.credentials.email = :email
+        """)
+    Optional<JobOffer> findByIdAndEmployerCredentialsEmail(@Param("id") Long id, @Param("email") String email);
 
     boolean existsByEmployer_Credentials_EmailAndAppliedCvs_Id(String email, Long cvId);
 

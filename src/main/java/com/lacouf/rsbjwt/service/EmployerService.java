@@ -182,7 +182,6 @@ public class EmployerService {
         JobApplication application = new JobApplication();
         application.setJobOffer(offer);
         application.setStudentCv(cv);
-        application.setStatus(Status.PENDING);
         return application;
     }
 
