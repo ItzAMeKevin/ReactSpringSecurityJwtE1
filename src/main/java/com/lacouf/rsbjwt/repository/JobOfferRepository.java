@@ -24,4 +24,6 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
         WHERE cv.student.id = :studentId
         """)
     Set<Long> findAppliedOfferIdsByStudentId(@Param("studentId") Long studentId);
+
+    Optional<JobOffer> findByIdAndStudent_Credentials_Email(Long id, String studentEmail);
 }

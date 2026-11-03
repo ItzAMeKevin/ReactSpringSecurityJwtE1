@@ -1,58 +1,34 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
+import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.mapper.CvMapper;
-import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.JobOffer;
-
-import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
-import com.lacouf.rsbjwt.repository.StudentCvRepository;
-import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
-import com.lacouf.rsbjwt.service.dto.AdresseDTO;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
-import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
-import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.dto.JobOfferDto;
+import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.event.CvDecisionEvent;
-import com.lacouf.rsbjwt.mapper.NotificationMapper;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.lacouf.rsbjwt.mapper.JobOfferMapper;
-import com.lacouf.rsbjwt.model.NotificationType;
-import com.lacouf.rsbjwt.service.dto.NotificationDto;
 
 @Service
 @RequiredArgsConstructor
 public class GestionnaireService {
-    
-    private static final String JOB_OFFER_UPLOADED = "JOB_OFFER_UPLOADED";
-    private static final Pattern OFFER_MESSAGE_PATTERN = Pattern.compile(
-        "L'entreprise \"(.*?)\" a déposé une offre : \"(.*?)\" \\((.*?)\\)"
-    );
-    
-    private final UserAppRepository userAppRepository;
+
     private final JobOfferRepository jobOfferRepository;
 
-    private final ManagerRepository managerRepository;
     private final NotificationRepository notificationRepository;
 
     private final StudentCvRepository studentCvRepository;
 
-    private final NotificationMapper notificationMapper;
     private final CvMapper cvMapper;
 
     private final JobOfferMapper jobOfferMapper;
@@ -60,10 +36,6 @@ public class GestionnaireService {
 
     private final ApplicationEventPublisher eventPublisher;
 
-
-    GestionnaireService(UserAppRepository userAppRepository) {
-        this.userAppRepository = userAppRepository;
-    }
 
 
     public List<PendingCvDto> getPendingCvs() {
@@ -104,33 +76,40 @@ public class GestionnaireService {
         return jobOfferMapper.toDtoListJobOffers(jobOfferRepository.findAllByStatus(Status.WAITING));
     }
 
-    @Transactional
-    public Optional<JobOfferDto> acceptOffer(Long id) {
-        return jobOfferRepository.findById(id).map(offer -> {
-            offer.setStatus(Status.ACCEPTED);
-            jobOfferRepository.save(offer);
-            notificationRepository.save(Notification.builder()
-                    .message("notification.types.JOB_OFFER_ACCEPTED.message")
-                    .user(offer.getEmployer())
-                    .notificationType(NotificationType.JOB_OFFER)
-                    .referenceId(id)
-                    .build());
-            return(jobOfferMapper.toDto(offer));
-        }).orElse(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
-    }
 
     @Transactional
-    public Optional<JobOfferDto> refuseOffer(Long id) {
-        return jobOfferRepository.findById(id).map(offer -> {
-            offer.setStatus(Status.DECLINED);
-            jobOfferRepository.save(offer);
-            notificationRepository.save(Notification.builder()
-                    .message("notification.types.JOB_OFFER_DECLINED.message")
-                    .user(offer.getEmployer())
-                    .notificationType(NotificationType.JOB_OFFER)
-                    .referenceId(id)
-                    .build());
-            return(jobOfferMapper.toDto(offer));
-        }).orElse(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
+    public JobOfferDto acceptOffer(Long id, String studentEmail) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        return changeOfferStatus(id, studentEmail, Status.ACCEPTED,
+                "notification.types.JOB_OFFER_ACCEPTED.message");
     }
+
+
+    @Transactional
+    public JobOfferDto refuseOffer(Long id, String studentEmail) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        return changeOfferStatus(id, studentEmail, Status.DECLINED,
+                "notification.types.JOB_OFFER_DECLINED.message");
+    }
+
+    private JobOfferDto changeOfferStatus(Long id, String studentEmail, Status newStatus, String messageKey) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        JobOffer offer = jobOfferRepository
+                .findByIdAndStudent_Credentials_Email(id, studentEmail)
+                .orElseThrow(() -> new JobOfferNotFoundException("errors.jobOfferNotFound"));
+
+        if (offer.getStatus() != Status.PENDING) {
+            throw new InvalidStateTransitionException("errors.jobOfferInvalidState");
+        }
+
+        offer.setStatus(newStatus);
+
+        notificationRepository.save(Notification.builder()
+                .message(messageKey)
+                .user(offer.getEmployer())
+                .notificationType(NotificationType.JOB_OFFER)
+                .referenceId(offer.getId())
+                .build());
+
+        return jobOfferMapper.toDtoSimple(offer);
+    }
+
+
 }
