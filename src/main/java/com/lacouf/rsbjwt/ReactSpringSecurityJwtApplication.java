@@ -97,6 +97,41 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             userAppService.inscription(student2);
         }
 
+        if (userAppService.getUserByEmail("jaime.laguerre@yahoo.com") == null) {
+            StudentCreateDto jaime = new StudentCreateDto();
+            jaime.setFirstName("Jaime");
+            jaime.setLastname("Laguerre");
+            jaime.setMatricule("1847293");
+            jaime.setEmail("jaime.laguerre@yahoo.com");
+
+            jaime.setPassword(passwordEncoder.encode("Jaime1234"));
+            jaime.setRole(Role.STUDENT);
+            jaime.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            userAppService.inscription(jaime);
+        }
+
+        if (userAppService.getUserByEmail("jaime.paolaguere@cmr.ca") == null) {
+            EmployerCreateDto cmrc = new EmployerCreateDto();
+            cmrc.setFirstName("Jaime");
+            cmrc.setLastname("PaolaGuere");
+            cmrc.setEmail("jaime.paolaguere@cmr.ca");
+            cmrc.setRole(Role.EMPLOYER);
+            cmrc.setCompanyName("College militaire royal du Canada");
+            cmrc.setPhoneNumber("613-541-6000");
+            cmrc.setEmployerWorkId("CMRC-001");
+            cmrc.setPassword(passwordEncoder.encode("Paola1234"));
+
+            AdresseDTO adresseCmrc = new AdresseDTO();
+            adresseCmrc.setPays("Canada");
+            adresseCmrc.setVille("Kingston");
+            adresseCmrc.setRue("General Crerar Crescent");
+            adresseCmrc.setNumeroCivic("13");
+            adresseCmrc.setCodePostal("K7K 7B4");
+            cmrc.setAdresseDTO(adresseCmrc);
+
+            userAppService.inscription(cmrc);
+        }
+
         if (userAppService.getUserByEmail("lll@l.com") == null) {
             EmployerCreateDto employer = new EmployerCreateDto();
             employer.setFirstName("Jean-Philippe");
@@ -157,6 +192,20 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                     ));
         }
 
+        Student jaime = students.findByCredentialsEmail("jaime.laguerre@yahoo.com").orElse(null);
+        if (jaime != null) {
+            seedCv(studentCvs, jaime, "cv-jaime.pdf", Status.ACCEPTED,
+                    buildCvStream(
+                            "Jaime Laguerre",
+                            "jaime.laguerre@yahoo.com  |  514-555-0271  |  Montreal, QC",
+                            new String[]{"Technique de genie civil - Cegep Andre-Laurendeau (2024 - present)"},
+                            new String[]{"Logiciels: AutoCAD, Civil 3D, SAP2000", "Materiaux: beton arme, charpente metallique, sol"},
+                            new String[]{"Projet academique - Conception d'un pont a poutrelles (2025)",
+                                    "  Calcul des charges, dimensionnement des elements porteurs",
+                                    "  Realisation des plans d'execution sous AutoCAD"}
+                    ));
+        }
+
         // --- Seed job offers ---
         // ACCEPTED: immediately visible to the student in the demo
         seedJobOffer(jobOffers, employer,
@@ -167,7 +216,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
                 "22",
-                LocalDate.of(2026, 5, 4), 15, Status.WAITING);
+                LocalDate.of(2026, 5, 4), 15, Status.WAITING,
+                Programe.TECHNIQUES_INFORMATIQUE);
 
         // WAITING: the manager reviews and accepts this one during the demo
         seedJobOffer(jobOffers, employer,
@@ -178,7 +228,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Spring Boot, REST, JWT, PostgreSQL, Maven. " +
                 "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
                 "20",
-                LocalDate.of(2026, 9, 1), 15, Status.WAITING);
+                LocalDate.of(2026, 9, 1), 15, Status.WAITING,
+                Programe.TECHNIQUES_INFORMATIQUE);
 
         seedJobOffer(jobOffers, employer,
                 "Developpeur front-end React",
@@ -186,7 +237,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         "Vous collaborerez avec les designers UX et participerez aux revues de code.",
                 "React, TypeScript, HTML/CSS, Git. Atout: Vitest ou Jest.",
                 "21",
-                LocalDate.of(2026, 9, 1), 15, Status.WAITING);
+                LocalDate.of(2026, 9, 1), 15, Status.WAITING,
+                Programe.TECHNIQUES_INFORMATIQUE);
 
         seedJobOffer(jobOffers, employer,
                 "Technicien support TI",
@@ -194,7 +246,26 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         "au deploiement de postes de travail.",
                 "Notions de reseaux, Windows/Linux, bon sens du service a la clientele.",
                 "19",
-                LocalDate.of(2026, 9, 1), 12, Status.WAITING);
+                LocalDate.of(2026, 9, 1), 12, Status.WAITING,
+                Programe.TECHNIQUES_INFORMATIQUE);
+
+        Employer cmrcEmployer = employers.findByCredentialsEmail("jaime.paolaguere@cmr.ca").orElse(null);
+        if (cmrcEmployer != null) {
+            seedJobOffer(jobOffers, cmrcEmployer,
+                    "Stage - Officier du genie civil, FAC",
+                    "Le College militaire royal du Canada recrute des eleves-officiers pour un stage en genie civil. " +
+                    "Vous participerez a des projets de conception de ponts, de travaux d'arpentage sur le terrain " +
+                    "(GCF393) et de genie geotechnique. Le stage combine formation militaire et applications civiles " +
+                    "en hydrogéologie, conception de structures et genie militaire de combat. " +
+                    "Les diplomes deviennent officiers du genie (combat, construction) au sein de l'Armee de terre, " +
+                    "de la Marine royale canadienne ou de l'Aviation royale canadienne.",
+                    "Etre inscrit en Technique de genie civil. " +
+                    "Competences: AutoCAD, calcul de structures, materiaux de construction. " +
+                    "Atout: notions de genie geotechnique ou hydrogéologie.",
+                    "Selon grille salariale FAC",
+                    LocalDate.of(2026, 5, 4), 16, Status.ACCEPTED,
+                    Programe.TECHNIQUE_GENIE_CIVIL);
+        }
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login
@@ -256,11 +327,16 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     private void seedJobOffer(JobOfferRepository repo, Employer employer, String title,
                               String description, String prerequisites, String salary,
-                              LocalDate startingDate, int durationInWeeks, Status status) {
+                              LocalDate startingDate, int durationInWeeks, Status status,
+                              Programe programe) {
         boolean alreadyExists = repo.getJobOffersByEmployerId(employer.getId())
                 .stream()
                 .anyMatch(offer -> offer.getTitle().equals(title));
         if (alreadyExists) return;
+
+        Adresse adresse = employer.getAdresse() != null
+                ? employer.getAdresse()
+                : new Adresse("Canada", "Montreal", "4120 boul. Saint-Laurent", "4120", "H2W 1Y7");
 
         JobOffer offer = JobOffer.builder()
                 .title(title)
@@ -269,9 +345,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 .salary(salary)
                 .startingDate(startingDate)
                 .durationInWeeks(durationInWeeks)
-                .programe(Programe.TECHNIQUES_INFORMATIQUE)
+                .programe(programe)
                 .employer(employer)
-                .adresse(new Adresse("Canada", "Montreal", "4120 boul. Saint-Laurent", "4120", "H2W 1Y7"))
+                .adresse(adresse)
                 .build();
         offer.setStatus(status);
         repo.save(offer);
