@@ -81,7 +81,8 @@
     "accessDenied": "Access denied.",
     "invalidFileName": "The file name is invalid.",
     "offerNotFound": "Offer not found.",
-    "cvAlreadyApplied": "This CV has already been used to apply for this offer."
+    "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
+    "jobOfferNotFound": "Job offer not found."
   },
   "header": {
     "title": "ZeROSE",

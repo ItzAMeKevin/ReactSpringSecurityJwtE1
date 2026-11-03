@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
-import com.lacouf.rsbjwt.service.NotificationService;
+import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.NotificationDto;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
-    private final NotificationService notificationService;
+    private final SystemeService notificationService;
     
     @GetMapping
     public ResponseEntity<List<NotificationDto>> getNotifications(Authentication authentication) {

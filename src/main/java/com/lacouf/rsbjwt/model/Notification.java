@@ -1,7 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
@@ -33,9 +32,9 @@ public class Notification {
     @NotNull
     @Column(nullable = false)
     private Long referenceId;
-
-    @Enumerated(EnumType.STRING)
-    private NotificationMessage message;
+    
+    @Column(length = 1000)
+    private String message;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
