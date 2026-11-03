@@ -64,7 +64,6 @@ class EmployerServiceTest {
 
     private Employer employer;
     private JobOffer jobOffer;
-    private JobOfferCreateDTO jobOfferCreateDTO;
     private JobOfferDetailDTO jobOfferDetailDTO;
     private AdresseDTO adresse;
 
