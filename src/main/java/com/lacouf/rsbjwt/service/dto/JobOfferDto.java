@@ -1,7 +1,11 @@
 package com.lacouf.rsbjwt.service.dto;
 
+import lombok.Builder;
+
 import java.time.LocalDate;
 
+
+@Builder
 public record JobOfferDto(
         Long id,
         String title,

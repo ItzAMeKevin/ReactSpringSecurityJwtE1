@@ -3,12 +3,16 @@ package com.lacouf.rsbjwt.presentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.exception.NotificationNotFound;
+import com.lacouf.rsbjwt.model.NotificationType;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
-import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
+import com.lacouf.rsbjwt.service.dto.NotificationDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,11 +37,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,11 +79,6 @@ class GestionnaireControllerWebMvcTest {
     @MockitoBean
     private JobOfferRepository jobOfferRepository;
 
-    @MockitoBean
-    private EmployerNotificationRepository employerNotificationRepository;
-
-    @MockitoBean
-    private ManagerNotificationRepository managerNotificationRepository;
 
     @MockitoBean
     private StudentCvRepository studentCvRepository;
@@ -88,6 +88,10 @@ class GestionnaireControllerWebMvcTest {
 
     @MockitoBean
     private PasswordEncoder passwordEncoder;
+    @MockitoBean
+    private SystemeService systemeService;
+
+    private Authentication managerAuthentication;
 
     @BeforeEach
     void setUp() {
@@ -96,6 +100,11 @@ class GestionnaireControllerWebMvcTest {
                 .build();
         objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+        managerAuthentication = new UsernamePasswordAuthenticationToken(
+                "manager@test.com",
+                null,
+                List.of(new SimpleGrantedAuthority("MANAGER"))
+        );
 
         AdresseDTO adresse = new AdresseDTO("Canada", "Montreal", "Rue Principale", "123", "H1A1A1");
         testOfferDto = new JobOfferDto(
@@ -270,52 +279,60 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     @DisplayName("GET /gestionnaire/offres/notifications returns 200 with list")
-    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void getNotifications_returnsOk() throws Exception {
-        ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", false, Instant.now(), 1L,
-                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
-        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of(notif));
+        NotificationDto notif = NotificationDto.builder()
+                .id(1L)
+                .notificationType(NotificationType.JOB_OFFER)
+                .referenceId(1L)
+                .status(Status.UNREAD)
+                .creationDate(Instant.now())
+                .build();
+        when(systemeService.getNotifications(managerAuthentication)).thenReturn(List.of(notif));
 
-        mockMvc.perform(get("/gestionnaire/offres/notifications"))
+        mockMvc.perform(get("/gestionnaire/offres/notifications")
+                        .with(authentication(managerAuthentication)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Nouvelle offre"));
+                .andExpect(jsonPath("$[0].notificationType").value("JOB_OFFER"))
+                .andExpect(jsonPath("$[0].referenceId").value(1));
     }
 
     @Test
     @DisplayName("GET /gestionnaire/offres/notifications returns 200 with empty list")
-    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void getNotifications_empty_returnsOk() throws Exception {
-        when(gestionnaireService.getNotifications("manager@test.com")).thenReturn(List.of());
+        when(systemeService.getNotifications(managerAuthentication)).thenReturn(List.of());
 
-        mockMvc.perform(get("/gestionnaire/offres/notifications"))
+        mockMvc.perform(get("/gestionnaire/offres/notifications")
+                        .with(authentication(managerAuthentication)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/offres/notifications/{id}/read returns 200 when found")
-    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void markAsRead_found_returnsOk() throws Exception {
-        ManagerNotificationDto notif = new ManagerNotificationDto(
-                1L, "Nouvelle offre", "Acme Corp a déposé une offre", true, Instant.now(), 1L,
-                "JOB_OFFER_UPLOADED", "Acme Corp", "Offre", "SOINS_INFIRMIERS");
-        when(gestionnaireService.markNotificationAsRead("manager@test.com", 1L))
-                .thenReturn(Optional.of(notif));
+        NotificationDto notif = NotificationDto.builder()
+                .id(1L)
+                .notificationType(NotificationType.JOB_OFFER)
+                .referenceId(1L)
+                .status(Status.READ)
+                .creationDate(Instant.now())
+                .build();
+        when(systemeService.updateNotificationStatus(managerAuthentication, 1L)).thenReturn(notif);
 
-        mockMvc.perform(put("/gestionnaire/offres/notifications/1/read"))
+        mockMvc.perform(put("/gestionnaire/offres/notifications/1/read")
+                        .with(authentication(managerAuthentication)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.isRead").value(true));
+                .andExpect(jsonPath("$.status").value("READ"));
     }
 
     @Test
     @DisplayName("PUT /gestionnaire/offres/notifications/{id}/read returns 404 when not found")
-    @WithMockUser(authorities = "MANAGER", username = "manager@test.com")
     void markAsRead_notFound_returns404() throws Exception {
-        when(gestionnaireService.markNotificationAsRead("manager@test.com", 99L))
-                .thenReturn(Optional.empty());
+        when(systemeService.updateNotificationStatus(managerAuthentication, 99L))
+                .thenThrow(new NotificationNotFound());
 
-        mockMvc.perform(put("/gestionnaire/offres/notifications/99/read"))
+        mockMvc.perform(put("/gestionnaire/offres/notifications/99/read")
+                        .with(authentication(managerAuthentication)))
                 .andExpect(status().isNotFound());
     }
 }

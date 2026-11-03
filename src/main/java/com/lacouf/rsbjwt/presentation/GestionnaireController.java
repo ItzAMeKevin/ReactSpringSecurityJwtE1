@@ -1,12 +1,11 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.NotificationNotFound;
 import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
-import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
-import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.SystemeService;
+import com.lacouf.rsbjwt.service.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,6 +23,7 @@ import java.util.List;
 public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
+    private final SystemeService systemeService;
     private final StudentCvService studentCvService;
 
     // ── CV Management ─────────────────────────────────────────────────────────
@@ -99,16 +99,18 @@ public class GestionnaireController {
 
     @GetMapping("/offres/notifications")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<ManagerNotificationDto>> getNotifications(Authentication authentication) {
-        return ResponseEntity.ok(gestionnaireService.getNotifications(authentication.getName()));
+    public ResponseEntity<List<NotificationDto>> getNotifications(Authentication authentication) {
+        return ResponseEntity.ok(systemeService.getNotifications(authentication));
     }
 
     @PutMapping("/offres/notifications/{id}/read")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ManagerNotificationDto> markAsRead(
+    public ResponseEntity<NotificationDto> markAsRead(
             @PathVariable Long id, Authentication authentication) {
-        return gestionnaireService.markNotificationAsRead(authentication.getName(), id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return ResponseEntity.ok(systemeService.updateNotificationStatus(authentication, id));
+        } catch (NotificationNotFound e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
-public class NotificationController {
+public class SystemeController {
     private final SystemeService notificationService;
     
     @GetMapping
