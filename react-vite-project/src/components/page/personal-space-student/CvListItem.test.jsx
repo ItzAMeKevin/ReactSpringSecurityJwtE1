@@ -23,7 +23,6 @@ vi.mock('../../../styles/classes.js', () => ({
     cardItem: 'card',
     btnSmPrimary: 'btn-primary',
     btnRefuse: 'btn-refuse',
-    btnSmSelectedSoft: 'btn-selected',
     statusBadge: 'badge',
     statusBadgeColor: () => '',
     textError: 'text-error',
@@ -39,63 +38,7 @@ const baseProps = {
     isOpen: false,
     onToggle: vi.fn(),
     scrollToFeedback: false,
-    isDefault: false,
-    onToggleDefault: vi.fn(),
 };
-
-describe('CvListItem — default CV button', () => {
-    beforeEach(() => vi.clearAllMocks());
-
-    it('shows default button for ACCEPTED CV', () => {
-        render(<CvListItem {...baseProps} />);
-        expect(screen.getByText('televerser.default')).toBeInTheDocument();
-    });
-
-    it('does not show default button for PENDING CV', () => {
-        render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'PENDING' }} />);
-        expect(screen.queryByText('televerser.default')).not.toBeInTheDocument();
-        expect(screen.queryByText('televerser.defaultActif')).not.toBeInTheDocument();
-    });
-
-    it('does not show default button for DECLINED CV', () => {
-        render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} />);
-        expect(screen.queryByText('televerser.default')).not.toBeInTheDocument();
-        expect(screen.queryByText('televerser.defaultActif')).not.toBeInTheDocument();
-    });
-
-    it('shows active label and is disabled when isDefault is true', () => {
-        render(<CvListItem {...baseProps} isDefault={true} />);
-        const btn = screen.getByText('televerser.defaultActif');
-        expect(btn).toBeInTheDocument();
-        expect(btn).toBeDisabled();
-    });
-
-    it('shows inactive label and is enabled when isDefault is false', () => {
-        render(<CvListItem {...baseProps} isDefault={false} />);
-        const btn = screen.getByText('televerser.default');
-        expect(btn).not.toBeDisabled();
-    });
-
-    it('calls onToggleDefault when clicked and not already default', () => {
-        render(<CvListItem {...baseProps} isDefault={false} />);
-        fireEvent.click(screen.getByText('televerser.default'));
-        expect(baseProps.onToggleDefault).toHaveBeenCalledTimes(1);
-    });
-
-    it('does not call onToggleDefault when already default', () => {
-        render(<CvListItem {...baseProps} isDefault={true} />);
-        fireEvent.click(screen.getByText('televerser.defaultActif'));
-        expect(baseProps.onToggleDefault).not.toHaveBeenCalled();
-    });
-
-    it('uses btn-selected class when default, btn-primary when not', () => {
-        const { rerender } = render(<CvListItem {...baseProps} isDefault={false} />);
-        expect(screen.getByText('televerser.default').className).toContain('btn-primary');
-
-        rerender(<CvListItem {...baseProps} isDefault={true} />);
-        expect(screen.getByText('televerser.defaultActif').className).toContain('btn-selected');
-    });
-});
 
 describe('CvListItem — general rendering', () => {
     beforeEach(() => vi.clearAllMocks());
@@ -103,6 +46,12 @@ describe('CvListItem — general rendering', () => {
     it('renders file name', () => {
         render(<CvListItem {...baseProps} />);
         expect(screen.getByText('cv.pdf')).toBeInTheDocument();
+    });
+
+    it.each(['ACCEPTED', 'PENDING', 'DECLINED'])('does not show a default CV button for %s CVs', (status) => {
+        render(<CvListItem {...baseProps} cv={{ ...baseCv, status }} />);
+        expect(screen.queryByText('televerser.default')).not.toBeInTheDocument();
+        expect(screen.queryByText('televerser.defaultActif')).not.toBeInTheDocument();
     });
 
     it('renders status badge', () => {

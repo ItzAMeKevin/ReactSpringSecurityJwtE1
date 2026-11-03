@@ -10,8 +10,7 @@ import {
     statusBadge,
     statusBadgeColor,
     textError,
-    textMuted,
-    btnSmSelectedSoft
+    textMuted
 } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
@@ -54,11 +53,8 @@ const CvListItem = ({
                         isOpen,
                         onToggle,
                         scrollToFeedback,
-                        isDefault,
-                        onToggleDefault,
                     }) => {
     const { t } = useTranslation();
-    const isAccepted = cv.status === "ACCEPTED";
     const isDeclined = cv.status === "DECLINED";
     const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
@@ -155,17 +151,6 @@ const CvListItem = ({
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                    {isAccepted && (
-                        <button
-                            type="button"
-                            disabled={isDefault}
-                            onClick={onToggleDefault}
-                            aria-pressed={isDefault}
-                            className={isDefault ? btnSmSelectedSoft : btnSmPrimary}
-                        >
-                            {isDefault ? t("televerser.defaultActif") : t("televerser.default")}
-                        </button>
-                    )}
                     <button
                         type="button"
                         onClick={onToggle}

@@ -33,8 +33,6 @@ const PersonalSpaceStudent = () => {
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
     const [scrollToFeedbackCvId, setScrollToFeedbackCvId] = useState(null);
-    const [defaultCvId, setDefaultCvId] = useState(null);
-    const [defaultError, setDefaultError] = useState(null);
 
     useEffect(() => {
         if (location.state?.feedbackCvId) {
@@ -53,9 +51,6 @@ const PersonalSpaceStudent = () => {
                 }
                 const data = await response.json();
                 setCvList(data);
-                const current = data.find((cv) => cv.isDefault);
-                setDefaultCvId(current ? current.id : null);
-
             } catch (error) {
                 console.error("Erreur lors du chargement des CVs :", error);
                 setListError(t("televerser.erreurChargement"));
@@ -65,28 +60,6 @@ const PersonalSpaceStudent = () => {
         };
         void loadCvList();
     }, [t]);
-
-    const handleToggleDefault = async (cvId) => {
-        if (defaultCvId === cvId) return;
-
-        const previousId = defaultCvId;
-        setDefaultError(null);
-        setDefaultCvId(cvId);
-
-        try {
-            const response = await fetcher(`/student-cv/${cvId}/set-default`, {
-                method: "PUT",
-            });
-            if (!response.ok) {
-                setDefaultCvId(previousId);
-                setDefaultError(t("errors.generic"));
-            }
-        } catch (error) {
-            console.error("Erreur lors du changement de CV par défaut :", error);
-            setDefaultCvId(previousId);
-            setDefaultError(t("errors.generic"));
-        }
-    };
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
@@ -196,9 +169,6 @@ const PersonalSpaceStudent = () => {
                     {!isLoadingList && !listError && cvList.length === 0 && (
                         <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
                     )}
-                    {defaultError && (
-                        <p className={`${textError} text-sm`} role="alert">{defaultError}</p>
-                    )}
                     <div className="flex flex-col gap-3">
                         {cvList.map((cv) => (
                             <CvListItem
@@ -209,8 +179,6 @@ const PersonalSpaceStudent = () => {
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
                                 }
                                 scrollToFeedback={scrollToFeedbackCvId === cv.id}
-                                isDefault={defaultCvId === cv.id}
-                                onToggleDefault={() => handleToggleDefault(cv.id)}
                             />
                         ))}
                     </div>

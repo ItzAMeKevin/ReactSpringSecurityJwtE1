@@ -83,7 +83,7 @@
     "cvAlreadyApplied": "Ce CV a déjà été utilisé pour postuler à cette offre.",
     "jobOfferNotFound": "Offre d'emploi introuvable.",
     "userNotFound": "Utilisateur introuvable.",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "noValidatedCv": "Vous devez avoir un CV validé pour postuler."
   },
   "header": {
     "title": "ZeROSE",
@@ -112,8 +112,6 @@
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer",
-    "default": "Définir par défaut",
-    "defaultActif": "Par défaut",
     "afficher": "Afficher",
     "apercuIndisponible": "Aperçu indisponible",
     "chargementApercu": "Chargement de l'aperçu...",
