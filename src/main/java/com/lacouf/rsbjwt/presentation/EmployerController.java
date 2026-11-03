@@ -41,7 +41,8 @@ public class EmployerController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+                return ResponseEntity.badRequest()
+                    .body(JobOfferDetailDTO.builder().erreur("errors.jobOfferUpdateFailed").build());
         }
     }
 }

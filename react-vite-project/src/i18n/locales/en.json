@@ -82,7 +82,8 @@
     "invalidFileName": "The file name is invalid.",
     "offerNotFound": "Offer not found.",
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
-    "jobOfferNotFound": "Job offer not found."
+    "jobOfferNotFound": "Job offer not found.",
+    "userNotFound": "User not found."
   },
   "header": {
     "title": "ZeROSE",

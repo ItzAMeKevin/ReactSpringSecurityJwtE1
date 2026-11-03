@@ -80,12 +80,13 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void acceptCv(Long cvId) {
+    public PendingCvDto acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
         cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         eventPublisher.publishEvent(new CvDecisionEvent(cv.getId()));
+        return cvMapper.toDto(cv);
     }
 
     @Transactional

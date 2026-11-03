@@ -51,23 +51,23 @@ public class GestionnaireController {
 
     @PutMapping("/cv/{cvId}/accept")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Void> acceptCv(@PathVariable Long cvId) {
+    public ResponseEntity<PendingCvDto> acceptCv(@PathVariable Long cvId) {
         try {
-            gestionnaireService.acceptCv(cvId);
-            return ResponseEntity.noContent().build();
+            PendingCvDto cv = gestionnaireService.acceptCv(cvId);
+            return ResponseEntity.ok().body(cv);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(PendingCvDto.builder().erreur("errors.userNotFound").build());
         }
     }
 
     @PutMapping("/cv/{cvId}/decline")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Void> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvDeclineFeedbackDto feedbackRequest) {
+    public ResponseEntity<CvDeclineFeedbackDto> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvDeclineFeedbackDto feedbackRequest) {
         try {
             gestionnaireService.declineCv(cvId, feedbackRequest);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(feedbackRequest);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(CvDeclineFeedbackDto.builder().erreur("errors.userNotFound").build());
         }
     }
 
@@ -84,7 +84,7 @@ public class GestionnaireController {
     public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
         return gestionnaireService.acceptOffer(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build()));
     }
 
     @PutMapping("/offres/{id}/refuse")
@@ -92,25 +92,6 @@ public class GestionnaireController {
     public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) {
         return gestionnaireService.refuseOffer(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ── Manager Notifications (job-offer events) ──────────────────────────────
-
-    @GetMapping("/offres/notifications")
-    @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<NotificationDto>> getNotifications(Authentication authentication) {
-        return ResponseEntity.ok(systemeService.getNotifications(authentication));
-    }
-
-    @PutMapping("/offres/notifications/{id}/read")
-    @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<NotificationDto> markAsRead(
-            @PathVariable Long id, Authentication authentication) {
-        try {
-            return ResponseEntity.ok(systemeService.updateNotificationStatus(authentication, id));
-        } catch (NotificationNotFound e) {
-            return ResponseEntity.notFound().build();
-        }
+                .orElse(ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build()));
     }
 }
