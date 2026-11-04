@@ -8,6 +8,7 @@ import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
+import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -31,6 +32,7 @@ const PersonalSpaceStudent = () => {
     const [cvList, setCvList] = useState([]);
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [listError, setListError] = useState(null);
     const [scrollToFeedbackCvId, setScrollToFeedbackCvId] = useState(null);
 
@@ -178,6 +180,8 @@ const PersonalSpaceStudent = () => {
                                 onToggle={() =>
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
                                 }
+                                isHighlighted={isHighlighted(cv.id)}
+                                onClearHighlight={clearHighlight}
                                 scrollToFeedback={scrollToFeedbackCvId === cv.id}
                             />
                         ))}

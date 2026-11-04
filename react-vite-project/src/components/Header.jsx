@@ -23,9 +23,6 @@ function Header({user}) {
                 <ul className="nav-links">
                     <li><Link to="/">{t("header.accueil")}</Link></li>
                     <li><Link to="/about">{t("header.about")}</Link></li>
-                    {isStudent() && <li><Link to="/etudiant">{t("header.etudiant")}</Link></li>}
-                    {isEmployer() && <li><Link to="/employeur">{t("header.employeur")}</Link></li>}
-                    {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
                     {!user?.isLoggedIn && <li><Link to="/inscription">{t("header.inscription")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
                     {["fr", "en"].map((lang) => (

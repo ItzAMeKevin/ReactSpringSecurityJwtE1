@@ -24,9 +24,9 @@ const ManagerNotificationBell = () => {
         }
         setIsOpen(false);
         if (notification.source === "jobOffer") {
-            navigate("/gestionnaire", { state: { highlightOfferId: notification.offerId } });
+            navigate("/gestionnaire", { state: { highlightOfferId: notification.referenceId } });
         } else {
-            navigate("/gestionnaire", { state: { highlightCvId: notification.cvId } });
+            navigate("/gestionnaire", { state: { highlightCvId: notification.referenceId } });
         }
     };
 

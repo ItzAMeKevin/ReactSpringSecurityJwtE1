@@ -11,15 +11,19 @@ const NotificationBell = () => {
     const { notifications, status, unreadCount, markAsRead } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleNotificationClick = (notificationId, isRead) => {
-        if (!isRead) {
-            markAsRead(notificationId);
+    const handleNotificationClick = (notification) => {
+        if (!notification.isRead) {
+            markAsRead(notification.id);
+        }
+        if (notification.type === "CV" && !notification.feedbackCvId && notification.referenceId) {
+            setIsOpen(false);
+            navigate("/etudiant", { state: { highlightCvId: notification.referenceId } });
         }
     };
 
     const handleViewFeedback = (e, notification) => {
         e.stopPropagation();
-        handleNotificationClick(notification.id, notification.isRead);
+        if (!notification.isRead) markAsRead(notification.id);
         setIsOpen(false);
         navigate("/etudiant", { state: { feedbackCvId: notification.feedbackCvId } });
     };
@@ -54,9 +58,7 @@ const NotificationBell = () => {
                     return (
                         <li
                             key={notification.id}
-                            onClick={() =>
-                                handleNotificationClick(notification.id, notification.isRead)
-                            }
+                            onClick={() => handleNotificationClick(notification)}
                             className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
                                 notification.isRead
                                     ? "bg-white/40 text-brand/70 hover:bg-white/60"
@@ -78,9 +80,9 @@ const NotificationBell = () => {
                                     {t("notifications.voirFeedback")}
                                 </button>
                             )}
-                            {notification.createdAt && (
+                            {notification.creationDate && (
                                 <p className="text-xs text-black mt-1">
-                                    {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
+                                    {new Date(notification.creationDate).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
                         </li>

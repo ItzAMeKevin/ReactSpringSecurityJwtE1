@@ -99,8 +99,9 @@ public class SecurityConfiguration {
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
+                HttpMethod.PATCH.name(),
                 HttpMethod.DELETE.name(),
-                HttpMethod.OPTIONS.name() // Crucial for preflight requests
+                HttpMethod.OPTIONS.name()
         ));
 
         // 3. Specify allowed headers

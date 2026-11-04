@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
 import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
+import smoothScrollToElement from "../../../utils/smoothScrollToElement.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
+    const cardRef = useRef(null);
     const containerRef = useRef(null);
     const reviewInputRef = useRef(null);
 
@@ -20,6 +22,19 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     const [isDeclining, setIsDeclining] = useState(false);
     const [reviewFeedback, setReviewFeedback] = useState("");
     const [reviewError, setReviewError] = useState(null);
+
+    useEffect(() => {
+        if (isHighlighted && cardRef.current) {
+            let cancelScroll = false;
+            const timer = setTimeout(() => {
+                cancelScroll = smoothScrollToElement(cardRef.current);
+            }, 300);
+            return () => {
+                clearTimeout(timer);
+                if (cancelScroll) cancelScroll();
+            };
+        }
+    }, [isHighlighted]);
 
     useEffect(() => {
         if (!containerRef.current || !isOpen) return;
@@ -87,7 +102,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     };
 
     return (
-        <div className={`${cardItem} ${
+        <div ref={cardRef} className={`${cardItem} ${
             isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
         }`}>
             <div className="flex flex-wrap items-center justify-between gap-3">

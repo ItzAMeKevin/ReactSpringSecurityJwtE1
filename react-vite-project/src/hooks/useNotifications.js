@@ -11,7 +11,7 @@ const useNotifications = () => {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const response = await fetcher("/etudiant/notifications");
+            const response = await fetcher("/notifications");
             if (!response.ok) {
                 setStatus("error");
                 return;
@@ -19,7 +19,9 @@ const useNotifications = () => {
             const data = await response.json();
             const enrichedData = data.map((n) => ({
                 ...n,
-                feedbackCvId: n.type === "CV_REJECTED" && n.studentCv ? n.studentCv.id : null,
+                isRead: n.status === "READ",
+                type: n.notificationType,
+                feedbackCvId: (n.notificationType === "CV" && n.referenceId && (n.message || "").includes("CV_DECLINED")) ? n.referenceId : null,
             }));
             setNotifications(enrichedData);
             const unread = enrichedData.filter((n) => !n.isRead).length;
@@ -47,8 +49,8 @@ const useNotifications = () => {
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
-                method: "PUT",
+            const response = await fetcher(`/notifications/${notificationId}`, {
+                method: "PATCH",
             });
             if (!response.ok) {
                 console.error("Erreur lors du marquage de la notification comme lue");

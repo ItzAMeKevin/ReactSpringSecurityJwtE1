@@ -53,6 +53,8 @@ const CvListItem = ({
                         isOpen,
                         onToggle,
                         scrollToFeedback,
+                        isHighlighted = false,
+                        onClearHighlight,
                     }) => {
     const { t } = useTranslation();
     const isDeclined = cv.status === "DECLINED";
@@ -67,6 +69,15 @@ const CvListItem = ({
             cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
     }, [scrollToFeedback]);
+
+    useEffect(() => {
+        if (isHighlighted && cardRef.current) {
+            const timer = setTimeout(() => {
+                cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [isHighlighted]);
 
     useEffect(() => {
         if (!isDeclined) return;
@@ -140,7 +151,7 @@ const CvListItem = ({
     };
 
     return (
-        <div ref={cardRef} className={`${cardItem} border-2`}>
+        <div ref={cardRef} className={`${cardItem} border-2 ${isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''}`}>
             <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex items-center gap-2">
                     <span className="text-main font-medium truncate">{cv.fileName}</span>
@@ -153,7 +164,7 @@ const CvListItem = ({
                 <div className="flex shrink-0 gap-2">
                     <button
                         type="button"
-                        onClick={onToggle}
+                        onClick={() => { onToggle(); onClearHighlight?.(); }}
                         aria-expanded={isOpen}
                         className={`${btnSmPrimary}`}
                     >

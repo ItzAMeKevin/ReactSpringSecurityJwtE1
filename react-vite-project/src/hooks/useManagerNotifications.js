@@ -11,21 +11,18 @@ const useManagerNotifications = (enabled = true) => {
 
     const fetchNotifications = useCallback(async () => {
         try {
-            const [cvRes, offerRes] = await Promise.all([
-                fetcher("/gestionnaire/notifications"),
-                fetcher("/gestionnaire/offres/notifications"),
-            ]);
-            if (!cvRes.ok || !offerRes.ok) {
+            const res = await fetcher("/notifications");
+            if (!res.ok) {
                 setStatus("error");
                 return;
             }
-            const cvNotifs = (await cvRes.json()).map((n) => ({ ...n, source: "cv" }));
-            const offerNotifs = (await offerRes.json()).map((n) => ({
+            const data = await res.json();
+            const all = data.map((n) => ({
                 ...n,
-                source: "jobOffer",
-                type: n.type || "JOB_OFFER_UPLOADED",
+                isRead: n.status === "READ",
+                type: n.notificationType,
+                source: n.notificationType === "JOB_OFFER" ? "jobOffer" : "cv",
             }));
-            const all = [...cvNotifs, ...offerNotifs];
             setNotifications(all);
             setUnreadCount(all.filter((n) => !n.isRead).length);
             setStatus(all.length === 0 ? "empty" : "ready");
@@ -52,11 +49,9 @@ const useManagerNotifications = (enabled = true) => {
     }, [fetchNotifications, enabled]);
 
     const markAsRead = useCallback(async (notificationId, source) => {
-        const endpoint = source === "jobOffer"
-            ? `/gestionnaire/offres/notifications/${notificationId}/read`
-            : `/gestionnaire/notifications/${notificationId}/read`;
+        const endpoint = `/notifications/${notificationId}`;
         try {
-            const response = await fetcher(endpoint, { method: "PUT" });
+            const response = await fetcher(endpoint, { method: "PATCH" });
             if (!response.ok) {
                 console.error("Error marking notification as read");
                 return;
@@ -76,18 +71,18 @@ const useManagerNotifications = (enabled = true) => {
     const removeNotificationsByCvId = useCallback((cvId) => {
         setNotifications((current) => {
             const removedUnreadCount = current
-                .filter((n) => n.source === "cv" && n.cvId === cvId && !n.isRead).length;
+                .filter((n) => n.source === "cv" && n.referenceId === cvId && !n.isRead).length;
             setUnreadCount((prev) => Math.max(0, prev - removedUnreadCount));
-            return current.filter((n) => !(n.source === "cv" && n.cvId === cvId));
+            return current.filter((n) => !(n.source === "cv" && n.referenceId === cvId));
         });
     }, []);
 
     const removeNotificationsByOfferId = useCallback((offerId) => {
         setNotifications((current) => {
             const removedUnreadCount = current
-                .filter((n) => n.source === "jobOffer" && n.offerId === offerId && !n.isRead).length;
+                .filter((n) => n.source === "jobOffer" && n.referenceId === offerId && !n.isRead).length;
             setUnreadCount((prev) => Math.max(0, prev - removedUnreadCount));
-            return current.filter((n) => !(n.source === "jobOffer" && n.offerId === offerId));
+            return current.filter((n) => !(n.source === "jobOffer" && n.referenceId === offerId));
         });
     }, []);
 

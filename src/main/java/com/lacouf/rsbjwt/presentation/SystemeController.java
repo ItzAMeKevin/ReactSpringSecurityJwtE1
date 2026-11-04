@@ -32,16 +32,12 @@ public class SystemeController {
         }
     }
 
-    @PatchMapping
-    public ResponseEntity<NotificationDto> updateNotification(Authentication authentication, Long notificationId) {
+    @PatchMapping("/{notificationId}")
+    public ResponseEntity<NotificationDto> updateNotification(Authentication authentication, @org.springframework.web.bind.annotation.PathVariable Long notificationId) {
        try {
             NotificationDto updatedNotification = notificationService.updateNotificationStatus(authentication, notificationId);
             return ResponseEntity.ok(updatedNotification);
         } catch (NotificationNotFound e) {
-           NotificationDto errorResponse = NotificationDto.builder()
-                     .erreur(e.getMessage())
-                      .build();
-
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.status(500).build();

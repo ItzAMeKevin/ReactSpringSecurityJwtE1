@@ -14,7 +14,9 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
 
-    Optional<List<Notification>> findByUserEmail(String userEmail);
+    @Query("SELECT n FROM Notification n WHERE n.user.credentials.email = :email")
+    Optional<List<Notification>> findByUserEmail(@Param("email") String email);
 
-    Optional<Notification> findByIdAndUserEmail(Long notificationId, String userEmail);
+    @Query("SELECT n FROM Notification n WHERE n.id = :id AND n.user.credentials.email = :email")
+    Optional<Notification> findByIdAndUserEmail(@Param("id") Long id, @Param("email") String email);
 }
