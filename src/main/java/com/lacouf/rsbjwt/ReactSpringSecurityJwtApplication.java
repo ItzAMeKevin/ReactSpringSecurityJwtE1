@@ -96,6 +96,17 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             student2.setPrograme(Programe.TECHNIQUES_GESTION_HOTELIERE);
             userAppService.inscription(student2);
         }
+        if (userAppService.getUserByEmail("bb@b.com") == null) {
+            StudentCreateDto student2 = new StudentCreateDto();
+            student2.setFirstName("Mars");
+            student2.setLastname("Jupiter");
+            student2.setMatricule("2121213");
+            student2.setEmail("bb@b.com");
+            student2.setPassword(passwordEncoder.encode("bib"));
+            student2.setRole(Role.STUDENT);
+            student2.setPrograme(Programe.TECHNIQUES_LOGISTIQUE_TRANSPORT);
+            userAppService.inscription(student2);
+        }
 
         if (userAppService.getUserByEmail("jaime.laguerre@yahoo.com") == null) {
             StudentCreateDto jaime = new StudentCreateDto();
@@ -216,7 +227,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
                 "22",
-                LocalDate.of(2026, 5, 4), 15, Status.WAITING,
+                LocalDate.of(2026, 5, 4), 15, Status.PENDING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         // PENDING: the manager reviews and accepts this one during the demo
@@ -269,7 +280,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login
-        seedCv(studentCvs, student, "cv-sophie-web.pdf", Status.ACCEPTED,
+        seedCv(studentCvs, student, "cv-sophie-web.pdf", Status.PENDING,
                 buildCvStream(
                         "Sophie Tremblay",
                         "ll@l.com  |  514-555-0192  |  Montreal, QC",
