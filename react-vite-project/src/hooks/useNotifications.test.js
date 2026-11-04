@@ -11,25 +11,32 @@ vi.mock("../utils/fetcher.js", () => ({
 const okResponse = (data) => ({ ok: true, json: () => Promise.resolve(data) });
 const errorResponse = () => ({ ok: false });
 
+// Format renvoyé par GET /notifications
 const acceptedNotification = {
     id: 1,
-    type: "CV_ACCEPTED",
-    isRead: false,
-    studentCv: { id: 10 },
+    notificationType: "CV",
+    referenceId: 10,
+    message: "notification.types.CV_ACCEPTED.message",
+    status: "UNREAD",
+    creationDate: "2026-10-15T14:30:00Z",
 };
 
 const rejectedNotification = {
     id: 2,
-    type: "CV_REJECTED",
-    isRead: false,
-    studentCv: { id: 55 },
+    notificationType: "CV",
+    referenceId: 55,
+    message: "notification.types.CV_DECLINED.message",
+    status: "UNREAD",
+    creationDate: "2026-10-16T09:00:00Z",
 };
 
 const readNotification = {
     id: 3,
-    type: "CV_ACCEPTED",
-    isRead: true,
-    studentCv: { id: 11 },
+    notificationType: "CV",
+    referenceId: 11,
+    message: "notification.types.CV_ACCEPTED.message",
+    status: "READ",
+    creationDate: "2026-10-14T08:00:00Z",
 };
 
 const renderReadyHook = async (data) => {
@@ -58,10 +65,10 @@ describe("useNotifications - chargement", () => {
         expect(result.current.notifications).toEqual([]);
     });
 
-    it("should fetch the student notifications", async () => {
+    it("should fetch the notifications of the logged-in user", async () => {
         await renderReadyHook([acceptedNotification]);
 
-        expect(fetcher).toHaveBeenCalledWith("/etudiant/notifications");
+        expect(fetcher).toHaveBeenCalledWith("/notifications");
     });
 
     it("should be ready with the notifications and the unread count", async () => {
@@ -100,34 +107,84 @@ describe("useNotifications - chargement", () => {
     });
 });
 
-describe("useNotifications - feedbackCvId", () => {
-    it("should set feedbackCvId to the CV id for a rejected CV", async () => {
-        const { result } = await renderReadyHook([rejectedNotification]);
+describe("useNotifications - normalisation", () => {
+    it("should map the backend fields to the frontend shape", async () => {
+        const { result } = await renderReadyHook([acceptedNotification, readNotification]);
 
-        expect(result.current.notifications[0].feedbackCvId).toBe(55);
+        expect(result.current.notifications[0]).toEqual({
+            id: 1,
+            category: "CV",
+            event: "CV_ACCEPTED",
+            referenceId: 10,
+            message: null,
+            isRead: false,
+            date: "2026-10-15T14:30:00Z",
+            target: { path: "/etudiant", state: { highlight: { kind: "cv", id: 10 } } },
+        });
+        expect(result.current.notifications[1].isRead).toBe(true);
     });
 
-    it("should set feedbackCvId to null for an accepted CV", async () => {
-        const { result } = await renderReadyHook([acceptedNotification]);
+    it("should keep a plain message that is not an event key", async () => {
+        const { result } = await renderReadyHook([{ ...acceptedNotification, message: "Texte libre" }]);
 
-        expect(result.current.notifications[0].feedbackCvId).toBeNull();
+        expect(result.current.notifications[0].event).toBeNull();
+        expect(result.current.notifications[0].message).toBe("Texte libre");
     });
 
-    it("should set feedbackCvId to null for a rejected CV without studentCv", async () => {
-        const { result } = await renderReadyHook([{ ...rejectedNotification, studentCv: null }]);
+    it("should have no event when the message is missing", async () => {
+        const { result } = await renderReadyHook([{ ...acceptedNotification, message: null }]);
 
-        expect(result.current.notifications[0].feedbackCvId).toBeNull();
+        expect(result.current.notifications[0].event).toBeNull();
+    });
+});
+
+
+describe("useNotifications - target", () => {
+    it.each([
+        ["CV_UPLOADED", "CV", "/gestionnaire", "cv"],
+        ["JOB_OFFER_CREATED", "JOB_OFFER", "/gestionnaire", "offer"],
+        ["CV_ACCEPTED", "CV", "/etudiant", "cv"],
+        ["CV_DECLINED", "CV", "/etudiant", "cv"],
+        ["JOB_OFFER_ACCEPTED", "JOB_OFFER", "/employeur", "offer"],
+        ["JOB_OFFER_DECLINED", "JOB_OFFER", "/employeur", "offer"],
+    ])("should lead %s to the highlighted item on %s's page", async (event, category, path, kind) => {
+        const { result } = await renderReadyHook([{
+            ...acceptedNotification,
+            notificationType: category,
+            referenceId: 7,
+            message: `notification.types.${event}.message`,
+        }]);
+
+        expect(result.current.notifications[0].target).toEqual({
+            path,
+            state: { highlight: { kind, id: 7 } },
+        });
+    });
+
+    it("should have no target for an unknown event", async () => {
+        const { result } = await renderReadyHook([{
+            ...acceptedNotification,
+            message: "notification.types.INCONNU.message",
+        }]);
+
+        expect(result.current.notifications[0].target).toBeNull();
+    });
+
+    it("should have no target when there is no event", async () => {
+        const { result } = await renderReadyHook([{ ...acceptedNotification, message: "Texte libre" }]);
+
+        expect(result.current.notifications[0].target).toBeNull();
     });
 });
 
 describe("useNotifications - markAsRead", () => {
-    it("should call the read endpoint with PUT", async () => {
+    it("should call the read endpoint with PATCH", async () => {
         const { result } = await renderReadyHook([acceptedNotification]);
         fetcher.mockResolvedValueOnce({ ok: true });
 
         await act(() => result.current.markAsRead(1));
 
-        expect(fetcher).toHaveBeenCalledWith("/etudiant/notifications/1/read", { method: "PUT" });
+        expect(fetcher).toHaveBeenCalledWith("/notifications?notificationId=1", { method: "PATCH" });
     });
 
     it("should mark the notification as read and decrement the unread count", async () => {

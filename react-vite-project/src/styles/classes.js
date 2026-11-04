@@ -6,10 +6,6 @@ export const btnPrimary = "bg-brand text-white px-4 border border-black py-2 hov
 /** Small primary button — used in CV/offer list items */
 export const btnSmPrimary = "bg-brand text-white text-sm font-medium py-1.5 px-3 border border-black py-2 hover:shadow-md hover:shadow-brand rounded-md hover:bg-brand-hover transition-colors";
 
-/** Selected/active state button (small) — used when an option is already chosen, e.g. default CV */
-export const btnSmSelectedSoft =
-    "bg-selected-bg text-selected-text text-sm font-medium py-1.5 px-3 border border-selected-border rounded-md cursor-default disabled:opacity-60";
-
 /** Accept / upload button (small) — used in manager and student pages */
 export const btnAccept = "bg-accept text-white text-sm font-bold py-1.5 px-3 border border-black py-2 hover:shadow-md hover:shadow-accept rounded-md hover:bg-accept-hover transition-colors disabled:opacity-60";
 
@@ -30,15 +26,17 @@ export const btnRefuse = "bg-red-700 text-white text-sm font-bold py-1.5 px-3 bo
 /** CV / offer list item card */
 export const cardItem = "rounded-xl border border-brand/20 bg-white/40 px-4 py-3 transition-all duration-500";
 
+/** Highlight for a card targeted by a notification */
+export const cardHighlighted = "bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200";
+
 // ── Status badges ─────────────────────────────────────────────────────────────
 
 /** Base shape of a status badge (CV / offer) */
 export const statusBadge = "shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full";
 
-/** Badge colors by status — WAITING (offers) and PENDING (CVs) share the "waiting" look */
+/** Badge colors by status (CVs, offers, applications) */
 const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
-    WAITING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
 };

@@ -5,13 +5,13 @@ import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
 import {
     cardItem,
+    cardHighlighted,
     btnSmPrimary,
     btnRefuse,
     statusBadge,
     statusBadgeColor,
     textError,
-    textMuted,
-    btnSmSelectedSoft
+    textMuted
 } from "../../../styles/classes.js";
 
 const CvPreview = ({ file }) => {
@@ -53,24 +53,22 @@ const CvListItem = ({
                         cv,
                         isOpen,
                         onToggle,
-                        isFeedbackOpen,
-                        onToggleFeedback,
-                        isDefault,
-                        onToggleDefault,
+                        isHighlighted,
+                        onClearHighlight,
+                        onReplace,
                     }) => {
     const { t } = useTranslation();
-    const isAccepted = cv.status === "ACCEPTED";
     const isDeclined = cv.status === "DECLINED";
-    const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [previewError, setPreviewError] = useState(false);
     const [feedback, setFeedback] = useState(null);
     const [feedbackError, setFeedbackError] = useState(false);
+    const replaceInputRef = useRef(null);
+    const [isReplacing, setIsReplacing] = useState(false);
+    const [replaceError, setReplaceError] = useState(null);
 
     useEffect(() => {
-        if (!isFeedbackOpen) return;
-        cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        if (feedback !== null) return;
+        if (!isDeclined) return;
         let cancelled = false;
         setFeedbackError(false);
         fetcher(`/student-cv/${cv.id}/review`)
@@ -86,7 +84,7 @@ const CvListItem = ({
         return () => {
             cancelled = true;
         };
-    }, [isFeedbackOpen, cv.id, feedback]);
+    }, [isDeclined, cv.id]);
 
     useEffect(() => {
         if (!isOpen || cv.file || previewUrl) return;
@@ -125,6 +123,27 @@ const CvListItem = ({
         );
     };
 
+    // The new version is a regular upload; the page hides this one if the file name is the same
+    const handleReplaceFile = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        if (file.type !== "application/pdf") {
+            setReplaceError("televerser.erreurTypeFichier");
+            return;
+        }
+        setReplaceError(null);
+        setIsReplacing(true);
+        try {
+            if (!(await onReplace(file))) setReplaceError("televerser.envoieErreur");
+        } catch (error) {
+            console.error("Erreur lors du remplacement du CV :", error);
+            setReplaceError("televerser.envoieErreur");
+        } finally {
+            setIsReplacing(false);
+        }
+    };
+
     const renderFeedback = () => {
         if (feedbackError) {
             return <p className={`text-sm ${textError}`}>{t("televerser.erreurFeedback")}</p>;
@@ -141,7 +160,10 @@ const CvListItem = ({
     };
 
     return (
-        <div ref={cardRef} className={`${cardItem} border-2`}>
+        <div
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} border-2 ${isHighlighted ? cardHighlighted : ''}`}
+        >
             <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex items-center gap-2">
                     <span className="text-main font-medium truncate">{cv.fileName}</span>
@@ -152,26 +174,24 @@ const CvListItem = ({
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                    {isAccepted && (
-                        <button
-                            type="button"
-                            disabled={isDefault}
-                            onClick={onToggleDefault}
-                            aria-pressed={isDefault}
-                            className={isDefault ? btnSmSelectedSoft : btnSmPrimary}
-                        >
-                            {isDefault ? t("televerser.defaultActif") : t("televerser.default")}
-                        </button>
-                    )}
                     {isDeclined && (
-                        <button
-                            type="button"
-                            onClick={onToggleFeedback}
-                            aria-expanded={isFeedbackOpen}
-                            className={btnSmPrimary}
-                        >
-                            {isFeedbackOpen ? t("televerser.masquerFeedback") : t("televerser.voirFeedback")}
-                        </button>
+                        <>
+                            <input
+                                ref={replaceInputRef}
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleReplaceFile}
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => replaceInputRef.current?.click()}
+                                disabled={isReplacing}
+                                className={btnSmPrimary}
+                            >
+                                {isReplacing ? t("televerser.remplacementEnCours") : t("televerser.remplacerCv")}
+                            </button>
+                        </>
                     )}
                     <button
                         type="button"
@@ -184,7 +204,11 @@ const CvListItem = ({
                 </div>
             </div>
 
-            {isDeclined && isFeedbackOpen && (
+            {replaceError && (
+                <p className={`mt-2 text-sm ${textError}`} role="alert">{t(replaceError)}</p>
+            )}
+
+            {isDeclined && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
                     {renderFeedback()}
                 </div>

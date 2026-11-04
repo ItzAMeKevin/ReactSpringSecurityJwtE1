@@ -4,8 +4,6 @@ public enum Status {
     PENDING,
     ACCEPTED,
     DECLINED,
-    WAITING,
-    SENT,
-    FAILED,
-    RETRYING
+    READ,
+    UNREAD
 }

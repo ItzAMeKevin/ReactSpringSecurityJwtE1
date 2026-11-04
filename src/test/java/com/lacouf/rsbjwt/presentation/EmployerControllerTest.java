@@ -6,8 +6,8 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.SecurityConfiguration;
-import com.lacouf.rsbjwt.security.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -116,7 +116,7 @@ class EmployerControllerTest {
                 "Spring Boot, JPA",
                 adresseDTO,
                 "60000$",
-                Status.WAITING,
+                Status.PENDING,
                 LocalDate.now(),
                 LocalDate.of(2025, 3, 1),
                 12,
@@ -144,7 +144,7 @@ class EmployerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.title").value("Développeur Java"))
-                .andExpect(jsonPath("$.status").value("WAITING"))
+                .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.companyName").value("ACME Inc."));
 
         verify(employerService, times(1)).addJobOffer(any(JobOfferCreateDTO.class), anyString());
@@ -190,7 +190,7 @@ class EmployerControllerTest {
                         "Spring Boot, JPA",
                         adresseDTO,
                         "60000$",
-                        Status.WAITING,
+                        Status.PENDING,
                         LocalDate.now(),
                         LocalDate.of(2025, 3, 1),
                         12,

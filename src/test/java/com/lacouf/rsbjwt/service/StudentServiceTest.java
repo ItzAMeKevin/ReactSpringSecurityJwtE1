@@ -6,8 +6,8 @@ import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
-import com.lacouf.rsbjwt.security.exception.NoValidatedCvException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.NoValidatedCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +52,6 @@ public class StudentServiceTest {
     private Student student;
     private JobOffer jobOffer;
     private JobOfferDetailDTO jobOfferDetailDTO;
-    private StudentCv latestCv;
     private static final String STUDENT_EMAIL = "student@test.com";
 
     @BeforeEach
@@ -79,8 +78,6 @@ public class StudentServiceTest {
                 LocalDate.now(), LocalDate.of(2025, 9, 1),
                 16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp"
         );
-
-        latestCv = mock(StudentCv.class);
     }
     private JobApplication application(JobOffer offer, Status status) {
         JobApplication application = new JobApplication();
@@ -104,11 +101,9 @@ public class StudentServiceTest {
     @Test
     @DisplayName("getAcceptedJobOffers retourne les offres quand le CV est validé")
     void getAcceptedJobOffers_returnsOffers_whenCvAccepted() {
-        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.of(latestCv));
+        when(studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)).thenReturn(true);
         when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
@@ -116,9 +111,9 @@ public class StudentServiceTest {
         List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
 
         assertEquals(1, result.size());
-        assertEquals("Dev Java", result.get(0).title());
+        assertEquals("Dev Java", result.get(0).getTitle());
         verify(studentRepository).findByCredentialsEmail(STUDENT_EMAIL);
-        verify(studentCvRepository).findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL);
+        verify(studentCvRepository).existsByStudentAndStatus(student, Status.ACCEPTED);
         verify(jobOfferRepository).findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE);
     }
 
@@ -127,8 +122,7 @@ public class StudentServiceTest {
     void getAcceptedJobOffers_throwsForbidden_whenNoCvAccepted() {
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.empty());
+        when(studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)).thenReturn(false);
 
         assertThrows(NoValidatedCvException.class,
                 () -> studentService.getAcceptedJobOffers(STUDENT_EMAIL));
@@ -139,11 +133,9 @@ public class StudentServiceTest {
     @Test
     @DisplayName("getAcceptedJobOffers retourne liste vide si aucune offre pour le programme")
     void getAcceptedJobOffers_returnsEmpty_whenNoOffersForProgram() {
-        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.of(latestCv));
+        when(studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)).thenReturn(true);
         when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of());
 
@@ -166,29 +158,13 @@ public class StudentServiceTest {
         verifyNoInteractions(jobOfferRepository);
     }
 
-    @ParameterizedTest(name = "un étudiant dont le dernier CV est {0} ne peut pas voir les offres")
-    @EnumSource(value = Status.class, names = "ACCEPTED", mode = EnumSource.Mode.EXCLUDE)
-    void getAcceptedJobOffers_throwsNoValidatedCv_whenLatestCvNotAccepted(Status status) {
-        when(latestCv.getStatus()).thenReturn(status);
-        when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
-                .thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.of(latestCv));
-
-        assertThrows(NoValidatedCvException.class,
-                () -> studentService.getAcceptedJobOffers(STUDENT_EMAIL));
-
-        verifyNoInteractions(jobOfferRepository);
-    }
 
     @ParameterizedTest(name = "une candidature {0} est transmise dans applicationStatus")
     @EnumSource(Status.class)
     @DisplayName("getAcceptedJobOffers : transmet le statut de la candidature")
     void getAcceptedJobOffers_exposesApplicationStatus(Status applicationStatus) {
-        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL)).thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.of(latestCv));
+        when(studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)).thenReturn(true);
         when(jobApplicationRepository.findByStudentIdWithOffer(1L))
                 .thenReturn(List.of(application(jobOffer, applicationStatus)));
         when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
@@ -197,18 +173,16 @@ public class StudentServiceTest {
 
         List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
 
-        assertTrue(result.get(0).applied());
-        assertEquals(applicationStatus, result.get(0).applicationStatus());
+        assertTrue(result.get(0).isApplied());
+        assertEquals(applicationStatus, result.get(0).getApplicationStatus());
     }
 
     @Test
     @DisplayName("getAcceptedJobOffers : garde la candidature la plus récente quand il y en a plusieurs sur la même offre")
     void getAcceptedJobOffers_keepsMostRecentApplication_whenDuplicates() {
         JobOffer offer = offerWithId(10L);
-        when(latestCv.getStatus()).thenReturn(Status.ACCEPTED);
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL)).thenReturn(Optional.of(student));
-        when(studentCvRepository.findFirstByStudentCredentialsEmailOrderByUploadedAtDesc(STUDENT_EMAIL))
-                .thenReturn(Optional.of(latestCv));
+        when(studentCvRepository.existsByStudentAndStatus(student, Status.ACCEPTED)).thenReturn(true);
         when(jobApplicationRepository.findByStudentIdWithOffer(1L)).thenReturn(List.of(
                 application(offer, Status.DECLINED),
                 application(offer, Status.PENDING)));
@@ -219,7 +193,7 @@ public class StudentServiceTest {
         List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
 
         assertEquals(1, result.size());
-        assertEquals(Status.DECLINED, result.get(0).applicationStatus());
+        assertEquals(Status.DECLINED, result.get(0).getApplicationStatus());
     }
 }
 

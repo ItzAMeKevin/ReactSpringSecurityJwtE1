@@ -7,11 +7,9 @@ import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.ManagerNotificationRepository;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
-import com.lacouf.rsbjwt.security.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
@@ -48,10 +46,7 @@ class EmployerServiceTest {
     private JobOfferMapper jobOfferMapper;
 
     @Mock
-    private ManagerRepository managerRepository;
-
-    @Mock
-    private ManagerNotificationRepository managerNotificationRepository;
+    private SystemeService systemeService;
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
@@ -146,7 +141,7 @@ class EmployerServiceTest {
         JobOfferDetailDTO expected = new JobOfferDetailDTO(
                 1L, "Titre", "Desc", "Preq",
                 adresse,
-                "60000$", Status.WAITING,
+                "60000$", Status.PENDING,
                 LocalDate.now(), LocalDate.of(2025, 3, 1),
                 12, Programe.TECHNIQUES_INFORMATIQUE, "ACME Inc."
         );
@@ -193,98 +188,47 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("addJobOffer crée une notification par gestionnaire")
-    void addJobOffer_notifiesAllManagers() {
-        // Arrange
+    @DisplayName("addJobOffer notifie les gestionnaires de la nouvelle offre")
+    void addJobOffer_notifiesManagers() {
         String email = "marie@acme.com";
-        jobOffer.setPrograme(Programe.TECHNIQUES_INFORMATIQUE);
-        jobOffer.setEmployer(employer);
-
-        Manager m1 = mock(Manager.class, RETURNS_DEEP_STUBS);
-        Manager m2 = mock(Manager.class, RETURNS_DEEP_STUBS);
-
         when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
         when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
         when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
-        when(managerRepository.findAll()).thenReturn(List.of(m1, m2));
 
-        // Act
         employerService.addJobOffer(validCreateDto(), email);
 
-        // Assert
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<ManagerNotification>> captor = ArgumentCaptor.forClass(List.class);
-        verify(managerNotificationRepository).saveAll(captor.capture());
-
-        List<ManagerNotification> saved = captor.getValue();
-        assertEquals(2, saved.size());
-        assertEquals(m1, saved.get(0).getManager());
-        assertEquals(m2, saved.get(1).getManager());
-
-        ManagerNotification n = saved.get(0);
-        assertEquals("Nouvelle offre de stage", n.getTitle());
-        assertEquals(jobOffer.getId(), n.getOfferId());
-        assertEquals("ACME Inc.", n.getCompanyName());
-        assertEquals("Développeur Java", n.getOfferTitle());
-        assertEquals("TECHNIQUES_INFORMATIQUE", n.getProgram());
-        assertEquals(
-                "L'entreprise \"ACME Inc.\" a déposé une offre : \"Développeur Java\" (TECHNIQUES_INFORMATIQUE)",
-                n.getMessage());
-        assertFalse(n.isRead());
-    }
-
-    @Test
-    @DisplayName("addJobOffer sauvegarde une liste vide s'il n'y a aucun gestionnaire")
-    void addJobOffer_noManagers_savesEmptyList() {
-        // Arrange
-        String email = "marie@acme.com";
-        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
-        when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
-        when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
-        when(managerRepository.findAll()).thenReturn(List.of());
-
-        // Act
-        employerService.addJobOffer(validCreateDto(), email);
-
-        // Assert
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<ManagerNotification>> captor = ArgumentCaptor.forClass(List.class);
-        verify(managerNotificationRepository).saveAll(captor.capture());
-        assertTrue(captor.getValue().isEmpty());
-    }
-
-    @Test
-    @DisplayName("addJobOffer réussit même si la notification échoue")
-    void addJobOffer_notificationFailure_doesNotBreakCreation() {
-        // Arrange
-        String email = "marie@acme.com";
-        JobOfferDetailDTO expected = mock(JobOfferDetailDTO.class);
-
-        when(employerRepository.findByCredentialsEmail(email)).thenReturn(Optional.of(employer));
-        when(jobOfferMapper.toEntity(any())).thenReturn(jobOffer);
-        when(jobOfferRepository.save(jobOffer)).thenReturn(jobOffer);
-        when(managerRepository.findAll()).thenThrow(new RuntimeException("DB down"));
-        when(jobOfferMapper.toDto(jobOffer)).thenReturn(expected);
-
-        // Act
-        JobOfferDetailDTO result = employerService.addJobOffer(validCreateDto(), email);
-
-        // Assert
-        assertSame(expected, result);
-        verify(jobOfferRepository).save(jobOffer);
-        verifyNoInteractions(managerNotificationRepository);
+        verify(systemeService).notifyManagers(NotificationType.JOB_OFFER, 1L, "notification.types.JOB_OFFER_CREATED.message");
     }
 
     @Test
     @DisplayName("addJobOffer ne notifie personne si l'employeur est introuvable")
     void addJobOffer_employerNotFound_noNotification() {
-        // Arrange
         when(employerRepository.findByCredentialsEmail("x@test.com")).thenReturn(Optional.empty());
 
-        // Act + Assert
         assertThrows(EmployerNotFoundException.class,
                 () -> employerService.addJobOffer(validCreateDto(), "x@test.com"));
-        verifyNoInteractions(managerRepository, managerNotificationRepository);
+        verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("updateRefusedJobOffer ne modifie qu'une offre refusée et la remet en attente")
+    void updateRefusedJobOffer_onlyUpdatesDeclinedOffer() {
+        String email = "marie@acme.com";
+        JobOffer offer = new JobOffer();
+        offer.setStatus(Status.DECLINED);
+        when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(offer));
+        when(jobOfferMapper.toEntity(any(JobOfferCreateDTO.class))).thenReturn(new JobOffer());
+        when(jobOfferRepository.save(offer)).thenReturn(offer);
+        when(jobOfferMapper.toDto(offer)).thenReturn(JobOfferDetailDTO.builder().build());
+
+        assertTrue(employerService.updateRefusedJobOffer(1L, validCreateDto(), email).isPresent());
+        assertEquals(Status.PENDING, offer.getStatus());
+
+        offer.setStatus(Status.ACCEPTED);
+        assertThrows(IllegalStateException.class,
+                () -> employerService.updateRefusedJobOffer(1L, validCreateDto(), email));
+        when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(2L, email)).thenReturn(Optional.empty());
+        assertTrue(employerService.updateRefusedJobOffer(2L, validCreateDto(), email).isEmpty());
     }
 
     @Test
@@ -378,7 +322,7 @@ class EmployerServiceTest {
     @DisplayName("updateCandidateStatus refuse un statut autre que ACCEPTED ou DECLINED")
     void updateCandidateStatus_invalidStatus() {
         assertThrows(IllegalArgumentException.class,
-                () -> employerService.updateCandidateStatus(1L, 5L, Status.WAITING, "marie@acme.com"));
+                () -> employerService.updateCandidateStatus(1L, 5L, Status.PENDING, "marie@acme.com"));
         verifyNoInteractions(jobApplicationRepository);
     }
 

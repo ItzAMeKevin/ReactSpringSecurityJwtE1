@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import {useLocation, useNavigate} from "react-router-dom";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
+import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 
@@ -22,8 +22,7 @@ const fileToBase64 = (file) =>
 
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
-    const location = useLocation();
-    const navigate = useNavigate();
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const inputRef = useRef(null);
     const [fileError, setFileError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -32,16 +31,6 @@ const PersonalSpaceStudent = () => {
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
-    const [openFeedbackCvId, setOpenFeedbackCvId] = useState(null);
-    const [defaultCvId, setDefaultCvId] = useState(null);
-    const [defaultError, setDefaultError] = useState(null);
-
-    useEffect(() => {
-        if (location.state?.feedbackCvId) {
-            setOpenFeedbackCvId(location.state.feedbackCvId);
-            navigate(location.pathname, { replace: true, state: null });
-        }
-    }, [location.key, location.state?.feedbackCvId, navigate, location.pathname]);
 
     useEffect(() => {
         const loadCvList = async () => {
@@ -53,9 +42,6 @@ const PersonalSpaceStudent = () => {
                 }
                 const data = await response.json();
                 setCvList(data);
-                const current = data.find((cv) => cv.isDefault);
-                setDefaultCvId(current ? current.id : null);
-
             } catch (error) {
                 console.error("Erreur lors du chargement des CVs :", error);
                 setListError(t("televerser.erreurChargement"));
@@ -65,28 +51,6 @@ const PersonalSpaceStudent = () => {
         };
         void loadCvList();
     }, [t]);
-
-    const handleToggleDefault = async (cvId) => {
-        if (defaultCvId === cvId) return;
-
-        const previousId = defaultCvId;
-        setDefaultError(null);
-        setDefaultCvId(cvId);
-
-        try {
-            const response = await fetcher(`/student-cv/${cvId}/set-default`, {
-                method: "PUT",
-            });
-            if (!response.ok) {
-                setDefaultCvId(previousId);
-                setDefaultError(t("errors.generic"));
-            }
-        } catch (error) {
-            console.error("Erreur lors du changement de CV par défaut :", error);
-            setDefaultCvId(previousId);
-            setDefaultError(t("errors.generic"));
-        }
-    };
 
     const handleInputChange = (event) => {
         const file = event.target.files?.[0];
@@ -107,25 +71,28 @@ const PersonalSpaceStudent = () => {
         setUploadState("idle");
     };
 
+    const uploadCv = async (file) => {
+        const content = await fileToBase64(file);
+        const response = await fetcher("/student-cv", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                fileName: file.name,
+                contentType: file.type,
+                content,
+            }),
+        });
+        if (response.status !== 201) return false;
+        const cvMeta = await response.json();
+        setCvList((prev) => [{ ...cvMeta, file }, ...prev]);
+        return true;
+    };
+
     const handleUpload = async () => {
         if (!selectedFile) return;
         setUploadState("uploading");
         try {
-            const content = await fileToBase64(selectedFile);
-
-            const response = await fetcher("/student-cv", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    fileName: selectedFile.name,
-                    contentType: selectedFile.type,
-                    content,
-                }),
-            });
-
-            if (response.status === 201) {
-                const cvMeta = await response.json();
-                setCvList((prev) => [{ ...cvMeta, file: selectedFile }, ...prev]);
+            if (await uploadCv(selectedFile)) {
                 setUploadState("success");
                 setSelectedFile(null);
             } else {
@@ -136,6 +103,10 @@ const PersonalSpaceStudent = () => {
             setUploadState("error");
         }
     };
+
+    const visibleCvs = cvList.filter(
+        (cv, index) => cvList.findIndex((other) => other.fileName === cv.fileName) === index
+    );
 
     return (
         <div className={pageWrapper}>
@@ -196,11 +167,8 @@ const PersonalSpaceStudent = () => {
                     {!isLoadingList && !listError && cvList.length === 0 && (
                         <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
                     )}
-                    {defaultError && (
-                        <p className={`${textError} text-sm`} role="alert">{defaultError}</p>
-                    )}
                     <div className="flex flex-col gap-3">
-                        {cvList.map((cv) => (
+                        {visibleCvs.map((cv) => (
                             <CvListItem
                                 key={cv.id}
                                 cv={cv}
@@ -208,12 +176,9 @@ const PersonalSpaceStudent = () => {
                                 onToggle={() =>
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
                                 }
-                                isFeedbackOpen={openFeedbackCvId === cv.id}
-                                onToggleFeedback={() =>
-                                    setOpenFeedbackCvId((current) => (current === cv.id ? null : cv.id))
-                                }
-                                isDefault={defaultCvId === cv.id}
-                                onToggleDefault={() => handleToggleDefault(cv.id)}
+                                isHighlighted={isHighlighted("cv", cv.id)}
+                                onClearHighlight={clearHighlight}
+                                onReplace={uploadCv}
                             />
                         ))}
                     </div>

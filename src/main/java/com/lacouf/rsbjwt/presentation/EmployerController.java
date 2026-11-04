@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.security.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
@@ -46,7 +46,8 @@ public class EmployerController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(JobOfferDetailDTO.builder().erreur("errors.jobOfferUpdateFailed").build());
         }
     }
 

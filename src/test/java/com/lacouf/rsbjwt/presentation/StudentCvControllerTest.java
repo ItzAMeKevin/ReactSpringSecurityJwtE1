@@ -1,48 +1,72 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
+import com.lacouf.rsbjwt.service.dto.CvUploadDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class StudentCvControllerTest {
+class StudentCvControllerTest {
 
-    @Mock
-    private StudentCvService studentCvService;
+    @Mock private StudentCvService service;
+    @Mock private Authentication authentication;
+    private StudentCvController controller;
 
-    @InjectMocks
-    private StudentCvController studentCvController;
-
-    @Test
-    void testAppliquerOffreReturnsSuccess() throws Exception {
-        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
-
-        ResponseEntity<String> response = studentCvController.appliquerOffre(10L, cvDto);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Candidature soumise avec succès.", response.getBody());
-        verify(studentCvService).applyToJobOffer(10L, cvDto);
+    @BeforeEach
+    void setUp() {
+        controller = new StudentCvController(service);
     }
 
     @Test
-    void testAppliquerOffreReturnsInternalServerErrorWhenApplicationFails() throws Exception {
-        CvMetaDataDto cvDto = CvMetaDataDto.builder().id(5L).build();
-        doThrow(new RuntimeException("application failed"))
-                .when(studentCvService).applyToJobOffer(10L, cvDto);
+    void uploadsListsAndReadsCv() {
+        when(authentication.getName()).thenReturn("student@test.com");
+        CvUploadDto upload = new CvUploadDto("cv.pdf", "application/pdf", "content");
+        CvMetaDataDto metadata = CvMetaDataDto.builder().id(1L).build();
+        when(service.upload("student@test.com", upload)).thenReturn(metadata);
+        when(service.listCvs("student@test.com")).thenReturn(List.of(metadata));
+        when(service.getCvContent(1L, "student@test.com")).thenReturn(new byte[]{1});
 
-        ResponseEntity<String> response = studentCvController.appliquerOffre(10L, cvDto);
+        assertEquals(HttpStatus.CREATED, controller.upload(authentication, upload).getStatusCode());
+        assertEquals(List.of(metadata), controller.listCvs(authentication).getBody());
+        assertArrayEquals(new byte[]{1}, controller.getCvContent(1L, authentication).getBody());
+    }
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertEquals("Une erreur est survenue lors de la candidature.", response.getBody());
+    @Test
+    void handlesUploadListAndContentErrors() {
+        when(authentication.getName()).thenReturn("student@test.com");
+        CvUploadDto upload = new CvUploadDto("cv.pdf", "application/pdf", "content");
+        doThrow(new InvalidCvException("invalid")).when(service).upload("student@test.com", upload);
+        assertEquals(HttpStatus.BAD_REQUEST, controller.upload(authentication, upload).getStatusCode());
+        CvUploadDto missing = new CvUploadDto("missing.pdf", "application/pdf", "content");
+        doThrow(new UserNotFoundException()).when(service).upload("student@test.com", missing);
+        assertEquals(HttpStatus.NOT_FOUND, controller.upload(authentication, missing).getStatusCode());
+
+        when(service.listCvs(anyString())).thenThrow(new UserNotFoundException());
+        assertEquals(HttpStatus.NOT_FOUND, controller.listCvs(authentication).getStatusCode());
+        when(service.getCvContent(anyLong(), anyString())).thenThrow(new InvalidCvException("missing"));
+        assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(1L, authentication).getStatusCode());
+    }
+
+
+
+    @Test
+    void appliesOfferAndHandlesFailure() throws Exception {
+        CvMetaDataDto cv = CvMetaDataDto.builder().id(1L).build();
+        assertEquals(HttpStatus.OK, controller.appliquerOffre(2L, cv).getStatusCode());
+        doThrow(new RuntimeException()).when(service).applyToJobOffer(3L, cv);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, controller.appliquerOffre(3L, cv).getStatusCode());
     }
 }

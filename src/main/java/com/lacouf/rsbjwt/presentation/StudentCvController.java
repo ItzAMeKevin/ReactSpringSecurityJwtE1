@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
@@ -82,18 +82,6 @@ public class StudentCvController {
         }
     }
 
-    @PutMapping("/{cvId}/set-default")
-    @PreAuthorize("hasAuthority('STUDENT')")
-    public ResponseEntity<Void> setDefaultCv(@PathVariable Long cvId, Authentication authentication) {
-        try {
-            studentCvService.setDefaultCv(cvId, authentication.getName());
-            return ResponseEntity.ok().build();
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (InvalidCvException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
 
     @PostMapping("/{offerID}/appliquer")
     public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {

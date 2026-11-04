@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
-import {btnSmPrimary, cardItem, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
+import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
+import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
 
 const ListJobOffer = ({refreshKey}) => {
@@ -9,6 +10,7 @@ const ListJobOffer = ({refreshKey}) => {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
     const handleToggleCandidates = (offerId) => {
@@ -53,7 +55,11 @@ const ListJobOffer = ({refreshKey}) => {
         <div className="w-full max-w-4xl flex flex-col gap-4">
             <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                 {offers.map((offer, i) => (
-                    <li key={offer.id ?? i} className={`${cardItem} p-4`}>
+                    <li
+                        key={offer.id ?? i}
+                        onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
+                        className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
+                    >
                         <div className="flex items-start justify-between gap-2">
                             <h3 className="text-lg font-bold text-black">{offer.title}</h3>
                             {offer.status && (

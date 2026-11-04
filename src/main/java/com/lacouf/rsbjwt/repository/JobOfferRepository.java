@@ -26,10 +26,14 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     boolean existsByEmployer_Credentials_EmailAndAppliedCvs_Id(String email, Long cvId);
 
     @Query("""
-        SELECT DISTINCT jo.id
+        SELECT DISTINCT jo
         FROM JobOffer jo
         JOIN jo.appliedCvs cv
-        WHERE cv.student.id = :studentId
+        JOIN cv.student student
+        WHERE jo.id = :id
+          AND student.credentials.email = :studentEmail
         """)
-    Set<Long> findAppliedOfferIdsByStudentId(@Param("studentId") Long studentId);
+    Optional<JobOffer> findByIdAndStudentCredentialsEmail(
+            @Param("id") Long id,
+            @Param("studentEmail") String studentEmail);
 }

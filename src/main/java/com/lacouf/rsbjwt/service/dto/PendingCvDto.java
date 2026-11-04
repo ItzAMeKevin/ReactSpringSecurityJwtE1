@@ -1,17 +1,17 @@
 package com.lacouf.rsbjwt.service.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PendingCvDto {
+public class PendingCvDto extends GenericDto {
     private Long id;
     private String fileName;
     private Instant uploadedAt;

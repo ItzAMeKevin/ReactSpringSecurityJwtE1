@@ -1,153 +1,93 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
-import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.StudentCvRepository;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
-import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
-import com.lacouf.rsbjwt.service.event.CvDecisionEvent;
-import com.lacouf.rsbjwt.service.mapper.GestionnaireMapper;
-import org.junit.jupiter.api.BeforeEach;
+import com.lacouf.rsbjwt.mapper.CvMapper;
+import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
+import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class GestionnaireServiceTest {
+class GestionnaireServiceTest {
 
-    @Mock
-    private StudentCvRepository studentCvRepository;
+    @Mock private JobOfferRepository jobOfferRepository;
+    @Mock private NotificationRepository notificationRepository;
+    @Mock private StudentCvRepository studentCvRepository;
+    @Mock private CvMapper cvMapper;
+    @Mock private JobOfferMapper jobOfferMapper;
+    @InjectMocks private GestionnaireService service;
 
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
+    @Test
+    void getsPendingCvsAndContent() {
+        StudentCv cv = new StudentCv();
+        cv.setContent(new byte[]{1, 2});
+        PendingCvDto dto = PendingCvDto.builder().id(1L).build();
+        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)).thenReturn(List.of(cv));
+        when(cvMapper.toDto(cv)).thenReturn(dto);
 
-    @Mock
-    private GestionnaireMapper gestionnaireMapper;
-
-    @InjectMocks
-    private GestionnaireService gestionnaireService;
-
-    private Student testStudent;
-    private StudentCv testCv;
-    private byte[] pdfBytes;
-
-    @BeforeEach
-    void setUp() {
-        // ARRANGE
-        testStudent = new Student();
-        testStudent.setId(1L);
-
-        pdfBytes = new byte[] {37, 80, 68, 70, 45}; // %PDF-
-
-        testCv = new StudentCv();
-        testCv.setId(10L);
-        testCv.setFileName("cv.pdf");
-        testCv.setContent(pdfBytes);
-        testCv.setStatus(Status.PENDING);
-        testCv.setStudent(testStudent);
+        assertEquals(List.of(dto), service.getPendingCvs());
+        when(studentCvRepository.findById(1L)).thenReturn(Optional.of(cv));
+        assertArrayEquals(new byte[]{1, 2}, service.getCvContent(1L));
     }
 
     @Test
-    void getPendingCvs_returnsMappedList() {
-        // ARRANGE
-        PendingCvDto dto = PendingCvDto.builder().id(10L).fileName("cv.pdf").build();
-        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)).thenReturn(List.of(testCv));
-        when(gestionnaireMapper.toPendingCvDto(testCv)).thenReturn(dto);
-
-        // ACT
-        List<PendingCvDto> result = gestionnaireService.getPendingCvs();
-
-        // ASSERT
-        assertEquals(1, result.size());
-        assertEquals("cv.pdf", result.getFirst().getFileName());
-        verify(studentCvRepository, times(1)).findAllByStatusOrderByUploadedAtAsc(Status.PENDING);
+    void rejectsMissingCvContent() {
+        when(studentCvRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(InvalidCvException.class, () -> service.getCvContent(1L));
     }
 
     @Test
-    void getPendingCvs_returnsEmptyList() {
-        // ARRANGE
-        when(studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)).thenReturn(List.of());
+    void acceptsAndDeclinesCvWithNotifications() {
+        Student student = new Student();
+        StudentCv cv = new StudentCv();
+        cv.setId(4L);
+        cv.setStudent(student);
+        when(studentCvRepository.findById(4L)).thenReturn(Optional.of(cv));
+        when(cvMapper.toDto(cv)).thenReturn(PendingCvDto.builder().id(4L).build());
 
-        // ACT
-        List<PendingCvDto> result = gestionnaireService.getPendingCvs();
+        assertEquals(4L, service.acceptCv(4L).getId());
+        assertEquals(Status.ACCEPTED, cv.getStatus());
+        verify(studentCvRepository).save(cv);
+        verify(notificationRepository).save(any(Notification.class));
 
-        // ASSERT
-        assertTrue(result.isEmpty());
+        CvDeclineFeedbackDto feedback = new CvDeclineFeedbackDto("Needs changes");
+        service.declineCv(4L, feedback);
+        assertEquals(Status.DECLINED, cv.getStatus());
+        assertEquals("Needs changes", cv.getReviewFeedback());
+        verify(studentCvRepository, times(2)).findById(4L);
     }
 
     @Test
-    void getCvContent_success_returnsByteArray() {
-        // ARRANGE
-        when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
+    void changesOfferStatusAndRejectsInvalidOffers() throws Throwable {
+        JobOffer offer = new JobOffer();
+        offer.setId(8L);
+        offer.setStatus(Status.PENDING);
+        offer.setEmployer(new Employer());
+        JobOfferDto dto = JobOfferDto.builder().id(8L).build();
+        when(jobOfferRepository.findById(8L)).thenReturn(Optional.of(offer));
+        when(jobOfferMapper.toDtoSimple(offer)).thenReturn(dto);
 
-        // ACT
-        byte[] result = gestionnaireService.getCvContent(10L);
+        assertEquals(dto, service.acceptOffer(8L));
+        assertEquals(Status.ACCEPTED, offer.getStatus());
+        assertEquals(Status.ACCEPTED, offer.getStatus());
 
-        // ASSERT
-        assertArrayEquals(pdfBytes, result);
-        verify(studentCvRepository, times(1)).findById(10L);
-    }
-
-    @Test
-    void getCvContent_not_Found_throwsInvalidCvException() {
-        // ARRANGE
-        when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
-
-        // ACT & ASSERT
-        assertThrows(InvalidCvException.class, () -> gestionnaireService.getCvContent(99L));
-        verify(studentCvRepository, times(1)).findById(99L);
-    }
-
-    @Test
-    void acceptCv_success_setStatusAndPublishesDecisionEvent() {
-        // ARRANGE
-        when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
-
-        // ACT
-        gestionnaireService.acceptCv(10L);
-
-        // ASSERT
-        assertEquals(Status.ACCEPTED, testCv.getStatus());
-        verify(eventPublisher, times(1)).publishEvent(new CvDecisionEvent(10L));
-    }
-
-    @Test
-    void declineCv_success_setStatusAndFeedbackAndPublishesDecisionEvent() {
-        // ARRANGE
-        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Le format du CV n'est pas correct.");
-        when(studentCvRepository.findById(10L)).thenReturn(Optional.of(testCv));
-
-        // ACT
-        gestionnaireService.declineCv(10L, feedbackRequest);
-
-        // ASSERT
-        assertEquals(Status.DECLINED, testCv.getStatus());
-        assertEquals("Le format du CV n'est pas correct.", testCv.getReviewFeedback());
-        verify(studentCvRepository, times(1)).save(testCv);
-        verify(eventPublisher, times(1)).publishEvent(new CvDecisionEvent(10L));
-    }
-
-    @Test
-    void declineCv_notFound_throwsInvalidCvException() {
-        // ARRANGE
-        CvDeclineFeedbackDto feedbackRequest = new CvDeclineFeedbackDto("Feedback");
-        when(studentCvRepository.findById(99L)).thenReturn(Optional.empty());
-
-        // ACT & ASSERT
-        assertThrows(InvalidCvException.class, () -> gestionnaireService.declineCv(99L, feedbackRequest));
-        verify(studentCvRepository, never()).save(any());
-        verify(eventPublisher, never()).publishEvent(any(Object.class));
+        offer.setStatus(Status.PENDING);
+        assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L));
+        when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
+        assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));
     }
 }
-

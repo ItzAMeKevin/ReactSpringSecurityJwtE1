@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
 import {useTranslation} from "react-i18next";
 import {btnPrimary} from "../../styles/classes.js";
@@ -7,6 +7,7 @@ import {btnPrimary} from "../../styles/classes.js";
 
 const LoginForm = ({user, setUser, setError}) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {t, i18n} = useTranslation()
 
   const [formData, setFormData] = useState({
@@ -18,6 +19,14 @@ const LoginForm = ({user, setUser, setError}) => {
     password: ''
   });
   const [authError, setAuthError] = useState('');
+  const [inscriptionSuccess, setInscriptionSuccess] = useState(() => Boolean(location.state?.inscriptionSuccess));
+
+  // Clear the flag so the message doesn't come back on refresh
+  useEffect(() => {
+    if (location.state?.inscriptionSuccess) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, location.pathname, navigate]);
 
   useEffect(() => {
     if (!user?.isLoggedIn) return;
@@ -76,6 +85,7 @@ const LoginForm = ({user, setUser, setError}) => {
 
   const fetchFunc = async () => {
     setAuthError('');
+    setInscriptionSuccess(false);
     try {
       const response = await fetcher('/user/login', {
         method: "POST",
@@ -90,7 +100,7 @@ const LoginForm = ({user, setUser, setError}) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        setAuthError(errorData.message || "Connexion échouée");
+        setAuthError(errorData.message ? t(errorData.message) : t("errors.authenticationFailed"));
         return;
       }
       const data = await response.json();
@@ -116,7 +126,7 @@ const LoginForm = ({user, setUser, setError}) => {
         navigate("/");
       }
     } catch(error) {
-      setAuthError(error.message || "Server error occurred");
+      setAuthError(error.message || t("errors.generic"));
       console.log(error.message);
     }
   }
@@ -171,6 +181,11 @@ const LoginForm = ({user, setUser, setError}) => {
                   </div>
 
                   <form id="login-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+                    {inscriptionSuccess && (
+                      <div className="w-full rounded-md bg-green-50 border border-green-400 p-3" role="status">
+                        <p className="text-green-800 text-sm font-semibold">{t("login.inscriptionSuccess")}</p>
+                      </div>
+                    )}
                     {authError && (
                       <div className="w-full rounded-md bg-red-50 border border-red-400 p-3">
                         <p className="text-red-800 text-sm font-semibold">{authError}</p>

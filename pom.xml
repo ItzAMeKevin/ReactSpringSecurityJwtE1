@@ -85,6 +85,13 @@
             <artifactId>mapstruct</artifactId>
             <version>1.6.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <version>4.2.0-M1</version>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -155,6 +162,22 @@
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/lacouf/rsbjwt/service/*</include>
+                                    </includes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <includes>
+                                        <include>com/lacouf/rsbjwt/presentation/*</include>
+                                    </includes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>

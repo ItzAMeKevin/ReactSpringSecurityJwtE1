@@ -8,23 +8,21 @@ import { textError } from "../styles/classes.js";
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { notifications, status, unreadCount, markAsRead } = useNotifications();
+    const { notifications, status, unreadCount, markAsRead, refetch } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleNotificationClick = (notificationId, isRead) => {
-        if (!isRead) {
-            markAsRead(notificationId);
+    const handleNotificationClick = (notification) => {
+        if (!notification.isRead) {
+            markAsRead(notification.id);
+        }
+        if (notification.target) {
+            setIsOpen(false);
+            navigate(notification.target.path, { state: notification.target.state });
         }
     };
 
-    const handleViewFeedback = (e, notification) => {
-        e.stopPropagation();
-        handleNotificationClick(notification.id, notification.isRead);
-        setIsOpen(false);
-        navigate("/etudiant", { state: { feedbackCvId: notification.feedbackCvId } });
-    };
-
     const toggleDropdown = () => {
+        if (!isOpen) refetch();
         setIsOpen((current) => !current);
     };
 
@@ -54,9 +52,7 @@ const NotificationBell = () => {
                     return (
                         <li
                             key={notification.id}
-                            onClick={() =>
-                                handleNotificationClick(notification.id, notification.isRead)
-                            }
+                            onClick={() => handleNotificationClick(notification)}
                             className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
                                 notification.isRead
                                     ? "bg-white/40 text-brand/70 hover:bg-white/60"
@@ -69,18 +65,9 @@ const NotificationBell = () => {
                                     {localizedNotif.message}
                                 </p>
                             )}
-                            {notification.feedbackCvId && (
-                                <button
-                                    type="button"
-                                    onClick={(e) => handleViewFeedback(e, notification)}
-                                    className="mt-2 bg-brand text-white text-xs font-medium py-1 px-2 rounded hover:bg-brand-hover transition-colors"
-                                >
-                                    {t("notifications.voirFeedback")}
-                                </button>
-                            )}
-                            {notification.createdAt && (
+                            {notification.date && (
                                 <p className="text-xs text-black mt-1">
-                                    {new Date(notification.createdAt).toLocaleDateString(i18n.language)}
+                                    {new Date(notification.date).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
                         </li>

@@ -1,15 +1,26 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
+import com.lacouf.rsbjwt.mapper.CvMetaDataMapperImpl;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 public class CvMetaDataDtoTest {
+    private CvMetaDataMapper cvMetaDataMapper ;
+
+    @BeforeEach
+    void setUp() {
+        cvMetaDataMapper = new CvMetaDataMapperImpl();   // pas de Spring
+    }
+
     @Test
     public void testCvMetaDataDto() {
         Instant date = Instant.now();
@@ -21,7 +32,7 @@ public class CvMetaDataDtoTest {
         cv.setStatus(Status.ACCEPTED);
         cv.setUploadedAt(date);
 
-    CvMetaDataDto dto = CvMetaDataDto.toCvMetaDataDto(cv);
+    CvMetaDataDto dto = cvMetaDataMapper.toDto(cv);
         assertEquals(1L, dto.getId());
         assertEquals("test.pdf", dto.getFileName());
         assertEquals("application/pdf", dto.getContentType());

@@ -14,11 +14,13 @@ const translations = vi.hoisted(() => ({
     "notifications.loading": "Chargement...",
     "notifications.error": "Erreur lors du chargement des notifications.",
     "notifications.empty": "Aucune notification.",
-    "notifications.voirFeedback": "Voir le feedback",
     "notifications.types.CV_ACCEPTED.title": "Votre CV a été accepté",
     "notifications.types.CV_ACCEPTED.message": "Votre CV a été validé par un gestionnaire.",
-    "notifications.types.CV_REJECTED.title": "Votre CV a été refusé",
-    "notifications.types.CV_REJECTED.message": "Veuillez consulter le commentaire et téléverser un nouveau CV.",
+    "notifications.types.CV_DECLINED.title": "Votre CV a été refusé",
+    "notifications.types.CV_DECLINED.message": "Veuillez consulter le commentaire et téléverser un nouveau CV.",
+    "notifications.categories.JOB_OFFER": "Offre de stage",
+    "notifications.types.CV_UPLOADED.title": "Nouveau CV à valider",
+    "notifications.types.CV_UPLOADED.message": "Un étudiant a téléversé un nouveau CV.",
 }));
 
 vi.mock("react-i18next", () => ({
@@ -39,22 +41,22 @@ vi.mock("../hooks/useNotifications.js", () => ({
 
 const acceptedNotification = {
     id: 1,
-    type: "CV_ACCEPTED",
-    title: "Votre CV a ete accepte",
-    message: "brut",
+    category: "CV",
+    event: "CV_ACCEPTED",
+    referenceId: 10,
+    message: null,
     isRead: false,
-    createdAt: "2026-10-15T14:30:00Z",
-    feedbackCvId: null,
+    date: "2026-10-15T14:30:00Z",
 };
 
 const rejectedNotification = {
     id: 2,
-    type: "CV_REJECTED",
-    title: "Votre CV a ete refuse",
-    message: "brut",
+    category: "CV",
+    event: "CV_DECLINED",
+    referenceId: 55,
+    message: null,
     isRead: false,
-    createdAt: "2026-10-16T09:00:00Z",
-    feedbackCvId: 55,
+    date: "2026-10-16T09:00:00Z",
 };
 
 const setHook = (overrides = {}) => {
@@ -63,6 +65,7 @@ const setHook = (overrides = {}) => {
         status: "ready",
         unreadCount: 0,
         markAsRead: vi.fn(),
+        refetch: vi.fn(),
         ...overrides,
     };
     useNotifications.mockReturnValue(value);
@@ -112,6 +115,23 @@ describe("NotificationBell - ouverture du menu", () => {
         openDropdown();
 
         expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument();
+    });
+
+    it("should refetch the notifications when opening the dropdown", () => {
+        const hook = renderBell();
+
+        openDropdown();
+
+        expect(hook.refetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not refetch the notifications when closing the dropdown", () => {
+        const hook = renderBell();
+
+        openDropdown();
+        openDropdown();
+
+        expect(hook.refetch).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -184,29 +204,21 @@ describe("NotificationBell - décision sur le CV", () => {
         ).toBeInTheDocument();
     });
 
-    it("should show the feedback button only for a rejected CV", () => {
-        renderBell({ notifications: [acceptedNotification, rejectedNotification], unreadCount: 2 });
-        openDropdown();
-
-        const buttons = screen.getAllByRole("button", { name: "Voir le feedback" });
-        expect(buttons).toHaveLength(1);
-        expect(buttons[0].closest("li")).toHaveTextContent("Votre CV a été refusé");
-    });
 
     it("should show the creation date", () => {
         renderBell({ notifications: [acceptedNotification], unreadCount: 1 });
         openDropdown();
 
-        const expected = new Date(acceptedNotification.createdAt).toLocaleDateString("fr");
+        const expected = new Date(acceptedNotification.date).toLocaleDateString("fr");
         expect(screen.getByText(expected)).toBeInTheDocument();
     });
 
-    it("should fall back to the raw title and message for an unknown type", () => {
-        const unknown = { id: 9, type: "TYPE_INCONNU", title: "Titre brut", message: "Message brut", isRead: false };
+    it("should fall back to the category and the raw message for an unknown event", () => {
+        const unknown = { id: 9, category: "JOB_OFFER", event: null, message: "Message brut", isRead: false };
         renderBell({ notifications: [unknown], unreadCount: 1 });
         openDropdown();
 
-        expect(screen.getByText("Titre brut")).toBeInTheDocument();
+        expect(screen.getByText("Offre de stage")).toBeInTheDocument();
         expect(screen.getByText("Message brut")).toBeInTheDocument();
     });
 
@@ -244,35 +256,46 @@ describe("NotificationBell - marquer comme lu", () => {
     });
 });
 
-describe("NotificationBell - bouton Voir le feedback", () => {
-    it("should mark as read once and navigate to the student page with the CV id", () => {
-        const hook = renderBell({ notifications: [rejectedNotification], unreadCount: 1 });
+describe("NotificationBell - navigation vers l'objet concerné", () => {
+    const newCvNotification = {
+        id: 4,
+        category: "CV",
+        event: "CV_UPLOADED",
+        referenceId: 7,
+        message: null,
+        isRead: false,
+        date: "2026-10-17T10:00:00Z",
+        target: { path: "/gestionnaire", state: { highlight: { kind: "cv", id: 7 } } },
+    };
+
+    it("should mark as read, close the dropdown and navigate to the target", () => {
+        const hook = renderBell({ notifications: [newCvNotification], unreadCount: 1 });
         openDropdown();
 
-        fireEvent.click(screen.getByRole("button", { name: "Voir le feedback" }));
+        fireEvent.click(screen.getByText("Nouveau CV à valider"));
 
-        expect(hook.markAsRead).toHaveBeenCalledTimes(1);
-        expect(hook.markAsRead).toHaveBeenCalledWith(2);
-        expect(mockNavigate).toHaveBeenCalledWith("/etudiant", { state: { feedbackCvId: 55 } });
-    });
-
-    it("should close the dropdown after clicking the feedback button", () => {
-        renderBell({ notifications: [rejectedNotification], unreadCount: 1 });
-        openDropdown();
-
-        fireEvent.click(screen.getByRole("button", { name: "Voir le feedback" }));
-
+        expect(hook.markAsRead).toHaveBeenCalledWith(4);
+        expect(mockNavigate).toHaveBeenCalledWith("/gestionnaire", { state: { highlight: { kind: "cv", id: 7 } } });
         expect(screen.queryByRole("heading", { name: "Notifications" })).not.toBeInTheDocument();
     });
 
-    it("should navigate without marking as read when the notification is already read", () => {
-        const read = { ...rejectedNotification, isRead: true };
-        const hook = renderBell({ notifications: [read], unreadCount: 0 });
+    it("should navigate without marking as read when already read", () => {
+        const hook = renderBell({ notifications: [{ ...newCvNotification, isRead: true }] });
         openDropdown();
 
-        fireEvent.click(screen.getByRole("button", { name: "Voir le feedback" }));
+        fireEvent.click(screen.getByText("Nouveau CV à valider"));
 
         expect(hook.markAsRead).not.toHaveBeenCalled();
-        expect(mockNavigate).toHaveBeenCalledWith("/etudiant", { state: { feedbackCvId: 55 } });
+        expect(mockNavigate).toHaveBeenCalledWith("/gestionnaire", { state: { highlight: { kind: "cv", id: 7 } } });
+    });
+
+    it("should not navigate nor close the dropdown when the notification has no target", () => {
+        renderBell({ notifications: [acceptedNotification], unreadCount: 1 });
+        openDropdown();
+
+        fireEvent.click(screen.getByText("Votre CV a été accepté"));
+
+        expect(mockNavigate).not.toHaveBeenCalled();
+        expect(screen.getByRole("heading", { name: "Notifications" })).toBeInTheDocument();
     });
 });

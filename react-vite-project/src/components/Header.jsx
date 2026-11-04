@@ -3,15 +3,10 @@ import './Header.css';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import NotificationBell from "./NotificationBell.jsx";
-import ManagerNotificationBell from "./ManagerNotificationBell.jsx";
 import roseLogo from "../utils/img/rose1.svg";
 
 function Header({user}) {
     const { t, i18n } = useTranslation();
-
-    const isManager = () => user?.role === 'ROLE_MANAGER';
-    const isEmployer = () => user?.role === 'ROLE_EMPLOYER';
-    const isStudent = () => user?.role === 'ROLE_STUDENT';
 
     return (
         <header className="header">
@@ -23,9 +18,6 @@ function Header({user}) {
                 <ul className="nav-links">
                     <li><Link to="/">{t("header.accueil")}</Link></li>
                     <li><Link to="/about">{t("header.about")}</Link></li>
-                    {isStudent() && <li><Link to="/etudiant">{t("header.etudiant")}</Link></li>}
-                    {isEmployer() && <li><Link to="/employeur">{t("header.employeur")}</Link></li>}
-                    {isManager() && <li><Link to="/gestionnaire">{t("header.gestionnaire")}</Link></li>}
                     {!user?.isLoggedIn && <li><Link to="/inscription">{t("header.inscription")}</Link></li>}
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
                     {["fr", "en"].map((lang) => (
@@ -40,8 +32,7 @@ function Header({user}) {
                             </button>
                         </li>
                     ))}
-                    {user?.isLoggedIn && isStudent() && <li><NotificationBell /></li>}
-                    {user?.isLoggedIn && isManager() && <li><ManagerNotificationBell /></li>}
+                    {user?.isLoggedIn && <li><NotificationBell /></li>}
                 </ul>
                 {user?.isLoggedIn && (
                     <p className="user-greeting">

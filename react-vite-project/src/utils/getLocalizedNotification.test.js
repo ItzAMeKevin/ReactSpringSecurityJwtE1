@@ -1,69 +1,54 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import getLocalizedNotification from "./getLocalizedNotification.js";
 
 const makeT = (dictionary) => (key) => dictionary[key] ?? key;
 
 describe("getLocalizedNotification", () => {
-    it("should return the translated title and message when the type has a translation", () => {
+    it("should return the translated title and message when the event has a translation", () => {
         // Arrange
         const t = makeT({
-            "notifications.types.JOB_OFFER_UPLOADED.title": "Nouvelle offre de stage",
-            "notifications.types.JOB_OFFER_UPLOADED.message": "Une offre a été déposée.",
+            "notifications.types.JOB_OFFER_CREATED.title": "Offre de stage soumise",
+            "notifications.types.JOB_OFFER_CREATED.message": "Votre offre est en attente de validation.",
         });
-        const notification = { type: "JOB_OFFER_UPLOADED", title: "brut", message: "brut" };
+        const notification = { category: "JOB_OFFER", event: "JOB_OFFER_CREATED", message: null };
 
         // Act
         const result = getLocalizedNotification(notification, t);
 
         // Assert
         expect(result).toEqual({
-            title: "Nouvelle offre de stage",
-            message: "Une offre a été déposée.",
+            title: "Offre de stage soumise",
+            message: "Votre offre est en attente de validation.",
         });
     });
 
-    it("should fall back to the raw title and message when the translation is missing", () => {
-        const t = makeT({});
-        const notification = { type: "TYPE_INCONNU", title: "Titre brut", message: "Message brut" };
+    it("should fall back to the category when the event has no translation", () => {
+        const t = makeT({ "notifications.categories.CV": "CV" });
+        const notification = { category: "CV", event: "EVENEMENT_INCONNU", message: null };
 
         const result = getLocalizedNotification(notification, t);
 
-        expect(result).toEqual({ title: "Titre brut", message: "Message brut" });
+        expect(result).toEqual({ title: "CV", message: "" });
     });
 
     it("should fall back when only the title is translated", () => {
         const t = makeT({
-            "notifications.types.CV_REVIEW_READY.title": "Revue prête",
+            "notifications.types.CV_ACCEPTED.title": "Votre CV a été accepté",
+            "notifications.categories.CV": "CV",
         });
-        const notification = { type: "CV_REVIEW_READY", title: "Titre brut", message: "Message brut" };
+        const notification = { category: "CV", event: "CV_ACCEPTED", message: null };
 
         const result = getLocalizedNotification(notification, t);
 
-        expect(result).toEqual({ title: "Titre brut", message: "Message brut" });
+        expect(result).toEqual({ title: "CV", message: "" });
     });
 
-    it("should fall back when the notification has no type", () => {
-        const t = vi.fn();
-        const notification = { title: "Titre brut", message: "Message brut" };
+    it("should use the category and the raw message when there is no event", () => {
+        const t = makeT({ "notifications.categories.CONTRACT": "Contrat" });
+        const notification = { category: "CONTRACT", event: null, message: "Message brut" };
 
         const result = getLocalizedNotification(notification, t);
 
-        expect(result).toEqual({ title: "Titre brut", message: "Message brut" });
-        expect(t).not.toHaveBeenCalled();
-    });
-
-    it("should fall back and warn when t throws", () => {
-        const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-        const t = () => {
-            throw new Error("i18n not ready");
-        };
-        const notification = { type: "CV_UPLOADED", title: "Titre brut", message: "Message brut" };
-
-        const result = getLocalizedNotification(notification, t);
-
-        expect(result).toEqual({ title: "Titre brut", message: "Message brut" });
-        expect(warn).toHaveBeenCalledTimes(1);
-
-        warn.mockRestore();
+        expect(result).toEqual({ title: "Contrat", message: "Message brut" });
     });
 });

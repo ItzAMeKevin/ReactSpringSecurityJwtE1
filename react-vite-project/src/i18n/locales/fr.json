@@ -51,16 +51,46 @@
     "startingDatePast": "La date de début ne peut pas être dans le passé.",
     "digitsOnly": "Entrez uniquement des chiffres.",
     "positiveNumber": "Entrez un nombre entier supérieur à 0.",
-    "identifiantTaken": "Cet identifiant est déjà attribué."
+    "identifiantTaken": "Cet identifiant est déjà attribué.",
+    "authenticationFailed": "Courriel ou mot de passe invalide.",
+    "fileNameRequired": "Le nom du fichier est obligatoire.",
+    "fileNameTooLong": "Le nom du fichier est trop long.",
+    "fileTypeRequired": "Le type de fichier est requis.",
+    "fileContentRequired": "Le contenu du fichier est requis.",
+    "fileContentTooLarge": "Le contenu du fichier est trop volumineux.",
+    "feedbackRequired": "Le feedback est obligatoire.",
+    "feedbackTooLong": "Le feedback est trop long.",
+    "countryRequired": "Le pays est obligatoire.",
+    "cityRequired": "La ville est obligatoire.",
+    "streetRequired": "La rue est obligatoire.",
+    "civicNumberRequired": "Le numéro civique est obligatoire.",
+    "postalCodeRequired": "Le code postal est obligatoire.",
+    "postalCodeLength": "Le code postal doit contenir 6 ou 7 caractères.",
+    "postalCodeFormat": "Format de code postal canadien invalide.",
+    "titleRequired": "Le titre est obligatoire.",
+    "descriptionRequired": "La description est obligatoire.",
+    "prerequisitesRequired": "Les prérequis sont obligatoires.",
+    "addressRequired": "L'adresse est obligatoire.",
+    "startingDateRequired": "La date de début est obligatoire.",
+    "cvNotFound": "CV introuvable.",
+    "pdfOnly": "Seuls les fichiers PDF sont acceptés.",
+    "invalidBase64": "Le contenu Base64 est invalide.",
+    "cvSize": "Le fichier doit faire entre 1 octet et 5 Mo.",
+    "invalidPdf": "Le contenu fourni n'est pas un PDF.",
+    "accessDenied": "Accès refusé.",
+    "invalidFileName": "Le nom de fichier est invalide.",
+    "offerNotFound": "Offre introuvable.",
+    "cvAlreadyApplied": "Ce CV a déjà été utilisé pour postuler à cette offre.",
+    "jobOfferNotFound": "Offre d'emploi introuvable.",
+    "userNotFound": "Utilisateur introuvable.",
+    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées."
   },
   "header": {
     "title": "ZeROSE",
     "inscription": "Inscription",
     "accueil": "Accueil",
     "about": "À propos",
-    "etudiant": "Étudiant",
-    "employeur": "Employeur",
-    "gestionnaire": "Gestionnaire",
     "logout": "Déconnexion",
     "login": "Connexion",
     "greeting": "Bonjour",
@@ -79,14 +109,12 @@
     "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
-    "masquer": "Masquer",
-    "default": "Définir par défaut",
-    "defaultActif": "Par défaut",
-    "afficher": "Afficher",
+    "masquer": "Masquer le CV",
+    "afficher": "Afficher le CV",
+    "remplacerCv": "Remplacer le CV",
+    "remplacementEnCours": "Remplacement...",
     "apercuIndisponible": "Aperçu indisponible",
     "chargementApercu": "Chargement de l'aperçu...",
-    "voirFeedback": "Voir le feedback",
-    "masquerFeedback": "Masquer le feedback",
     "feedbackTitre": "Commentaire du gestionnaire :",
     "chargementFeedback": "Chargement du feedback...",
     "erreurFeedback": "Impossible de charger le feedback.",
@@ -94,7 +122,7 @@
     "aucunCv": "Aucun CV téléversé pour l'instant.",
     "erreurChargement": "Impossible de charger vos CVs. Réessayez plus tard.",
     "statuts": {
-      "PENDING": "En attente",
+      "PENDING": "En attente de validation",
       "ACCEPTED": "Accepté",
       "DECLINED": "Refusé"
     }
@@ -131,7 +159,8 @@
     "firstTime": "Première fois ?",
     "signUp": "Inscrivez-vous",
     "invalidEmail": "Courriel invalide",
-    "invalidPassword": "Mot de passe invalide"
+    "invalidPassword": "Mot de passe invalide",
+    "inscriptionSuccess": "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter."
   },
   "personalSpaceEmployer": {
     "title": "Espace employeur",
@@ -142,7 +171,7 @@
     "loading": "Chargement des offres...",
     "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
-      "WAITING": "En attente",
+      "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",
       "DECLINED": "Refusée"
     },
@@ -187,7 +216,7 @@
   "gestionnaire": {
     "title": "Espace gestionnaire",
     "cvSection": "CVs en attente de validation",
-    "loadingCvs": "Chargement des CV en attente...",
+    "loadingCvs": "Chargement des CV en attente de validation...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",
     "consulter": "Consulter",
@@ -199,10 +228,10 @@
       "loading": "Chargement de l'aperçu..."
     },
     "offres": {
-      "title": "Offres de stage en attente",
+      "title": "Offres de stage en attente de validation",
       "loading": "Chargement des offres...",
       "error": "Erreur lors du chargement des offres.",
-      "none": "Aucune offre de stage en attente.",
+      "none": "Aucune offre de stage en attente de validation.",
       "company": "Entreprise",
       "weeks": "sem.",
       "readMore": "En savoir plus",
@@ -228,37 +257,38 @@
   },
   "notifications": {
     "title": "Notifications",
-    "managerTitle": "CVs à réviser",
     "ariaLabel": "Notifications",
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
-    "voirFeedback": "Voir le feedback",
+    "categories": {
+      "CV": "CV",
+      "JOB_OFFER": "Offre de stage",
+      "INTERVIEW": "Entrevue",
+      "CONTRACT": "Contrat"
+    },
     "types": {
       "CV_UPLOADED": {
         "title": "Nouveau CV à valider",
-        "message": "L'étudiant {firstName} {lastName} (Matricule: {matricule}) a téléversé un nouveau CV: {fileName} le {uploadedAt}. Veuillez consulter et approuver le document."
+        "message": "Un étudiant a téléversé un nouveau CV. Veuillez le consulter et le valider."
       },
       "CV_ACCEPTED": {
         "title": "Votre CV a été accepté",
         "message": "Votre CV a été validé par un gestionnaire."
       },
-      "CV_REJECTED": {
+      "CV_DECLINED": {
         "title": "Votre CV a été refusé",
         "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
       },
-      "CV_REVIEW_READY": {
-        "title": "Revue prête"
-      },
-      "JOB_OFFER_UPLOADED": {
-        "title": "Nouvelle offre de stage",
-        "message": "L'entreprise {company} a déposé une nouvelle offre de stage : {offerTitle} ({program}). Veuillez examiner et approuver l'offre."
+      "JOB_OFFER_CREATED": {
+        "title": "Nouvelle offre de stage à valider",
+        "message": "Un employeur a soumis une nouvelle offre de stage. Veuillez l'examiner et la valider."
       },
       "JOB_OFFER_ACCEPTED": {
         "title": "Votre offre de stage a été acceptée",
         "message": "Votre offre de stage a été validée par un gestionnaire."
       },
-      "JOB_OFFER_REJECTED": {
+      "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
       }

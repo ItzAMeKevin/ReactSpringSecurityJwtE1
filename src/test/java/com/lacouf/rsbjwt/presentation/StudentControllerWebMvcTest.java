@@ -3,8 +3,8 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.security.exception.NoValidatedCvException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.NoValidatedCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -60,12 +60,6 @@ public class StudentControllerWebMvcTest {
 
     @MockitoBean
     private JobOfferRepository jobOfferRepository;
-
-    @MockitoBean
-    private EmployerNotificationRepository employerNotificationRepository;
-
-    @MockitoBean
-    private ManagerNotificationRepository managerNotificationRepository;
 
     @MockitoBean
     private StudentCvRepository studentCvRepository;

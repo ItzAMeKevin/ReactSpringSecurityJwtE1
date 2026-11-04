@@ -1,31 +1,26 @@
 const getLocalizedNotification = (notification, t) => {
-    const notificationType = notification.type;
+    const { event, category, message } = notification;
 
-    if (notificationType) {
-        const typePath = `notifications.types.${notificationType}`;
-        try {
-            const localizedTitle = t(`${typePath}.title`);
-            const localizedMessage = t(`${typePath}.message`);
+    if (event) {
+        const typePath = `notifications.types.${event}`;
+        const localizedTitle = t(`${typePath}.title`);
+        const localizedMessage = t(`${typePath}.message`);
 
-            if (
-                !localizedTitle.startsWith("notifications.types.") &&
-                !localizedMessage.startsWith("notifications.types.")
-            ) {
-                return {
-                    title: localizedTitle,
-                    message: localizedMessage,
-                };
-            }
-        } catch (error) {
-            console.warn(`No translation found for notification type: ${notificationType}`);
+        if (
+            !localizedTitle.startsWith("notifications.types.") &&
+            !localizedMessage.startsWith("notifications.types.")
+        ) {
+            return {
+                title: localizedTitle,
+                message: localizedMessage,
+            };
         }
     }
 
     return {
-        title: notification.title,
-        message: notification.message,
+        title: t(`notifications.categories.${category}`),
+        message: message ?? "",
     };
 };
 
 export default getLocalizedNotification;
-

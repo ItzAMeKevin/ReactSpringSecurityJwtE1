@@ -1,14 +1,12 @@
-import {useState, useRef, useEffect} from "react";
+import {useState} from "react";
 import { useTranslation } from "react-i18next";
-import smoothScrollToElement from "../../../utils/smoothScrollToElement.js";
-import { cardItem, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
+import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
 
-const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) => {
+const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
     const {t} = useTranslation();
     const [actionError, setActionError] = useState(null);
     const [processing, setProcessing] = useState(null);
     const [pendingAction, setPendingAction] = useState(null);
-    const cardRef = useRef(null);
     const [expanded, setExpanded] = useState(false);
 
     const programs = t("inscription.programsList", {returnObjects: true});
@@ -27,21 +25,6 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         ].filter(Boolean).join(", ")
         : null;
 
-
-
-    useEffect(() => {
-        if (isHighlighted && cardRef.current) {
-
-            let cancelScroll = false;
-            const timer = setTimeout(() => {
-                cancelScroll = smoothScrollToElement(cardRef.current);
-            }, 300);
-            return () => {
-                clearTimeout(timer);
-                if (cancelScroll) cancelScroll();
-            };
-        }
-    }, [isHighlighted]);
 
     const isAccept = pendingAction === "accept";
 
@@ -66,7 +49,10 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onAccept, onRefuse }) =
         }
     };
     return (
-        <div ref={cardRef} className={`${cardItem} ${isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''}`}>
+        <div
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
+        >
             <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-main text-lg">{offer.title}</h3>

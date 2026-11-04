@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
-public class UserCreateDTO {
+@SuperBuilder
+public class UserCreateDTO extends GenericDto {
     private String firstName;
     private String lastname;
     private String email;

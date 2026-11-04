@@ -1,12 +1,13 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
+import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.exception.NotificationNotFound;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
-import com.lacouf.rsbjwt.service.dto.ManagerNotificationDto;
-import com.lacouf.rsbjwt.service.dto.PendingCvDto;
-import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.SystemeService;
+import com.lacouf.rsbjwt.service.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import java.util.List;
 public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
+    private final SystemeService systemeService;
     private final StudentCvService studentCvService;
 
     // ── CV Management ─────────────────────────────────────────────────────────
@@ -51,23 +53,23 @@ public class GestionnaireController {
 
     @PutMapping("/cv/{cvId}/accept")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Void> acceptCv(@PathVariable Long cvId) {
+    public ResponseEntity<PendingCvDto> acceptCv(@PathVariable Long cvId) {
         try {
-            gestionnaireService.acceptCv(cvId);
-            return ResponseEntity.noContent().build();
+            PendingCvDto cv = gestionnaireService.acceptCv(cvId);
+            return ResponseEntity.ok().body(cv);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(PendingCvDto.builder().erreur("errors.userNotFound").build());
         }
     }
 
     @PutMapping("/cv/{cvId}/decline")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<Void> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvDeclineFeedbackDto feedbackRequest) {
+    public ResponseEntity<CvDeclineFeedbackDto> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvDeclineFeedbackDto feedbackRequest) {
         try {
             gestionnaireService.declineCv(cvId, feedbackRequest);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(feedbackRequest);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(CvDeclineFeedbackDto.builder().erreur("errors.userNotFound").build());
         }
     }
 
@@ -81,34 +83,27 @@ public class GestionnaireController {
 
     @PutMapping("/offres/{id}/accept")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
-        return gestionnaireService.acceptOffer(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        try {
+            JobOfferDto jobOffer = gestionnaireService.acceptOffer(id);
+            return ResponseEntity.ok(jobOffer);
+        } catch (JobOfferNotFoundException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
+        } catch (InvalidStateTransitionException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.invalidStateTransition").build());
+        }        
     }
 
     @PutMapping("/offres/{id}/refuse")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) {
-        return gestionnaireService.refuseOffer(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // ── Manager Notifications (job-offer events) ──────────────────────────────
-
-    @GetMapping("/offres/notifications")
-    @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<ManagerNotificationDto>> getNotifications(Authentication authentication) {
-        return ResponseEntity.ok(gestionnaireService.getNotifications(authentication.getName()));
-    }
-
-    @PutMapping("/offres/notifications/{id}/read")
-    @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ManagerNotificationDto> markAsRead(
-            @PathVariable Long id, Authentication authentication) {
-        return gestionnaireService.markNotificationAsRead(authentication.getName(), id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        try {
+            JobOfferDto jobOffer = gestionnaireService.refuseOffer(id);
+            return ResponseEntity.ok(jobOffer);
+        } catch (JobOfferNotFoundException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());
+        } catch (InvalidStateTransitionException e) {
+            return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.invalidStateTransition").build());
+        }
     }
 }
