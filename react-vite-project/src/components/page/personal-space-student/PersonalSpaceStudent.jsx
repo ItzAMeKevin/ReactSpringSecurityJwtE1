@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import {useLocation, useNavigate} from "react-router-dom";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
+import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 
@@ -22,8 +22,7 @@ const fileToBase64 = (file) =>
 
 const PersonalSpaceStudent = () => {
     const {t} = useTranslation();
-    const location = useLocation();
-    const navigate = useNavigate();
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const inputRef = useRef(null);
     const [fileError, setFileError] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
@@ -32,14 +31,6 @@ const PersonalSpaceStudent = () => {
     const [openCvId, setOpenCvId] = useState(null);
     const [isLoadingList, setIsLoadingList] = useState(true);
     const [listError, setListError] = useState(null);
-    const [scrollToFeedbackCvId, setScrollToFeedbackCvId] = useState(null);
-
-    useEffect(() => {
-        if (location.state?.feedbackCvId) {
-            setScrollToFeedbackCvId(location.state.feedbackCvId);
-            navigate(location.pathname, { replace: true, state: null });
-        }
-    }, [location.key, location.state?.feedbackCvId, navigate, location.pathname]);
 
     useEffect(() => {
         const loadCvList = async () => {
@@ -178,7 +169,8 @@ const PersonalSpaceStudent = () => {
                                 onToggle={() =>
                                     setOpenCvId((current) => (current === cv.id ? null : cv.id))
                                 }
-                                scrollToFeedback={scrollToFeedbackCvId === cv.id}
+                                isHighlighted={isHighlighted("cv", cv.id)}
+                                onClearHighlight={clearHighlight}
                             />
                         ))}
                     </div>

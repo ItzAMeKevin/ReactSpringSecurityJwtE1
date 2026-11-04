@@ -26,6 +26,9 @@ export const btnRefuse = "bg-red-700 text-white text-sm font-bold py-1.5 px-3 bo
 /** CV / offer list item card */
 export const cardItem = "rounded-xl border border-brand/20 bg-white/40 px-4 py-3 transition-all duration-500";
 
+/** Highlight for a card targeted by a notification */
+export const cardHighlighted = "bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200";
+
 // ── Status badges ─────────────────────────────────────────────────────────────
 
 /** Base shape of a status badge (CV / offer) */

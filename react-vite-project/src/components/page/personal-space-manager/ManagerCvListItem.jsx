@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
-import { cardItem, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
+import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
-const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
+const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
     const containerRef = useRef(null);
@@ -87,9 +87,10 @@ const ManagerCvListItem = ({ cv, isHighlighted, onAccept, onDecline }) => {
     };
 
     return (
-        <div className={`${cardItem} ${
-            isHighlighted ? 'bg-yellow-100 border-yellow-400 shadow-lg shadow-yellow-200' : ''
-        }`}>
+        <div
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
+        >
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                     <p className="text-main font-medium truncate">{cv.fileName}</p>

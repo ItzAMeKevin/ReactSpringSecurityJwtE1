@@ -5,6 +5,22 @@ const POLLING_INTERVAL = 30000;
 
 const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 
+const EVENT_TARGETS = {
+    CV_UPLOADED: { path: "/gestionnaire", kind: "cv" },
+    JOB_OFFER_CREATED: { path: "/gestionnaire", kind: "offer" },
+    CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
+    CV_DECLINED: { path: "/etudiant", kind: "cv" },
+    JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
+    JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer" },
+};
+
+const getTarget = (event, referenceId) => {
+    const target = EVENT_TARGETS[event];
+    return target
+        ? { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } }
+        : null;
+};
+
 const normalizeNotification = (n) => {
     const event = n.message?.match(EVENT_KEY_PATTERN)?.[1] ?? null;
     return {
@@ -15,7 +31,7 @@ const normalizeNotification = (n) => {
         message: event ? null : n.message,
         isRead: n.status === "READ",
         date: n.creationDate,
-        feedbackCvId: event === "CV_DECLINED" ? n.referenceId : null,
+        target: getTarget(event, n.referenceId),
     };
 };
 

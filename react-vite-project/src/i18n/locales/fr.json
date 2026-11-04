@@ -112,8 +112,8 @@
     "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
-    "masquer": "Masquer",
-    "afficher": "Afficher",
+    "masquer": "Masquer le CV",
+    "afficher": "Afficher le CV",
     "apercuIndisponible": "Aperçu indisponible",
     "chargementApercu": "Chargement de l'aperçu...",
     "feedbackTitre": "Commentaire du gestionnaire :",
@@ -255,7 +255,6 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
-    "voirFeedback": "Voir le feedback",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Offre de stage",

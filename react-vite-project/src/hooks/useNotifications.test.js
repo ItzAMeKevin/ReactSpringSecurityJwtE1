@@ -119,7 +119,7 @@ describe("useNotifications - normalisation", () => {
             message: null,
             isRead: false,
             date: "2026-10-15T14:30:00Z",
-            feedbackCvId: null,
+            target: { path: "/etudiant", state: { highlight: { kind: "cv", id: 10 } } },
         });
         expect(result.current.notifications[1].isRead).toBe(true);
     });
@@ -138,27 +138,42 @@ describe("useNotifications - normalisation", () => {
     });
 });
 
-describe("useNotifications - feedbackCvId", () => {
-    it("should set feedbackCvId to the CV id for a rejected CV", async () => {
-        const { result } = await renderReadyHook([rejectedNotification]);
 
-        expect(result.current.notifications[0].feedbackCvId).toBe(55);
-    });
-
-    it("should set feedbackCvId to null for an accepted CV", async () => {
-        const { result } = await renderReadyHook([acceptedNotification]);
-
-        expect(result.current.notifications[0].feedbackCvId).toBeNull();
-    });
-
-    it("should set feedbackCvId to null for a declined job offer", async () => {
+describe("useNotifications - target", () => {
+    it.each([
+        ["CV_UPLOADED", "CV", "/gestionnaire", "cv"],
+        ["JOB_OFFER_CREATED", "JOB_OFFER", "/gestionnaire", "offer"],
+        ["CV_ACCEPTED", "CV", "/etudiant", "cv"],
+        ["CV_DECLINED", "CV", "/etudiant", "cv"],
+        ["JOB_OFFER_ACCEPTED", "JOB_OFFER", "/employeur", "offer"],
+        ["JOB_OFFER_DECLINED", "JOB_OFFER", "/employeur", "offer"],
+    ])("should lead %s to the highlighted item on %s's page", async (event, category, path, kind) => {
         const { result } = await renderReadyHook([{
-            ...rejectedNotification,
-            notificationType: "JOB_OFFER",
-            message: "notification.types.JOB_OFFER_DECLINED.message",
+            ...acceptedNotification,
+            notificationType: category,
+            referenceId: 7,
+            message: `notification.types.${event}.message`,
         }]);
 
-        expect(result.current.notifications[0].feedbackCvId).toBeNull();
+        expect(result.current.notifications[0].target).toEqual({
+            path,
+            state: { highlight: { kind, id: 7 } },
+        });
+    });
+
+    it("should have no target for an unknown event", async () => {
+        const { result } = await renderReadyHook([{
+            ...acceptedNotification,
+            message: "notification.types.INCONNU.message",
+        }]);
+
+        expect(result.current.notifications[0].target).toBeNull();
+    });
+
+    it("should have no target when there is no event", async () => {
+        const { result } = await renderReadyHook([{ ...acceptedNotification, message: "Texte libre" }]);
+
+        expect(result.current.notifications[0].target).toBeNull();
     });
 });
 

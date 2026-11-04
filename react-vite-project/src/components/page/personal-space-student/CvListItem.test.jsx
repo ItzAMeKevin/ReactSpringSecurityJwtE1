@@ -21,6 +21,7 @@ vi.mock('../../../utils/downloadFile.js', () => ({
 
 vi.mock('../../../styles/classes.js', () => ({
     cardItem: 'card',
+    cardHighlighted: 'card-highlighted',
     btnSmPrimary: 'btn-primary',
     btnRefuse: 'btn-refuse',
     statusBadge: 'badge',
@@ -37,7 +38,8 @@ const baseProps = {
     cv: baseCv,
     isOpen: false,
     onToggle: vi.fn(),
-    scrollToFeedback: false,
+    isHighlighted: false,
+    onClearHighlight: vi.fn(),
 };
 
 describe('CvListItem — general rendering', () => {
@@ -79,12 +81,21 @@ describe('CvListItem — general rendering', () => {
         expect(screen.queryByText('televerser.feedbackTitre')).not.toBeInTheDocument();
     });
 
-    it('scrolls to the card when scrollToFeedback is true', async () => {
-        const scrollIntoView = vi.fn();
-        Element.prototype.scrollIntoView = scrollIntoView;
-        render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} scrollToFeedback={true} />);
-        await screen.findByText('Ajoutez vos stages.');
-        expect(scrollIntoView).toHaveBeenCalledTimes(1);
-        delete Element.prototype.scrollIntoView;
+    it('highlights the card and clears the highlight when clicked', () => {
+        const { container } = render(<CvListItem {...baseProps} isHighlighted={true} />);
+        const card = container.firstChild;
+
+        expect(card.className).toContain('card-highlighted');
+        fireEvent.click(card);
+        expect(baseProps.onClearHighlight).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not highlight nor clear when the card is not highlighted', () => {
+        const { container } = render(<CvListItem {...baseProps} />);
+        const card = container.firstChild;
+
+        expect(card.className).not.toContain('card-highlighted');
+        fireEvent.click(card);
+        expect(baseProps.onClearHighlight).not.toHaveBeenCalled();
     });
 });

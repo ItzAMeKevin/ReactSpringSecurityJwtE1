@@ -113,8 +113,8 @@
     "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
-    "masquer": "Hide",
-    "afficher": "Show",
+    "masquer": "Hide CV",
+    "afficher": "Show CV",
     "apercuIndisponible": "Preview not available",
     "chargementApercu": "Loading preview...",
     "feedbackTitre": "Manager's comment:",
@@ -256,7 +256,6 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "voirFeedback": "View feedback",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Internship offer",

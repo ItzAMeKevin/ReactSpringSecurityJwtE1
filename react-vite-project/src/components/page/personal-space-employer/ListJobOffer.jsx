@@ -1,13 +1,15 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
-import { cardItem, statusBadge, statusBadgeColor, textError } from "../../../styles/classes.js";
+import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
+import { cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError } from "../../../styles/classes.js";
 
 const ListJobOffer = ({refreshKey}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
@@ -46,7 +48,11 @@ const ListJobOffer = ({refreshKey}) => {
     return (
         <ul className="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
             {offers.map((offer, i) => (
-                <li key={offer.id ?? i} className={`${cardItem} p-4`}>
+                <li
+                    key={offer.id ?? i}
+                    onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
+                    className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
+                >
                     <div className="flex items-start justify-between gap-2">
                         <h3 className="text-lg font-bold text-black">{offer.title}</h3>
                         {offer.status && (

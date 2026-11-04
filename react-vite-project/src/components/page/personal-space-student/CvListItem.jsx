@@ -5,6 +5,7 @@ import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
 import {
     cardItem,
+    cardHighlighted,
     btnSmPrimary,
     btnRefuse,
     statusBadge,
@@ -52,21 +53,15 @@ const CvListItem = ({
                         cv,
                         isOpen,
                         onToggle,
-                        scrollToFeedback,
+                        isHighlighted,
+                        onClearHighlight,
                     }) => {
     const { t } = useTranslation();
     const isDeclined = cv.status === "DECLINED";
-    const cardRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [previewError, setPreviewError] = useState(false);
     const [feedback, setFeedback] = useState(null);
     const [feedbackError, setFeedbackError] = useState(false);
-
-    useEffect(() => {
-        if (scrollToFeedback) {
-            cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
-    }, [scrollToFeedback]);
 
     useEffect(() => {
         if (!isDeclined) return;
@@ -140,7 +135,10 @@ const CvListItem = ({
     };
 
     return (
-        <div ref={cardRef} className={`${cardItem} border-2`}>
+        <div
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} border-2 ${isHighlighted ? cardHighlighted : ''}`}
+        >
             <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0 flex items-center gap-2">
                     <span className="text-main font-medium truncate">{cv.fileName}</span>
