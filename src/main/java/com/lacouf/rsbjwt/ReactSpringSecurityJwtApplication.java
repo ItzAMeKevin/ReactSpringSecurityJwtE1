@@ -93,7 +93,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             student2.setEmail("aa@a.com");
             student2.setPassword(passwordEncoder.encode("bib"));
             student2.setRole(Role.STUDENT);
-            student2.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            student2.setPrograme(Programe.TECHNIQUES_GESTION_HOTELIERE);
             userAppService.inscription(student2);
         }
 
@@ -216,7 +216,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
                 "22",
-                LocalDate.of(2026, 5, 4), 15, Status.ACCEPTED,
+                LocalDate.of(2026, 5, 4), 15, Status.WAITING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         // WAITING: the manager reviews and accepts this one during the demo
