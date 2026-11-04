@@ -88,7 +88,7 @@ public class StudentControllerWebMvcTest {
                 1L, "Dev Java", "Description", "Java",
                 adresse, "20$/h", Status.ACCEPTED,
                 LocalDate.now(), LocalDate.of(2025, 9, 1),
-                16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp", false
+                16, Programe.TECHNIQUES_INFORMATIQUE, "Acme Corp", false, null
         ));
     }
 

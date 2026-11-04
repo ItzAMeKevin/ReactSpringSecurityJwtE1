@@ -83,9 +83,7 @@ class GestionnaireServiceTest {
 
         assertEquals(dto, service.acceptOffer(8L));
         assertEquals(Status.ACCEPTED, offer.getStatus());
-        assertEquals(Status.ACCEPTED, offer.getStatus());
 
-        offer.setStatus(Status.PENDING);
         assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L));
         when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
         assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));

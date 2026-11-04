@@ -10,7 +10,7 @@
     },
     "fields": {
       "nom": "Nom",
-      "prenom": "Prenom",
+      "prenom": "Prénom",
       "courriel": "Courriel",
       "motDePasse": "Mot de passe",
       "confirmation": "Confirmation de mot de passe",
@@ -21,7 +21,7 @@
       "adresse": "Adresse",
       "codePostal": "Code postal",
       "ville": "Ville",
-      "telephone": "téléphone",
+      "telephone": "Téléphone",
       "identifiant": "NEQ"
     },
     "programsList": [
@@ -168,6 +168,7 @@
     "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
     "close": "Fermer",
     "jobOffers": "Mes offres de stage",
+    "loading": "Chargement des offres...",
     "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
       "WAITING": "En attente de validation",
@@ -234,7 +235,13 @@
       "company": "Entreprise",
       "weeks": "sem.",
       "readMore": "En savoir plus",
-      "showLess": "Voir moins"
+      "showLess": "Voir moins",
+      "confirmation": {
+        "accepter": "Accepter l'offre «\u00a0{{title}}\u00a0»\u00a0?",
+        "refuser": "Refuser l'offre «\u00a0{{title}}\u00a0»\u00a0?",
+        "confirmer": "Confirmer",
+        "annuler": "Annuler"
+      }
     },
     "accept": {
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
@@ -286,9 +293,9 @@
     }
   },
   "roles": {
-    "STUDENT": "Student",
-    "MANAGER": "Manager",
-    "EMPLOYER": "Employer"
+    "STUDENT": "Étudiant",
+    "MANAGER": "Professeur",
+    "EMPLOYER": "Employeur"
   },
 
   "etudiantOffres": {
@@ -305,6 +312,40 @@
     "applied": "Candidature envoyée",
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler."
+    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "applicationStatuts": {
+      "PENDING": "Candidature envoyée",
+      "ACCEPTED": "Candidature acceptée",
+      "DECLINED": "Candidature refusée"
+    }
+  },
+
+  "employeurCandidats": {
+    "titreCandidats": "Candidats",
+    "voirCandidats": "Voir les candidats",
+    "masquerCandidats": "Masquer les candidats",
+    "loading": "Chargement des candidats...",
+    "aucunCandidats": "Aucune candidature reçue pour le moment.",
+    "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
+    "voirCv": "Voir le CV",
+    "popupBloque": "Le CV n'a pas pu s'ouvrir. Autorisez les pop-ups dans votre navigateur.",
+    "erreurCv": "Impossible de charger le CV.",
+    "statuts": {
+      "PENDING": "En attente d'évaluation",
+      "ACCEPTED": "Candidat retenu",
+      "DECLINED": "Candidat non retenu"
+    },
+    "accepter": "Accepter",
+    "refuser": "Refuser",
+    "erreurStatut": "Impossible de mettre à jour le statut.",
+
+    "confirmation": {
+      "titre": "Confirmation de la décision",
+      "accepter": "Accepter la candidature de {{nom}} ?",
+      "refuser": "Refuser la candidature de {{nom}} ?",
+      "motifLabel": "Message ou motif (optionnel)",
+      "confirmer": "Confirmer",
+      "annuler": "Annuler"
+    }
   }
 }

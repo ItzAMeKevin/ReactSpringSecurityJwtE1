@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { cardItem, statusBadge, statusBadgeColor } from "../../../styles/classes.js";
+import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../styles/classes.js";
 import fetcher from "../../../utils/fetcher.js";
 
 const dtClass = "text-sm font-bold text-black";
@@ -13,13 +13,14 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
     const detailsId = useId();
 
     const hasApplied = Boolean(offer.applied) || applyState === "success";
+    const applicationStatus = offer.applicationStatus ?? "PENDING";
     const canApply = Boolean(acceptedCv) && !hasApplied && applyState !== "sending";
 
     const handleApply = async () => {
         if (!canApply) return;
         setApplyState("sending");
         try {
-            const res = await fetcher(`/student-cv/${offer.id}/appliquer?offerID=${offer.id}`, {
+            const res = await fetcher(`/student-cv/${acceptedCv.id}/appliquer?offerID=${offer.id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedCv),
@@ -53,15 +54,10 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
             <div className="flex items-start justify-between gap-3">
                 <h3 className="text-lg font-bold text-black">{offer.title}</h3>
                 <div className="flex flex-col items-end gap-1">
-                    {offer.status && (
-                        <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                            {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                        </span>
-                    )}
                     {hasApplied && (
-                        <span className={`${statusBadge} bg-green-100 text-green-800`}>
-                            {t("etudiantOffres.applied")}
-                        </span>
+                        <span className={`${statusBadge} ${statusBadgeColor(applicationStatus)} text-center`}>
+            {t(`etudiantOffres.applicationStatuts.${applicationStatus}`)}
+        </span>
                     )}
                 </div>
             </div>
@@ -115,8 +111,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                             type="button"
                             onClick={handleApply}
                             disabled={!canApply}
-                            className="rounded-md bg-[#4b1113] px-4 py-2 text-sm font-semibold text-white
-                                       hover:bg-[#3a0d0f] disabled:cursor-not-allowed disabled:opacity-50"
+                            className={`${btnSmPrimary} disabled:cursor-not-allowed disabled:opacity-50`}
                         >
                             {hasApplied
                                 ? t("etudiantOffres.applied")

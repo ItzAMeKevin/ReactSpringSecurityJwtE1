@@ -3,10 +3,12 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
 import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
+import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
+import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
@@ -43,6 +45,7 @@ public class StudentCvService {
     private final JobOfferRepository jobOfferRepository;
     private final NotificationRepository notificationRepository;
     private final CvMetaDataMapper cvMetaDataMapper;
+    private final JobApplicationRepository jobApplicationRepository;
 
     @Transactional
     public CvMetaDataDto upload(String authenticatedEmail, CvUploadDto request) {
@@ -113,11 +116,11 @@ public class StudentCvService {
 
     public String getReviewFile(Long cvId, String authenticatedEmail) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new RuntimeException("errors.cvNotFound"));
+                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
 
         Student student = findStudentByEmail(authenticatedEmail);
         if (!cv.getStudent().getId().equals(student.getId())) {
-            throw new RuntimeException("errors.accessDenied");
+            throw new InvalidCvException("errors.accessDenied");
         }
 
         return cv.getReviewFeedback();
@@ -139,7 +142,7 @@ public class StudentCvService {
         return normalized;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CvMetaDataDto> listCvs(String authenticatedEmail) {
         findStudentByEmail(authenticatedEmail);
         return  cvMetaDataMapper.toDtoList(studentCvRepository.findByStudentCredentialsEmailOrderByUploadedAtDesc(authenticatedEmail));
@@ -154,12 +157,15 @@ public class StudentCvService {
 
         if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
             throw new OffrerException("errors.cvAlreadyApplied");
-        } else {
-            StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
-                    .orElseThrow(() -> new CvException("errors.cvNotFound"));
-            appliedCvs.add(studentCv);
-            jobOffer.setAppliedCvs(appliedCvs);
-            jobOfferRepository.save(jobOffer);
         }
+        StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
+        appliedCvs.add(studentCv);
+        jobOfferRepository.save(jobOffer);
+
+        JobApplication application = new JobApplication();
+        application.setJobOffer(jobOffer);
+        application.setStudentCv(studentCv);
+        jobApplicationRepository.save(application);
     }
 }

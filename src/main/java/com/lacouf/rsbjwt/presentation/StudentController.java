@@ -28,11 +28,9 @@ public class StudentController {
         try {
             return ResponseEntity.ok(studentService.getAcceptedJobOffers(authentication.getName()));
         } catch (NoValidatedCvException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(List.of(JobOfferDetailDTO.builder().erreur("errors.noValidatedCv").build()));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(List.of(JobOfferDetailDTO.builder().erreur("errors.userNotFound").build()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }

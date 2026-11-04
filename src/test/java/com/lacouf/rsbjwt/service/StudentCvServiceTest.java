@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
+import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -29,6 +30,8 @@ class StudentCvServiceTest {
     @Mock private StudentRepository studentRepository;
     @Mock private JobOfferRepository jobOfferRepository;
     @Mock private NotificationRepository notificationRepository;
+    @Mock private CvMetaDataMapper cvMetaDataMapper;
+    @Mock private JobApplicationRepository jobApplicationRepository;
     @InjectMocks private StudentCvService service;
 
     private final Student student = student(1L);
@@ -47,12 +50,15 @@ class StudentCvServiceTest {
 
     @Test
     void uploadsValidPdfAndCreatesNotification() {
+        StudentCv savedCv = new StudentCv();
+        savedCv.setId(5L);
+        savedCv.setFileName("cv.pdf");
+        savedCv.setStatus(Status.PENDING);
+        CvMetaDataDto dto = CvMetaDataDto.builder().id(5L).fileName("cv.pdf").status(Status.PENDING).build();
+
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
-        when(studentCvRepository.save(any(StudentCv.class))).thenAnswer(invocation -> {
-            StudentCv cv = invocation.getArgument(0);
-            cv.setId(5L);
-            return cv;
-        });
+        when(studentCvRepository.save(any(StudentCv.class))).thenReturn(savedCv);
+        when(cvMetaDataMapper.toDto(savedCv)).thenReturn(dto);
 
         CvMetaDataDto result = service.upload("student@test.com", uploadRequest("cv.pdf", pdf));
 
@@ -99,14 +105,14 @@ class StudentCvServiceTest {
     @Test
     void rejectsMissingOrUnauthorizedContent() {
         when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
 
         Student owner = student(2L);
         StudentCv cv = new StudentCv();
         cv.setStudent(owner);
         when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
-        assertThrows(RuntimeException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
     }
 
     @Test
