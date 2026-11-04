@@ -55,6 +55,7 @@ const CvListItem = ({
                         onToggle,
                         isHighlighted,
                         onClearHighlight,
+                        onReplace,
                     }) => {
     const { t } = useTranslation();
     const isDeclined = cv.status === "DECLINED";
@@ -62,6 +63,9 @@ const CvListItem = ({
     const [previewError, setPreviewError] = useState(false);
     const [feedback, setFeedback] = useState(null);
     const [feedbackError, setFeedbackError] = useState(false);
+    const replaceInputRef = useRef(null);
+    const [isReplacing, setIsReplacing] = useState(false);
+    const [replaceError, setReplaceError] = useState(null);
 
     useEffect(() => {
         if (!isDeclined) return;
@@ -119,6 +123,27 @@ const CvListItem = ({
         );
     };
 
+    // The new version is a regular upload; the page hides this one if the file name is the same
+    const handleReplaceFile = async (event) => {
+        const file = event.target.files?.[0];
+        event.target.value = "";
+        if (!file) return;
+        if (file.type !== "application/pdf") {
+            setReplaceError("televerser.erreurTypeFichier");
+            return;
+        }
+        setReplaceError(null);
+        setIsReplacing(true);
+        try {
+            if (!(await onReplace(file))) setReplaceError("televerser.envoieErreur");
+        } catch (error) {
+            console.error("Erreur lors du remplacement du CV :", error);
+            setReplaceError("televerser.envoieErreur");
+        } finally {
+            setIsReplacing(false);
+        }
+    };
+
     const renderFeedback = () => {
         if (feedbackError) {
             return <p className={`text-sm ${textError}`}>{t("televerser.erreurFeedback")}</p>;
@@ -149,6 +174,25 @@ const CvListItem = ({
                     )}
                 </div>
                 <div className="flex shrink-0 gap-2">
+                    {isDeclined && (
+                        <>
+                            <input
+                                ref={replaceInputRef}
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleReplaceFile}
+                                className="hidden"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => replaceInputRef.current?.click()}
+                                disabled={isReplacing}
+                                className={btnSmPrimary}
+                            >
+                                {isReplacing ? t("televerser.remplacementEnCours") : t("televerser.remplacerCv")}
+                            </button>
+                        </>
+                    )}
                     <button
                         type="button"
                         onClick={onToggle}
@@ -159,6 +203,10 @@ const CvListItem = ({
                     </button>
                 </div>
             </div>
+
+            {replaceError && (
+                <p className={`mt-2 text-sm ${textError}`} role="alert">{t(replaceError)}</p>
+            )}
 
             {isDeclined && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">

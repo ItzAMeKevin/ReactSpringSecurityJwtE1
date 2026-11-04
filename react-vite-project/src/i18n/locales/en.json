@@ -112,6 +112,8 @@
     "mesCvs": "My uploaded CVs",
     "masquer": "Hide CV",
     "afficher": "Show CV",
+    "remplacerCv": "Replace CV",
+    "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
     "chargementApercu": "Loading preview...",
     "feedbackTitre": "Manager's comment:",

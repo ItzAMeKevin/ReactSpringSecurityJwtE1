@@ -111,6 +111,8 @@
     "mesCvs": "Mes CVs téléversés",
     "masquer": "Masquer le CV",
     "afficher": "Afficher le CV",
+    "remplacerCv": "Remplacer le CV",
+    "remplacementEnCours": "Remplacement...",
     "apercuIndisponible": "Aperçu indisponible",
     "chargementApercu": "Chargement de l'aperçu...",
     "feedbackTitre": "Commentaire du gestionnaire :",

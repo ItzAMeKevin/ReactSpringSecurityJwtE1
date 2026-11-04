@@ -71,25 +71,29 @@ const PersonalSpaceStudent = () => {
         setUploadState("idle");
     };
 
+    // Uploads a CV and puts it at the top of the list; returns whether it succeeded
+    const uploadCv = async (file) => {
+        const content = await fileToBase64(file);
+        const response = await fetcher("/student-cv", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                fileName: file.name,
+                contentType: file.type,
+                content,
+            }),
+        });
+        if (response.status !== 201) return false;
+        const cvMeta = await response.json();
+        setCvList((prev) => [{ ...cvMeta, file }, ...prev]);
+        return true;
+    };
+
     const handleUpload = async () => {
         if (!selectedFile) return;
         setUploadState("uploading");
         try {
-            const content = await fileToBase64(selectedFile);
-
-            const response = await fetcher("/student-cv", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    fileName: selectedFile.name,
-                    contentType: selectedFile.type,
-                    content,
-                }),
-            });
-
-            if (response.status === 201) {
-                const cvMeta = await response.json();
-                setCvList((prev) => [{ ...cvMeta, file: selectedFile }, ...prev]);
+            if (await uploadCv(selectedFile)) {
                 setUploadState("success");
                 setSelectedFile(null);
             } else {
@@ -100,6 +104,12 @@ const PersonalSpaceStudent = () => {
             setUploadState("error");
         }
     };
+
+    // Only the latest version of each file name is shown (the list is newest first);
+    // older versions stay in the backend for traceability
+    const visibleCvs = cvList.filter(
+        (cv, index) => cvList.findIndex((other) => other.fileName === cv.fileName) === index
+    );
 
     return (
         <div className={pageWrapper}>
@@ -161,7 +171,7 @@ const PersonalSpaceStudent = () => {
                         <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
                     )}
                     <div className="flex flex-col gap-3">
-                        {cvList.map((cv) => (
+                        {visibleCvs.map((cv) => (
                             <CvListItem
                                 key={cv.id}
                                 cv={cv}
@@ -171,6 +181,7 @@ const PersonalSpaceStudent = () => {
                                 }
                                 isHighlighted={isHighlighted("cv", cv.id)}
                                 onClearHighlight={clearHighlight}
+                                onReplace={uploadCv}
                             />
                         ))}
                     </div>

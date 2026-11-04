@@ -48,7 +48,9 @@ const useNotifications = () => {
                 setStatus("error");
                 return;
             }
-            const data = (await response.json()).map(normalizeNotification);
+            const data = (await response.json())
+                .map(normalizeNotification)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
             setNotifications(data);
             setUnreadCount(data.filter((n) => !n.isRead).length);
             setStatus(data.length === 0 ? "empty" : "ready");
