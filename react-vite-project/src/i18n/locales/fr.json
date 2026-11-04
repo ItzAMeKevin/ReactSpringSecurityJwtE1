@@ -265,13 +265,13 @@
     "types": {
       "CV_UPLOADED": {
         "title": "Nouveau CV à valider",
-        "message": "L'étudiant {firstName} {lastName} (Matricule: {matricule}) a téléversé un nouveau CV: {fileName} le {uploadedAt}. Veuillez consulter et approuver le document."
+        "message": "Un étudiant a téléversé un nouveau CV. Veuillez le consulter."
       },
       "CV_ACCEPTED": {
         "title": "Votre CV a été accepté",
         "message": "Votre CV a été validé par un gestionnaire."
       },
-      "CV_REJECTED": {
+      "CV_DECLINED": {
         "title": "Votre CV a été refusé",
         "message": "Veuillez consulter le commentaire et téléverser un nouveau CV."
       },
@@ -280,13 +280,13 @@
       },
       "JOB_OFFER_UPLOADED": {
         "title": "Nouvelle offre de stage",
-        "message": "L'entreprise {company} a déposé une nouvelle offre de stage : {offerTitle} ({program}). Veuillez examiner et approuver l'offre."
+        "message": "Une entreprise a déposé une nouvelle offre de stage. Veuillez l'examiner."
       },
       "JOB_OFFER_ACCEPTED": {
         "title": "Votre offre de stage a été acceptée",
         "message": "Votre offre de stage a été validée par un gestionnaire."
       },
-      "JOB_OFFER_REJECTED": {
+      "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
       }

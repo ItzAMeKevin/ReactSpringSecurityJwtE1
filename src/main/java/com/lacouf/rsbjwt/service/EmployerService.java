@@ -60,13 +60,13 @@ public class EmployerService {
         JobOffer jobOfferEntity = jobOfferMapper.toEntity(jobOfferDTO);
         jobOfferEntity.setEmployer(employer);
         JobOffer savedOffer = jobOfferRepository.save(jobOfferEntity);
-        Notification notification = Notification.builder()
-                .message("notification.types.JOB_OFFER_CREATED.message")
-                .user(employer)
-                .notificationType(NotificationType.JOB_OFFER)
-                .referenceId(savedOffer.getId())
-                .build();
-        notificationRepository.save(notification);
+        managerRepository.findAll().forEach(manager ->
+                notificationRepository.save(Notification.builder()
+                        .message("notification.types.JOB_OFFER_UPLOADED.message")
+                        .user(manager)
+                        .notificationType(NotificationType.JOB_OFFER)
+                        .referenceId(savedOffer.getId())
+                        .build()));
         return jobOfferMapper.toDto(savedOffer);
     }
 

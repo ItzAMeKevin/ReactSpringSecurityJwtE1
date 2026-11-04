@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
+import com.lacouf.rsbjwt.repository.ManagerRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.security.exception.InvalidCvException;
@@ -43,6 +44,7 @@ public class StudentCvService {
     private final StudentCvRepository studentCvRepository;
     private final StudentRepository studentRepository;
     private final JobOfferRepository jobOfferRepository;
+    private final ManagerRepository managerRepository;
     private final NotificationRepository notificationRepository;
     private final CvMetaDataMapper cvMetaDataMapper;
     private final JobApplicationRepository jobApplicationRepository;
@@ -54,12 +56,13 @@ public class StudentCvService {
         Student student = findStudentByEmail(authenticatedEmail);
         StudentCv savedCv = createAndSaveStudentCv(student, request.getFileName(), decodedContent);
 
-        this.notificationRepository.save(Notification.builder()
-                .message("notification.types.CV_UPLOADED.message")
-                .user(student)
-                .notificationType(NotificationType.CV)
-                .referenceId(savedCv.getId())
-                .build());
+        managerRepository.findAll().forEach(manager ->
+                notificationRepository.save(Notification.builder()
+                        .message("notification.types.CV_UPLOADED.message")
+                        .user(manager)
+                        .notificationType(NotificationType.CV)
+                        .referenceId(savedCv.getId())
+                        .build()));
 
         return cvMetaDataMapper.toDto(savedCv);
     }
