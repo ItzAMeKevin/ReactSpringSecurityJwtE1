@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;

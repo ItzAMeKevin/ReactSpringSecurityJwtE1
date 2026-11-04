@@ -5,8 +5,8 @@ import com.lacouf.rsbjwt.exception.OffrerException;
 import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import org.junit.jupiter.api.Test;
@@ -32,6 +32,7 @@ class StudentCvServiceTest {
     @Mock private StudentRepository studentRepository;
     @Mock private JobOfferRepository jobOfferRepository;
     @Mock private SystemeService systemeService;
+    @Mock private JobApplicationRepository jobApplicationRepository;
     @Spy private CvMetaDataMapper cvMetaDataMapper = Mappers.getMapper(CvMetaDataMapper.class);
     @InjectMocks private StudentCvService service;
 
@@ -103,14 +104,14 @@ class StudentCvServiceTest {
     @Test
     void rejectsMissingOrUnauthorizedContent() {
         when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
 
         Student owner = student(2L);
         StudentCv cv = new StudentCv();
         cv.setStudent(owner);
         when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
-        assertThrows(RuntimeException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
     }
 
     @Test
@@ -123,6 +124,7 @@ class StudentCvServiceTest {
 
         service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build());
         assertEquals(List.of(cv), offer.getAppliedCvs());
+        verify(jobApplicationRepository).save(any(JobApplication.class));
 
         assertThrows(OffrerException.class,
                 () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));

@@ -169,9 +169,10 @@
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
     "jobOffers": "My internship offers",
+    "loading": "Loading offers...",
     "noJobOffers": "You have no internship offers yet.",
     "statuts": {
-      "WAITING": "Pending validation",
+      "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
       "DECLINED": "Declined"
     },
@@ -235,7 +236,13 @@
       "company": "Company",
       "weeks": "wks",
       "readMore": "Read more",
-      "showLess": "Show less"
+      "showLess": "Show less",
+      "confirmation": {
+        "accepter": "Accept the offer \u201c{{title}}\u201d?",
+        "refuser": "Decline the offer \u201c{{title}}\u201d?",
+        "confirmer": "Confirm",
+        "annuler": "Cancel"
+      }
     },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
@@ -289,9 +296,9 @@
     }
   },
   "roles": {
-    "STUDENT": "Étudiant",
-    "MANAGER": "Gestionnaire",
-    "EMPLOYER": "Employeur"
+    "STUDENT": "Student",
+    "MANAGER": "Manager",
+    "EMPLOYER": "Employer"
   },
 
   "etudiantOffres": {
@@ -308,7 +315,40 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You need a validated CV to apply."
-  }
+    "noValidatedCv": "You need a validated CV to apply.",
+    "applicationStatuts": {
+      "PENDING": "Application sent",
+      "ACCEPTED": "Application accepted",
+      "DECLINED": "Application declined"
+    }
+  },
 
+  "employeurCandidats": {
+    "titreCandidats": "Candidates",
+    "voirCandidats": "View candidates",
+    "masquerCandidats": "Hide candidates",
+    "loading": "Loading candidates...",
+    "aucunCandidats": "No applications received yet.",
+    "erreurChargement": "An error occurred while loading candidates, please try again later.",
+    "voirCv": "View CV",
+    "popupBloque": "The CV could not open. Please allow pop-ups in your browser.",
+    "erreurCv": "Unable to load the CV.",
+    "statuts": {
+      "PENDING": "Under review",
+      "ACCEPTED": "Candidate selected",
+      "DECLINED": "Candidate not selected"
+    },
+    "accepter": "Accept",
+    "refuser": "Decline",
+    "erreurStatut": "Unable to update status.",
+
+    "confirmation": {
+      "titre": "Decision confirmation",
+      "accepter": "Accept {{nom}}'s application?",
+      "refuser": "Decline {{nom}}'s application?",
+      "motifLabel": "Message or reason (optional)",
+      "confirmer": "Confirm",
+      "annuler": "Cancel"
+    }
+  }
 }

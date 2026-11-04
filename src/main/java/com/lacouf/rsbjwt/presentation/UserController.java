@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.security.exception.AuthenticationException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.AuthenticationException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AuthErrorResponse;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;

@@ -1,7 +1,5 @@
 # Définition de Done
 
-Oct 21, 2026 · @Prodigio Valitiana
-
 Une tâche est terminée seulement quand chaque étape de sa section est complétée, dans l'ordre.
 
 ## Front end

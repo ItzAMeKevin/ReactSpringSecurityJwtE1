@@ -3,7 +3,7 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.SystemeService;

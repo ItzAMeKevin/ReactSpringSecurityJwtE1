@@ -2,8 +2,8 @@ package com.lacouf.rsbjwt.security;
 
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.User;
-import com.lacouf.rsbjwt.security.exception.AuthenticationException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.AuthenticationException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;

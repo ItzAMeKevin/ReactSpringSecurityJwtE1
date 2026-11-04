@@ -1,4 +1,4 @@
-package com.lacouf.rsbjwt.security.exception;
+package com.lacouf.rsbjwt.exception;
 
 public class NoValidatedCvException extends RuntimeException {
     public NoValidatedCvException() {

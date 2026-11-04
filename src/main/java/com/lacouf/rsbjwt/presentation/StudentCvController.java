@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
-import com.lacouf.rsbjwt.security.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;

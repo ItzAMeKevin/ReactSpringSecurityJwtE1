@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.lacouf.rsbjwt.security.exception.AuthenticationException;
+import com.lacouf.rsbjwt.exception.AuthenticationException;
 import org.springframework.http.HttpStatus;
 
 import static org.mockito.ArgumentMatchers.any;

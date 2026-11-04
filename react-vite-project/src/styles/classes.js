@@ -34,10 +34,9 @@ export const cardHighlighted = "bg-yellow-100 border-yellow-400 shadow-lg shadow
 /** Base shape of a status badge (CV / offer) */
 export const statusBadge = "shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full";
 
-/** Badge colors by status — WAITING (offers) and PENDING (CVs) share the "waiting" look */
+/** Badge colors by status (CVs, offers, applications) */
 const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
-    WAITING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
 };

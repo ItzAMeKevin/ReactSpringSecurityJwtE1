@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.security.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

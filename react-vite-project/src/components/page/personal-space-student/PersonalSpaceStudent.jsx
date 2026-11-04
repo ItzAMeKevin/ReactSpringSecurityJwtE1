@@ -71,7 +71,6 @@ const PersonalSpaceStudent = () => {
         setUploadState("idle");
     };
 
-    // Uploads a CV and puts it at the top of the list; returns whether it succeeded
     const uploadCv = async (file) => {
         const content = await fileToBase64(file);
         const response = await fetcher("/student-cv", {
@@ -105,8 +104,6 @@ const PersonalSpaceStudent = () => {
         }
     };
 
-    // Only the latest version of each file name is shown (the list is newest first);
-    // older versions stay in the backend for traceability
     const visibleCvs = cvList.filter(
         (cv, index) => cvList.findIndex((other) => other.fileName === cv.fileName) === index
     );

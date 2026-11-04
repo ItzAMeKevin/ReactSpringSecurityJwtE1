@@ -28,4 +28,21 @@ public class JobOfferDetailDTO extends GenericDto {
     private Programe programe;
     private String companyName;
     private boolean applied;
+    private Status applicationStatus;
+
+    public JobOfferDetailDTO(Long id, String title, String description, String prerequisites,
+                             AdresseDTO location, String salary, Status status,
+                             LocalDate publicationDate, LocalDate startingDate,
+                             Integer durationInWeeks, Programe programe, String companyName) {
+        this(id, title, description, prerequisites, location, salary, status,
+                publicationDate, startingDate, durationInWeeks, programe, companyName, false, null);
+    }
+
+    public JobOfferDetailDTO withApplication(boolean applied, Status applicationStatus) {
+        JobOfferDetailDTO copy = new JobOfferDetailDTO(id, title, description, prerequisites, location, salary,
+                status, publicationDate, startingDate, durationInWeeks, programe,
+                companyName, applied, applicationStatus);
+        copy.setErreur(getErreur());
+        return copy;
+    }
 }
