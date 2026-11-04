@@ -34,7 +34,6 @@ export const statusBadge = "shrink-0 text-xs font-semibold px-2 py-0.5 rounded-f
 /** Badge colors by status — WAITING (offers) and PENDING (CVs) share the "waiting" look */
 const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
-    WAITING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
 };

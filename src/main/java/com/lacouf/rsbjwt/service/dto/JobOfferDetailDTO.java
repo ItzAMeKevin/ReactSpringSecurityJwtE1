@@ -5,7 +5,7 @@ import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Programe;
 
 import java.time.LocalDate;
-
+ // a changer prochainement
 public record JobOfferDetailDTO(
         Long id,
         String title,

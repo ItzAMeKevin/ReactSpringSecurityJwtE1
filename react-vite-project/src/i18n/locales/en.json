@@ -172,7 +172,7 @@
     "loading": "Loading offers...",
     "noJobOffers": "You have no internship offers yet.",
     "statuts": {
-      "WAITING": "Pending validation",
+      "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
       "DECLINED": "Declined"
     },

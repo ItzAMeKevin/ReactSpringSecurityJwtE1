@@ -171,7 +171,7 @@
     "loading": "Chargement des offres...",
     "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
-      "WAITING": "En attente de validation",
+      "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",
       "DECLINED": "Refusée"
     },
