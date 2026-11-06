@@ -1,5 +1,6 @@
 import {useState} from "react";
 import { useTranslation } from "react-i18next";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
@@ -50,6 +51,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
     };
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
         >

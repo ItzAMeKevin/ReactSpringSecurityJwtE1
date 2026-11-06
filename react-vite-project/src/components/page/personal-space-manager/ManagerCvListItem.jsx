@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Document, Page } from "react-pdf";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
 import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
@@ -88,6 +89,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
 
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
         >

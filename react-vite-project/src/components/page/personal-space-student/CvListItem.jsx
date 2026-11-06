@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
 import { Document, Page } from "react-pdf";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
 import {
@@ -161,6 +162,7 @@ const CvListItem = ({
 
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} border-2 ${isHighlighted ? cardHighlighted : ''}`}
         >
