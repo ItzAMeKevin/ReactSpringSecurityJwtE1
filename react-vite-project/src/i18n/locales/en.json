@@ -177,6 +177,7 @@
       "DECLINED": "Declined"
     },
     "offerCreated": "Internship offer published successfully.",
+    "refusalFeedbackTitle": "Reason for refusal:",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",
@@ -242,7 +243,10 @@
         "refuser": "Decline the offer \u201c{{title}}\u201d?",
         "confirmer": "Confirm",
         "annuler": "Cancel"
-      }
+      },
+      "feedbackTitle": "Write your feedback before confirming the refusal.",
+      "feedbackPlaceholder": "Explain why the offer was declined...",
+      "feedbackRequired": "You must write feedback before confirming the refusal."
     },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."

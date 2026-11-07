@@ -83,8 +83,12 @@ const PersonalSpaceManager = () => {
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };
 
-    const handleRefuseOffer = async (offerId) => {
-        const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, { method: "PUT" });
+    const handleRefuseOffer = async (offerId, feedbackPayload) => {
+        const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(feedbackPayload),
+        });
         if (!response.ok) throw new Error("Erreur lors du refus de l'offre");
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };

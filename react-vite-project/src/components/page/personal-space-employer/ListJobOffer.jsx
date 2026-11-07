@@ -80,6 +80,14 @@ const ListJobOffer = ({refreshKey}) => {
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
                         </dl>
+                        {offer.status === "DECLINED" && offer.refusalFeedback && (
+                            <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
+                                <p className="text-sm font-semibold text-main mb-1">
+                                    {t("personalSpaceEmployer.refusalFeedbackTitle")}
+                                </p>
+                                <p className="text-sm text-main/80 whitespace-pre-line">{offer.refusalFeedback}</p>
+                            </div>
+                        )}
                         <button
                             type="button"
                             className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}

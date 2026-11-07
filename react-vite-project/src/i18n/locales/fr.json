@@ -176,6 +176,7 @@
       "DECLINED": "Refusée"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
+    "refusalFeedbackTitle": "Motif du refus :",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
@@ -241,7 +242,10 @@
         "refuser": "Refuser l'offre «\u00a0{{title}}\u00a0»\u00a0?",
         "confirmer": "Confirmer",
         "annuler": "Annuler"
-      }
+      },
+      "feedbackTitle": "Écrivez votre feedback avant de confirmer le refus.",
+      "feedbackPlaceholder": "Expliquez pourquoi l'offre a été refusée...",
+      "feedbackRequired": "Vous devez écrire un feedback avant de confirmer le refus."
     },
     "accept": {
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
