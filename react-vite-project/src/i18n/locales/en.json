@@ -178,6 +178,9 @@
     },
     "offerCreated": "Internship offer published successfully.",
     "refusalFeedbackTitle": "Reason for refusal:",
+    "voirFeedback": "View feedback",
+    "masquerFeedback": "Hide feedback",
+    "noFeedback": "No refusal comment available.",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",
@@ -266,6 +269,7 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
+    "voirFeedback": "View feedback →",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Internship offer",

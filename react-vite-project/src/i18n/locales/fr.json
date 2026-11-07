@@ -177,6 +177,9 @@
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "refusalFeedbackTitle": "Motif du refus :",
+    "voirFeedback": "Voir le feedback",
+    "masquerFeedback": "Masquer le feedback",
+    "noFeedback": "Aucun commentaire de refus disponible.",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
@@ -265,6 +268,7 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
+    "voirFeedback": "Voir le feedback →",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Offre de stage",

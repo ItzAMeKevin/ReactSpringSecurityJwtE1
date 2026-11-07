@@ -100,6 +100,7 @@ public class GestionnaireService {
 
         offer.setStatus(Status.DECLINED);
         offer.setRefusalFeedback(feedbackRequest.getFeedback());
+        jobOfferRepository.save(offer);
 
         notificationRepository.save(Notification.builder()
                 .message("notification.types.JOB_OFFER_DECLINED.message")
