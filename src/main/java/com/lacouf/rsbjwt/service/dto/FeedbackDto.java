@@ -5,14 +5,11 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class CvDeclineFeedbackDto extends GenericDto {
-
+public class FeedbackDto {
     @NotBlank(message = "errors.feedbackRequired")
     @Size(max = 2000, message = "errors.feedbackTooLong")
     private String feedback;

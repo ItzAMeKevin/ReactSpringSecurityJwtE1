@@ -56,6 +56,9 @@ public class JobOffer {
     @Column(nullable = false)
     private Programe programe;
 
+    @Column(length = 2000)
+    private String refusalFeedback;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
             inverseJoinColumns = @JoinColumn(name = "student_cv_id"))

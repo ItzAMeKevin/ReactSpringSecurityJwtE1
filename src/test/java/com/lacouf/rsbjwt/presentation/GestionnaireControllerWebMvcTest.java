@@ -60,7 +60,7 @@ class GestionnaireControllerWebMvcTest {
         when(service.acceptCv(2L)).thenThrow(new UserNotFoundException());
         assertEquals(HttpStatus.BAD_REQUEST, controller.acceptCv(2L).getStatusCode());
 
-        CvDeclineFeedbackDto feedback = new CvDeclineFeedbackDto("feedback");
+        FeedbackDto feedback = new FeedbackDto("feedback");
         doNothing().when(service).declineCv(1L, feedback);
         assertEquals(feedback, controller.declineCv(1L, feedback).getBody());
 
@@ -71,14 +71,15 @@ class GestionnaireControllerWebMvcTest {
     @Test
     void acceptsAndRefusesOffers() throws Throwable {
         JobOfferDto offer = JobOfferDto.builder().id(1L).build();
+        FeedbackDto feedback = new FeedbackDto("feedback");
         when(service.acceptOffer(1L)).thenReturn(offer);
-        when(service.refuseOffer(1L)).thenReturn(offer);
+        when(service.refuseOffer(1L, feedback)).thenReturn(offer);
         assertEquals(offer, controller.acceptOffer(1L).getBody());
-        assertEquals(offer, controller.refuseOffer(1L).getBody());
+        assertEquals(offer, controller.refuseOffer(1L, feedback).getBody());
 
         when(service.acceptOffer(2L)).thenThrow(new JobOfferNotFoundException("missing"));
         assertEquals(HttpStatus.BAD_REQUEST, controller.acceptOffer(2L).getStatusCode());
-        when(service.refuseOffer(2L)).thenThrow(new InvalidStateTransitionException("invalid"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.refuseOffer(2L).getStatusCode());
+        when(service.refuseOffer(2L, feedback)).thenThrow(new InvalidStateTransitionException("invalid"));
+        assertEquals(HttpStatus.BAD_REQUEST, controller.refuseOffer(2L, feedback).getStatusCode());
     }
 }

@@ -64,12 +64,12 @@ public class GestionnaireController {
 
     @PutMapping("/cv/{cvId}/decline")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<CvDeclineFeedbackDto> declineCv(@PathVariable Long cvId, @Valid @RequestBody CvDeclineFeedbackDto feedbackRequest) {
+    public ResponseEntity<FeedbackDto> declineCv(@PathVariable Long cvId, @Valid @RequestBody FeedbackDto feedbackRequest) {
         try {
             gestionnaireService.declineCv(cvId, feedbackRequest);
             return ResponseEntity.ok(feedbackRequest);
         } catch (UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(CvDeclineFeedbackDto.builder().erreur("errors.userNotFound").build());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -96,9 +96,9 @@ public class GestionnaireController {
 
     @PutMapping("/offres/{id}/refuse")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id, @Valid @RequestBody FeedbackDto feedbackRequest) throws JobOfferNotFoundException, InvalidStateTransitionException {
         try {
-            JobOfferDto jobOffer = gestionnaireService.refuseOffer(id);
+            JobOfferDto jobOffer = gestionnaireService.refuseOffer(id, feedbackRequest);
             return ResponseEntity.ok(jobOffer);
         } catch (JobOfferNotFoundException e) {
             return ResponseEntity.badRequest().body(JobOfferDto.builder().erreur("errors.jobOfferNotFound").build());

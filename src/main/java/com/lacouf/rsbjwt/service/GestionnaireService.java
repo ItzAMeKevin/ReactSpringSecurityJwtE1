@@ -7,7 +7,7 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
-import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
+import com.lacouf.rsbjwt.service.dto.FeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +61,7 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void declineCv(Long cvId, CvDeclineFeedbackDto feedbackRequest) {
+    public void declineCv(Long cvId, FeedbackDto feedbackRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
         cv.setStatus(Status.DECLINED);
@@ -89,9 +89,26 @@ public class GestionnaireService {
 
 
     @Transactional
-    public JobOfferDto refuseOffer(Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
-        return changeOfferStatus(id, Status.DECLINED,
-                "notification.types.JOB_OFFER_DECLINED.message");
+    public JobOfferDto refuseOffer(Long id, FeedbackDto feedbackRequest) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        JobOffer offer = jobOfferRepository
+                .findById(id)
+                .orElseThrow(() -> new JobOfferNotFoundException("errors.jobOfferNotFound"));
+
+        if (offer.getStatus() != Status.PENDING) {
+            throw new InvalidStateTransitionException("errors.jobOfferInvalidState");
+        }
+
+        offer.setStatus(Status.DECLINED);
+        offer.setRefusalFeedback(feedbackRequest.getFeedback());
+
+        notificationRepository.save(Notification.builder()
+                .message("notification.types.JOB_OFFER_DECLINED.message")
+                .user(offer.getEmployer())
+                .notificationType(NotificationType.JOB_OFFER)
+                .referenceId(offer.getId())
+                .build());
+
+        return jobOfferMapper.toDtoSimple(offer);
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey) throws JobOfferNotFoundException, InvalidStateTransitionException {

@@ -64,7 +64,7 @@ class GestionnaireServiceTest {
         verify(studentCvRepository).save(cv);
         verify(notificationRepository).save(any(Notification.class));
 
-        CvDeclineFeedbackDto feedback = new CvDeclineFeedbackDto("Needs changes");
+        FeedbackDto feedback = new FeedbackDto("Needs changes");
         service.declineCv(4L, feedback);
         assertEquals(Status.DECLINED, cv.getStatus());
         assertEquals("Needs changes", cv.getReviewFeedback());
@@ -86,7 +86,7 @@ class GestionnaireServiceTest {
         assertEquals(Status.ACCEPTED, offer.getStatus());
 
         offer.setStatus(Status.PENDING);
-        assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L));
+        assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L, new FeedbackDto("feedback")));
         when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
         assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));
     }
