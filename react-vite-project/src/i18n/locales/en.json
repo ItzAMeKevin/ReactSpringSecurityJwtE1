@@ -177,7 +177,6 @@
       "DECLINED": "Declined"
     },
     "offerCreated": "Internship offer published successfully.",
-    "refusalFeedbackTitle": "Reason for refusal:",
     "voirFeedback": "View feedback",
     "masquerFeedback": "Hide feedback",
     "noFeedback": "No refusal comment available.",
@@ -249,7 +248,8 @@
       },
       "feedbackTitle": "Write your feedback before confirming the refusal.",
       "feedbackPlaceholder": "Explain why the offer was declined...",
-      "feedbackRequired": "You must write feedback before confirming the refusal."
+      "feedbackRequired": "You must write feedback before confirming the refusal.",
+      "errorProcessing": "An error occurred while processing this offer. Please try again."
     },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."

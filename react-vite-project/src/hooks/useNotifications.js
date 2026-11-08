@@ -64,15 +64,9 @@ const useNotifications = () => {
     useEffect(() => {
         fetchNotifications();
 
-        pollingIntervalRef.current = setInterval(() => {
-            fetchNotifications();
-        }, POLLING_INTERVAL);
+        pollingIntervalRef.current = setInterval(fetchNotifications, POLLING_INTERVAL);
 
-        return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
+        return () => clearInterval(pollingIntervalRef.current);
     }, [fetchNotifications]);
 
     const markAsRead = useCallback(async (notificationId) => {

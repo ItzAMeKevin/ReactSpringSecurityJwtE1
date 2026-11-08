@@ -83,11 +83,27 @@ class GestionnaireServiceTest {
 
         assertEquals(dto, service.acceptOffer(8L));
         assertEquals(Status.ACCEPTED, offer.getStatus());
-        assertEquals(Status.ACCEPTED, offer.getStatus());
 
-        offer.setStatus(Status.PENDING);
         assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L, new FeedbackDto("feedback")));
         when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
         assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));
+    }
+
+    @Test
+    void refusesOfferWithFeedback() throws Throwable {
+        JobOffer offer = new JobOffer();
+        offer.setId(10L);
+        offer.setStatus(Status.PENDING);
+        offer.setEmployer(new Employer());
+        JobOfferDto dto = JobOfferDto.builder().id(10L).build();
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+        when(jobOfferMapper.toDtoSimple(offer)).thenReturn(dto);
+
+        FeedbackDto feedback = new FeedbackDto("Not suitable");
+        assertEquals(dto, service.refuseOffer(10L, feedback));
+        assertEquals(Status.DECLINED, offer.getStatus());
+        assertEquals("Not suitable", offer.getRefusalFeedback());
+        verify(jobOfferRepository).save(offer);
+        verify(notificationRepository).save(any(Notification.class));
     }
 }

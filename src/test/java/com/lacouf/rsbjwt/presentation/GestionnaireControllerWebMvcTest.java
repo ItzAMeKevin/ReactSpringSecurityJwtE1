@@ -1,9 +1,11 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.StudentCvService;
+import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.model.Status;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +29,7 @@ class GestionnaireControllerWebMvcTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GestionnaireController(service, mock(com.lacouf.rsbjwt.service.SystemeService.class),
-                mock(com.lacouf.rsbjwt.service.StudentCvService.class));
+        controller = new GestionnaireController(service, mock(SystemeService.class), mock(StudentCvService.class));
     }
 
     @Test
@@ -47,7 +48,7 @@ class GestionnaireControllerWebMvcTest {
         when(service.getCvContent(1L)).thenReturn(new byte[]{1});
         assertEquals(HttpStatus.OK, controller.getCvContent(1L).getStatusCode());
 
-        when(service.getCvContent(2L)).thenThrow(new UserNotFoundException());
+        when(service.getCvContent(2L)).thenThrow(new InvalidCvException("errors.cvNotFound"));
         assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(2L).getStatusCode());
     }
 
@@ -57,14 +58,14 @@ class GestionnaireControllerWebMvcTest {
         when(service.acceptCv(1L)).thenReturn(accepted);
         assertEquals(accepted, controller.acceptCv(1L).getBody());
 
-        when(service.acceptCv(2L)).thenThrow(new UserNotFoundException());
+        when(service.acceptCv(2L)).thenThrow(new InvalidCvException("errors.cvNotFound"));
         assertEquals(HttpStatus.BAD_REQUEST, controller.acceptCv(2L).getStatusCode());
 
         FeedbackDto feedback = new FeedbackDto("feedback");
         doNothing().when(service).declineCv(1L, feedback);
         assertEquals(feedback, controller.declineCv(1L, feedback).getBody());
 
-        doThrow(new UserNotFoundException()).when(service).declineCv(2L, feedback);
+        doThrow(new InvalidCvException("errors.cvNotFound")).when(service).declineCv(2L, feedback);
         assertEquals(HttpStatus.BAD_REQUEST, controller.declineCv(2L, feedback).getStatusCode());
     }
 

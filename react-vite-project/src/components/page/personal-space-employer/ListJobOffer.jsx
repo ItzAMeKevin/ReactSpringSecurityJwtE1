@@ -29,7 +29,9 @@ const ListJobOffer = ({refreshKey}) => {
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+        Array.isArray(programs)
+            ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
+            : enumName;
 
     useEffect(() => {
         let cancelled = false;
@@ -88,7 +90,7 @@ const ListJobOffer = ({refreshKey}) => {
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
+                            <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                         </dl>
                         <div className="flex gap-2 mt-3 flex-wrap">
                             <button
@@ -104,7 +106,7 @@ const ListJobOffer = ({refreshKey}) => {
                             {offer.status === "DECLINED" && (
                                 <button
                                     type="button"
-                                    className={`${btnSmPrimary} disabled:opacity-50`}
+                                    className={btnSmPrimary}
                                     onClick={(e) => { e.stopPropagation(); setExpandedFeedback(prev => ({ ...prev, [offer.id]: !prev[offer.id] })); }}
                                 >
                                     {expandedFeedback[offer.id] ? t("personalSpaceEmployer.masquerFeedback") : t("personalSpaceEmployer.voirFeedback")}

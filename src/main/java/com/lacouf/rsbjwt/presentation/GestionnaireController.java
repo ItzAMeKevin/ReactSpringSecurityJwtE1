@@ -1,9 +1,8 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.NotificationNotFound;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.SystemeService;
@@ -13,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.List;
 
@@ -46,7 +43,7 @@ public class GestionnaireController {
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(content);
-        } catch (UserNotFoundException e) {
+        } catch (InvalidCvException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -57,8 +54,8 @@ public class GestionnaireController {
         try {
             PendingCvDto cv = gestionnaireService.acceptCv(cvId);
             return ResponseEntity.ok().body(cv);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.badRequest().body(PendingCvDto.builder().erreur("errors.userNotFound").build());
+        } catch (InvalidCvException e) {
+            return ResponseEntity.badRequest().body(PendingCvDto.builder().erreur("errors.cvNotFound").build());
         }
     }
 
@@ -68,7 +65,7 @@ public class GestionnaireController {
         try {
             gestionnaireService.declineCv(cvId, feedbackRequest);
             return ResponseEntity.ok(feedbackRequest);
-        } catch (UserNotFoundException e) {
+        } catch (InvalidCvException e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -83,7 +80,7 @@ public class GestionnaireController {
 
     @PutMapping("/offres/{id}/accept")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
+    public ResponseEntity<JobOfferDto> acceptOffer(@PathVariable Long id) {
         try {
             JobOfferDto jobOffer = gestionnaireService.acceptOffer(id);
             return ResponseEntity.ok(jobOffer);
@@ -96,7 +93,7 @@ public class GestionnaireController {
 
     @PutMapping("/offres/{id}/refuse")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id, @Valid @RequestBody FeedbackDto feedbackRequest) throws JobOfferNotFoundException, InvalidStateTransitionException {
+    public ResponseEntity<JobOfferDto> refuseOffer(@PathVariable Long id, @Valid @RequestBody FeedbackDto feedbackRequest) {
         try {
             JobOfferDto jobOffer = gestionnaireService.refuseOffer(id, feedbackRequest);
             return ResponseEntity.ok(jobOffer);

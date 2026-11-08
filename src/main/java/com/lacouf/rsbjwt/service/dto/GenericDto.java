@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

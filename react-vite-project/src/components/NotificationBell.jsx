@@ -59,7 +59,7 @@ const NotificationBell = () => {
                                     : "bg-blue-50 text-black hover:bg-blue-100 font-medium"
                             }`}
                         >
-                            <p className="">{localizedNotif.title}</p>
+                            <p>{localizedNotif.title}</p>
                             {localizedNotif.message && (
                                 <p className="text-xs text-black mt-1">
                                     {localizedNotif.message}
@@ -71,7 +71,11 @@ const NotificationBell = () => {
                                 </p>
                             )}
                             {notification.event === "JOB_OFFER_DECLINED" && (
-                                <button type="button" className={`${btnSmPrimary} mt-2`}>
+                                <button
+                                    type="button"
+                                    className={`${btnSmPrimary} mt-2`}
+                                    onClick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}
+                                >
                                     {t("notifications.voirFeedback")}
                                 </button>
                             )}

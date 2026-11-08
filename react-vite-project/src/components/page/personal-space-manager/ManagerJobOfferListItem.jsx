@@ -53,7 +53,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
             else await onRefuse(offer.id, { feedback: feedback.trim() });
             setPendingAction(null);
         } catch {
-            setActionError(t("gestionnaire.decline.errorProcessing"));
+            setActionError(t("gestionnaire.offres.errorProcessing"));
         } finally {
             setProcessing(null);
         }
