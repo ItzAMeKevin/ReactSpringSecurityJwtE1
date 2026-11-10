@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../styles/classes.js";
 import fetcher from "../../../utils/fetcher.js";
+import formatSalary from "../../../utils/formatSalary.js";
 
 const dtClass = "text-sm font-bold text-black";
 const ddClass = "text-sm leading-relaxed text-gray-700";
@@ -90,7 +91,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                         {offer.salary != null && (
                             <div>
                                 <dt className={dtClass}>{t("personalSpaceEmployer.fields.salary")}</dt>
-                                <dd className={ddClass}>{offer.salary}</dd>
+                                <dd className={ddClass}>{formatSalary(offer.salary, t)}</dd>
                             </div>
                         )}
                         <div>

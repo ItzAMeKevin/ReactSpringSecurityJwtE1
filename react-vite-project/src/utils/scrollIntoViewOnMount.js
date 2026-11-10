@@ -1,7 +1,3 @@
-/**
- * Callback ref: scrolls the element into view once it is attached to the DOM.
- * Usage: ref={isHighlighted ? scrollIntoViewOnMount : undefined}
- */
 const scrollIntoViewOnMount = (element) => {
     if (!element) return;
     const timer = setTimeout(() => {

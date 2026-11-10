@@ -176,6 +176,8 @@
       "DECLINED": "Refusée"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
+    "salaryPerHour": "{{salary}} $/heure",
+    "salaryToDiscuss": "À discuter",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",

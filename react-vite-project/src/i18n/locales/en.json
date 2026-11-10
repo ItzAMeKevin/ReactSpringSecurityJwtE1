@@ -177,6 +177,8 @@
       "DECLINED": "Declined"
     },
     "offerCreated": "Internship offer published successfully.",
+    "salaryPerHour": "${{salary}}/hour",
+    "salaryToDiscuss": "To be discussed",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",

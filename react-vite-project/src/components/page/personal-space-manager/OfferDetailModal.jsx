@@ -1,5 +1,6 @@
 import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
+import formatSalary from "../../../utils/formatSalary.js";
 
 const btnFilled = "bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300 disabled:opacity-50";
 const btnOutline = "border border-[#4b1113] text-[#4b1113] px-4 py-2 rounded hover:bg-[#f3ebe3] transition-colors duration-300 disabled:opacity-50";
@@ -50,7 +51,7 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
                         </div>
                         <div>
                             <dt className={dtClass}>{t("personalSpaceEmployer.fields.salary")}</dt>
-                            <dd>{offer.salary}</dd>
+                            <dd>{formatSalary(offer.salary, t)}</dd>
                         </div>
                         <div>
                             <dt className={dtClass}>{t("personalSpaceEmployer.fields.startingDate")}</dt>
