@@ -12,7 +12,7 @@ import java.time.Instant;
 @Mapper(componentModel = "spring")
 public interface CandidateMapper {
 
-    @Mapping(source = "studentCv.id", target = "id")
+    @Mapping(source = "studentCv.id", target = "cvId")
     @Mapping(source = "studentCv.student.firstName", target = "firstName")
     @Mapping(source = "studentCv.student.lastName", target = "lastName")
     @Mapping(source = "studentCv.student.email", target = "email")
@@ -21,7 +21,7 @@ public interface CandidateMapper {
     CandidateDto toCandidateDto(JobApplication application);
 
 
-    @Mapping(source = "cv.id",                target = "id")
+    @Mapping(source = "cv.id",                target = "cvId")
     @Mapping(source = "cv.student.firstName", target = "firstName")
     @Mapping(source = "cv.student.lastName",  target = "lastName")
     @Mapping(source = "cv.student.email",     target = "email")
