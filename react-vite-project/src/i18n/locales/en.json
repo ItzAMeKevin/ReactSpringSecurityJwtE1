@@ -110,8 +110,6 @@
     "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
-    "masquer": "Hide CV",
-    "afficher": "Show CV",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
@@ -222,8 +220,6 @@
     "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
-    "consulter": "View",
-    "masquer": "Hide",
     "accepter": "Accept",
     "refuser": "Decline",
     "preview": {
@@ -325,7 +321,11 @@
     }
   },
 
+  "modal": {
+    "close": "Close"
+  },
   "cvViewer": {
+    "show": "Show CV",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "resetZoom": "Reset zoom",
@@ -338,8 +338,6 @@
     "loading": "Loading candidates...",
     "aucunCandidats": "No applications received yet.",
     "erreurChargement": "An error occurred while loading candidates, please try again later.",
-    "voirCv": "View CV",
-    "masquerCv": "Hide CV",
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",

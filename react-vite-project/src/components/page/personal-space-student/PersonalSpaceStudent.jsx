@@ -148,7 +148,7 @@ const PersonalSpaceStudent = () => {
                     <p className={textError}>{t("televerser.envoieErreur")}</p>
                 )}
 
-                <div className="w-full mx-auto mt-10">
+                <div className="w-full max-w-3xl mx-auto mt-10">
                     <h2 className="text-main text-center text-xl font-bold mb-3">
                         {t("televerser.mesCvs")}
                     </h2>

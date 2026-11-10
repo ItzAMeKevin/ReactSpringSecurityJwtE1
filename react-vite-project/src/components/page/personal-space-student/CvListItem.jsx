@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import CvPdfViewer from "../../CvPdfViewer.jsx";
+import CvModal from "../../CvModal.jsx";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
@@ -79,17 +79,6 @@ const CvListItem = ({
         };
     }, [previewUrl]);
 
-    const renderPreview = () => {
-        if (cv.file) return <CvPdfViewer file={cv.file} />;
-        if (previewUrl) return <CvPdfViewer file={previewUrl} />;
-        return (
-            <p className={`mt-3 text-sm ${previewError ? textError : textMuted}`}>
-                {previewError ? t("televerser.apercuIndisponible") : t("televerser.chargementApercu")}
-            </p>
-        );
-    };
-
-    // The new version is a regular upload; the page hides this one if the file name is the same
     const handleReplaceFile = async (event) => {
         const file = event.target.files?.[0];
         event.target.value = "";
@@ -163,10 +152,10 @@ const CvListItem = ({
                     <button
                         type="button"
                         onClick={onToggle}
-                        aria-expanded={isOpen}
+                        aria-haspopup="dialog"
                         className={`${btnSmPrimary}`}
                     >
-                        {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
+                        {t("cvViewer.show")}
                     </button>
                 </div>
             </div>
@@ -181,9 +170,15 @@ const CvListItem = ({
                 </div>
             )}
 
-            <div className="w-full">
-                {isOpen && renderPreview()}
-            </div>
+            {isOpen && (
+                <CvModal
+                    title={cv.fileName}
+                    file={cv.file ?? previewUrl}
+                    error={previewError ? t("televerser.apercuIndisponible") : null}
+                    loadingMessage={t("televerser.chargementApercu")}
+                    onClose={onToggle}
+                />
+            )}
         </div>
     );
 };

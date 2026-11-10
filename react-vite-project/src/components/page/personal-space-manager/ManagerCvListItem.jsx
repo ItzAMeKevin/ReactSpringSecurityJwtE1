@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import CvPdfViewer from "../../CvPdfViewer.jsx";
+import CvModal from "../../CvModal.jsx";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
 import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
@@ -25,11 +25,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         };
     }, [previewUrl]);
 
-    const handleToggle = async () => {
-        if (isOpen) {
-            setIsOpen(false);
-            return;
-        }
+    const handleOpen = async () => {
         setIsOpen(true);
         if (previewUrl) return;
         setPreviewError(null);
@@ -113,11 +109,11 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                     </button>
                     <button
                         type="button"
-                        onClick={handleToggle}
-                        aria-expanded={isOpen}
+                        onClick={handleOpen}
+                        aria-haspopup="dialog"
                         className={btnSmPrimary}
                     >
-                        {isOpen ? t("gestionnaire.masquer") : t("gestionnaire.consulter")}
+                        {t("cvViewer.show")}
                     </button>
                     <button
                         type="button"
@@ -139,13 +135,13 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
             </div>
 
             {isOpen && (
-                <div className="w-full">
-                    {previewError && <p className={`mt-3 ${textError} text-sm`} role="alert">{previewError}</p>}
-                    {!previewError && previewUrl && <CvPdfViewer file={previewUrl} />}
-                    {!previewError && !previewUrl && (
-                        <p className="mt-3 text-sm text-main/70">{t("gestionnaire.preview.loading")}</p>
-                    )}
-                </div>
+                <CvModal
+                    title={`${cv.studentFirstName} ${cv.studentLastName} — ${cv.fileName}`}
+                    file={previewUrl}
+                    error={previewError}
+                    loadingMessage={t("gestionnaire.preview.loading")}
+                    onClose={() => setIsOpen(false)}
+                />
             )}
 
             {isDeclining && (

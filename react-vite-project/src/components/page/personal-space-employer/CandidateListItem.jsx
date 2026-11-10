@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
-import CvPdfViewer from "../../CvPdfViewer.jsx";
+import CvModal from "../../CvModal.jsx";
 import fetcher from "../../../utils/fetcher.js";
 import {
     cardItem,
@@ -60,11 +60,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
         }
     };
 
-    const handleToggleCv = async () => {
-        if (isCvOpen) {
-            setIsCvOpen(false);
-            return;
-        }
+    const handleOpenCv = async () => {
         setIsCvOpen(true);
         if (cvUrl) return;
         setCvError(null);
@@ -96,11 +92,11 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 <button
                     type="button"
                     className={btnSmPrimary}
-                    onClick={handleToggleCv}
-                    aria-expanded={isCvOpen}
-                    aria-label={`${t(isCvOpen ? "employeurCandidats.masquerCv" : "employeurCandidats.voirCv")} — ${candidate.firstName} ${candidate.lastName}`}
+                    onClick={handleOpenCv}
+                    aria-haspopup="dialog"
+                    aria-label={`${t("cvViewer.show")} — ${candidate.firstName} ${candidate.lastName}`}
                 >
-                    {t(isCvOpen ? "employeurCandidats.masquerCv" : "employeurCandidats.voirCv")}
+                    {t("cvViewer.show")}
                 </button>
                 {candidate.status === "PENDING" && !pendingStatus && (
                     <>
@@ -114,10 +110,14 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 )}
             </div>
 
-            {isCvOpen && !cvError && (
-                cvUrl
-                    ? <CvPdfViewer file={cvUrl} />
-                    : <p className={`text-sm ${textMuted}`}>{t("cvViewer.loading")}</p>
+            {isCvOpen && (
+                <CvModal
+                    title={`${candidate.firstName} ${candidate.lastName}`}
+                    file={cvUrl}
+                    error={cvError}
+                    loadingMessage={t("cvViewer.loading")}
+                    onClose={() => setIsCvOpen(false)}
+                />
             )}
 
             {pendingStatus && (
@@ -155,7 +155,6 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 </div>
             )}
 
-            {cvError && <p className={`text-sm ${textError}`}>{cvError}</p>}
             {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
         </li>
     );
