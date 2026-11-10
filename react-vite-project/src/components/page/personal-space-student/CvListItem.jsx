@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import { Document, Page } from "react-pdf";
+import CvPdfViewer from "../../CvPdfViewer.jsx";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
@@ -14,41 +14,6 @@ import {
     textError,
     textMuted
 } from "../../../styles/classes.js";
-
-const CvPreview = ({ file }) => {
-    const [numPages, setNumPages] = useState(0);
-    const [containerWidth, setContainerWidth] = useState(null);
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        const observer = new ResizeObserver(([entry]) => {
-            setContainerWidth(entry.contentRect.width);
-        });
-        observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    return (
-        <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-            {containerWidth && (
-                <Document
-                    file={file}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    onLoadError={(error) => console.error("Erreur de chargement PDF :", error)}
-                >
-                    {Array.from({ length: numPages }, (_, index) => (
-                        <Page
-                            key={index}
-                            pageNumber={index + 1}
-                            width={containerWidth}
-                            className="mb-2"
-                        />
-                    ))}
-                </Document>
-            )}
-        </div>
-    );
-};
 
 const CvListItem = ({
                         cv,
@@ -115,8 +80,8 @@ const CvListItem = ({
     }, [previewUrl]);
 
     const renderPreview = () => {
-        if (cv.file) return <CvPreview file={cv.file} />;
-        if (previewUrl) return <CvPreview file={previewUrl} />;
+        if (cv.file) return <CvPdfViewer file={cv.file} />;
+        if (previewUrl) return <CvPdfViewer file={previewUrl} />;
         return (
             <p className={`mt-3 text-sm ${previewError ? textError : textMuted}`}>
                 {previewError ? t("televerser.apercuIndisponible") : t("televerser.chargementApercu")}

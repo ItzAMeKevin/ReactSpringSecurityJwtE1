@@ -324,6 +324,12 @@
     }
   },
 
+  "cvViewer": {
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "resetZoom": "Réinitialiser le zoom",
+    "loading": "Chargement du CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidats",
     "voirCandidats": "Voir les candidats",
@@ -332,7 +338,7 @@
     "aucunCandidats": "Aucune candidature reçue pour le moment.",
     "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
     "voirCv": "Voir le CV",
-    "popupBloque": "Le CV n'a pas pu s'ouvrir. Autorisez les pop-ups dans votre navigateur.",
+    "masquerCv": "Masquer le CV",
     "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",

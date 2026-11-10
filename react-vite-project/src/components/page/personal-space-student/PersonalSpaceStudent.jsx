@@ -1,16 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
 const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {

@@ -325,6 +325,12 @@
     }
   },
 
+  "cvViewer": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "loading": "Loading CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidates",
     "voirCandidats": "View candidates",
@@ -333,7 +339,7 @@
     "aucunCandidats": "No applications received yet.",
     "erreurChargement": "An error occurred while loading candidates, please try again later.",
     "voirCv": "View CV",
-    "popupBloque": "The CV could not open. Please allow pop-ups in your browser.",
+    "masquerCv": "Hide CV",
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
