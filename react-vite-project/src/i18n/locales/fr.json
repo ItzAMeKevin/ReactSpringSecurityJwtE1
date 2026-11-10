@@ -93,6 +93,7 @@
     "about": "À propos",
     "logout": "Déconnexion",
     "login": "Connexion",
+    "candidatureTracking": "Suivi des candidatures",
     "greeting": "Bonjour",
     "roles": {
       "STUDENT": "Étudiant",
@@ -253,6 +254,55 @@
       "processing": "Envoi en cours...",
       "errorNoFeedback": "Vous devez écrire un feedback avant de confirmer le refus.",
       "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
+    }
+  },
+  "candidatureTracking": {
+    "title": "Suivi des candidatures",
+    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres d'emploi",
+    "loading": "Chargement des candidatures...",
+    "noCandidatures": "Aucune candidature trouvée.",
+    "noResults": "Aucun résultat ne correspond à votre recherche.",
+    "resultCount": "{{count}} candidature(s) sur {{total}}",
+    "filters": {
+      "all": "Tous les statuts",
+      "accepted": "Acceptés",
+      "declined": "Refusés",
+      "pending": "En attente",
+      "filterByStatus": "Filtrer par statut",
+      "searchPlaceholder": "Rechercher par nom, prénom, matricule ou offre",
+      "searchHint": "Recherchez un étudiant par son nom, prénom, matricule ou le titre de l'offre d'emploi"
+    },
+    "statuses": {
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "pending": "En attente"
+    },
+    "table": {
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "position": "Titre du poste",
+      "status": "Statut",
+      "lastModified": "Dernière modification",
+      "actions": "Actions",
+      "matricule": "Matricule"
+    },
+    "details": {
+      "student": "Informations de l'étudiant",
+      "email": "Courriel",
+      "offer": "Informations de l'offre",
+      "position": "Titre du poste",
+      "company": "Entreprise",
+      "duration": "Durée",
+      "weeks": "sem.",
+      "dates": "Dates importantes",
+      "submitted": "Date de soumission",
+      "lastModified": "Dernière modification"
+    },
+    "viewDetails": "Voir les détails",
+    "hideDetails": "Masquer les détails",
+    "errors": {
+      "loadingFailed": "Une erreur est survenue lors du chargement de la liste des étudiants, veuillez réessayer plus tard.",
+      "accessDenied": "Accès refusé. Seuls les gestionnaires peuvent accéder à cette section."
     }
   },
   "notifications": {

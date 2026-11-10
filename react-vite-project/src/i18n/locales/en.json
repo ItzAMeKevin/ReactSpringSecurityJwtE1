@@ -94,6 +94,7 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
+    "candidatureTracking": "Application Tracking",
     "greeting": "Hello",
     "roles": {
       "STUDENT": "Student",
@@ -254,6 +255,55 @@
       "processing": "Sending...",
       "errorNoFeedback": "You must write feedback before confirming the rejection.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
+    }
+  },
+  "candidatureTracking": {
+    "title": "Application Tracking",
+    "subtitle": "Monitor the status of student applications for all job offers",
+    "loading": "Loading applications...",
+    "noCandidatures": "No applications found.",
+    "noResults": "No results match your search.",
+    "resultCount": "{{count}} application(s) out of {{total}}",
+    "filters": {
+      "all": "All statuses",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "pending": "Pending",
+      "filterByStatus": "Filter by status",
+      "searchPlaceholder": "Search by name, first name, matricule or offer",
+      "searchHint": "Search a student by their name, first name, matricule, or job offer title"
+    },
+    "statuses": {
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "pending": "Pending"
+    },
+    "table": {
+      "student": "Student",
+      "company": "Company",
+      "position": "Job Title",
+      "status": "Status",
+      "lastModified": "Last Modified",
+      "actions": "Actions",
+      "matricule": "Matricule"
+    },
+    "details": {
+      "student": "Student Information",
+      "email": "Email",
+      "offer": "Offer Information",
+      "position": "Job Title",
+      "company": "Company",
+      "duration": "Duration",
+      "weeks": "wks",
+      "dates": "Important dates",
+      "submitted": "Submission date",
+      "lastModified": "Last modified"
+    },
+    "viewDetails": "View details",
+    "hideDetails": "Hide details",
+    "errors": {
+      "loadingFailed": "An error occurred while loading the student list, please try again later.",
+      "accessDenied": "Access denied. Only managers can access this section."
     }
   },
   "notifications": {
