@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
+import formatSalary from "../../../utils/formatSalary.js";
 import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
 
@@ -59,6 +61,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                 {offers.map((offer, i) => (
                     <li
                         key={offer.id ?? i}
+                        ref={isHighlighted("offer", offer.id) ? scrollIntoViewOnMount : undefined}
                         onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
                         className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
                     >
@@ -74,7 +77,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                         <p className="mt-2 line-clamp-3">{offer.description}</p>
                         <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
-                            <dd>{offer.salary}</dd>
+                            <dd>{formatSalary(offer.salary, t)}</dd>
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                             <dd>{offer.startingDate}</dd>
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>

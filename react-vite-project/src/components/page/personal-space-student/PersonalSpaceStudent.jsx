@@ -1,16 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
 const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -154,7 +148,7 @@ const PersonalSpaceStudent = () => {
                     <p className={textError}>{t("televerser.envoieErreur")}</p>
                 )}
 
-                <div className="w-full mx-auto mt-10">
+                <div className="w-full max-w-3xl mx-auto mt-10">
                     <h2 className="text-main text-center text-xl font-bold mb-3">
                         {t("televerser.mesCvs")}
                     </h2>

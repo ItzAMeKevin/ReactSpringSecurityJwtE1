@@ -1,20 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Document, Page } from "react-pdf";
+import CvModal from "../../CvModal.jsx";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import { fetchBlobUrl, downloadFile } from "../../../utils/downloadFile.js";
 import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textError } from "../../../styles/classes.js";
 
 const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
-    const containerRef = useRef(null);
     const reviewInputRef = useRef(null);
 
     const [isOpen, setIsOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [previewError, setPreviewError] = useState(null);
-    const [numPages, setNumPages] = useState(null);
-    const [containerWidth, setContainerWidth] = useState(null);
 
     const [actionState, setActionState] = useState("idle");
     const [isDeclining, setIsDeclining] = useState(false);
@@ -22,25 +20,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
     const [reviewError, setReviewError] = useState(null);
 
     useEffect(() => {
-        if (!containerRef.current || !isOpen) return;
-        const resizeObserver = new ResizeObserver((entries) => {
-            setContainerWidth(entries[0].contentRect.width);
-        });
-        resizeObserver.observe(containerRef.current);
-        return () => resizeObserver.disconnect();
-    }, [isOpen]);
-
-    useEffect(() => {
         return () => {
             if (previewUrl) URL.revokeObjectURL(previewUrl);
         };
     }, [previewUrl]);
 
-    const handleToggle = async () => {
-        if (isOpen) {
-            setIsOpen(false);
-            return;
-        }
+    const handleOpen = async () => {
         setIsOpen(true);
         if (previewUrl) return;
         setPreviewError(null);
@@ -88,6 +73,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
 
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
         >
@@ -123,11 +109,11 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                     </button>
                     <button
                         type="button"
-                        onClick={handleToggle}
-                        aria-expanded={isOpen}
+                        onClick={handleOpen}
+                        aria-haspopup="dialog"
                         className={btnSmPrimary}
                     >
-                        {isOpen ? t("gestionnaire.masquer") : t("gestionnaire.consulter")}
+                        {t("cvViewer.show")}
                     </button>
                     <button
                         type="button"
@@ -149,27 +135,13 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
             </div>
 
             {isOpen && (
-                <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-                    {previewError && <p className={`${textError} text-sm`} role="alert">{previewError}</p>}
-                    {!previewError && previewUrl && containerWidth && (
-                        <Document
-                            file={previewUrl}
-                            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                        >
-                            {Array.from(new Array(numPages ?? 0), (_, index) => (
-                                <Page
-                                    key={index}
-                                    pageNumber={index + 1}
-                                    width={containerWidth}
-                                    className="mb-2"
-                                />
-                            ))}
-                        </Document>
-                    )}
-                    {!previewError && !previewUrl && (
-                        <p className="text-sm text-main/70">{t("gestionnaire.preview.loading")}</p>
-                    )}
-                </div>
+                <CvModal
+                    title={`${cv.studentFirstName} ${cv.studentLastName} — ${cv.fileName}`}
+                    file={previewUrl}
+                    error={previewError}
+                    loadingMessage={t("gestionnaire.preview.loading")}
+                    onClose={() => setIsOpen(false)}
+                />
             )}
 
             {isDeclining && (

@@ -9,10 +9,7 @@ import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.EmployerRepository;
-import com.lacouf.rsbjwt.repository.JobApplicationRepository;
-import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.StudentCvRepository;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
@@ -40,6 +37,7 @@ public class EmployerService {
     private final SystemeService systemeService;
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
+    private final CandidateMapper candidateMapper;
 
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
         Employer employer = findEmployerByEmail(employerEmail);
@@ -96,13 +94,13 @@ public class EmployerService {
         for (StudentCv cv : offer.getAppliedCvs()) {
             JobApplication application = applicationsByCvId.remove(cv.getId());
             if (application != null) {
-                candidates.add(toCandidateDto(application));
+                candidates.add(candidateMapper.toCandidateDto(application));
             } else {
-                candidates.add(toCandidateDto(cv, cv.getUploadedAt(), Status.PENDING));
+                candidates.add(candidateMapper.toCandidateDto(cv, cv.getUploadedAt(), Status.PENDING));
             }
         }
         applicationsByCvId.values().stream()
-                .map(this::toCandidateDto)
+                .map(candidateMapper::toCandidateDto)
                 .forEach(candidates::add);
         return candidates;
     }
@@ -119,7 +117,7 @@ public class EmployerService {
             throw new IllegalStateException("Seules les candidatures en attente peuvent être mises à jour.");
         }
         application.setStatus(newStatus);
-        return toCandidateDto(jobApplicationRepository.save(application));
+        return candidateMapper.toCandidateDto(jobApplicationRepository.save(application));
     }
 
     @Transactional(readOnly = true)
@@ -150,19 +148,6 @@ public class EmployerService {
         return application;
     }
 
-    private CandidateDto toCandidateDto(JobApplication application) {
-        return toCandidateDto(application.getStudentCv(), application.getAppliedAt(), application.getStatus());
-    }
 
-    private CandidateDto toCandidateDto(StudentCv cv, Instant appliedAt, Status status) {
-        Student student = cv.getStudent();
-        return new CandidateDto(
-                cv.getId(),
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEmail(),
-                appliedAt,
-                status
-        );
-    }
+
 }

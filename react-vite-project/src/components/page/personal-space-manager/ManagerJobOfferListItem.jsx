@@ -1,5 +1,7 @@
 import {useState} from "react";
 import { useTranslation } from "react-i18next";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
+import formatSalary from "../../../utils/formatSalary.js";
 import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
@@ -60,6 +62,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
     };
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
         >
@@ -96,7 +99,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                             {offer.salary != null && (
                                 <>
                                     <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
-                                    <dd className="text-main/70">{offer.salary} $/h</dd>
+                                    <dd className="text-main/70">{formatSalary(offer.salary, t)}</dd>
                                 </>
                             )}
                             <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>

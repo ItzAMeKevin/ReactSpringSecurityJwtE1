@@ -109,8 +109,6 @@
     "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
-    "masquer": "Masquer le CV",
-    "afficher": "Afficher le CV",
     "remplacerCv": "Remplacer le CV",
     "remplacementEnCours": "Remplacement...",
     "apercuIndisponible": "Aperçu indisponible",
@@ -181,6 +179,8 @@
     "resubmit": "Resoumettre l'offre",
     "feedbackTitre": "Commentaire du gestionnaire :",
     "noFeedback": "Aucun commentaire de refus disponible.",
+    "salaryPerHour": "{{salary}} $/heure",
+    "salaryToDiscuss": "À discuter",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
@@ -224,8 +224,6 @@
     "loadingCvs": "Chargement des CV en attente de validation...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",
-    "consulter": "Consulter",
-    "masquer": "Masquer",
     "accepter": "Accepter",
     "refuser": "Refuser",
     "preview": {
@@ -331,6 +329,16 @@
     }
   },
 
+  "modal": {
+    "close": "Fermer"
+  },
+  "cvViewer": {
+    "show": "Afficher le CV",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "resetZoom": "Réinitialiser le zoom",
+    "loading": "Chargement du CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidats",
     "voirCandidats": "Voir les candidats",
@@ -338,8 +346,6 @@
     "loading": "Chargement des candidats...",
     "aucunCandidats": "Aucune candidature reçue pour le moment.",
     "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
-    "voirCv": "Voir le CV",
-    "popupBloque": "Le CV n'a pas pu s'ouvrir. Autorisez les pop-ups dans votre navigateur.",
     "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",

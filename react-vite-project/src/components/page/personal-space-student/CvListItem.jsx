@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import { Document, Page } from "react-pdf";
+import CvModal from "../../CvModal.jsx";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
 import {
@@ -13,41 +14,6 @@ import {
     textError,
     textMuted
 } from "../../../styles/classes.js";
-
-const CvPreview = ({ file }) => {
-    const [numPages, setNumPages] = useState(0);
-    const [containerWidth, setContainerWidth] = useState(null);
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        const observer = new ResizeObserver(([entry]) => {
-            setContainerWidth(entry.contentRect.width);
-        });
-        observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    return (
-        <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-            {containerWidth && (
-                <Document
-                    file={file}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    onLoadError={(error) => console.error("Erreur de chargement PDF :", error)}
-                >
-                    {Array.from({ length: numPages }, (_, index) => (
-                        <Page
-                            key={index}
-                            pageNumber={index + 1}
-                            width={containerWidth}
-                            className="mb-2"
-                        />
-                    ))}
-                </Document>
-            )}
-        </div>
-    );
-};
 
 const CvListItem = ({
                         cv,
@@ -160,6 +126,7 @@ const CvListItem = ({
 
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} border-2 ${isHighlighted ? cardHighlighted : ''}`}
         >
@@ -195,10 +162,10 @@ const CvListItem = ({
                     <button
                         type="button"
                         onClick={onToggle}
-                        aria-expanded={isOpen}
+                        aria-haspopup="dialog"
                         className={`${btnSmPrimary}`}
                     >
-                        {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
+                        {t("cvViewer.show")}
                     </button>
                 </div>
             </div>
@@ -213,9 +180,15 @@ const CvListItem = ({
                 </div>
             )}
 
-            <div className="w-full">
-                {isOpen && renderPreview()}
-            </div>
+            {isOpen && (
+                <CvModal
+                    title={cv.fileName}
+                    file={cv.file ?? previewUrl}
+                    error={previewError ? t("televerser.apercuIndisponible") : null}
+                    loadingMessage={t("televerser.chargementApercu")}
+                    onClose={onToggle}
+                />
+            )}
         </div>
     );
 };
