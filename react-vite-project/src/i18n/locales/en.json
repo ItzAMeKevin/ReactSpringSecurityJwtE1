@@ -213,7 +213,16 @@
       "message": "Unsaved data will be lost.",
       "cancel": "Cancel",
       "confirm": "Confirm"
-    }
+    },
+    "sessions": {
+      "A": "Fall {{year}}",
+      "H": "Winter {{year}}",
+      "E": "Summer {{year}}"
+    },
+    "sessionFilter": {
+      "label": "Filter by semester"
+    },
+    "noOffersForSession": "You have no internship offers for this semester."
   },
   "gestionnaire": {
     "title": "Manager Space",

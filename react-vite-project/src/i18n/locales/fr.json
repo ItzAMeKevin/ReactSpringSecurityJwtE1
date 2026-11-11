@@ -212,7 +212,16 @@
       "message": "Les données non sauvegardées seront perdues.",
       "cancel": "Annuler",
       "confirm": "Confirmer"
-    }
+    },
+    "sessions": {
+      "A": "Automne {{year}}",
+      "H": "Hiver {{year}}",
+      "E": "Été {{year}}"
+    },
+    "sessionFilter": {
+      "label": "Filtrer par session"
+    },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
