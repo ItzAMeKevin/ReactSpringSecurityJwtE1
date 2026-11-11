@@ -70,7 +70,7 @@ const NotificationBell = () => {
                                     {new Date(notification.date).toLocaleDateString(i18n.language)}
                                 </p>
                             )}
-                            {notification.event === "JOB_OFFER_DECLINED" && (
+                            {notification.event === "CV_DECLINED" && (
                                 <button
                                     type="button"
                                     className={`${btnSmPrimary} mt-2`}
