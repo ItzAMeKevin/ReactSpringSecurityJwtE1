@@ -178,7 +178,7 @@ const PersonalSpaceStudent = () => {
                     </div>
                 </div>
 
-                <div className="w-full mx-auto mt-10">
+                <div className="w-full max-w-3xl mx-auto mt-10">
                     <h2 className="text-main text-center text-xl font-bold mb-3">
                         {t("etudiantOffres.title")}
                     </h2>

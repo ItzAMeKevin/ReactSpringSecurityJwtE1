@@ -315,7 +315,6 @@
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
-    "noAcceptedCv": "Your CV must be accepted to view internship offers.",
     "noOffers": "No internship offers available for your program.",
     "company": "Company",
     "weeks": "wks",
@@ -326,7 +325,7 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You need a validated CV to apply.",
+    "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",

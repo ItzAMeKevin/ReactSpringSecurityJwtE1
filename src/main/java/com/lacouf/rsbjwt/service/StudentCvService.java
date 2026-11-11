@@ -152,6 +152,9 @@ public class StudentCvService {
         }
         StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
                 .orElseThrow(() -> new CvException("errors.cvNotFound"));
+        if (studentCv.getStatus() != Status.ACCEPTED) {
+            throw new CvException("errors.noValidatedCv");
+        }
         appliedCvs.add(studentCv);
         jobOfferRepository.save(jobOffer);
 

@@ -11,6 +11,8 @@ import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -119,6 +121,7 @@ class StudentCvServiceTest {
         JobOffer offer = new JobOffer();
         StudentCv cv = new StudentCv();
         cv.setId(4L);
+        cv.setStatus(Status.ACCEPTED);
         when(jobOfferRepository.findById(2L)).thenReturn(Optional.of(offer));
         when(studentCvRepository.findById(4L)).thenReturn(Optional.of(cv));
 
@@ -135,5 +138,23 @@ class StudentCvServiceTest {
         when(studentCvRepository.findById(4L)).thenReturn(Optional.empty());
         assertThrows(CvException.class,
                 () -> service.applyToJobOffer(4L, CvMetaDataDto.builder().id(4L).build()));
+    }
+
+    @ParameterizedTest(name = "un CV {0} ne peut pas postuler")
+    @EnumSource(value = Status.class, names = "ACCEPTED", mode = EnumSource.Mode.EXCLUDE)
+    void rejectsApplyingWithCvNotAccepted(Status cvStatus) {
+        JobOffer offer = new JobOffer();
+        StudentCv cv = new StudentCv();
+        cv.setId(4L);
+        cv.setStatus(cvStatus);
+        when(jobOfferRepository.findById(2L)).thenReturn(Optional.of(offer));
+        when(studentCvRepository.findById(4L)).thenReturn(Optional.of(cv));
+
+        CvException exception = assertThrows(CvException.class,
+                () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));
+
+        assertEquals("errors.noValidatedCv", exception.getMessage());
+        assertTrue(offer.getAppliedCvs().isEmpty());
+        verify(jobApplicationRepository, never()).save(any(JobApplication.class));
     }
 }

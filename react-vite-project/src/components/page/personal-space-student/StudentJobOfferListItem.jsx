@@ -121,9 +121,6 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                                     : t("etudiantOffres.apply")}
                         </button>
 
-                        {!acceptedCv && !hasApplied && (
-                            <p className="mt-2 text-sm text-gray-600">{t("etudiantOffres.noValidatedCv")}</p>
-                        )}
                         {applyState === "success" && (
                             <p className="mt-2 text-sm font-medium text-green-700" role="status">
                                 {t("etudiantOffres.applySuccess")}

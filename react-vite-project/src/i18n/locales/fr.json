@@ -314,7 +314,6 @@
   "etudiantOffres": {
     "title": "Offres de stage disponibles",
     "loading": "Chargement des offres...",
-    "noAcceptedCv": "Votre CV doit être accepté pour voir les offres de stage.",
     "noOffers": "Aucune offre de stage disponible pour votre programme.",
     "company": "Entreprise",
     "weeks": "sem.",
@@ -325,7 +324,7 @@
     "applied": "Candidature envoyée",
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "noValidatedCv": "Vous pourrez postuler lorsque votre CV sera accepté par le gestionnaire.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",

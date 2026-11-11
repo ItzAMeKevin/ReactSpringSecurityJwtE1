@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.NoValidatedCvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
@@ -27,9 +26,6 @@ public class StudentController {
     public ResponseEntity<List<JobOfferDetailDTO>> getAcceptedOffers(Authentication authentication) {
         try {
             return ResponseEntity.ok(studentService.getAcceptedJobOffers(authentication.getName()));
-        } catch (NoValidatedCvException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-            .body(List.of(JobOfferDetailDTO.builder().erreur("errors.noValidatedCv").build()));
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(List.of(JobOfferDetailDTO.builder().erreur("errors.userNotFound").build()));

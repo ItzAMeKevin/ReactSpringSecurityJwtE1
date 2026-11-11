@@ -12,7 +12,6 @@ const StudentJobOfferList = () => {
     const [acceptedCv, setAcceptedCv] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [noAcceptedCv, setNoAcceptedCv] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -20,17 +19,12 @@ const StudentJobOfferList = () => {
         const load = async () => {
             setLoading(true);
             setError(null);
-            setNoAcceptedCv(false);
             try {
                 const [offersRes, cvRes] = await Promise.all([
                     fetcher("/etudiant/offres"),
                     fetcher("/student-cv"),
                 ]);
 
-                if (offersRes.status === 403) {
-                    if (!cancelled) setNoAcceptedCv(true);
-                    return;
-                }
                 if (!offersRes.ok) throw new Error(`${offersRes.status}`);
                 const data = await offersRes.json();
                 if (!Array.isArray(data)) throw new Error("invalid response");
@@ -62,20 +56,26 @@ const StudentJobOfferList = () => {
     }, [t]);
 
     if (loading) return <p className={`${textMuted} text-sm`}>{t("etudiantOffres.loading")}</p>;
-    if (noAcceptedCv) return <p className={`${textMuted} text-sm`}>{t("etudiantOffres.noAcceptedCv")}</p>;
     if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) return <p className={`${textMuted} text-sm`}>{t("etudiantOffres.noOffers")}</p>;
 
     return (
-        <ul className="grid w-full max-w-4xl grid-cols-1 items-start gap-4 md:grid-cols-2">
-            {offers.map((offer, i) => (
-                <StudentJobOfferListItem
-                    key={offer.id ?? `fallback-${i}`}
-                    offer={offer}
-                    acceptedCv={acceptedCv}
-                />
-            ))}
-        </ul>
+        <div className="flex w-full flex-col gap-4">
+            {!acceptedCv && (
+                <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="status">
+                    {t("etudiantOffres.noValidatedCv")}
+                </p>
+            )}
+            <ul className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-2">
+                {offers.map((offer, i) => (
+                    <StudentJobOfferListItem
+                        key={offer.id ?? `fallback-${i}`}
+                        offer={offer}
+                        acceptedCv={acceptedCv}
+                    />
+                ))}
+            </ul>
+        </div>
     );
 };
 
