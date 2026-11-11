@@ -8,6 +8,7 @@ const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 const EVENT_TARGETS = {
     CV_UPLOADED: { path: "/gestionnaire", kind: "cv" },
     JOB_OFFER_CREATED: { path: "/gestionnaire", kind: "offer" },
+    JOB_OFFER_RESUBMITTED: { path: "/gestionnaire", kind: "offer" },
     CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
     CV_DECLINED: { path: "/etudiant", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },

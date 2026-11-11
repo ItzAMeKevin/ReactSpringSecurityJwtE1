@@ -215,6 +215,7 @@ class EmployerServiceTest {
     void updateRefusedJobOffer_onlyUpdatesDeclinedOffer() {
         String email = "marie@acme.com";
         JobOffer offer = new JobOffer();
+        offer.setId(1L);
         offer.setStatus(Status.DECLINED);
         offer.setRefusalFeedback("Not suitable");
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(offer));
@@ -225,12 +226,15 @@ class EmployerServiceTest {
         assertTrue(employerService.updateRefusedJobOffer(1L, validCreateDto(), email).isPresent());
         assertEquals(Status.PENDING, offer.getStatus());
         assertNull(offer.getRefusalFeedback());
+        verify(systemeService).notifyManagers(NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_RESUBMITTED.message");
 
         offer.setStatus(Status.ACCEPTED);
         assertThrows(IllegalStateException.class,
                 () -> employerService.updateRefusedJobOffer(1L, validCreateDto(), email));
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(2L, email)).thenReturn(Optional.empty());
         assertTrue(employerService.updateRefusedJobOffer(2L, validCreateDto(), email).isEmpty());
+        verifyNoMoreInteractions(systemeService);
     }
 
     @Test

@@ -291,6 +291,10 @@
         "title": "Nouvelle offre de stage à valider",
         "message": "Un employeur a soumis une nouvelle offre de stage. Veuillez l'examiner et la valider."
       },
+      "JOB_OFFER_RESUBMITTED": {
+        "title": "Offre de stage modifiée à valider",
+        "message": "Un employeur a corrigé une offre refusée. Veuillez la réexaminer."
+      },
       "JOB_OFFER_ACCEPTED": {
         "title": "Votre offre de stage a été acceptée",
         "message": "Votre offre de stage a été validée par un gestionnaire."

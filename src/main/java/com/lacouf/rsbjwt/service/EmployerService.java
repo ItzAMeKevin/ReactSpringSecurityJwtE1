@@ -79,7 +79,10 @@ public class EmployerService {
             offer.setAdresse(updated.getAdresse());
             offer.setStatus(Status.PENDING);
             offer.setRefusalFeedback(null);
-            return jobOfferMapper.toDto(jobOfferRepository.save(offer));
+            JobOffer savedOffer = jobOfferRepository.save(offer);
+            systemeService.notifyManagers(NotificationType.JOB_OFFER, savedOffer.getId(),
+                    "notification.types.JOB_OFFER_RESUBMITTED.message");
+            return jobOfferMapper.toDto(savedOffer);
         });
     }
 
