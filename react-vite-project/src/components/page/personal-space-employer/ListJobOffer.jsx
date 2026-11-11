@@ -17,7 +17,7 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedSession, setSelectedSession] = useState(null);
+    const [selectedSession, setSelectedSession] = useState(getCurrentSessionCode);
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
@@ -39,15 +39,7 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
                 const res = await fetcher("/employer", {method: "GET"});
                 if (!res.ok) throw new Error(`${res.status}`);
                 const data = await res.json();
-                if (!cancelled) {
-                    const loaded = Array.isArray(data) ? data : [];
-                    setOffers(loaded);
-                    const current = getCurrentSessionCode();
-                    const derived = getSessionsFromOffers(loaded);
-                    if (!derived.includes(current)) derived.push(current);
-                    derived.sort().reverse();
-                    setSelectedSession(current);
-                }
+                if (!cancelled) setOffers(Array.isArray(data) ? data : []);
             } catch {
                 if (!cancelled) setError(t("errors.generic"));
             } finally {
@@ -94,7 +86,7 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
                 </label>
                 <select
                     id="session-select"
-                    value={selectedSession ?? ""}
+                    value={selectedSession}
                     onChange={e => setSelectedSession(e.target.value)}
                     className={`${inputField} max-w-xs`}
                 >

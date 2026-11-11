@@ -7,7 +7,7 @@ export function getSessionCode(dateStr) {
 }
 
 export function getCurrentSessionCode() {
-    return getSessionCode(new Date().toISOString().slice(0, 10));
+    return getSessionCode(new Date());
 }
 
 // Returns sorted descending (A2026, H2026, A2025, …) with no duplicates
