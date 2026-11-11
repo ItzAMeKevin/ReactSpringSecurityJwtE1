@@ -1,27 +1,17 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {useLocation} from "react-router-dom";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
 
-const ListJobOffer = ({refreshKey}) => {
+const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const location = useLocation();
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
-    const [expandedFeedback, setExpandedFeedback] = useState({});
-
-    useEffect(() => {
-        const { highlight, openFeedback } = location.state ?? {};
-        if (highlight?.kind === "offer" && highlight.id && openFeedback) {
-            setExpandedFeedback(prev => ({ ...prev, [highlight.id]: true }));
-        }
-    }, [location.state]);
 
     const handleToggleCandidates = (offerId) => {
         setSelectedOfferId((prev) => (prev === offerId ? null : offerId));
@@ -92,7 +82,15 @@ const ListJobOffer = ({refreshKey}) => {
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                         </dl>
-                        <div className="flex gap-2 mt-3 flex-wrap">
+                        {offer.status === "DECLINED" && (
+                            <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                                <p className="text-sm font-semibold text-red-800">{t("personalSpaceEmployer.feedbackTitre")}</p>
+                                <p className="text-sm text-black mt-1 whitespace-pre-line break-words">
+                                    {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
+                                </p>
+                            </div>
+                        )}
+                        <div className="flex flex-wrap gap-2 mt-3">
                             <button
                                 type="button"
                                 className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -107,19 +105,12 @@ const ListJobOffer = ({refreshKey}) => {
                                 <button
                                     type="button"
                                     className={btnSmPrimary}
-                                    onClick={(e) => { e.stopPropagation(); setExpandedFeedback(prev => ({ ...prev, [offer.id]: !prev[offer.id] })); }}
+                                    onClick={(e) => { e.stopPropagation(); onEdit?.(offer); }}
                                 >
-                                    {expandedFeedback[offer.id] ? t("personalSpaceEmployer.masquerFeedback") : t("personalSpaceEmployer.voirFeedback")}
+                                    {t("personalSpaceEmployer.editJobOffer")}
                                 </button>
                             )}
                         </div>
-                        {expandedFeedback[offer.id] && (
-                            <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3">
-                                <p className="text-sm text-main/80 whitespace-pre-line">
-                                    {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
-                                </p>
-                            </div>
-                        )}
                         {selectedOfferId === offer.id && (
                             <CandidateList offerId={offer.id} />
                         )}

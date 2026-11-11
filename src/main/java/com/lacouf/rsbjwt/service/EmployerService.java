@@ -80,6 +80,7 @@ public class EmployerService {
             offer.setPrograme(updated.getPrograme());
             offer.setAdresse(updated.getAdresse());
             offer.setStatus(Status.PENDING);
+            offer.setRefusalFeedback(null);
             return jobOfferMapper.toDto(jobOfferRepository.save(offer));
         });
     }

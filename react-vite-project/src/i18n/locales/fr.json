@@ -176,8 +176,10 @@
       "DECLINED": "Refusée"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
-    "voirFeedback": "Voir le feedback",
-    "masquerFeedback": "Masquer le feedback",
+    "offerUpdated": "L'offre a été resoumise pour approbation.",
+    "editJobOffer": "Modifier l'offre",
+    "resubmit": "Resoumettre l'offre",
+    "feedbackTitre": "Commentaire du gestionnaire :",
     "noFeedback": "Aucun commentaire de refus disponible.",
     "submit": "Publier l'offre",
     "fields": {
@@ -268,7 +270,6 @@
     "loading": "Chargement...",
     "error": "Erreur lors du chargement des notifications.",
     "empty": "Aucune notification.",
-    "voirFeedback": "Voir le feedback →",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Offre de stage",

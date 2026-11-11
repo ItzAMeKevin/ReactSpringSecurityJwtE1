@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
-import { textError, btnSmPrimary } from "../styles/classes.js";
+import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
@@ -69,15 +69,6 @@ const NotificationBell = () => {
                                 <p className="text-xs text-black mt-1">
                                     {new Date(notification.date).toLocaleDateString(i18n.language)}
                                 </p>
-                            )}
-                            {notification.event === "JOB_OFFER_DECLINED" && (
-                                <button
-                                    type="button"
-                                    className={`${btnSmPrimary} mt-2`}
-                                    onClick={(e) => { e.stopPropagation(); handleNotificationClick(notification); }}
-                                >
-                                    {t("notifications.voirFeedback")}
-                                </button>
                             )}
                         </li>
                     );

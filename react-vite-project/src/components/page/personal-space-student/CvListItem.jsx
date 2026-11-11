@@ -123,7 +123,6 @@ const CvListItem = ({
         );
     };
 
-    // The new version is a regular upload; the page hides this one if the file name is the same
     const handleReplaceFile = async (event) => {
         const file = event.target.files?.[0];
         event.target.value = "";

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import fetcher from "../utils/fetcher.js";
 
-const POLLING_INTERVAL = 10000;
+const POLLING_INTERVAL = 30000;
 
 const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 
@@ -11,15 +11,13 @@ const EVENT_TARGETS = {
     CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
     CV_DECLINED: { path: "/etudiant", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
-    JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer", openFeedback: true },
+    JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer" },
 };
 
 const getTarget = (event, referenceId) => {
     const target = EVENT_TARGETS[event];
     if (!target) return null;
-    const state = { highlight: { kind: target.kind, id: referenceId } };
-    if (target.openFeedback) state.openFeedback = true;
-    return { path: target.path, state };
+    return { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } };
 };
 
 const normalizeNotification = (n) => {

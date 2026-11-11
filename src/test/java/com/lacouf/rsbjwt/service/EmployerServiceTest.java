@@ -216,6 +216,7 @@ class EmployerServiceTest {
         String email = "marie@acme.com";
         JobOffer offer = new JobOffer();
         offer.setStatus(Status.DECLINED);
+        offer.setRefusalFeedback("Not suitable");
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(offer));
         when(jobOfferMapper.toEntity(any(JobOfferCreateDTO.class))).thenReturn(new JobOffer());
         when(jobOfferRepository.save(offer)).thenReturn(offer);
@@ -223,6 +224,7 @@ class EmployerServiceTest {
 
         assertTrue(employerService.updateRefusedJobOffer(1L, validCreateDto(), email).isPresent());
         assertEquals(Status.PENDING, offer.getStatus());
+        assertNull(offer.getRefusalFeedback());
 
         offer.setStatus(Status.ACCEPTED);
         assertThrows(IllegalStateException.class,

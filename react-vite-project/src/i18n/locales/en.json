@@ -177,8 +177,10 @@
       "DECLINED": "Declined"
     },
     "offerCreated": "Internship offer published successfully.",
-    "voirFeedback": "View feedback",
-    "masquerFeedback": "Hide feedback",
+    "offerUpdated": "The offer has been resubmitted for approval.",
+    "editJobOffer": "Edit offer",
+    "resubmit": "Resubmit offer",
+    "feedbackTitre": "Manager's comment:",
     "noFeedback": "No refusal comment available.",
     "submit": "Publish offer",
     "fields": {
@@ -269,7 +271,6 @@
     "loading": "Loading...",
     "error": "Error loading notifications.",
     "empty": "No notifications.",
-    "voirFeedback": "View feedback →",
     "categories": {
       "CV": "CV",
       "JOB_OFFER": "Internship offer",
