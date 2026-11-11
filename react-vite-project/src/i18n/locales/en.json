@@ -323,6 +323,7 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
+    "choisirCv": "Choose a CV to apply with",
     "noValidatedCv": "You need a validated CV to apply.",
     "applicationStatuts": {
       "PENDING": "Application sent",
