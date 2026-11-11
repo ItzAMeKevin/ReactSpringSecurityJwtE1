@@ -1,15 +1,23 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
-import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
+import {btnPrimary, btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
+import {getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
 
-const ListJobOffer = ({refreshKey}) => {
+const formatSessionLabel = (code, t) => {
+    const prefix = code[0];
+    const year = code.slice(1);
+    return t(`personalSpaceEmployer.sessions.${prefix}`, { year });
+};
+
+const ListJobOffer = ({refreshKey, onCreateOffer}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedSession, setSelectedSession] = useState(null);
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
@@ -31,7 +39,15 @@ const ListJobOffer = ({refreshKey}) => {
                 const res = await fetcher("/employer", {method: "GET"});
                 if (!res.ok) throw new Error(`${res.status}`);
                 const data = await res.json();
-                if (!cancelled) setOffers(Array.isArray(data) ? data : []);
+                if (!cancelled) {
+                    const loaded = Array.isArray(data) ? data : [];
+                    setOffers(loaded);
+                    const current = getCurrentSessionCode();
+                    const derived = getSessionsFromOffers(loaded);
+                    if (!derived.includes(current)) derived.push(current);
+                    derived.sort().reverse();
+                    setSelectedSession(current);
+                }
             } catch {
                 if (!cancelled) setError(t("errors.generic"));
             } finally {
@@ -45,57 +61,104 @@ const ListJobOffer = ({refreshKey}) => {
         };
     }, [refreshKey]);
 
+    const allSessions = useMemo(() => {
+        const current = getCurrentSessionCode();
+        const derived = getSessionsFromOffers(offers);
+        if (!derived.includes(current)) derived.push(current);
+        return derived.sort().reverse();
+    }, [offers]);
+
+    const filteredOffers = useMemo(
+        () => offers.filter(o => getSessionCode(o.startingDate) === selectedSession),
+        [offers, selectedSession]
+    );
+
     if (loading) return <p className={textMuted}>{t("personalSpaceEmployer.loading")}</p>;
     if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) {
-        return <p className={textMuted}>{t("personalSpaceEmployer.noJobOffers")}</p>;
+        return (
+            <div className="flex flex-col items-center gap-3">
+                <p className={textMuted}>{t("personalSpaceEmployer.noJobOffers")}</p>
+                <button className={btnPrimary} onClick={onCreateOffer}>
+                    {t("personalSpaceEmployer.createJobOffer")}
+                </button>
+            </div>
+        );
     }
 
     return (
         <div className="w-full max-w-4xl flex flex-col gap-4">
-            <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-                {offers.map((offer, i) => (
-                    <li
-                        key={offer.id ?? i}
-                        onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
-                        className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
-                    >
-                        <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-lg font-bold text-black">{offer.title}</h3>
-                            {offer.status && (
-                                <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                                    {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                                </span>
-                            )}
-                        </div>
-                        <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
-                        <p className="mt-2 line-clamp-3">{offer.description}</p>
-                        <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
-                            <dd>{offer.salary}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
-                            <dd>{offer.startingDate}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
-                            <dd>{offer.durationInWeeks}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
-                        </dl>
-                        <button
-                            type="button"
-                            className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
-                            onClick={() => handleToggleCandidates(offer.id)}
-                            disabled={offer.status !== "ACCEPTED"}
+            <div className="flex items-center gap-3 w-full max-w-4xl">
+                <label htmlFor="session-select" className="text-sm font-medium text-black shrink-0">
+                    {t("personalSpaceEmployer.sessionFilter.label")}
+                </label>
+                <select
+                    id="session-select"
+                    value={selectedSession ?? ""}
+                    onChange={e => setSelectedSession(e.target.value)}
+                    className={`${inputField} max-w-xs`}
+                >
+                    {allSessions.map(code => (
+                        <option key={code} value={code}>{formatSessionLabel(code, t)}</option>
+                    ))}
+                </select>
+                <span className={`${statusBadge} bg-brand/10 text-brand shrink-0`}>
+                    {selectedSession ? formatSessionLabel(selectedSession, t) : ""}
+                </span>
+            </div>
+
+            {filteredOffers.length === 0 ? (
+                <div className="flex flex-col items-center gap-3">
+                    <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>
+                    <button className={btnPrimary} onClick={onCreateOffer}>
+                        {t("personalSpaceEmployer.createJobOffer")}
+                    </button>
+                </div>
+            ) : (
+                <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+                    {filteredOffers.map((offer, i) => (
+                        <li
+                            key={offer.id ?? i}
+                            onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
+                            className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
                         >
-                            {selectedOfferId === offer.id
-                                ? t("employeurCandidats.masquerCandidats")
-                                : t("employeurCandidats.voirCandidats")}
-                        </button>
-                        {selectedOfferId === offer.id && (
-                            <CandidateList offerId={offer.id} />
-                        )}
-                    </li>
-                ))}
-            </ul>
+                            <div className="flex items-start justify-between gap-2">
+                                <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                                {offer.status && (
+                                    <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                                        {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
+                            <p className="mt-2 line-clamp-3">{offer.description}</p>
+                            <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
+                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
+                                <dd>{offer.salary}</dd>
+                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                                <dd>{offer.startingDate}</dd>
+                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                                <dd>{offer.durationInWeeks}</dd>
+                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
+                                <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
+                            </dl>
+                            <button
+                                type="button"
+                                className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                onClick={() => handleToggleCandidates(offer.id)}
+                                disabled={offer.status !== "ACCEPTED"}
+                            >
+                                {selectedOfferId === offer.id
+                                    ? t("employeurCandidats.masquerCandidats")
+                                    : t("employeurCandidats.voirCandidats")}
+                            </button>
+                            {selectedOfferId === offer.id && (
+                                <CandidateList offerId={offer.id} />
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };
