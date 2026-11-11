@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
 import fetcher from "../../../utils/fetcher.js";
+import ScheduleInterviewModal from "./ScheduleInterviewModal.jsx";
 import {
     cardItem,
     statusBadge,
@@ -20,6 +21,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
     const [updating, setUpdating] = useState(false);
     const [pendingStatus, setPendingStatus] = useState(null);
     const [message, setMessage] = useState("");
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const blobUrlRef = useRef(null);
 
     useEffect(() => {
@@ -101,6 +103,16 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 >
                     {t("employeurCandidats.voirCv")}
                 </button>
+                {candidate.status === "ACCEPTED" && !pendingStatus && (
+                    <button
+                        type="button"
+                        className={btnSmPrimary}
+                        onClick={() => setIsScheduleModalOpen(true)}
+                        aria-label={`${t("employeurCandidats.scheduleInterview")} — ${candidate.firstName} ${candidate.lastName}`}
+                    >
+                        {t("employeurCandidats.scheduleInterview")}
+                    </button>
+                )}
                 {candidate.status === "PENDING" && !pendingStatus && (
                     <>
                         <button type="button" className={btnAccept} onClick={() => openConfirm("ACCEPTED")}>
@@ -150,6 +162,16 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
 
             {cvError && <p className={`text-sm ${textError}`}>{cvError}</p>}
             {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
+
+            <ScheduleInterviewModal
+                isOpen={isScheduleModalOpen}
+                onClose={() => setIsScheduleModalOpen(false)}
+                candidate={candidate}
+                candidatureId={candidate.candidatureId}
+                onSuccess={() => {
+                    setIsScheduleModalOpen(false);
+                }}
+            />
         </li>
     );
 };

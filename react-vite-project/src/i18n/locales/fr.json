@@ -389,6 +389,7 @@
     },
     "accepter": "Accepter",
     "refuser": "Refuser",
+    "scheduleInterview": "Planifier une entrevue",
     "erreurStatut": "Impossible de mettre à jour le statut.",
 
     "confirmation": {
@@ -398,6 +399,47 @@
       "motifLabel": "Message ou motif (optionnel)",
       "confirmer": "Confirmer",
       "annuler": "Annuler"
+    }
+  },
+  "scheduleInterview": {
+    "title": "Planifier une entrevue",
+    "with": "Avec:",
+    "proposeSlots": "Proposer les créneaux",
+    "scheduling": "Planification en cours...",
+    "cancel": "Annuler",
+    "form": {
+      "date": "Date de l'entrevue",
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "type": "Type d'entrevue",
+      "typeOnline": "En ligne",
+      "typeInPerson": "Présentiel",
+      "videoLink": "Lien de visioconférence",
+      "videoLinkHint": "Collez le lien de votre réunion Zoom, Teams ou Google Meet",
+      "address": "Adresse / Lieu",
+      "notes": "Notes pour le candidat",
+      "notesPlaceholder": "Ajoutez des instructions ou des notes pour le candidat...",
+      "notesHelp": "Optionnel"
+    },
+    "slots": {
+      "title": "Créneaux disponibles",
+      "addSlot": "Ajouter un créneau",
+      "noSlots": "Aucun créneau ajouté pour le moment",
+      "save": "Sauvegarder",
+      "cancel": "Annuler",
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "errors": {
+      "title": "Erreur",
+      "generic": "Une erreur est survenue lors de la planification de l'entrevue, veuillez réessayer plus tard.",
+      "dateRequired": "Date requise",
+      "timeRequired": "Heure requise",
+      "endTimeAfterStart": "L'heure de fin doit être après l'heure de début",
+      "videoLinkRequired": "Lien de visioconférence requis",
+      "addressRequired": "L'adresse est obligatoire",
+      "fillAllFields": "Veuillez remplir tous les champs et ajouter au moins un créneau",
+      "retry": "Réessayer"
     }
   }
 }

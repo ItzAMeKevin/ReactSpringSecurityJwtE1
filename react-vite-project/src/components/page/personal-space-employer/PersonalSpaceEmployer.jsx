@@ -12,7 +12,6 @@ const PersonalSpaceEmployer = () => {
     const [openForm, setOpenForm] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-
     const handleOpenForm = () => {
         setOpenForm(true);
         setShowCloseConfirm(false);
