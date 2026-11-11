@@ -258,7 +258,7 @@
   },
   "candidatureTracking": {
     "title": "Suivi des candidatures",
-    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres d'emploi",
+    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres de stage",
     "loading": "Chargement des candidatures...",
     "noCandidatures": "Aucune candidature trouvée.",
     "noResults": "Aucun résultat ne correspond à votre recherche.",

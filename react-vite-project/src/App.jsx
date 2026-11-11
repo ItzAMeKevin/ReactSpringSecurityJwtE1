@@ -13,7 +13,7 @@ import PersonalSpaceManager from "./components/page/personal-space-manager/Perso
 import PersonalSpaceEmployer from "./components/page/personal-space-employer/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import CandidatureSuiviPage from "./components/page/personal-space-manager/CandidatureSuiviPage.jsx";
+import CandidatureTracking from "./components/page/personal-space-manager/CandidatureTracking.jsx";
 
 function App() {
   const [user, setUser] = useState({})
@@ -134,7 +134,7 @@ function App() {
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
           <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
           <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
-          <Route path='gestionnaire/suivi' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><CandidatureSuiviPage/></ProtectedRoute>}/>
+          <Route path='gestionnaire/suivi' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><CandidatureTracking/></ProtectedRoute>}/>
           <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>

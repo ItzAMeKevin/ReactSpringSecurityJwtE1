@@ -259,7 +259,7 @@
   },
   "candidatureTracking": {
     "title": "Application Tracking",
-    "subtitle": "Monitor the status of student applications for all job offers",
+    "subtitle": "Monitor the status of student applications for all internship offers",
     "loading": "Loading applications...",
     "noCandidatures": "No applications found.",
     "noResults": "No results match your search.",
