@@ -1,20 +1,28 @@
 package com.lacouf.rsbjwt.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-public abstract class APIException extends RuntimeException{
-	@Getter
-	protected final HttpStatus status;
-	protected final String message;
+public abstract class APIException extends RuntimeException {
+	private final HttpStatus status;
+	private final String errorKey;
 
-	public APIException(HttpStatus status, String message){
+	protected APIException(HttpStatus status, String errorKey) {
+		super(errorKey);
 		this.status = status;
-		this.message = message;
+		this.errorKey = errorKey;
 	}
 
-	@Override
-	public String getMessage(){
-		return message;
+	protected APIException(HttpStatus status, String errorKey, Throwable cause) {
+		super(errorKey, cause);
+		this.status = status;
+		this.errorKey = errorKey;
+	}
+
+	public HttpStatus getStatus() {
+		return status;
+	}
+
+	public String getErrorKey() {
+		return errorKey;
 	}
 }

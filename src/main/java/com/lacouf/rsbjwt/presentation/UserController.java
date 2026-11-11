@@ -1,21 +1,16 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.AuthenticationException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.UserAppService;
-import com.lacouf.rsbjwt.service.dto.AuthErrorResponse;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
 import com.lacouf.rsbjwt.service.dto.UserCreateDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -26,28 +21,11 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDto) {
-		try {
-			String accessToken = userService.authenticateUser(loginDto);
-			final JWTAuthResponse authResponse = new JWTAuthResponse(accessToken);
-			return ResponseEntity.accepted()
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(authResponse);
-		} catch (UserNotFoundException | AuthenticationException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(new AuthErrorResponse(
-							"errors.authenticationFailed",
-							"AUTH_FAILED"
-					));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(new AuthErrorResponse(
-							"errors.generic",
-							"SERVER_ERROR"
-					));
-		}
+	public ResponseEntity<JWTAuthResponse> authenticateUser(@RequestBody LoginDTO loginDto) {
+		String accessToken = userService.authenticateUser(loginDto);
+		return ResponseEntity.accepted()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(new JWTAuthResponse(accessToken));
 	}
 
 	@GetMapping("/me")
@@ -60,15 +38,15 @@ public class UserController {
 	public ResponseEntity<?> inscription(@RequestBody UserCreateDTO userCreateDTO) {
 		UserCreateDTO existingUser = userService.getUserByEmail(userCreateDTO.getEmail());
 		if (existingUser != null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "email"));
+			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.emailTaken");
 		}
 
 		if (userCreateDTO.getMatricule() != null && userService.matriculeExists(userCreateDTO.getMatricule())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "matricule"));
+			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.matriculeTaken");
 		}
 
 		if (userCreateDTO.getEmployerWorkId() != null && userService.employerIdExists(userCreateDTO.getEmployerWorkId())) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("field", "identifiant"));
+			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.identifiantTaken");
 		}
 
 		userCreateDTO.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));

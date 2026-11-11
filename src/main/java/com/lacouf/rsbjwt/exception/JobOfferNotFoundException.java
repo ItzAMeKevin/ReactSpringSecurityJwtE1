@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class JobOfferNotFoundException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class JobOfferNotFoundException extends APIException {
     public JobOfferNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

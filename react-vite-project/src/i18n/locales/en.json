@@ -54,6 +54,7 @@
     "positiveNumber": "Enter a whole number greater than 0.",
     "identifiantTaken": "This identifier is already assigned.",
     "authenticationFailed": "Invalid email or password.",
+    "invalidToken": "The authentication token is invalid.",
     "fileNameRequired": "The file name is required.",
     "fileNameTooLong": "The file name is too long.",
     "fileTypeRequired": "The file type is required.",
@@ -85,7 +86,12 @@
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
     "noValidatedCv": "You must have a validated CV to apply.",
-    "jobOfferUpdateFailed": "Only declined offers can be modified."
+    "jobOfferUpdateFailed": "Only declined offers can be modified.",
+    "employerNotFound": "Employer not found.",
+    "notificationNotFound": "Notification not found.",
+    "invalidApplicationStatus": "Invalid application status.",
+    "applicationNotPending": "Only pending applications can be updated.",
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
     "title": "ZeROSE",

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @SuperBuilder
-public class JobOfferDto extends GenericDto {
+public class JobOfferDto {
 
     private Long id;
     private String title;

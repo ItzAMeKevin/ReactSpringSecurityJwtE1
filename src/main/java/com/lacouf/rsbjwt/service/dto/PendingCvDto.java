@@ -11,7 +11,7 @@ import java.time.Instant;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PendingCvDto extends GenericDto {
+public class PendingCvDto {
     private Long id;
     private String fileName;
     private Instant uploadedAt;

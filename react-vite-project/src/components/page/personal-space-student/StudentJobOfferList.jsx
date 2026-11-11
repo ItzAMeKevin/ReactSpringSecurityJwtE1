@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import { textError, textMuted } from "../../../styles/classes.js";
 import StudentJobOfferListItem from "./StudentJobOfferListItem.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const VALIDATED_CV_STATUS = "ACCEPTED";
 
@@ -31,7 +32,7 @@ const StudentJobOfferList = () => {
                     if (!cancelled) setNoAcceptedCv(true);
                     return;
                 }
-                if (!offersRes.ok) throw new Error(`${offersRes.status}`);
+                if (!offersRes.ok) throw new Error(await getApiErrorKey(offersRes));
                 const data = await offersRes.json();
                 if (!Array.isArray(data)) throw new Error("invalid response");
 
@@ -49,7 +50,9 @@ const StudentJobOfferList = () => {
                 }
             } catch (e) {
                 console.error("Erreur chargement offres :", e);
-                if (!cancelled) setError(t("errors.generic"));
+                if (!cancelled) {
+                    setError(e.message?.startsWith("errors.") ? t(e.message) : t("errors.generic"));
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }

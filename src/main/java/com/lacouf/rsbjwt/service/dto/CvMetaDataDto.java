@@ -15,7 +15,7 @@ import java.time.Instant;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CvMetaDataDto extends GenericDto {
+public class CvMetaDataDto {
     private Long id;
     private String fileName;
     private String contentType;

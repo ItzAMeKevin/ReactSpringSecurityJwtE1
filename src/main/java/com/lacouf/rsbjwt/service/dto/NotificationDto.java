@@ -14,7 +14,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Data
 @SuperBuilder
-public class NotificationDto extends GenericDto {
+public class NotificationDto {
 
     private Long id;
     private NotificationType notificationType;

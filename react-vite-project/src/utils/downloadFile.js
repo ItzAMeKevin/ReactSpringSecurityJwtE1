@@ -1,9 +1,10 @@
 import fetcher from "./fetcher.js";
+import { getApiErrorKey } from "./apiError.js";
 
 export const fetchBlobUrl = async (url) => {
     const response = await fetcher(url);
     if (!response.ok) {
-        throw new Error(`Erreur HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(await getApiErrorKey(response));
     }
     return URL.createObjectURL(await response.blob());
 };

@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class CvDeclineFeedbackDto extends GenericDto {
+public class CvDeclineFeedbackDto {
 
     @NotBlank(message = "errors.feedbackRequired")
     @Size(max = 2000, message = "errors.feedbackTooLong")

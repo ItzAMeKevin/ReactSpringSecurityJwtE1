@@ -5,6 +5,7 @@ import ManagerCvListItem from "./ManagerCvListItem.jsx";
 import ManagerJobOfferListItem from "./ManagerJobOfferListItem.jsx";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import { pageWrapper, pageTitle, sectionTitle, textMuted, textError } from "../../../styles/classes.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const PersonalSpaceManager = () => {
     const { t } = useTranslation();
@@ -60,7 +61,7 @@ const PersonalSpaceManager = () => {
             method: "PUT",
         });
         if (!response.ok) {
-            throw new Error("Erreur lors de l'acceptation du CV");
+            throw new Error(await getApiErrorKey(response));
         }
         removeFromList(cvId);
     });
@@ -71,21 +72,19 @@ const PersonalSpaceManager = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(reviewPayload),
         });
-        if (!response.ok) {
-            throw new Error("Erreur lors du refus du CV");
-        }
+        if (!response.ok) throw new Error(await getApiErrorKey(response));
         removeFromList(cvId);
     });
 
     const handleAcceptOffer = async (offerId) => {
         const response = await fetcher(`/gestionnaire/offres/${offerId}/accept`, { method: "PUT" });
-        if (!response.ok) throw new Error("Erreur lors de l'acceptation de l'offre");
+        if (!response.ok) throw new Error(await getApiErrorKey(response));
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };
 
     const handleRefuseOffer = async (offerId) => {
         const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, { method: "PUT" });
-        if (!response.ok) throw new Error("Erreur lors du refus de l'offre");
+        if (!response.ok) throw new Error(await getApiErrorKey(response));
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };
 

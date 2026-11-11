@@ -5,6 +5,7 @@ import { validateField, validateInscription } from "../../../utils/validation.js
 import BASE_URL from "../../config/Config.jsx";
 import RoleSelector from "./RoleSelector.jsx";
 import InscriptionForm from "./InscriptionForm.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const Inscription = () => {
   const { t, i18n } = useTranslation();
@@ -67,20 +68,19 @@ const Inscription = () => {
       }
 
       if (res.status === 409) {
-        const { field } = await res.json();
-        if (field === "email") {
-          setErrors((prev) => ({ ...prev, courriel: "errors.emailTaken" }));
-        } else if (field === "matricule") {
-          setErrors((prev) => ({ ...prev, matricule: "errors.matriculeTaken" }));
-        } else if (field ==="identifiant") {
-          setErrors((prev) => ({ ...prev, identifiant: "errors.identifiantTaken" }));
-        }else {
-          setSubmitError("errors.generic");
-        }
+        const errorKey = await getApiErrorKey(res);
+        const fieldByError = {
+          "errors.emailTaken": "courriel",
+          "errors.matriculeTaken": "matricule",
+          "errors.identifiantTaken": "identifiant",
+        };
+        const field = fieldByError[errorKey];
+        if (field) setErrors((prev) => ({ ...prev, [field]: errorKey }));
+        else setSubmitError(errorKey);
         return;
       }
 
-      setSubmitError("errors.generic");
+      setSubmitError(await getApiErrorKey(res));
     } catch {
       setSubmitError("errors.generic");
     }

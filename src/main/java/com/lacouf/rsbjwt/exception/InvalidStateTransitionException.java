@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class InvalidStateTransitionException extends Throwable {
+import org.springframework.http.HttpStatus;
+
+public class InvalidStateTransitionException extends APIException {
     public InvalidStateTransitionException(String message) {
-        super(message);
+        super(HttpStatus.CONFLICT, message);
     }
 }

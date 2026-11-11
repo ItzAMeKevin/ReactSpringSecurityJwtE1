@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @NoArgsConstructor
-public class AdresseDTO extends GenericDto {
+public class AdresseDTO {
 
     @NotBlank(message = "errors.countryRequired")
     private String pays;

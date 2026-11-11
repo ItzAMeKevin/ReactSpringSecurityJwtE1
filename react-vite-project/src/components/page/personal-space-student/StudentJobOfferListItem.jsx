@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../styles/classes.js";
 import fetcher from "../../../utils/fetcher.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const dtClass = "text-sm font-bold text-black";
 const ddClass = "text-sm leading-relaxed text-gray-700";
@@ -25,7 +26,8 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(acceptedCv),
             });
-            setApplyState(res.ok ? "success" : "error");
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
+            setApplyState("success");
         } catch (e) {
             console.error("Erreur lors de la candidature :", e);
             setApplyState("error");

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @Getter
 @SuperBuilder
-public class UserCreateDTO extends GenericDto {
+public class UserCreateDTO {
     private String firstName;
     private String lastname;
     private String email;

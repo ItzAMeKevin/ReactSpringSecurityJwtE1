@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class NoValidatedCvException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class NoValidatedCvException extends APIException {
     public NoValidatedCvException() {
-        super("No validated CV");
+        super(HttpStatus.FORBIDDEN, "errors.noValidatedCv");
     }
 }

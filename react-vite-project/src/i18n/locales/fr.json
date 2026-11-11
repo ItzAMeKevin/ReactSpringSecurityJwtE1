@@ -53,6 +53,7 @@
     "positiveNumber": "Entrez un nombre entier supérieur à 0.",
     "identifiantTaken": "Cet identifiant est déjà attribué.",
     "authenticationFailed": "Courriel ou mot de passe invalide.",
+    "invalidToken": "Le jeton d'authentification est invalide.",
     "fileNameRequired": "Le nom du fichier est obligatoire.",
     "fileNameTooLong": "Le nom du fichier est trop long.",
     "fileTypeRequired": "Le type de fichier est requis.",
@@ -84,7 +85,12 @@
     "jobOfferNotFound": "Offre d'emploi introuvable.",
     "userNotFound": "Utilisateur introuvable.",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
-    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées."
+    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
+    "employerNotFound": "Employeur introuvable.",
+    "notificationNotFound": "Notification introuvable.",
+    "invalidApplicationStatus": "Statut de candidature invalide.",
+    "applicationNotPending": "Seules les candidatures en attente peuvent être mises à jour.",
+    "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
   },
   "header": {
     "title": "ZeROSE",

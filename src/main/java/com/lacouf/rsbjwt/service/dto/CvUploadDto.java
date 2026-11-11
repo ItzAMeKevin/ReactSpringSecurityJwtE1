@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class CvUploadDto extends GenericDto {
+public class CvUploadDto {
 
     @NotBlank(message = "errors.fileNameRequired")
     @Size(max = 255, message = "errors.fileNameTooLong")

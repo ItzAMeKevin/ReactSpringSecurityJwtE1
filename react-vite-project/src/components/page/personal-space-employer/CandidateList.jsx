@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import {sectionTitle, textError, textMuted} from "../../../styles/classes.js";
 import CandidateListItem from "./CandidateListItem.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const CandidateList = ({offerId}) => {
     const {t} = useTranslation();
@@ -18,11 +19,16 @@ const CandidateList = ({offerId}) => {
             setError(null);
             try {
                 const res = await fetcher(`/employer/${offerId}/candidates`, {method: "GET"});
-                if (!res.ok) throw new Error(`${res.status}`);
+                if (!res.ok) throw new Error(await getApiErrorKey(res));
                 const data = await res.json();
                 if (!cancelled) setCandidates(Array.isArray(data) ? data : []);
-            } catch {
-                if (!cancelled) setError(t("employeurCandidats.erreurChargement"));
+            } catch (error) {
+                if (!cancelled) {
+                    const key = error.message?.startsWith("errors.")
+                        ? error.message
+                        : "employeurCandidats.erreurChargement";
+                    setError(t(key));
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }

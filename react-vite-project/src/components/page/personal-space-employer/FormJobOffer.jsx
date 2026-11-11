@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import Field from "../Field.jsx";
 import { inputField, btnOutline, btnModalPrimary, textError } from "../../../styles/classes.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const FormJobOffer = ({onSuccess, onCancel}) => {
 
@@ -81,10 +82,10 @@ const FormJobOffer = ({onSuccess, onCancel}) => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body),
             });
-            if (!res.ok) throw new Error(`${res.status}`);
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
             onSuccess?.();
-        } catch {
-            setError(t("errors.generic"));
+        } catch (error) {
+            setError(error.message?.startsWith("errors.") ? t(error.message) : t("errors.generic"));
         } finally {
             setSubmitting(false);
         }

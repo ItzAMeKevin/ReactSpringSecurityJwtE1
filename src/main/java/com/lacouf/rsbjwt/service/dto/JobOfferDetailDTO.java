@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @SuperBuilder
-public class JobOfferDetailDTO extends GenericDto {
+public class JobOfferDetailDTO {
 
     private Long id;
     private String title;
@@ -42,7 +42,6 @@ public class JobOfferDetailDTO extends GenericDto {
         JobOfferDetailDTO copy = new JobOfferDetailDTO(id, title, description, prerequisites, location, salary,
                 status, publicationDate, startingDate, durationInWeeks, programe,
                 companyName, applied, applicationStatus);
-        copy.setErreur(getErreur());
         return copy;
     }
 }

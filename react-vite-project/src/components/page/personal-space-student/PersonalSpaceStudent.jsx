@@ -9,6 +9,7 @@ import CvListItem from "./CvListItem.jsx";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -37,7 +38,7 @@ const PersonalSpaceStudent = () => {
             try {
                 const response = await fetcher("/student-cv");
                 if (!response.ok) {
-                    setListError(t("televerser.erreurChargement"));
+                    setListError(t(await getApiErrorKey(response, "televerser.erreurChargement")));
                     return;
                 }
                 const data = await response.json();
@@ -82,7 +83,9 @@ const PersonalSpaceStudent = () => {
                 content,
             }),
         });
-        if (response.status !== 201) return false;
+        if (response.status !== 201) {
+            throw new Error(await getApiErrorKey(response));
+        }
         const cvMeta = await response.json();
         setCvList((prev) => [{ ...cvMeta, file }, ...prev]);
         return true;
