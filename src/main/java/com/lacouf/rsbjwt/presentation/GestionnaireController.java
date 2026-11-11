@@ -73,6 +73,14 @@ public class GestionnaireController {
         }
     }
 
+    // ── Candidature Tracking ──────────────────────────────────────────────────
+
+    @GetMapping("/candidatures")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<List<CandidatureDto>> getAllCandidatures() {
+        return ResponseEntity.ok(gestionnaireService.getAllCandidatures());
+    }
+
     // ── Job Offer Management ──────────────────────────────────────────────────
 
     @GetMapping("/offres/pending")

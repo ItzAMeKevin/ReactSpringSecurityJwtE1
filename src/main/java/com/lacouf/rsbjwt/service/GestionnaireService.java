@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
@@ -26,6 +27,8 @@ public class GestionnaireService {
     private final NotificationRepository notificationRepository;
 
     private final StudentCvRepository studentCvRepository;
+
+    private final JobApplicationRepository jobApplicationRepository;
 
     private final CvMapper cvMapper;
 
@@ -94,6 +97,33 @@ public class GestionnaireService {
                 "notification.types.JOB_OFFER_DECLINED.message");
     }
 
+    public List<CandidatureDto> getAllCandidatures() {
+        return jobApplicationRepository.findAllWithStudentAndOffer()
+                .stream()
+                .map(ja -> {
+                    Student student = ja.getStudentCv().getStudent();
+                    JobOffer offer = ja.getJobOffer();
+                    return new CandidatureDto(
+                            ja.getId(),
+                            new CandidatureDto.StudentInfoDto(
+                                    student.getFirstName(),
+                                    student.getLastName(),
+                                    student.getMatricule(),
+                                    student.getCredentials().getEmail()
+                            ),
+                            new CandidatureDto.JobOfferInfoDto(
+                                    offer.getTitle(),
+                                    offer.getEmployer().getCompanyName(),
+                                    offer.getDurationInWeeks()
+                            ),
+                            ja.getStatus(),
+                            ja.getAppliedAt(),
+                            ja.getUpdatedAt()
+                    );
+                })
+                .toList();
+    }
+
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey) throws JobOfferNotFoundException, InvalidStateTransitionException {
         JobOffer offer = jobOfferRepository
                 .findById(id)
@@ -114,6 +144,4 @@ public class GestionnaireService {
 
         return jobOfferMapper.toDtoSimple(offer);
     }
-
-
 }
