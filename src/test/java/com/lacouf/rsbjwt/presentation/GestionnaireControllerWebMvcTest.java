@@ -3,9 +3,9 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.dto.*;
-import com.lacouf.rsbjwt.model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -80,5 +80,19 @@ class GestionnaireControllerWebMvcTest {
         assertEquals(HttpStatus.BAD_REQUEST, controller.acceptOffer(2L).getStatusCode());
         when(service.refuseOffer(2L)).thenThrow(new InvalidStateTransitionException("invalid"));
         assertEquals(HttpStatus.BAD_REQUEST, controller.refuseOffer(2L).getStatusCode());
+    }
+
+    @Test
+    void getsAllCandidatures() {
+        CandidatureDto.StudentInfoDto studentInfo = new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com");
+        CandidatureDto.JobOfferInfoDto offerInfo = new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12);
+        CandidatureDto dto = new CandidatureDto(1L, studentInfo, offerInfo, Status.PENDING, null, null);
+
+        when(service.getAllCandidatures()).thenReturn(List.of(dto));
+        assertEquals(List.of(dto), controller.getAllCandidatures().getBody());
+        assertEquals(HttpStatus.OK, controller.getAllCandidatures().getStatusCode());
+
+        when(service.getAllCandidatures()).thenReturn(List.of());
+        assertEquals(List.of(), controller.getAllCandidatures().getBody());
     }
 }

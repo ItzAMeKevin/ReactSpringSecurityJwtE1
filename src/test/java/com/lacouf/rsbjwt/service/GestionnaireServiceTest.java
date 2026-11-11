@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
@@ -27,6 +28,7 @@ class GestionnaireServiceTest {
     @Mock private JobOfferRepository jobOfferRepository;
     @Mock private NotificationRepository notificationRepository;
     @Mock private StudentCvRepository studentCvRepository;
+    @Mock private JobApplicationRepository jobApplicationRepository;
     @Mock private CvMapper cvMapper;
     @Mock private JobOfferMapper jobOfferMapper;
     @InjectMocks private GestionnaireService service;
@@ -83,11 +85,50 @@ class GestionnaireServiceTest {
 
         assertEquals(dto, service.acceptOffer(8L));
         assertEquals(Status.ACCEPTED, offer.getStatus());
-        assertEquals(Status.ACCEPTED, offer.getStatus());
 
-        offer.setStatus(Status.PENDING);
         assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L));
         when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
         assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));
+    }
+
+    @Test
+    void returnsAllCandidaturesAndEmptyList() {
+        Student student = new Student();
+        student.setFirstName("Jane");
+        student.setLastName("Doe");
+        student.setMatricule("1234567");
+        student.setCredentials(Credentials.builder()
+                .email("jane@test.com").password("x").role(Role.STUDENT).build());
+
+        StudentCv cv = new StudentCv();
+        cv.setStudent(student);
+
+        Employer employer = new Employer();
+        employer.setCompanyName("Acme");
+
+        JobOffer offer = new JobOffer();
+        offer.setTitle("Developer");
+        offer.setEmployer(employer);
+        offer.setDurationInWeeks(12);
+
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setStudentCv(cv);
+        application.setJobOffer(offer);
+        application.setStatus(Status.PENDING);
+
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of(application));
+        List<CandidatureDto> result = service.getAllCandidatures();
+        assertEquals(1, result.size());
+        CandidatureDto dto = result.get(0);
+        assertEquals(1L, dto.id());
+        assertEquals("Jane", dto.student().firstName());
+        assertEquals("jane@test.com", dto.student().email());
+        assertEquals("Acme", dto.jobOffer().companyName());
+        assertEquals(12, dto.jobOffer().durationInWeeks());
+        assertEquals(Status.PENDING, dto.status());
+
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of());
+        assertTrue(service.getAllCandidatures().isEmpty());
     }
 }
