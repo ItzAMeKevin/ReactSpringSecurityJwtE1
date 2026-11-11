@@ -122,7 +122,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                     </button>
                 </div>
 
-                <div className="flex flex-col gap-2 shrink-0">
+                <div className="flex flex-row gap-2 shrink-0">
                     <button
                         type="button"
                         onClick={() => openConfirm("accept")}
