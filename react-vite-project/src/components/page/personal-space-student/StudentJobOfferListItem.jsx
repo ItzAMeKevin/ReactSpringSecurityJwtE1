@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField} from "../../../styles/classes.js";
+import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "../../../styles/classes.js";
+import { labelClass } from "../Field.jsx";
 import fetcher from "../../../utils/fetcher.js";
 
 const dtClass = "text-sm font-bold text-black";
@@ -111,7 +112,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                     <div className="border-t border-gray-200 pt-4">
                         {(acceptedCvs?.length ?? 0) > 1 && !hasApplied && (
                             <div className="mb-3">
-                                <label className="text-sm font-medium text-black block mb-1">
+                                <label className={labelClass}>
                                     {t("etudiantOffres.choisirCv")}
                                 </label>
                                 <select
@@ -138,16 +139,16 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                                     : t("etudiantOffres.apply")}
                         </button>
 
-                        {!(acceptedCvs?.length > 0) && !hasApplied && (
+                        {!acceptedCvs?.length && !hasApplied && (
                             <p className="mt-2 text-sm text-gray-600">{t("etudiantOffres.noValidatedCv")}</p>
                         )}
                         {applyState === "success" && (
-                            <p className="mt-2 text-sm font-medium text-green-700" role="status">
+                            <p className={`mt-2 text-sm font-medium ${textSuccess}`} role="status">
                                 {t("etudiantOffres.applySuccess")}
                             </p>
                         )}
                         {applyState === "error" && (
-                            <p className="mt-2 text-sm font-medium text-red-700" role="alert">
+                            <p className={`mt-2 text-sm font-medium ${textError}`} role="alert">
                                 {t("etudiantOffres.applyError")}
                             </p>
                         )}
