@@ -73,6 +73,7 @@ public class SecurityConfiguration {
                         .requestMatchers(PREPOSE_PATH).hasAuthority(Role.EMPLOYER.name())
                         .requestMatchers(GESTIONNAIRE_PATH).hasAuthority(Role.MANAGER.name())
                         .requestMatchers(EMPLOYER_PATH).hasAuthority(Role.EMPLOYER.name())
+                        .requestMatchers("/interview/**").hasAuthority(Role.EMPLOYER.name())
                         .anyRequest().authenticated() // Changed from denyAll() to authenticated() - more common, adjust if denyAll is strictly needed
                 )
                 .headers(headers -> headers.frameOptions(Customizer.withDefaults()).disable()) // for h2-console
