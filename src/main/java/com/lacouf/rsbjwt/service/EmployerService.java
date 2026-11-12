@@ -97,7 +97,7 @@ public class EmployerService {
             if (application != null) {
                 candidates.add(toCandidateDto(application));
             } else {
-                candidates.add(toCandidateDto(cv, cv.getUploadedAt(), Status.PENDING));
+                candidates.add(toCandidateDto(cv, null, cv.getUploadedAt(), Status.PENDING));
             }
         }
         applicationsByCvId.values().stream()
@@ -150,13 +150,14 @@ public class EmployerService {
     }
 
     private CandidateDto toCandidateDto(JobApplication application) {
-        return toCandidateDto(application.getStudentCv(), application.getAppliedAt(), application.getStatus());
+        return toCandidateDto(application.getStudentCv(), application.getId(), application.getAppliedAt(), application.getStatus());
     }
 
-    private CandidateDto toCandidateDto(StudentCv cv, Instant appliedAt, Status status) {
+    private CandidateDto toCandidateDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status) {
         Student student = cv.getStudent();
         return new CandidateDto(
                 cv.getId(),
+                candidatureId,
                 student.getFirstName(),
                 student.getLastName(),
                 student.getEmail(),

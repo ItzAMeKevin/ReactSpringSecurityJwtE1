@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { inputField, textError } from '../../../styles/classes.js';
-import { formatDateFrench, getTodayDateString } from '../../../utils/dateFormatting.js';
+import { btnAccept, btnOutline, btnPrimary, inputField, textError } from '../../../styles/classes.js';
+import { getTodayDateString } from '../../../utils/dateFormatting.js';
+
+const DATE_FORMAT_OPTIONS = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
 const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, interviewType, videoLink, address, notes, onFieldChange, submissionAttempted }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [newSlot, setNewSlot] = useState({
         date: '',
         startTime: '',
@@ -73,7 +75,7 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
     return (
         <div className="space-y-6">
             {/* Interview Type and General Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+            <div className="bg-brand/5 border border-brand/20 rounded-lg p-4 space-y-4">
                 <div>
                     <fieldset>
                         <legend className="block text-sm font-semibold text-main mb-3">
@@ -86,7 +88,7 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                                     name="type"
                                     value="ONLINE"
                                     checked={interviewType === 'ONLINE'}
-                                    onChange={(e) => onFieldChange('type', e.target.value)}
+                                    onChange={(e) => onFieldChange('interviewType', e.target.value)}
                                     className="w-4 h-4"
                                 />
                                 <span className="text-main">{t('scheduleInterview.form.typeOnline')}</span>
@@ -97,7 +99,7 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                                     name="type"
                                     value="IN_PERSON"
                                     checked={interviewType === 'IN_PERSON'}
-                                    onChange={(e) => onFieldChange('type', e.target.value)}
+                                    onChange={(e) => onFieldChange('interviewType', e.target.value)}
                                     className="w-4 h-4"
                                 />
                                 <span className="text-main">{t('scheduleInterview.form.typeInPerson')}</span>
@@ -224,7 +226,7 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                     <button
                         type="button"
                         onClick={handleAddSlot}
-                        className="w-full bg-brand text-white font-medium py-2 px-3 rounded hover:bg-brand/90 transition"
+                        className={`${btnPrimary} w-full`}
                     >
                         {t('scheduleInterview.slots.addSlot')}
                     </button>
@@ -262,14 +264,14 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                                             <button
                                                 type="button"
                                                 onClick={handleSaveEdit}
-                                                className="flex-1 bg-green-600 text-white font-medium py-1 px-2 rounded hover:bg-green-700 text-sm"
+                                                className={`${btnAccept} flex-1`}
                                             >
                                                 {t('scheduleInterview.slots.save')}
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setEditingSlotId(null)}
-                                                className="flex-1 bg-gray-400 text-white font-medium py-1 px-2 rounded hover:bg-gray-500 text-sm"
+                                                className={`${btnOutline} flex-1`}
                                             >
                                                 {t('scheduleInterview.slots.cancel')}
                                             </button>
@@ -279,7 +281,9 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
                                             <p className="font-medium text-main">
-                                                {formatDateFrench(slot.date)} • {slot.startTime} - {slot.endTime}
+                                                {new Date(slot.date + 'T00:00:00').toLocaleDateString(
+                                                i18n.language, DATE_FORMAT_OPTIONS
+                                            )} • {slot.startTime} - {slot.endTime}
                                             </p>
                                         </div>
                                         <div className="flex gap-2">

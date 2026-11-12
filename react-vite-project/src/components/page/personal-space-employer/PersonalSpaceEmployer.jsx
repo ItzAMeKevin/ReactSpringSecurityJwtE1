@@ -115,7 +115,7 @@ const PersonalSpaceEmployer = () => {
                         </>
                     )}
                     <h2 className={sectionTitle}>{t("personalSpaceEmployer.jobOffers")}</h2>
-                    <ListJobOffer refreshKey={refreshKey} />
+                    <ListJobOffer refreshKey={refreshKey} onCreateOffer={handleOpenForm} />
                 </div>
             </div>
         </>
