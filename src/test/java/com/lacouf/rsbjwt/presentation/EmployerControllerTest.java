@@ -269,7 +269,7 @@ class EmployerControllerTest {
     @DisplayName("GET /employer/{id}/candidates retourne la liste")
     void getCandidates_returnsList() throws Exception {
         CandidateDto candidate = new CandidateDto(
-                5L, "Jean", "Dupont", "jean@test.com",
+                5L, 1L, "Jean", "Dupont", "jean@test.com",
                 Instant.parse("2026-02-01T12:00:00Z"), Status.PENDING);
         when(employerService.getCandidates(1L, "marie@acme.com")).thenReturn(List.of(candidate));
 
@@ -315,7 +315,7 @@ class EmployerControllerTest {
     @DisplayName("PUT /employer/{id}/candidates/{cvId}/status met à jour le statut")
     void updateCandidateStatus_ok() throws Exception {
         CandidateDto updated = new CandidateDto(
-                5L, "Jean", "Dupont", "jean@test.com",
+                5L, 1L, "Jean", "Dupont", "jean@test.com",
                 Instant.parse("2026-02-01T12:00:00Z"), Status.ACCEPTED);
         when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com"))
                 .thenReturn(updated);
