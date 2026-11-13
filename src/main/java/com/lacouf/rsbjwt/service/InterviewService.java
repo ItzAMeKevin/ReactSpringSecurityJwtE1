@@ -25,7 +25,7 @@ public class InterviewService {
 
     @Transactional
     public InterviewResponseDto schedule(ScheduleInterviewRequestDto dto, String employerEmail) {
-        JobApplication application = jobApplicationRepository.findById(dto.candidatureId())
+        JobApplication application = jobApplicationRepository.findByIdWithEmployer(dto.candidatureId())
                 .orElseThrow(ApplicationNotFoundException::new);
 
         String offerOwnerEmail = application.getJobOffer()

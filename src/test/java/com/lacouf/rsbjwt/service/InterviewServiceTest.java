@@ -69,7 +69,7 @@ class InterviewServiceTest {
 
     @Test
     void schedule_success() {
-        when(jobApplicationRepository.findById(1L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> {
             Interview i = inv.getArgument(0);
             i.setId(10L);
@@ -91,7 +91,7 @@ class InterviewServiceTest {
 
     @Test
     void schedule_applicationNotFound() {
-        when(jobApplicationRepository.findById(99L)).thenReturn(Optional.empty());
+        when(jobApplicationRepository.findByIdWithEmployer(99L)).thenReturn(Optional.empty());
 
         ScheduleInterviewRequestDto dto = new ScheduleInterviewRequestDto(
                 99L, InterviewType.ONLINE, "https://zoom.us/j/123", null, null,
@@ -104,7 +104,7 @@ class InterviewServiceTest {
 
     @Test
     void schedule_wrongEmployer() {
-        when(jobApplicationRepository.findById(1L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> interviewService.schedule(validOnlineDto(), "other@test.com"));
@@ -113,7 +113,7 @@ class InterviewServiceTest {
 
     @Test
     void schedule_onlineNullsAddress() {
-        when(jobApplicationRepository.findById(1L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> {
             Interview i = inv.getArgument(0);
             i.setId(1L);
@@ -131,7 +131,7 @@ class InterviewServiceTest {
 
     @Test
     void schedule_inPersonNullsVideoLink() {
-        when(jobApplicationRepository.findById(1L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> {
             Interview i = inv.getArgument(0);
             i.setId(1L);
