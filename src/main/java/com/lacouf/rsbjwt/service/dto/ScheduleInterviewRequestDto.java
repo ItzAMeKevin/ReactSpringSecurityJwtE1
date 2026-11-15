@@ -12,7 +12,7 @@ public record ScheduleInterviewRequestDto(
         @NotNull Long candidatureId,
         @NotNull InterviewType type,
         String videoLink,
-        String address,
+        @Valid AdresseDTO address,
         @Size(max = 500) String notes,
         @NotEmpty @Valid List<InterviewSlotDto> slots
 ) {}

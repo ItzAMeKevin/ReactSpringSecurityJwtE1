@@ -4,10 +4,12 @@ import fetcher from '../../../utils/fetcher.js';
 import InterviewSlotsForm from './InterviewSlotsForm.jsx';
 import { btnOutline, btnPrimary, textError } from '../../../styles/classes.js';
 
+const EMPTY_ADDRESS = { pays: 'Canada', ville: '', rue: '', numeroCivic: '', codePostal: '' };
+
 const INITIAL_FORM_STATE = {
     interviewType: 'ONLINE',
     videoLink: '',
-    address: '',
+    address: EMPTY_ADDRESS,
     notes: '',
     slots: []
 };
@@ -32,7 +34,7 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
             const updated = { ...prev, [field]: value };
             
             if (field === 'interviewType') {
-                if (value === 'ONLINE') updated.address = '';
+                if (value === 'ONLINE') updated.address = EMPTY_ADDRESS;
                 if (value === 'IN_PERSON') updated.videoLink = '';
             }
             
@@ -66,7 +68,10 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
     const validateForm = () => {
         if (!formData.interviewType) return false;
         if (formData.interviewType === 'ONLINE' && !formData.videoLink) return false;
-        if (formData.interviewType === 'IN_PERSON' && !formData.address) return false;
+        if (formData.interviewType === 'IN_PERSON') {
+            const a = formData.address;
+            if (!a.pays || !a.ville || !a.rue || !a.numeroCivic || !a.codePostal) return false;
+        }
         if (formData.slots.length === 0) return false;
         return true;
     };

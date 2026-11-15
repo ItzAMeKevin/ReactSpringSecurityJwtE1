@@ -417,6 +417,11 @@
       "videoLink": "Lien de visioconférence",
       "videoLinkHint": "Collez le lien de votre réunion Zoom, Teams ou Google Meet",
       "address": "Adresse / Lieu",
+      "numeroCivic": "No civique",
+      "rue": "Rue",
+      "ville": "Ville",
+      "codePostal": "Code postal",
+      "pays": "Pays",
       "notes": "Notes pour le candidat",
       "notesPlaceholder": "Ajoutez des instructions ou des notes pour le candidat...",
       "notesHelp": "Optionnel"

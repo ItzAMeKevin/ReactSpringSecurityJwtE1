@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
 import com.lacouf.rsbjwt.model.InterviewType;
@@ -22,6 +23,7 @@ public class InterviewService {
 
     private final InterviewRepository interviewRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final AdresseMapper adresseMapper;
 
     @Transactional
     public InterviewResponseDto schedule(ScheduleInterviewRequestDto dto, String employerEmail) {
@@ -38,7 +40,7 @@ public class InterviewService {
         interview.setJobApplication(application);
         interview.setType(dto.type());
         interview.setVideoLink(dto.type() == InterviewType.ONLINE ? dto.videoLink() : null);
-        interview.setAddress(dto.type() == InterviewType.IN_PERSON ? dto.address() : null);
+        interview.setAdresse(dto.type() == InterviewType.IN_PERSON ? adresseMapper.toEntity(dto.address()) : null);
         interview.setNotes(dto.notes());
 
         List<InterviewSlot> slots = dto.slots().stream().map(s -> {
@@ -61,7 +63,7 @@ public class InterviewService {
                 i.getJobApplication().getId(),
                 i.getType(),
                 i.getVideoLink(),
-                i.getAddress(),
+                adresseMapper.toDto(i.getAdresse()),
                 i.getNotes(),
                 i.getScheduledAt(),
                 i.getSlots().stream()

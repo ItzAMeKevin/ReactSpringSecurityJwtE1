@@ -30,7 +30,15 @@ public class Interview {
 
     private String videoLink;
 
-    private String address;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "pay", column = @Column(name = "adresse_pays")),
+            @AttributeOverride(name = "ville", column = @Column(name = "adresse_ville")),
+            @AttributeOverride(name = "rue", column = @Column(name = "adresse_rue")),
+            @AttributeOverride(name = "numeroCivic", column = @Column(name = "adresse_numero_civic")),
+            @AttributeOverride(name = "codePostal", column = @Column(name = "adresse_code_postal"))
+    })
+    private Adresse adresse;
 
     @Column(length = 500)
     private String notes;

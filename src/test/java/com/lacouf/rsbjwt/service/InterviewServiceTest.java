@@ -1,10 +1,12 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
+import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
@@ -32,6 +34,9 @@ class InterviewServiceTest {
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
+
+    @Mock
+    private AdresseMapper adresseMapper;
 
     @InjectMocks
     private InterviewService interviewService;
@@ -121,7 +126,7 @@ class InterviewServiceTest {
         });
 
         InterviewResponseDto result = interviewService.schedule(new ScheduleInterviewRequestDto(
-                        1L, InterviewType.ONLINE, "https://zoom.us", "Some address", null,
+                        1L, InterviewType.ONLINE, "https://zoom.us", null, null,
                         List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
                 EMPLOYER_EMAIL);
 
@@ -131,6 +136,10 @@ class InterviewServiceTest {
 
     @Test
     void schedule_inPersonNullsVideoLink() {
+        AdresseDTO adresseDto = new AdresseDTO("Canada", "Montréal", "St-Denis", "123", "H2X 1A1");
+        Adresse adresse = Adresse.builder().pays("Canada").ville("Montréal").rue("St-Denis").numeroCivic("123").codePostal("H2X 1A1").build();
+        when(adresseMapper.toEntity(adresseDto)).thenReturn(adresse);
+        when(adresseMapper.toDto(adresse)).thenReturn(adresseDto);
         when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> {
             Interview i = inv.getArgument(0);
@@ -139,11 +148,11 @@ class InterviewServiceTest {
         });
 
         InterviewResponseDto result = interviewService.schedule(new ScheduleInterviewRequestDto(
-                        1L, InterviewType.IN_PERSON, "https://zoom.us", "123 Main St", null,
+                        1L, InterviewType.IN_PERSON, "https://zoom.us", adresseDto, null,
                         List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
                 EMPLOYER_EMAIL);
 
         assertNull(result.videoLink());
-        assertEquals("123 Main St", result.address());
+        assertSame(adresseDto, result.address());
     }
 }

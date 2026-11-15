@@ -9,7 +9,7 @@ public record InterviewResponseDto(Long id,
                                    Long candidatureId,
                                    InterviewType type,
                                    String videoLink,
-                                   String address,
+                                   AdresseDTO address,
                                    String notes,
                                    Instant scheduledAt,
                                    List<InterviewSlotDto> slots

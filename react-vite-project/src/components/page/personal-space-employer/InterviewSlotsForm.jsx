@@ -136,18 +136,51 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
 
                 {interviewType === 'IN_PERSON' && (
                     <div>
-                        <label htmlFor="address" className="block text-sm font-semibold text-main mb-2">
+                        <label className="block text-sm font-semibold text-main mb-2">
                             {t('scheduleInterview.form.address')} <span className="text-red-600">*</span>
                         </label>
-                        <textarea
-                            id="address"
-                            placeholder="123 Rue Principale, Montréal, QC H1A 1A1"
-                            value={address}
-                            onChange={(e) => onFieldChange('address', e.target.value)}
-                            rows="2"
-                            className={inputField + (submissionAttempted && !address ? ' border-red-600 ring-red-200' : '')}
-                        />
-                        {submissionAttempted && !address && (
+                        <div className="space-y-2">
+                            <div className="grid grid-cols-3 gap-2">
+                                <input
+                                    type="text"
+                                    placeholder={t('scheduleInterview.form.numeroCivic')}
+                                    value={address.numeroCivic}
+                                    onChange={(e) => onFieldChange('address', { ...address, numeroCivic: e.target.value })}
+                                    className={inputField + (submissionAttempted && !address.numeroCivic ? ' border-red-600 ring-red-200' : '')}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder={t('scheduleInterview.form.rue')}
+                                    value={address.rue}
+                                    onChange={(e) => onFieldChange('address', { ...address, rue: e.target.value })}
+                                    className={`${inputField} col-span-2` + (submissionAttempted && !address.rue ? ' border-red-600 ring-red-200' : '')}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    type="text"
+                                    placeholder={t('scheduleInterview.form.ville')}
+                                    value={address.ville}
+                                    onChange={(e) => onFieldChange('address', { ...address, ville: e.target.value })}
+                                    className={inputField + (submissionAttempted && !address.ville ? ' border-red-600 ring-red-200' : '')}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder={t('scheduleInterview.form.codePostal')}
+                                    value={address.codePostal}
+                                    onChange={(e) => onFieldChange('address', { ...address, codePostal: e.target.value })}
+                                    className={inputField + (submissionAttempted && !address.codePostal ? ' border-red-600 ring-red-200' : '')}
+                                />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder={t('scheduleInterview.form.pays')}
+                                value={address.pays}
+                                onChange={(e) => onFieldChange('address', { ...address, pays: e.target.value })}
+                                className={inputField + (submissionAttempted && !address.pays ? ' border-red-600 ring-red-200' : '')}
+                            />
+                        </div>
+                        {submissionAttempted && (!address.numeroCivic || !address.rue || !address.ville || !address.codePostal || !address.pays) && (
                             <p className={textError + ' text-sm mt-1'}>{t('scheduleInterview.errors.addressRequired')}</p>
                         )}
                     </div>
