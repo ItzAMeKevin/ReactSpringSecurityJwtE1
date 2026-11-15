@@ -190,6 +190,7 @@ const PersonalSpaceStudent = () => {
                     </h2>
                     <StudentJobOfferList />
                 </div>
+
             </div>
         </div>
     );

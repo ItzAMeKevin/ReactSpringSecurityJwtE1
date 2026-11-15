@@ -21,6 +21,9 @@ function Header({user}) {
                     {user?.isLoggedIn && user?.role === "ROLE_MANAGER" && (
                         <li><Link to="/gestionnaire/suivi">{t("header.candidatureTracking")}</Link></li>
                     )}
+                    {user?.isLoggedIn && user?.role === "ROLE_STUDENT" && (
+                        <li><Link to="/etudiant/convocations">{t("header.convocations")}</Link></li>
+                    )}
                     <li><Link to="/about">{t("header.about")}</Link></li>
                     <li>{user?.isLoggedIn ? <Link to="/logout">{t("header.logout")}</Link> : <Link to="/login">{t("header.login")}</Link>}</li>
                     {["fr", "en"].map((lang) => (

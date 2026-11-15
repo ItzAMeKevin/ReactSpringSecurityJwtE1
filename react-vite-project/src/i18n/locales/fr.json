@@ -94,6 +94,7 @@
     "logout": "Déconnexion",
     "login": "Connexion",
     "candidatureTracking": "Suivi des candidatures",
+    "convocations": "Mes convocations",
     "greeting": "Bonjour",
     "roles": {
       "STUDENT": "Étudiant",
@@ -446,6 +447,44 @@
       "addressRequired": "L'adresse est obligatoire",
       "fillAllFields": "Veuillez remplir tous les champs et ajouter au moins un créneau",
       "retry": "Réessayer"
+    }
+  },
+  "convocations": {
+    "title": "Mes convocations",
+    "loading": "Chargement des convocations...",
+    "empty": "Aucune convocation pour le moment.",
+    "error": "Impossible de charger les convocations.",
+    "status": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Confirmée",
+      "DECLINED": "Refusée",
+      "EXPIRED": "Expirée"
+    },
+    "type": {
+      "ONLINE": "En ligne",
+      "IN_PERSON": "Présentiel"
+    },
+    "modal": {
+      "title": "Détails de la convocation",
+      "company": "Entreprise",
+      "offer": "Offre",
+      "type": "Type",
+      "link": "Lien",
+      "address": "Adresse",
+      "notes": "Notes",
+      "slots": "Créneaux proposés"
+    },
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "declineMessage": "Message (optionnel)",
+    "declineMessagePlaceholder": "Expliquez pourquoi vous refusez...",
+    "expired": "Cette convocation a expiré.",
+    "errors": {
+      "expired": "Tous les créneaux sont expirés.",
+      "alreadyResponded": "Vous avez déjà répondu à cette convocation.",
+      "generic": "Une erreur est survenue, veuillez réessayer."
     }
   }
 }

@@ -95,6 +95,7 @@
     "logout": "Logout",
     "login": "Login",
     "candidatureTracking": "Application Tracking",
+    "convocations": "My Invitations",
     "greeting": "Hello",
     "roles": {
       "STUDENT": "Student",
@@ -447,6 +448,44 @@
       "addressRequired": "Address is required",
       "fillAllFields": "Please fill in all fields and add at least one slot",
       "retry": "Retry"
+    }
+  },
+  "convocations": {
+    "title": "My Interview Invitations",
+    "loading": "Loading invitations...",
+    "empty": "No invitations yet.",
+    "error": "Could not load invitations.",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Confirmed",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "type": {
+      "ONLINE": "Online",
+      "IN_PERSON": "In-person"
+    },
+    "modal": {
+      "title": "Invitation Details",
+      "company": "Company",
+      "offer": "Offer",
+      "type": "Type",
+      "link": "Link",
+      "address": "Address",
+      "notes": "Notes",
+      "slots": "Proposed slots"
+    },
+    "accept": "Accept",
+    "decline": "Decline",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "declineMessage": "Message (optional)",
+    "declineMessagePlaceholder": "Explain why you are declining...",
+    "expired": "This invitation has expired.",
+    "errors": {
+      "expired": "All slots have expired.",
+      "alreadyResponded": "You have already responded to this invitation.",
+      "generic": "An error occurred, please try again."
     }
   }
 }
