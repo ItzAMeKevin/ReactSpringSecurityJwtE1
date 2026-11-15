@@ -473,7 +473,8 @@
       "link": "Link",
       "address": "Address",
       "notes": "Notes",
-      "slots": "Proposed slots"
+      "slots": "Proposed slots",
+      "selectSlot": "Select a slot to accept"
     },
     "accept": "Accept",
     "decline": "Decline",

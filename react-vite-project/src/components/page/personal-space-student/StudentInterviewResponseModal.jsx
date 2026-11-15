@@ -5,6 +5,7 @@ import { btnAccept, btnOutline, btnRefuse, inputField, textError, textMuted } fr
 
 const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }) => {
     const { t, i18n } = useTranslation();
+    const [selectedSlotId, setSelectedSlotId] = useState(null);
     const [declining, setDeclining] = useState(false);
     const [declineMessage, setDeclineMessage] = useState('');
     const [loading, setLoading] = useState(false);
@@ -14,6 +15,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
 
     const handleClose = () => {
         if (loading) return;
+        setSelectedSlotId(null);
         setDeclining(false);
         setDeclineMessage('');
         setError(null);
@@ -29,6 +31,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     status,
+                    selectedSlotId: status === 'ACCEPTED' ? selectedSlotId : null,
                     message: status === 'DECLINED' ? declineMessage || null : null
                 })
             });
@@ -103,17 +106,38 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                         )}
                     </div>
 
-                    {/* Slots */}
+                    {/* Slots — selectable */}
                     {interview.slots?.length > 0 && (
                         <div>
-                            <p className="text-sm font-semibold text-main mb-2">{t('convocations.modal.slots')}</p>
-                            <ul className="space-y-1">
-                                {interview.slots.map((slot, i) => (
-                                    <li key={i} className={`${textMuted} text-sm`}>
-                                        {formatDate(slot.date)} • {slot.startTime} – {slot.endTime}
-                                    </li>
-                                ))}
+                            <p className="text-sm font-semibold text-main mb-2">
+                                {t('convocations.modal.slots')}
+                                {!declining && <span className="text-red-500 ml-1">*</span>}
+                            </p>
+                            <ul className="space-y-2">
+                                {interview.slots.map((slot) => {
+                                    const selected = selectedSlotId === slot.id;
+                                    return (
+                                        <li key={slot.id}>
+                                            <button
+                                                type="button"
+                                                onClick={() => !declining && setSelectedSlotId(slot.id)}
+                                                disabled={declining}
+                                                className={`w-full text-left px-4 py-2 rounded-lg border text-sm transition-colors
+                                                    ${selected
+                                                        ? 'border-brand bg-brand/10 font-semibold text-main'
+                                                        : 'border-brand/20 bg-white text-main/70 hover:bg-brand/5'}
+                                                    ${declining ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
+                                            >
+                                                {formatDate(slot.date)} • {slot.startTime} – {slot.endTime}
+                                                {selected && <span className="ml-2 text-brand">✓</span>}
+                                            </button>
+                                        </li>
+                                    );
+                                })}
                             </ul>
+                            {!declining && !selectedSlotId && (
+                                <p className={`${textMuted} text-xs mt-1`}>{t('convocations.modal.selectSlot')}</p>
+                            )}
                         </div>
                     )}
 
@@ -151,7 +175,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                             </button>
                             <button
                                 onClick={() => respond('ACCEPTED')}
-                                disabled={loading}
+                                disabled={loading || !selectedSlotId}
                                 className={`${btnAccept} disabled:opacity-50`}
                             >
                                 {loading ? '...' : t('convocations.accept')}

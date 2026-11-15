@@ -472,7 +472,8 @@
       "link": "Lien",
       "address": "Adresse",
       "notes": "Notes",
-      "slots": "Créneaux proposés"
+      "slots": "Créneaux proposés",
+      "selectSlot": "Sélectionnez un créneau pour accepter"
     },
     "accept": "Accepter",
     "decline": "Refuser",
