@@ -8,9 +8,14 @@ import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.SecurityConfiguration;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.service.EmployerService;
+import com.lacouf.rsbjwt.service.InterviewService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
+import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
+import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
+import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
@@ -34,6 +39,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +65,9 @@ class EmployerControllerTest {
     @MockitoBean
     private EmployerService employerService;
 
+    @MockitoBean
+    private InterviewService interviewService;
+
     @Autowired
     private JsonMapper jsonMapper;
 
@@ -82,6 +91,8 @@ class EmployerControllerTest {
     private AdresseDTO adresseDTO;
     private JobOfferCreateDTO jobOfferCreateDTO;
     private JobOfferDetailDTO jobOfferDetailDTO;
+    private ScheduleInterviewRequestDto scheduleRequest;
+    private InterviewResponseDto interviewResponseDto;
 
     @BeforeEach
     void setUp() {
@@ -122,6 +133,17 @@ class EmployerControllerTest {
                 12,
                 Programe.TECHNIQUES_INFORMATIQUE,
                 "ACME Inc."
+        );
+
+        scheduleRequest = new ScheduleInterviewRequestDto(
+                1L, InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
+                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0)))
+        );
+
+        interviewResponseDto = new InterviewResponseDto(
+                10L, 1L, InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
+                Instant.now(),
+                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0)))
         );
     }
 
@@ -375,6 +397,59 @@ class EmployerControllerTest {
     void getCandidateCv_invalidCv_returns404() throws Exception {
         when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new InvalidCvException("CV not found"));
         mockMvc.perform(get("/employer/candidates/5/cv").with(employer())).andExpect(status().isNotFound());
+    }
+
+    // ===== POST /employer/interview/schedule =====
+
+    @Test
+    void scheduleInterview_success_returns201() throws Exception {
+        when(interviewService.schedule(any(ScheduleInterviewRequestDto.class), anyString()))
+                .thenReturn(interviewResponseDto);
+
+        mockMvc.perform(post("/employer/interview/schedule")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(scheduleRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(10L))
+                .andExpect(jsonPath("$.candidatureId").value(1L))
+                .andExpect(jsonPath("$.type").value("ONLINE"));
+
+        verify(interviewService).schedule(any(), anyString());
+    }
+
+    @Test
+    void scheduleInterview_wrongRole_returns403() throws Exception {
+        mockMvc.perform(post("/employer/interview/schedule")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(scheduleRequest)))
+                .andExpect(status().isForbidden());
+
+        verify(interviewService, never()).schedule(any(), any());
+    }
+
+    @Test
+    void scheduleInterview_invalidBody_returns400() throws Exception {
+        mockMvc.perform(post("/employer/interview/schedule")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+
+        verify(interviewService, never()).schedule(any(), any());
+    }
+
+    @Test
+    void scheduleInterview_notFound_returns404() throws Exception {
+        when(interviewService.schedule(any(ScheduleInterviewRequestDto.class), anyString()))
+                .thenThrow(new ApplicationNotFoundException());
+
+        mockMvc.perform(post("/employer/interview/schedule")
+                        .with(employer())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(scheduleRequest)))
+                .andExpect(status().isNotFound());
     }
 
     // ===== helpers =====

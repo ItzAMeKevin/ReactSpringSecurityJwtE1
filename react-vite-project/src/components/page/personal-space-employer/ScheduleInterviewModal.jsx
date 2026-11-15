@@ -86,7 +86,7 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
         setIsLoading(true);
 
         try {
-            const response = await fetcher('/interview/schedule', {
+            const response = await fetcher('/employer/interview/schedule', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

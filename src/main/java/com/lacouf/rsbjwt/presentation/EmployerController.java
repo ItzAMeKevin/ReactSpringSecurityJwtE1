@@ -3,10 +3,8 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.EmployerService;
-import com.lacouf.rsbjwt.service.dto.CandidateDto;
-import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
-import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
-import com.lacouf.rsbjwt.service.dto.UpdateCandidateStatusDto;
+import com.lacouf.rsbjwt.service.dto.*;
+import com.lacouf.rsbjwt.service.InterviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +20,7 @@ import java.util.List;
 @RequestMapping("/employer")
 public class EmployerController {
     private final EmployerService employerService;
+    private final InterviewService interviewService;
 
     @PostMapping("/addJobOffer")
     public ResponseEntity<JobOfferDetailDTO> addJobOffer(
@@ -90,6 +89,18 @@ public class EmployerController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(content);
         } catch (ApplicationNotFoundException | InvalidCvException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/interview/schedule")
+    public ResponseEntity<InterviewResponseDto> scheduleInterview(
+            @Valid @RequestBody ScheduleInterviewRequestDto request,
+            Authentication authentication) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(interviewService.schedule(request, authentication.getName()));
+        } catch (ApplicationNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
