@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.mapper.AdresseMapper;
+import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
 import com.lacouf.rsbjwt.model.InterviewType;
@@ -9,7 +10,6 @@ import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
-import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,7 @@ public class InterviewService {
     private final InterviewRepository interviewRepository;
     private final JobApplicationRepository jobApplicationRepository;
     private final AdresseMapper adresseMapper;
+    private final InterviewMapper interviewMapper;
 
     @Transactional
     public InterviewResponseDto schedule(ScheduleInterviewRequestDto dto, String employerEmail) {
@@ -54,22 +55,7 @@ public class InterviewService {
         interview.setSlots(slots);
 
         Interview saved = interviewRepository.save(interview);
-        return toDto(saved);
-    }
-
-    private InterviewResponseDto toDto(Interview i) {
-        return new InterviewResponseDto(
-                i.getId(),
-                i.getJobApplication().getId(),
-                i.getType(),
-                i.getVideoLink(),
-                adresseMapper.toDto(i.getAdresse()),
-                i.getNotes(),
-                i.getScheduledAt(),
-                i.getSlots().stream()
-                        .map(s -> new InterviewSlotDto(s.getDate(), s.getStartTime(), s.getEndTime()))
-                        .toList()
-        );
+        return interviewMapper.toDto(saved);
     }
 }
 
