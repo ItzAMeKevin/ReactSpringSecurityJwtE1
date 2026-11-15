@@ -25,6 +25,10 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
         if (!slot.startTime) newErrors.startTime = t('scheduleInterview.errors.timeRequired') || 'Heure requise';
         if (!slot.endTime) newErrors.endTime = t('scheduleInterview.errors.timeRequired') || 'Heure requise';
         
+        if (slot.date && slot.date < today) {
+            newErrors.date = t('scheduleInterview.errors.dateInPast') || 'La date ne peut pas être antérieure à aujourd\'hui';
+        }
+        
         if (slot.startTime && slot.endTime && slot.startTime >= slot.endTime) {
             newErrors.endTime = t('scheduleInterview.errors.endTimeAfterStart') || 'L\'heure de fin doit être après l\'heure de début';
         }

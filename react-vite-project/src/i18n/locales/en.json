@@ -435,6 +435,7 @@
       "title": "Error",
       "generic": "An error occurred while scheduling the interview, please try again later.",
       "dateRequired": "Date required",
+      "dateInPast": "Date cannot be before today",
       "timeRequired": "Time required",
       "endTimeAfterStart": "End time must be after start time",
       "videoLinkRequired": "Videoconference link required",

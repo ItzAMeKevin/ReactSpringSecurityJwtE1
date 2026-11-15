@@ -434,6 +434,7 @@
       "title": "Erreur",
       "generic": "Une erreur est survenue lors de la planification de l'entrevue, veuillez réessayer plus tard.",
       "dateRequired": "Date requise",
+      "dateInPast": "La date ne peut pas être antérieure à aujourd'hui",
       "timeRequired": "Heure requise",
       "endTimeAfterStart": "L'heure de fin doit être après l'heure de début",
       "videoLinkRequired": "Lien de visioconférence requis",
