@@ -148,7 +148,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
             {pendingAction && (
                 <div className="mt-3 flex flex-col gap-2 border-t pt-3" role="group"
                      aria-label={t("gestionnaire.offres.confirmation.confirmer")}>
-                    <p className="text-sm font-semibold text-black">
+                    <p className="text-sm font-semibold text-main">
                         {t(`gestionnaire.offres.confirmation.${isAccept ? "accepter" : "refuser"}`,
                             {title: offer.title})}
                     </p>

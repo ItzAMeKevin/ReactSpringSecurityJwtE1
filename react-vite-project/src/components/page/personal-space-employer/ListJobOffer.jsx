@@ -66,29 +66,29 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                         className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
                     >
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                            <h3 className="text-lg font-bold text-main">{offer.title}</h3>
                             {offer.status && (
                                 <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
                                     {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
                                 </span>
                             )}
                         </div>
-                        <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
+                        <p className="text-sm text-main/70">{programName(offer.programe)}</p>
                         <p className="mt-2 line-clamp-3">{offer.description}</p>
                         <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
                             <dd>{formatSalary(offer.salary, t)}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                             <dd>{offer.startingDate}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
+                            <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                         </dl>
                         {offer.status === "DECLINED" && (
                             <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
                                 <p className="text-sm font-semibold text-red-800">{t("personalSpaceEmployer.feedbackTitre")}</p>
-                                <p className="text-sm text-black mt-1 whitespace-pre-line break-words">
+                                <p className="text-sm text-main mt-1 whitespace-pre-line break-words">
                                     {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
                                 </p>
                             </div>

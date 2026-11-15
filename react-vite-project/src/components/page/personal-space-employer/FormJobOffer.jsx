@@ -112,7 +112,7 @@ const FormJobOffer = ({offer, onSuccess, onCancel}) => {
                         ))}
                     </Field>
                 </div>
-                <h2 className="text-black font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
+                <h2 className="text-main font-bold mb-2">{t("personalSpaceEmployer.fields.address")}</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.city")} name="city" defaultValue={offer?.location?.ville} required placeholder={t("personalSpaceEmployer.placeholders.city")} className={inputField} error={fieldErrors.city}/>
                     <Field label={t("personalSpaceEmployer.fields.country")} name="country" defaultValue={offer?.location?.pays} required placeholder={t("personalSpaceEmployer.placeholders.country")} className={inputField} error={fieldErrors.country}/>

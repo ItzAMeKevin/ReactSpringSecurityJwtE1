@@ -119,7 +119,7 @@ const CvListItem = ({
         return (
             <>
                 <p className="text-sm font-semibold text-red-800">{t("televerser.feedbackTitre")}</p>
-                <p className="text-sm text-black mt-1 whitespace-pre-line break-words">{feedback}</p>
+                <p className="text-sm text-main mt-1 whitespace-pre-line break-words">{feedback}</p>
             </>
         );
     };

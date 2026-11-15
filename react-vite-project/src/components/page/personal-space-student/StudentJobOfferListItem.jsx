@@ -63,13 +63,13 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                 </div>
             </div>
 
-            <p className="mt-1 text-sm text-gray-600">{programName(offer.programe)}</p>
+            <p className="mt-1 text-sm text-main/70">{programName(offer.programe)}</p>
             {offer.companyName && (
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-main/70">
                     {t("etudiantOffres.company")}: <span className="font-medium">{offer.companyName}</span>
                 </p>
             )}
-            <p className="mt-1 text-sm text-gray-600">
+            <p className="mt-1 text-sm text-main/70">
                 {offer.startingDate} · {offer.durationInWeeks} {t("etudiantOffres.weeks")}
             </p>
 

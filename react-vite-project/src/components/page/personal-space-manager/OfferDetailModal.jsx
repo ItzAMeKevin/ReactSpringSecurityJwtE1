@@ -34,7 +34,7 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
                     <h2 id="offer-detail-title" className="text-lg font-bold text-main">
                         {offer.title}
                     </h2>
-                    <p className="mb-4 text-sm text-gray-600">{programName(offer.programe)}</p>
+                    <p className="mb-4 text-sm text-main/70">{programName(offer.programe)}</p>
 
                     <dl className="space-y-3 text-sm">
                         <div>

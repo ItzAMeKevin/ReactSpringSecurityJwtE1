@@ -30,7 +30,7 @@ const Modal = ({ title, onClose, children, widthClass = "w-full max-w-3xl" }) =>
                 aria-labelledby={titleId}
             >
                 <div className="flex items-center justify-between gap-2 border-b px-6 py-3">
-                    <h2 id={titleId} className="text-lg font-bold text-black">{title}</h2>
+                    <h2 id={titleId} className="text-lg font-bold text-main">{title}</h2>
                     <button type="button" className={btnSmPrimary} onClick={onClose}>
                         {t("modal.close")}
                     </button>
