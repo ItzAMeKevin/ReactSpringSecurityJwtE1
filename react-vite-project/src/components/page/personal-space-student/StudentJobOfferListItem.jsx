@@ -4,8 +4,8 @@ import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../st
 import fetcher from "../../../utils/fetcher.js";
 import formatSalary from "../../../utils/formatSalary.js";
 
-const dtClass = "text-sm font-bold text-black";
-const ddClass = "text-sm leading-relaxed text-gray-700";
+const dtClass = "text-sm font-bold text-main";
+const ddClass = "text-sm leading-relaxed text-main/70";
 
 const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
     const { t } = useTranslation();
@@ -53,7 +53,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
     return (
         <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
             <div className="flex items-start justify-between gap-3">
-                <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                <h3 className="text-lg font-bold text-main">{offer.title}</h3>
                 <div className="flex flex-col items-end gap-1">
                     {hasApplied && (
                         <span className={`${statusBadge} ${statusBadgeColor(applicationStatus)} text-center`}>
@@ -140,7 +140,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                 onClick={() => setExpanded((prev) => !prev)}
                 aria-expanded={expanded}
                 aria-controls={expanded ? detailsId : undefined}
-                className="mt-3 cursor-pointer text-sm font-medium text-[#4b1113] underline underline-offset-2 hover:text-[#3a0d0f]"
+                className="mt-3 cursor-pointer text-sm font-medium text-main underline"
             >
                 {expanded ? t("etudiantOffres.showLess") : t("etudiantOffres.readMore")}
             </button>

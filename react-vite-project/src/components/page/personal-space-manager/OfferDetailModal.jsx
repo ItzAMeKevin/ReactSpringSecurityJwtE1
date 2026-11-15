@@ -1,11 +1,7 @@
 import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import formatSalary from "../../../utils/formatSalary.js";
-
-const btnFilled = "bg-[#4b1113] text-white px-4 py-2 rounded hover:bg-[#6b1c1f] transition-colors duration-300 disabled:opacity-50";
-const btnOutline = "border border-[#4b1113] text-[#4b1113] px-4 py-2 rounded hover:bg-[#f3ebe3] transition-colors duration-300 disabled:opacity-50";
-const btnText = "text-[#4b1113] px-2 py-2 underline hover:no-underline disabled:opacity-50";
-const dtClass = "font-bold text-[#4b1113]";
+import {btnModalPrimary, btnOutline} from "../../../styles/classes.js";
 
 const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onRefuse, onClose}) => {
     const {t} = useTranslation();
@@ -35,34 +31,34 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
                 aria-labelledby="offer-detail-title"
             >
                 <div className="overflow-y-auto p-6">
-                    <h2 id="offer-detail-title" className="text-lg font-bold text-[#4b1113]">
+                    <h2 id="offer-detail-title" className="text-lg font-bold text-main">
                         {offer.title}
                     </h2>
                     <p className="mb-4 text-sm text-gray-600">{programName(offer.programe)}</p>
 
                     <dl className="space-y-3 text-sm">
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.description")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.description")}</dt>
                             <dd className="whitespace-pre-line">{offer.description}</dd>
                         </div>
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.requirements")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.requirements")}</dt>
                             <dd className="whitespace-pre-line">{offer.prerequisites}</dd>
                         </div>
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.salary")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
                             <dd>{formatSalary(offer.salary, t)}</dd>
                         </div>
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                             <dd>{offer.startingDate}</dd>
                         </div>
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
                         </div>
                         <div>
-                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.address")}</dt>
+                            <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd>
                                 {address
                                     ? `${address.numeroCivic} ${address.rue}, ${address.ville}, ${address.pays}`
@@ -76,14 +72,14 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
                     )}
 
                     <div className="mt-6 flex items-center justify-between gap-2">
-                        <button type="button" className={btnText} disabled={deciding} onClick={onClose}>
+                        <button type="button" className="text-sm text-main/70 underline hover:no-underline px-2 py-2" disabled={deciding} onClick={onClose}>
                             {t("personalSpaceManager.close")}
                         </button>
                         <div className="flex gap-3">
                             <button type="button" className={btnOutline} disabled={deciding} onClick={onRefuse}>
                                 {t("personalSpaceManager.refuse")}
                             </button>
-                            <button type="button" className={btnFilled} disabled={deciding} onClick={onAccept}>
+                            <button type="button" className={btnModalPrimary} disabled={deciding} onClick={onAccept}>
                                 {t("personalSpaceManager.accept")}
                             </button>
                         </div>

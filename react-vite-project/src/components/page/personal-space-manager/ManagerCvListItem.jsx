@@ -53,7 +53,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
             await onAccept(cv.id);
         } catch (error) {
             console.error("Erreur lors de l'acceptation du CV :", error);
-            setActionState("error");
+            setActionState("acceptError");
         }
     };
 
@@ -67,7 +67,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
             await onDecline(cv.id, { feedback: reviewFeedback.trim() });
         } catch (error) {
             console.error("Erreur lors du refus du CV :", error);
-            setActionState("error");
+            setActionState("declineError");
         }
     };
 
