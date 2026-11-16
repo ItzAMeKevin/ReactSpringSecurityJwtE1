@@ -342,6 +342,10 @@
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "Interview Invitation",
+        "message": "You have received an interview invitation. Please review the proposed time slots and respond as soon as possible."
       }
     }
   },
@@ -448,5 +452,17 @@
       "fillAllFields": "Please fill in all fields and add at least one slot",
       "retry": "Retry"
     }
+  },
+  "interview": {
+    "date": "Date",
+    "time": "Time",
+    "type": "Modality",
+    "accept": "Accept",
+    "decline": "Decline",
+    "joinLink": "Join meeting"
+  },
+  "common": {
+    "online": "Online",
+    "inPerson": "In-person"
   }
 }

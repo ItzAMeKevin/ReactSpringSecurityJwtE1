@@ -341,6 +341,10 @@
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "Convocation à une entrevue",
+        "message": "Vous avez reçu une convocation à une entrevue. Consultez les créneaux proposés et répondez dès que possible."
       }
     }
   },
@@ -447,5 +451,17 @@
       "fillAllFields": "Veuillez remplir tous les champs et ajouter au moins un créneau",
       "retry": "Réessayer"
     }
+  },
+  "interview": {
+    "date": "Date",
+    "time": "Heure",
+    "type": "Modalité",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "joinLink": "Rejoindre la réunion"
+  },
+  "common": {
+    "online": "En ligne",
+    "inPerson": "Présentiel"
   }
 }

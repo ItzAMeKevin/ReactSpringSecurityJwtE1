@@ -12,6 +12,7 @@ const EVENT_TARGETS = {
     CV_DECLINED: { path: "/etudiant", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
     JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer" },
+    INTERVIEW_SCHEDULED: { path: "/etudiant", kind: "interview" },
 };
 
 const getTarget = (event, referenceId) => {
@@ -21,9 +22,9 @@ const getTarget = (event, referenceId) => {
         : null;
 };
 
-const normalizeNotification = (n) => {
+const normalizeNotification = async (n) => {
     const event = n.message?.match(EVENT_KEY_PATTERN)?.[1] ?? null;
-    return {
+    const normalized = {
         id: n.id,
         category: n.notificationType,
         event,
@@ -32,7 +33,22 @@ const normalizeNotification = (n) => {
         isRead: n.status === "READ",
         date: n.creationDate,
         target: getTarget(event, n.referenceId),
+        details: null,
     };
+
+    // Fetch interview details if this is an interview notification
+    if (event === "INTERVIEW_SCHEDULED" && n.referenceId) {
+        try {
+            const response = await fetcher(`/interview/${n.referenceId}`);
+            if (response.ok) {
+                normalized.details = await response.json();
+            }
+        } catch (err) {
+            console.error("Error fetching interview details:", err);
+        }
+    }
+
+    return normalized;
 };
 
 const useNotifications = () => {
@@ -48,12 +64,12 @@ const useNotifications = () => {
                 setStatus("error");
                 return;
             }
-            const data = (await response.json())
-                .map(normalizeNotification)
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-            setNotifications(data);
-            setUnreadCount(data.filter((n) => !n.isRead).length);
-            setStatus(data.length === 0 ? "empty" : "ready");
+            const rawData = await response.json();
+            const data = await Promise.all(rawData.map(normalizeNotification));
+            const sorted = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setNotifications(sorted);
+            setUnreadCount(sorted.filter((n) => !n.isRead).length);
+            setStatus(sorted.length === 0 ? "empty" : "ready");
         } catch (error) {
             console.error("Erreur lors du chargement des notifications :", error);
             setStatus("error");

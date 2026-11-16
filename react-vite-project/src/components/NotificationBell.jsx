@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useNotifications from "../hooks/useNotifications.js";
 import getLocalizedNotification from "../utils/getLocalizedNotification.js";
+import InterviewNotification from "./InterviewNotification.jsx";
 import { textError } from "../styles/classes.js";
 
 const NotificationBell = () => {
@@ -15,7 +16,7 @@ const NotificationBell = () => {
         if (!notification.isRead) {
             markAsRead(notification.id);
         }
-        if (notification.target) {
+        if (notification.target && notification.event !== "INTERVIEW_SCHEDULED") {
             setIsOpen(false);
             navigate(notification.target.path, { state: notification.target.state });
         }
@@ -46,14 +47,33 @@ const NotificationBell = () => {
         }
 
         return (
-            <ul className="max-h-96 overflow-y-auto">
+            <ul className="max-h-96 overflow-y-auto space-y-1 p-2">
                 {notifications.map((notification) => {
+                    if (notification.event === "INTERVIEW_SCHEDULED") {
+                        return (
+                            <li
+                                key={notification.id}
+                                className={`rounded-lg transition-colors ${
+                                    notification.isRead
+                                        ? "bg-white/40"
+                                        : "bg-blue-50 ring-1 ring-blue-200"
+                                }`}
+                            >
+                                <InterviewNotification
+                                    notification={notification}
+                                    onClose={() => setIsOpen(false)}
+                                />
+                            </li>
+                        );
+                    }
+
+                    // Default notification rendering
                     const localizedNotif = getLocalizedNotification(notification, t);
                     return (
                         <li
                             key={notification.id}
                             onClick={() => handleNotificationClick(notification)}
-                            className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
+                            className={`px-3 py-2 text-sm cursor-pointer transition-colors rounded-lg ${
                                 notification.isRead
                                     ? "bg-white/40 text-brand/70 hover:bg-white/60"
                                     : "bg-blue-50 text-black hover:bg-blue-100 font-medium"
@@ -109,7 +129,7 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
+                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
                     <div className="p-3 border-b border-brand/10">
                         <h3 className="text-black font-bold">{t("notifications.title")}</h3>
                     </div>
