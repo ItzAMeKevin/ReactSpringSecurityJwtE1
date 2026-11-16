@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.repository;
 
 import com.lacouf.rsbjwt.model.JobApplication;
+import com.lacouf.rsbjwt.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,16 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     Optional<JobApplication> findByOfferIdAndCvIdWithStudent(@Param("offerId") Long offerId, @Param("cvId") Long cvId);
 
     boolean existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(Long cvId, String email);
+
+    long countByJobOffer_IdAndStatus(Long jobOfferId, Status status);
+
+    @Query("""
+        SELECT ja.jobOffer.id, COUNT(ja)
+        FROM JobApplication ja
+        WHERE ja.jobOffer.id IN :offerIds AND ja.status = :status
+        GROUP BY ja.jobOffer.id
+        """)
+    List<Object[]> countByOfferIdsAndStatus(@Param("offerIds") List<Long> offerIds, @Param("status") Status status);
 
     @Query("""
         SELECT ja FROM JobApplication ja

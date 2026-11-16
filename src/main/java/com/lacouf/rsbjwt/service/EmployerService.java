@@ -39,11 +39,22 @@ public class EmployerService {
     private final StudentCvRepository studentCvRepository;
     private final CandidateMapper candidateMapper;
 
+    @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
         Employer employer = findEmployerByEmail(employerEmail);
-        return jobOfferRepository.getJobOffersByEmployerId(employer.getId())
+        List<JobOfferDetailDTO> dtos = jobOfferRepository.getJobOffersByEmployerId(employer.getId())
                 .stream()
                 .map(jobOfferMapper::toDto)
+                .toList();
+        if (dtos.isEmpty()) return dtos;
+        List<Long> offerIds = dtos.stream().map(JobOfferDetailDTO::getId).toList();
+        Map<Long, Long> hiredCounts = jobApplicationRepository.countByOfferIdsAndStatus(offerIds, Status.HIRED)
+                .stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
+        return dtos.stream()
+                .map(dto -> (JobOfferDetailDTO) dto.toBuilder()
+                        .hiredCount(hiredCounts.getOrDefault(dto.getId(), 0L))
+                        .build())
                 .toList();
     }
 
@@ -77,6 +88,7 @@ public class EmployerService {
             offer.setDurationInWeeks(updated.getDurationInWeeks());
             offer.setPrograme(updated.getPrograme());
             offer.setAdresse(updated.getAdresse());
+            offer.setNumberOfPositions(updated.getNumberOfPositions());
             offer.setStatus(Status.PENDING);
             offer.setRefusalFeedback(null);
             JobOffer savedOffer = jobOfferRepository.save(offer);
@@ -135,6 +147,33 @@ public class EmployerService {
                 .orElseThrow(() -> new InvalidCvException("CV not found"));
     }
 
+    @Transactional
+    public CandidateDto hireStudent(Long offerId, Long cvId, String employerEmail) {
+        JobOffer offer = findOwnedOffer(offerId, employerEmail);
+        if (offer.getStatus() != Status.ACCEPTED) {
+            throw new IllegalStateException("errors.offerNotAccepted");
+        }
+        JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
+                .orElseThrow(ApplicationNotFoundException::new);
+        if (application.getStatus() != Status.ACCEPTED) {
+            throw new IllegalStateException("errors.candidateNotAccepted");
+        }
+        application.setStatus(Status.HIRED);
+        JobApplication saved = jobApplicationRepository.save(application);
+
+        Student student = application.getStudentCv().getStudent();
+        systemeService.notifyUsers(List.of(student), NotificationType.JOB_OFFER, offerId,
+                "notification.types.JOB_OFFER_HIRED.message");
+
+        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatus(offerId, Status.HIRED);
+        if (hiredCount >= offer.getNumberOfPositions()) {
+            offer.setStatus(Status.FILLED);
+            jobOfferRepository.save(offer);
+        }
+
+        return candidateMapper.toCandidateDto(saved);
+    }
+
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {
         return jobOfferRepository.findByIdAndEmployerCredentialsEmail(offerId, employerEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
@@ -150,7 +189,4 @@ public class EmployerService {
         application.setStudentCv(cv);
         return application;
     }
-
-
-
 }

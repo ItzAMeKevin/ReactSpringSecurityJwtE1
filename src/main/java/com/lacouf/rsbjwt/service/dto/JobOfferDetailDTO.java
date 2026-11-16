@@ -30,13 +30,16 @@ public class JobOfferDetailDTO extends GenericDto {
     private boolean applied;
     private Status applicationStatus;
     private String refusalFeedback;
+    private Integer numberOfPositions;
+    private long hiredCount;
 
     public JobOfferDetailDTO(Long id, String title, String description, String prerequisites,
                              AdresseDTO location, String salary, Status status,
                              LocalDate publicationDate, LocalDate startingDate,
                              Integer durationInWeeks, Programe programe, String companyName) {
         this(id, title, description, prerequisites, location, salary, status,
-                publicationDate, startingDate, durationInWeeks, programe, companyName, false, null, null);
+                publicationDate, startingDate, durationInWeeks, programe, companyName,
+                false, null, null, null, 0);
     }
 
     public JobOfferDetailDTO withApplication(boolean applied, Status applicationStatus) {

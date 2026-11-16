@@ -80,6 +80,20 @@ public class EmployerController {
         }
     }
 
+    @PutMapping("/{offerId}/candidates/{cvId}/hire")
+    public ResponseEntity<CandidateDto> hireStudent(
+            @PathVariable Long offerId,
+            @PathVariable Long cvId,
+            Authentication authentication) {
+        try {
+            return ResponseEntity.ok(employerService.hireStudent(offerId, cvId, authentication.getName()));
+        } catch (ApplicationNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
     @GetMapping("/candidates/{cvId}/cv")
     public ResponseEntity<byte[]> getCandidateCv(
             @PathVariable Long cvId,
