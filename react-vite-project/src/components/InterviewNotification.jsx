@@ -31,7 +31,6 @@ const InterviewNotification = ({ notification, onClose }) => {
 
     return (
         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3">
-            {/* Titre */}
             <div>
                 <p className="text-sm font-bold text-black">
                     {t("notifications.types.INTERVIEW_SCHEDULED.title")}
@@ -42,7 +41,6 @@ const InterviewNotification = ({ notification, onClose }) => {
                 </p>
             </div>
 
-            {/* Détails de l'entrevue */}
             <div className="bg-white rounded p-3 space-y-2">
                 {slotDate && (
                     <div className="text-sm">
