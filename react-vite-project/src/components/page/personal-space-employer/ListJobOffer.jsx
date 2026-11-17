@@ -57,7 +57,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
 
     return (
         <div className="w-full max-w-4xl flex flex-col gap-4">
-            <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+            <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
                 {offers.map((offer, i) => (
                     <li
                         key={offer.id ?? i}
@@ -104,7 +104,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                                 type="button"
                                 className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
                                 onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
-                                disabled={offer.status !== "ACCEPTED"}
+                                disabled={offer.status !== "ACCEPTED" && offer.status !== "FILLED"}
                             >
                                 {selectedOfferId === offer.id
                                     ? t("employeurCandidats.masquerCandidats")

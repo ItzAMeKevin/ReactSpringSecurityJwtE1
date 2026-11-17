@@ -338,7 +338,8 @@
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",
-      "DECLINED": "Application declined"
+      "DECLINED": "Application declined",
+      "HIRED": "Hired"
     }
   },
 

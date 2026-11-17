@@ -337,7 +337,8 @@
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",
-      "DECLINED": "Candidature refusée"
+      "DECLINED": "Candidature refusée",
+      "HIRED": "Embauché(e)"
     }
   },
 
