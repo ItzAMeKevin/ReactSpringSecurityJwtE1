@@ -2,35 +2,26 @@ package com.lacouf.rsbjwt.mapper;
 
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.time.Instant;
 
-@Component
-public class CandidateMapper {
+@Mapper(componentModel = "spring")
+public interface CandidateMapper {
 
-    public CandidateDto toDto(JobApplication application) {
-        return toDto(
-                application.getStudentCv(),
-                application.getId(),
-                application.getAppliedAt(),
-                application.getStatus()
-        );
-    }
+    @Mapping(target = "cvId", source = "studentCv.id")
+    @Mapping(target = "candidatureId", source = "id")
+    @Mapping(target = "firstName", source = "studentCv.student.firstName")
+    @Mapping(target = "lastName", source = "studentCv.student.lastName")
+    @Mapping(target = "email", source = "studentCv.student.email")
+    CandidateDto toDto(JobApplication application);
 
-    public CandidateDto toDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status) {
-        Student student = cv.getStudent();
-        return new CandidateDto(
-                cv.getId(),
-                candidatureId,
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEmail(),
-                appliedAt,
-                status
-        );
-    }
+    @Mapping(target = "cvId", source = "cv.id")
+    @Mapping(target = "firstName", source = "cv.student.firstName")
+    @Mapping(target = "lastName", source = "cv.student.lastName")
+    @Mapping(target = "email", source = "cv.student.email")
+    CandidateDto toDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status);
 }

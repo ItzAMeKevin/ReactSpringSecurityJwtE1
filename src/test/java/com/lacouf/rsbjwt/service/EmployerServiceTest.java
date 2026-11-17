@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
+import com.lacouf.rsbjwt.mapper.CandidateMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
@@ -44,6 +45,9 @@ class EmployerServiceTest {
 
     @Mock
     private JobOfferMapper jobOfferMapper;
+
+    @Mock
+    private CandidateMapper candidateMapper;
 
     @Mock
     private SystemeService systemeService;
