@@ -20,7 +20,7 @@ const FormJobOffer = ({offer, onSuccess, onCancel}) => {
         const fd = new FormData(e.target);
         const requiredFields = [
             "title", "description", "requirements", "salary", "startingDate",
-            "durationInWeeks", "programe", "city", "country", "postalCode",
+            "durationInWeeks", "numberOfPositions", "programe", "city", "country", "postalCode",
             "civicNumber", "street",
         ];
         const validationErrors = {};
@@ -32,6 +32,11 @@ const FormJobOffer = ({offer, onSuccess, onCancel}) => {
         const duration = Number(fd.get("durationInWeeks"));
         if (fd.get("durationInWeeks") && (!Number.isInteger(duration) || duration < 1)) {
             validationErrors.durationInWeeks = "errors.positiveNumber";
+        }
+
+        const positions = Number(fd.get("numberOfPositions"));
+        if (fd.get("numberOfPositions") && (!Number.isInteger(positions) || positions < 1)) {
+            validationErrors.numberOfPositions = "errors.positiveNumber";
         }
 
         const salary = String(fd.get("salary") ?? "").trim();
@@ -65,6 +70,7 @@ const FormJobOffer = ({offer, onSuccess, onCancel}) => {
             salary: fd.get("salary"),
             startingDate: fd.get("startingDate"),
             durationInWeeks: parseInt(fd.get("durationInWeeks"), 10),
+            numberOfPositions: parseInt(fd.get("numberOfPositions"), 10),
             programe: fd.get("programe"),
             adresse: {
                 pays: fd.get("country"),
@@ -105,6 +111,7 @@ const FormJobOffer = ({offer, onSuccess, onCancel}) => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <Field label={t("personalSpaceEmployer.fields.durationInWeeks")} name="durationInWeeks" defaultValue={offer?.durationInWeeks} type="number" min="1" required placeholder={t("personalSpaceEmployer.placeholders.durationInWeeks")} className={inputField} error={fieldErrors.durationInWeeks}/>
+                    <Field label={t("personalSpaceEmployer.fields.positions")} name="numberOfPositions" defaultValue={offer?.numberOfPositions} type="number" min="1" required placeholder={t("personalSpaceEmployer.placeholders.positions")} className={inputField} error={fieldErrors.numberOfPositions}/>
                     <Field label={t("personalSpaceEmployer.fields.programe")} name="programe" defaultValue={offer?.programe ?? ""} as="select" required className={inputField} error={fieldErrors.programe}>
                         <option value="">{t("personalSpaceEmployer.placeholders.programe")}</option>
                         {programs.map((p) => (

@@ -207,6 +207,7 @@
       "salary": "e.g. 20 dollars per hour",
       "startingDate": "Select a starting date",
       "durationInWeeks": "e.g. 12",
+      "positions": "e.g. 3",
       "programe": "Select a program",
       "city": "e.g. Montreal",
       "country": "e.g. Canada",
