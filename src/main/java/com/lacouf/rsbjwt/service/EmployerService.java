@@ -14,7 +14,7 @@ import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
@@ -133,7 +133,7 @@ public class EmployerService {
         }
         return studentCvRepository.findById(cvId)
                 .map(StudentCv::getContent)
-                .orElseThrow(() -> new InvalidCvException("CV not found"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
     }
 
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {

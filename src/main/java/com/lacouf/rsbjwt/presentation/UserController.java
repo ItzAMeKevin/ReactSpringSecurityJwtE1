@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.RegistrationConflictException;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.JWTAuthResponse;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
@@ -38,15 +39,15 @@ public class UserController {
 	public ResponseEntity<?> inscription(@RequestBody UserCreateDTO userCreateDTO) {
 		UserCreateDTO existingUser = userService.getUserByEmail(userCreateDTO.getEmail());
 		if (existingUser != null) {
-			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.emailTaken");
+			throw new RegistrationConflictException("errors.emailTaken");
 		}
 
 		if (userCreateDTO.getMatricule() != null && userService.matriculeExists(userCreateDTO.getMatricule())) {
-			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.matriculeTaken");
+			throw new RegistrationConflictException("errors.matriculeTaken");
 		}
 
 		if (userCreateDTO.getEmployerWorkId() != null && userService.employerIdExists(userCreateDTO.getEmployerWorkId())) {
-			throw new com.lacouf.rsbjwt.exception.RegistrationConflictException("errors.identifiantTaken");
+			throw new RegistrationConflictException("errors.identifiantTaken");
 		}
 
 		userCreateDTO.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));

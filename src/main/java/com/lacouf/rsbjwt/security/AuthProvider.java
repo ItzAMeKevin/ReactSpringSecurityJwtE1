@@ -3,7 +3,6 @@ package com.lacouf.rsbjwt.security;
 import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.model.User;
 import com.lacouf.rsbjwt.exception.AuthenticationException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -37,7 +36,7 @@ public class AuthProvider implements AuthenticationProvider{
 
 	private User loadUserByEmail(String email) throws UsernameNotFoundException{
 		return userAppRepository.findUserAppByEmail(email)
-			.orElseThrow(UserNotFoundException::new);
+			.orElseThrow(() -> new AuthenticationException(HttpStatus.UNAUTHORIZED, "errors.authenticationFailed"));
 	}
 
 	private void validateAuthentication(Authentication authentication, User user){

@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.service.dto.FeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
@@ -40,14 +40,14 @@ public class GestionnaireService {
 
     public byte[] getCvContent(Long cvId) {
         return studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
                 .getContent();
     }
 
     @Transactional
     public PendingCvDto acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
         cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         this.notificationRepository.save(Notification.builder()
@@ -62,7 +62,7 @@ public class GestionnaireService {
     @Transactional
     public void declineCv(Long cvId, FeedbackDto feedbackRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
         cv.setStatus(Status.DECLINED);
         cv.setReviewFeedback(feedbackRequest.getFeedback());
         studentCvRepository.save(cv);

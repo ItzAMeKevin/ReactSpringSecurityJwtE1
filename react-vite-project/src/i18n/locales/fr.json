@@ -84,6 +84,7 @@
     "cvAlreadyApplied": "Ce CV a déjà été utilisé pour postuler à cette offre.",
     "jobOfferNotFound": "Offre d'emploi introuvable.",
     "userNotFound": "Utilisateur introuvable.",
+    "applicationNotFound": "Candidature introuvable.",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
     "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
     "employerNotFound": "Employeur introuvable.",

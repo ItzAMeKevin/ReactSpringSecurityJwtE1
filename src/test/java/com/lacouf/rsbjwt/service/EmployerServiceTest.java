@@ -9,7 +9,10 @@ import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
@@ -225,7 +228,7 @@ class EmployerServiceTest {
         assertEquals(Status.PENDING, offer.getStatus());
 
         offer.setStatus(Status.ACCEPTED);
-        assertThrows(IllegalStateException.class,
+        assertThrows(JobOfferUpdateException.class,
                 () -> employerService.updateRefusedJobOffer(1L, validCreateDto(), email));
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(2L, email)).thenReturn(Optional.empty());
         assertTrue(employerService.updateRefusedJobOffer(2L, validCreateDto(), email).isEmpty());
@@ -321,7 +324,7 @@ class EmployerServiceTest {
     @Test
     @DisplayName("updateCandidateStatus refuse un statut autre que ACCEPTED ou DECLINED")
     void updateCandidateStatus_invalidStatus() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(InvalidApplicationStatusException.class,
                 () -> employerService.updateCandidateStatus(1L, 5L, Status.PENDING, "marie@acme.com"));
         verifyNoInteractions(jobApplicationRepository);
     }
@@ -401,7 +404,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(ApplicationStateException.class,
                 () -> employerService.updateCandidateStatus(1L, 5L, Status.DECLINED, "marie@acme.com"));
         verify(jobApplicationRepository, never()).save(any());
     }
@@ -445,11 +448,11 @@ class EmployerServiceTest {
     }
 
     @Test
-    void getCandidateCv_cvMissing_throwsInvalidCv() {
+    void getCandidateCv_cvMissing_throwsCvException() {
         when(jobApplicationRepository.existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(5L, "marie@acme.com")).thenReturn(true);
         when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
 
-        assertThrows(InvalidCvException.class,
+        assertThrows(CvException.class,
                 () -> employerService.getCandidateCv(5L, "marie@acme.com"));
     }
 }

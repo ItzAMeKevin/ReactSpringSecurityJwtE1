@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.CvAlreadyAppliedException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
 import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
@@ -93,7 +94,6 @@ class StudentCvServiceTest {
         cv.setStudent(student);
         cv.setContent(pdf);
         cv.setReviewFeedback("Good");
-        when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
         when(studentCvRepository.findByIdAndStudent_Id(5L, 1L)).thenReturn(Optional.of(cv));
 
@@ -103,15 +103,11 @@ class StudentCvServiceTest {
 
     @Test
     void rejectsMissingOrUnauthorizedContent() {
-        when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
-        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
-
-        Student owner = student(2L);
-        StudentCv cv = new StudentCv();
-        cv.setStudent(owner);
-        when(studentCvRepository.findById(5L)).thenReturn(Optional.of(cv));
         when(studentRepository.findByCredentialsEmail("student@test.com")).thenReturn(Optional.of(student));
-        assertThrows(InvalidCvException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        when(studentCvRepository.findByIdAndStudent_Id(5L, 1L)).thenReturn(Optional.empty());
+
+        assertThrows(CvException.class, () -> service.getReviewFile(5L, "student@test.com"));
+        assertThrows(CvException.class, () -> service.getCvContent(5L, "student@test.com"));
     }
 
     @Test
@@ -126,7 +122,7 @@ class StudentCvServiceTest {
         assertEquals(List.of(cv), offer.getAppliedCvs());
         verify(jobApplicationRepository).save(any(JobApplication.class));
 
-        assertThrows(OffrerException.class,
+        assertThrows(CvAlreadyAppliedException.class,
                 () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));
         when(jobOfferRepository.findById(3L)).thenReturn(Optional.empty());
         assertThrows(OffrerException.class,

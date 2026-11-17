@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.NotificationNotFound;
 import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.NotificationDto;
 
@@ -28,8 +27,7 @@ public class SystemeController {
     }
 
     @PatchMapping
-    public ResponseEntity<NotificationDto> updateNotification(Authentication authentication, Long notificationId)
-            throws NotificationNotFound {
+    public ResponseEntity<NotificationDto> updateNotification(Authentication authentication, Long notificationId) {
        return ResponseEntity.ok(notificationService.updateNotificationStatus(authentication, notificationId));
     }
 

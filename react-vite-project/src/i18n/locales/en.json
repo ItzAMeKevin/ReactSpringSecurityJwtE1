@@ -85,6 +85,7 @@
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
+    "applicationNotFound": "Application not found.",
     "noValidatedCv": "You must have a validated CV to apply.",
     "jobOfferUpdateFailed": "Only declined offers can be modified.",
     "employerNotFound": "Employer not found.",
