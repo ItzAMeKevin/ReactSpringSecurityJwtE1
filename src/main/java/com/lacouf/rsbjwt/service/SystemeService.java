@@ -68,44 +68,23 @@ public class SystemeService{
         notifyUsers(employerRepository.findAll(), type, refId, msg);
     }
 
-    public void notifyStudentsByPrograme( NotificationType type,
-                                         Long refId, String msg) {
-        Programe programe = getProgrameForOffer(type, refId);
-        notifyUsers(studentRepository.findByPrograme(programe), type, refId, msg);
+    public void notifyStudentsOfOffer( Long refId, String msg) {
+        Programe programe = getProgrameForOffer( refId);
+        if (programe == null) return;
+        notifyUsers(studentRepository.findByPrograme(programe), NotificationType.JOB_OFFER, refId, msg);
     }
 
     public void notifyAllStudents(NotificationType type, Long refId, String msg) {
         notifyUsers(studentRepository.findAll(), type, refId, msg);
     }
 
-    private Programe getProgrameForOffer(NotificationType type, Long refId) {
-        if (type == NotificationType.JOB_OFFER) {
+    private Programe getProgrameForOffer( Long refId) {
             return jobOfferRepository.findById(refId)
                     .map(JobOffer::getPrograme)
                     .orElse(null);
-        }
-        return null;
     }
 
-   /*  private Programe getReference(NotificationType type, Long refId) {
-        return switch (type) {
-            case CV -> cvRepository.findById(refId)
-                    .map(cv -> cv.getStudent().getPrograme())
-                    .orElse(null);
 
-            case JOB_OFFER -> jobOfferRepository.findById(refId)
-                    .map(JobOffer::getPrograme)
-                    .orElse(null);
-
-           case INTERVIEW -> interviewRepository.findById(refId)   // pas fini
-                    .map(Interview::getPrograme)
-                    .orElse(null);
-
-            case CONTRACT -> contractRepository.findById(refId)    // pas fini
-                    .map(contract -> contract.getStudent().getPrograme())
-                    .orElse(null);
-        };
-    }*/
 
     public NotificationDto updateNotificationStatus(Authentication authentication, Long notificationId) throws NotificationNotFound {
         String userEmail = authentication.getName();
