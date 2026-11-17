@@ -6,6 +6,7 @@ import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import formatSalary from "../../../utils/formatSalary.js";
 import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
@@ -33,11 +34,13 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
             setError(null);
             try {
                 const res = await fetcher("/employer", {method: "GET"});
-                if (!res.ok) throw new Error(`${res.status}`);
+                if (!res.ok) throw new Error(await getApiErrorKey(res));
                 const data = await res.json();
                 if (!cancelled) setOffers(Array.isArray(data) ? data : []);
-            } catch {
-                if (!cancelled) setError(t("errors.generic"));
+            } catch (error) {
+                if (!cancelled) {
+                    setError(error.message?.startsWith("errors.") ? t(error.message) : t("errors.generic"));
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }

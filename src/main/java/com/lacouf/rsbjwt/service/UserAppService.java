@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,8 +35,15 @@ public class UserAppService {
 
 
     public String authenticateUser(LoginDTO loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+        } catch (org.springframework.security.core.AuthenticationException exception) {
+            throw new AuthenticationException(
+                    org.springframework.http.HttpStatus.UNAUTHORIZED,
+                    "errors.authenticationFailed");
+        }
         final String token = jwtTokenProvider.generateToken(authentication);
         System.out.println("JWT Token " + token);
         return token;

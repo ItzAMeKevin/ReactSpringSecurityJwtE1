@@ -3,6 +3,7 @@ import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
 import CvModal from "../../CvModal.jsx";
 import fetcher from "../../../utils/fetcher.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 import {
     cardItem,
     statusBadge,
@@ -51,11 +52,13 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({status: pendingStatus, message: message.trim() || null}),
             });
-            if (!res.ok) throw new Error();
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
             onStatusChange(candidate.cvId, pendingStatus);
             cancelConfirm();
-        } catch {
-            setStatusError(t("employeurCandidats.erreurStatut"));
+        } catch (error) {
+            setStatusError(error.message?.startsWith("errors.")
+                ? t(error.message)
+                : t("employeurCandidats.erreurStatut"));
         } finally {
             setUpdating(false);
         }

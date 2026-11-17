@@ -12,9 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface CvMetaDataMapper {
 
-    @Mapping(target = "erreur", ignore = true)
     CvMetaDataDto toDto(StudentCv entity);
 
-    @Mapping(target = "erreur", ignore = true)
     List<CvMetaDataDto> toDtoList(List<StudentCv> entities);
 }

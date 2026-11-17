@@ -4,6 +4,7 @@ import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textS
 import { labelClass } from "../Field.jsx";
 import fetcher from "../../../utils/fetcher.js";
 import formatSalary from "../../../utils/formatSalary.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const dtClass = "text-sm font-bold text-main";
 const ddClass = "text-sm leading-relaxed text-main/70";
@@ -29,7 +30,8 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(selectedCv),
             });
-            setApplyState(res.ok ? "success" : "error");
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
+            setApplyState("success");
         } catch (e) {
             console.error("Erreur lors de la candidature :", e);
             setApplyState("error");

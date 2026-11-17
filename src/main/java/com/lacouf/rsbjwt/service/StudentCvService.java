@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.CvAlreadyAppliedException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
 import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
@@ -107,22 +108,17 @@ public class StudentCvService {
     }
 
     public String getReviewFile(Long cvId, String authenticatedEmail) {
-        StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
-
         Student student = findStudentByEmail(authenticatedEmail);
-        if (!cv.getStudent().getId().equals(student.getId())) {
-            throw new InvalidCvException("errors.accessDenied");
-        }
-
-        return cv.getReviewFeedback();
+        return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
+                .getReviewFeedback();
     }
 
     @Transactional(readOnly = true)
     public byte[] getCvContent(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
                 .getContent();
     }
 
@@ -148,7 +144,7 @@ public class StudentCvService {
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
 
         if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
-            throw new OffrerException("errors.cvAlreadyApplied");
+            throw new CvAlreadyAppliedException();
         }
         StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
                 .orElseThrow(() -> new CvException("errors.cvNotFound"));

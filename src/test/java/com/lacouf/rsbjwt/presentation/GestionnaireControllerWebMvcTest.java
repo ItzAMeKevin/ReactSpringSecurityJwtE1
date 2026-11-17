@@ -1,6 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.service.GestionnaireService;
@@ -48,8 +48,8 @@ class GestionnaireControllerWebMvcTest {
         when(service.getCvContent(1L)).thenReturn(new byte[]{1});
         assertEquals(HttpStatus.OK, controller.getCvContent(1L).getStatusCode());
 
-        when(service.getCvContent(2L)).thenThrow(new InvalidCvException("errors.cvNotFound"));
-        assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(2L).getStatusCode());
+        when(service.getCvContent(2L)).thenThrow(new CvException("errors.cvNotFound"));
+        assertThrows(CvException.class, () -> controller.getCvContent(2L));
     }
 
     @Test
@@ -58,15 +58,15 @@ class GestionnaireControllerWebMvcTest {
         when(service.acceptCv(1L)).thenReturn(accepted);
         assertEquals(accepted, controller.acceptCv(1L).getBody());
 
-        when(service.acceptCv(2L)).thenThrow(new InvalidCvException("errors.cvNotFound"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.acceptCv(2L).getStatusCode());
+        when(service.acceptCv(2L)).thenThrow(new CvException("errors.cvNotFound"));
+        assertThrows(CvException.class, () -> controller.acceptCv(2L));
 
         FeedbackDto feedback = new FeedbackDto("feedback");
         doNothing().when(service).declineCv(1L, feedback);
         assertEquals(feedback, controller.declineCv(1L, feedback).getBody());
 
-        doThrow(new InvalidCvException("errors.cvNotFound")).when(service).declineCv(2L, feedback);
-        assertEquals(HttpStatus.BAD_REQUEST, controller.declineCv(2L, feedback).getStatusCode());
+        doThrow(new CvException("errors.cvNotFound")).when(service).declineCv(2L, feedback);
+        assertThrows(CvException.class, () -> controller.declineCv(2L, feedback));
     }
 
     @Test
@@ -79,8 +79,8 @@ class GestionnaireControllerWebMvcTest {
         assertEquals(offer, controller.refuseOffer(1L, feedback).getBody());
 
         when(service.acceptOffer(2L)).thenThrow(new JobOfferNotFoundException("missing"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.acceptOffer(2L).getStatusCode());
+        assertThrows(JobOfferNotFoundException.class, () -> controller.acceptOffer(2L));
         when(service.refuseOffer(2L, feedback)).thenThrow(new InvalidStateTransitionException("invalid"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.refuseOffer(2L, feedback).getStatusCode());
+        assertThrows(InvalidStateTransitionException.class, () -> controller.refuseOffer(2L, feedback));
     }
 }

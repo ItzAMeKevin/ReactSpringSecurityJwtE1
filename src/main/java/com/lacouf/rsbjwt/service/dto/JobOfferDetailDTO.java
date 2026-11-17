@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @SuperBuilder(toBuilder = true)
-public class JobOfferDetailDTO extends GenericDto {
+public class JobOfferDetailDTO {
 
     private Long id;
     private String title;

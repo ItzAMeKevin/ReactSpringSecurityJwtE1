@@ -6,7 +6,7 @@ import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class GestionnaireServiceTest {
     @Test
     void rejectsMissingCvContent() {
         when(studentCvRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(InvalidCvException.class, () -> service.getCvContent(1L));
+        assertThrows(CvException.class, () -> service.getCvContent(1L));
     }
 
     @Test

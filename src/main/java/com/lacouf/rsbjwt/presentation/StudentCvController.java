@@ -1,7 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.InvalidCvException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
@@ -28,68 +26,46 @@ public class StudentCvController {
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<CvMetaDataDto> upload(Authentication authentication,
                                                 @Valid @RequestBody CvUploadDto request) {
-        try {
-            CvMetaDataDto response = studentCvService.upload(authentication.getName(), request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response);
-        } catch (InvalidCvException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        CvMetaDataDto response = studentCvService.upload(authentication.getName(), request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<List<CvMetaDataDto>> listCvs(Authentication authentication) {
-        try {
-            List<CvMetaDataDto> response = studentCvService.listCvs(authentication.getName());
-            return ResponseEntity.status(HttpStatus.OK)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(response);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        List<CvMetaDataDto> response = studentCvService.listCvs(authentication.getName());
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
     }
 
     @GetMapping("/{cvId}/content")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<byte[]> getCvContent(@PathVariable Long cvId, Authentication authentication) {
-        try {
-            byte[] content = studentCvService.getCvContent(cvId, authentication.getName());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(content);
-        } catch (InvalidCvException | UserNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        byte[] content = studentCvService.getCvContent(cvId, authentication.getName());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(content);
     }
 
     @GetMapping("/{cvId}/review")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<String> getReviewFile(@PathVariable Long cvId, Authentication authentication) {
-        try {
-            String feedback = studentCvService.getReviewFile(cvId, authentication.getName());
-            if (feedback == null || feedback.isBlank()) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(feedback);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        String feedback = studentCvService.getReviewFile(cvId, authentication.getName());
+        if (feedback == null || feedback.isBlank()) {
+            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(feedback);
     }
 
 
     @PostMapping("/{offerID}/appliquer")
     public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {
-        try {
-            studentCvService.applyToJobOffer(offerID, cvDto);
-            return ResponseEntity.ok("Candidature soumise avec succès.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue lors de la candidature.");
-        }
+        studentCvService.applyToJobOffer(offerID, cvDto);
+        return ResponseEntity.ok("Candidature soumise avec succès.");
     }
 }
