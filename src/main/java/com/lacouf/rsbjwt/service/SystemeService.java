@@ -3,12 +3,8 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
 import com.lacouf.rsbjwt.mapper.NotificationMapper;
-import com.lacouf.rsbjwt.model.Notification;
-import com.lacouf.rsbjwt.model.NotificationType;
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.User;
-import com.lacouf.rsbjwt.repository.ManagerRepository;
-import com.lacouf.rsbjwt.repository.NotificationRepository;
+import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.service.dto.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -26,6 +22,11 @@ public class SystemeService{
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
     private final ManagerRepository managerRepository;
+    private final EmployerRepository employerRepository;
+    private final StudentRepository studentRepository;
+    private final StudentCvRepository cvRepository;
+    private final JobOfferRepository jobOfferRepository;
+
 
     private Notification buildNotification(
             User user, NotificationType type, Long referenceId, String messageKey) {
@@ -45,7 +46,7 @@ public class SystemeService{
     public void notifyUsers(List<? extends User> users,
                             NotificationType type, Long referenceId, String messageKey) {
         List<Notification> notifications = users.stream()
-                .map(u -> buildNotification(u, type, referenceId, messageKey))
+                .map(user -> buildNotification(user, type, referenceId, messageKey))
                 .toList();
         saveNotifications(notifications);
     }
@@ -59,6 +60,39 @@ public class SystemeService{
         notifyUsers(managerRepository.findAll(), type, refId, msg);
     }
 
+    public void notifyAllEmployers(NotificationType type, Long refId, String msg) {
+        notifyUsers(employerRepository.findAll(), type, refId, msg);
+    }
+
+    public void notifyStudentsByPrograme(Programe programe, NotificationType type,
+                                         Long refId, String msg) {
+        notifyUsers(studentRepository.findByPrograme(programe), type, refId, msg);
+    }
+
+    public void notifyAllStudents(NotificationType type, Long refId, String msg) {
+        notifyUsers(studentRepository.findAll(), type, refId, msg);
+    }
+
+
+    private Programe resolvePrograme(NotificationType type, Long refId) {
+        return switch (type) {
+            case CV -> cvRepository.findById(refId)
+                    .map(cv -> cv.getStudent().getPrograme())
+                    .orElse(null);
+
+            case JOB_OFFER -> jobOfferRepository.findById(refId)
+                    .map(JobOffer::getPrograme)
+                    .orElse(null);
+
+        /*    case INTERVIEW -> interviewRepository.findById(refId)
+                    .map(Interview::getPrograme)   // adapte le getter
+                    .orElse(null);
+
+            case CONTRACT -> contractRepository.findById(refId)
+                    .map(contract -> contract.getStudent().getPrograme()) // adapte
+                    .orElse(null);       */
+        };
+    }
 
     public NotificationDto updateNotificationStatus(Authentication authentication, Long notificationId) throws NotificationNotFound {
         String userEmail = authentication.getName();
