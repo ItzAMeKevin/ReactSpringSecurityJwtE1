@@ -51,21 +51,26 @@ public class SystemeService{
         saveNotifications(notifications);
     }
 
+
     private void saveNotifications(List<Notification> notifications) {
         if (notifications.isEmpty()) return;
         notificationRepository.saveAll(notifications);
     }
 
+
+
     public void notifyManagers(NotificationType type, Long refId, String msg) {
         notifyUsers(managerRepository.findAll(), type, refId, msg);
     }
+
 
     public void notifyAllEmployers(NotificationType type, Long refId, String msg) {
         notifyUsers(employerRepository.findAll(), type, refId, msg);
     }
 
-    public void notifyStudentsByPrograme(Programe programe, NotificationType type,
+    public void notifyStudentsByPrograme( NotificationType type,
                                          Long refId, String msg) {
+        Programe programe = getProgrameForOffer(type, refId);
         notifyUsers(studentRepository.findByPrograme(programe), type, refId, msg);
     }
 
@@ -73,8 +78,16 @@ public class SystemeService{
         notifyUsers(studentRepository.findAll(), type, refId, msg);
     }
 
+    private Programe getProgrameForOffer(NotificationType type, Long refId) {
+        if (type == NotificationType.JOB_OFFER) {
+            return jobOfferRepository.findById(refId)
+                    .map(JobOffer::getPrograme)
+                    .orElse(null);
+        }
+        return null;
+    }
 
-    private Programe resolvePrograme(NotificationType type, Long refId) {
+   /*  private Programe getReference(NotificationType type, Long refId) {
         return switch (type) {
             case CV -> cvRepository.findById(refId)
                     .map(cv -> cv.getStudent().getPrograme())
@@ -84,15 +97,15 @@ public class SystemeService{
                     .map(JobOffer::getPrograme)
                     .orElse(null);
 
-        /*    case INTERVIEW -> interviewRepository.findById(refId)
-                    .map(Interview::getPrograme)   // adapte le getter
+           case INTERVIEW -> interviewRepository.findById(refId)   // pas fini
+                    .map(Interview::getPrograme)
                     .orElse(null);
 
-            case CONTRACT -> contractRepository.findById(refId)
-                    .map(contract -> contract.getStudent().getPrograme()) // adapte
-                    .orElse(null);       */
+            case CONTRACT -> contractRepository.findById(refId)    // pas fini
+                    .map(contract -> contract.getStudent().getPrograme())
+                    .orElse(null);
         };
-    }
+    }*/
 
     public NotificationDto updateNotificationStatus(Authentication authentication, Long notificationId) throws NotificationNotFound {
         String userEmail = authentication.getName();
