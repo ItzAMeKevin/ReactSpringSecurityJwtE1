@@ -106,7 +106,8 @@ class EmployerControllerTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE
+                Programe.TECHNIQUES_INFORMATIQUE,
+                3
         );
 
         jobOfferDetailDTO = new JobOfferDetailDTO(
