@@ -4,7 +4,7 @@ import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import {btnPrimary, btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
-import {getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
+import {compareSessionCodesDesc, getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
 
 const formatSessionLabel = (code, t) => {
     const prefix = code[0];
@@ -57,7 +57,7 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
         const current = getCurrentSessionCode();
         const derived = getSessionsFromOffers(offers);
         if (!derived.includes(current)) derived.push(current);
-        return derived.sort().reverse();
+        return derived.sort(compareSessionCodesDesc);
     }, [offers]);
 
     const filteredOffers = useMemo(
