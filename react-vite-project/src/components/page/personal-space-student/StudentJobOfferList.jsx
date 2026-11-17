@@ -9,7 +9,7 @@ const VALIDATED_CV_STATUS = "ACCEPTED";
 const StudentJobOfferList = () => {
     const { t } = useTranslation();
     const [offers, setOffers] = useState([]);
-    const [acceptedCv, setAcceptedCv] = useState(null);
+    const [acceptedCvs, setAcceptedCvs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -29,17 +29,17 @@ const StudentJobOfferList = () => {
                 const data = await offersRes.json();
                 if (!Array.isArray(data)) throw new Error("invalid response");
 
-                let validatedCv = null;
+                let validatedCvs = [];
                 if (cvRes.ok) {
                     const cvs = await cvRes.json();
-                    validatedCv = Array.isArray(cvs)
-                        ? cvs.find((cv) => cv.status === VALIDATED_CV_STATUS) ?? null
-                        : null;
+                    validatedCvs = Array.isArray(cvs)
+                        ? cvs.filter((cv) => cv.status === VALIDATED_CV_STATUS)
+                        : [];
                 }
 
                 if (!cancelled) {
                     setOffers(data);
-                    setAcceptedCv(validatedCv);
+                    setAcceptedCvs(validatedCvs);
                 }
             } catch (e) {
                 console.error("Erreur chargement offres :", e);
@@ -61,7 +61,7 @@ const StudentJobOfferList = () => {
 
     return (
         <div className="flex w-full flex-col gap-4">
-            {!acceptedCv && (
+            {acceptedCvs.length === 0 && (
                 <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="status">
                     {t("etudiantOffres.noValidatedCv")}
                 </p>
@@ -71,7 +71,7 @@ const StudentJobOfferList = () => {
                     <StudentJobOfferListItem
                         key={offer.id ?? `fallback-${i}`}
                         offer={offer}
-                        acceptedCv={acceptedCv}
+                        acceptedCvs={acceptedCvs}
                     />
                 ))}
             </ul>
