@@ -325,7 +325,8 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
+    "choisirCv": "Choose a CV to apply with",
+    "noValidatedCv": "You need a validated CV to apply.",
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",

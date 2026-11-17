@@ -1,30 +1,33 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary} from "../../../styles/classes.js";
+import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "../../../styles/classes.js";
+import { labelClass } from "../Field.jsx";
 import fetcher from "../../../utils/fetcher.js";
 import formatSalary from "../../../utils/formatSalary.js";
 
 const dtClass = "text-sm font-bold text-main";
 const ddClass = "text-sm leading-relaxed text-main/70";
 
-const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
+const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
     const [applyState, setApplyState] = useState("idle");
+    const [selectedCvId, setSelectedCvId] = useState(() => acceptedCvs?.[0]?.id ?? null);
     const detailsId = useId();
 
+    const selectedCv = (acceptedCvs ?? []).find((cv) => cv.id === selectedCvId) ?? null;
     const hasApplied = Boolean(offer.applied) || applyState === "success";
     const applicationStatus = offer.applicationStatus ?? "PENDING";
-    const canApply = Boolean(acceptedCv) && !hasApplied && applyState !== "sending";
+    const canApply = Boolean(selectedCv) && !hasApplied && applyState !== "sending";
 
     const handleApply = async () => {
         if (!canApply) return;
         setApplyState("sending");
         try {
-            const res = await fetcher(`/student-cv/${acceptedCv.id}/appliquer?offerID=${offer.id}`, {
+            const res = await fetcher(`/student-cv/${selectedCv.id}/appliquer?offerID=${offer.id}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(acceptedCv),
+                body: JSON.stringify(selectedCv),
             });
             setApplyState(res.ok ? "success" : "error");
         } catch (e) {
@@ -108,6 +111,22 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                         </div>
                     </div>
                     <div className="border-t border-gray-200 pt-4">
+                        {(acceptedCvs?.length ?? 0) > 1 && !hasApplied && (
+                            <div className="mb-3">
+                                <label className={labelClass}>
+                                    {t("etudiantOffres.choisirCv")}
+                                </label>
+                                <select
+                                    value={selectedCvId ?? ""}
+                                    onChange={(e) => setSelectedCvId(Number(e.target.value))}
+                                    className={inputField}
+                                >
+                                    {acceptedCvs.map((cv) => (
+                                        <option key={cv.id} value={cv.id}>{cv.fileName}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <button
                             type="button"
                             onClick={handleApply}
@@ -121,13 +140,16 @@ const StudentJobOfferListItem = ({ offer, acceptedCv }) => {
                                     : t("etudiantOffres.apply")}
                         </button>
 
+                        {!acceptedCvs?.length && !hasApplied && (
+                            <p className="mt-2 text-sm text-gray-600">{t("etudiantOffres.noValidatedCv")}</p>
+                        )}
                         {applyState === "success" && (
-                            <p className="mt-2 text-sm font-medium text-green-700" role="status">
+                            <p className={`mt-2 text-sm font-medium ${textSuccess}`} role="status">
                                 {t("etudiantOffres.applySuccess")}
                             </p>
                         )}
                         {applyState === "error" && (
-                            <p className="mt-2 text-sm font-medium text-red-700" role="alert">
+                            <p className={`mt-2 text-sm font-medium ${textError}`} role="alert">
                                 {t("etudiantOffres.applyError")}
                             </p>
                         )}
