@@ -196,7 +196,9 @@
       "civicNumber": "Civic number",
       "street": "Street",
       "durationInWeeks": "Duration (weeks)",
-      "programe": "Program of study"
+      "programe": "Program of study",
+      "positions": "Positions",
+      "positionsFilled": "filled"
     },
     "placeholders": {
       "title": "e.g. Web developer intern",

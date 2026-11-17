@@ -82,6 +82,12 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                             <dd>{offer.startingDate}</dd>
                             <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
+                            {offer.numberOfPositions != null && (
+                                <>
+                                    <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.positions")}</dt>
+                                    <dd>{offer.hiredCount ?? 0} / {offer.numberOfPositions} {t("personalSpaceEmployer.fields.positionsFilled")}</dd>
+                                </>
+                            )}
                             <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
                             <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                         </dl>

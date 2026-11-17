@@ -195,7 +195,9 @@
       "civicNumber": "Numéro civique",
       "street": "Rue",
       "durationInWeeks": "Durée (semaines)",
-      "programe": "Programme d'études"
+      "programe": "Programme d'études",
+      "positions": "Postes",
+      "positionsFilled": "pourvus"
     },
     "placeholders": {
       "title": "ex. Stagiaire en développement web",
