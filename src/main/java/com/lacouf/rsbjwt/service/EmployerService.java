@@ -1,13 +1,13 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
+import com.lacouf.rsbjwt.mapper.CandidateMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ public class EmployerService {
     private final JobOfferRepository jobOfferRepository;
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
+    private final CandidateMapper candidateMapper;
     private final SystemeService systemeService;
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
@@ -95,13 +95,13 @@ public class EmployerService {
         for (StudentCv cv : offer.getAppliedCvs()) {
             JobApplication application = applicationsByCvId.remove(cv.getId());
             if (application != null) {
-                candidates.add(toCandidateDto(application));
+                candidates.add(candidateMapper.toDto(application));
             } else {
-                candidates.add(toCandidateDto(cv, null, cv.getUploadedAt(), Status.PENDING));
+                candidates.add(candidateMapper.toDto(cv, null, cv.getUploadedAt(), Status.PENDING));
             }
         }
         applicationsByCvId.values().stream()
-                .map(this::toCandidateDto)
+                .map(candidateMapper::toDto)
                 .forEach(candidates::add);
         return candidates;
     }
@@ -118,7 +118,7 @@ public class EmployerService {
             throw new IllegalStateException("Seules les candidatures en attente peuvent être mises à jour.");
         }
         application.setStatus(newStatus);
-        return toCandidateDto(jobApplicationRepository.save(application));
+        return candidateMapper.toDto(jobApplicationRepository.save(application));
     }
 
     @Transactional(readOnly = true)
@@ -149,20 +149,4 @@ public class EmployerService {
         return application;
     }
 
-    private CandidateDto toCandidateDto(JobApplication application) {
-        return toCandidateDto(application.getStudentCv(), application.getId(), application.getAppliedAt(), application.getStatus());
-    }
-
-    private CandidateDto toCandidateDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status) {
-        Student student = cv.getStudent();
-        return new CandidateDto(
-                cv.getId(),
-                candidatureId,
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEmail(),
-                appliedAt,
-                status
-        );
-    }
 }
