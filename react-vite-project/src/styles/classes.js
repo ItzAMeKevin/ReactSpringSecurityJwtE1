@@ -40,6 +40,7 @@ const STATUS_COLORS = {
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
     HIRED: "bg-blue-100 text-blue-800",
+    FILLED: "bg-purple-100 text-purple-800",
 };
 
 export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";

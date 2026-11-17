@@ -171,7 +171,8 @@
     "statuts": {
       "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",
-      "DECLINED": "Refusée"
+      "DECLINED": "Refusée",
+      "FILLED": "Pourvue"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "offerUpdated": "L'offre a été resoumise pour approbation.",

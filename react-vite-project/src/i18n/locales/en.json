@@ -172,7 +172,8 @@
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
-      "DECLINED": "Declined"
+      "DECLINED": "Declined",
+      "FILLED": "Filled"
     },
     "offerCreated": "Internship offer published successfully.",
     "offerUpdated": "The offer has been resubmitted for approval.",
