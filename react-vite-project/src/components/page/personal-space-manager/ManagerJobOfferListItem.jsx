@@ -8,6 +8,8 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
     const [processing, setProcessing] = useState(null);
     const [pendingAction, setPendingAction] = useState(null);
     const [expanded, setExpanded] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [feedbackError, setFeedbackError] = useState(null);
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
@@ -33,17 +35,25 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
         setPendingAction(action);
     };
 
-    const cancelConfirm = () => setPendingAction(null);
+    const cancelConfirm = () => {
+        setPendingAction(null);
+        setFeedback("");
+        setFeedbackError(null);
+    };
 
     const handleConfirm = async () => {
         setActionError(null);
+        if (!isAccept && !feedback.trim()) {
+            setFeedbackError(t("gestionnaire.offres.feedbackRequired"));
+            return;
+        }
         setProcessing(pendingAction);
         try {
             if (isAccept) await onAccept(offer.id);
-            else await onRefuse(offer.id);
+            else await onRefuse(offer.id, { feedback: feedback.trim() });
             setPendingAction(null);
         } catch {
-            setActionError(t("gestionnaire.decline.errorProcessing"));
+            setActionError(t("gestionnaire.offres.errorProcessing"));
         } finally {
             setProcessing(null);
         }
@@ -112,7 +122,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                     </button>
                 </div>
 
-                <div className="flex flex-col gap-2 shrink-0">
+                <div className="flex flex-row gap-2 shrink-0">
                     <button
                         type="button"
                         onClick={() => openConfirm("accept")}
@@ -139,6 +149,19 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                         {t(`gestionnaire.offres.confirmation.${isAccept ? "accepter" : "refuser"}`,
                             {title: offer.title})}
                     </p>
+                    {!isAccept && (
+                        <>
+                            <p className="text-sm text-main">{t("gestionnaire.offres.feedbackTitle")}</p>
+                            <textarea
+                                value={feedback}
+                                onChange={(e) => { setFeedback(e.target.value); setFeedbackError(null); }}
+                                placeholder={t("gestionnaire.offres.feedbackPlaceholder")}
+                                rows={3}
+                                className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400"
+                            />
+                            {feedbackError && <p className={`${textError} text-sm`} role="alert">{feedbackError}</p>}
+                        </>
+                    )}
                     <div className="flex gap-2">
                         <button
                             type="button"

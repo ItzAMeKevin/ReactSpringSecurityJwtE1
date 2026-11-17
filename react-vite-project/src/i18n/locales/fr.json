@@ -182,6 +182,9 @@
       "DECLINED": "Refusée"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
+    "voirFeedback": "Voir le feedback",
+    "masquerFeedback": "Masquer le feedback",
+    "noFeedback": "Aucun commentaire de refus disponible.",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
@@ -247,7 +250,11 @@
         "refuser": "Refuser l'offre «\u00a0{{title}}\u00a0»\u00a0?",
         "confirmer": "Confirmer",
         "annuler": "Annuler"
-      }
+      },
+      "feedbackTitle": "Écrivez votre feedback avant de confirmer le refus.",
+      "feedbackPlaceholder": "Expliquez pourquoi l'offre a été refusée...",
+      "feedbackRequired": "Vous devez écrire un feedback avant de confirmer le refus.",
+      "errorProcessing": "Une erreur est survenue lors du traitement de cette offre. Veuillez réessayer."
     },
     "accept": {
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
@@ -320,6 +327,7 @@
     "applied": "Candidature envoyée",
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
+    "choisirCv": "Choisir un CV pour postuler",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",

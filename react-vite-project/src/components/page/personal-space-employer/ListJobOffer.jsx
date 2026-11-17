@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
+import {useLocation} from "react-router-dom";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
@@ -11,8 +12,17 @@ const ListJobOffer = ({refreshKey}) => {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const location = useLocation();
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
+    const [expandedFeedback, setExpandedFeedback] = useState({});
+
+    useEffect(() => {
+        const { highlight, openFeedback } = location.state ?? {};
+        if (highlight?.kind === "offer" && highlight.id && openFeedback) {
+            setExpandedFeedback(prev => ({ ...prev, [highlight.id]: true }));
+        }
+    }, [location.state]);
 
     const handleToggleCandidates = (offerId) => {
         setSelectedOfferId((prev) => (prev === offerId ? null : offerId));
@@ -20,7 +30,9 @@ const ListJobOffer = ({refreshKey}) => {
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+        Array.isArray(programs)
+            ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
+            : enumName;
 
     useEffect(() => {
         let cancelled = false;
@@ -81,18 +93,36 @@ const ListJobOffer = ({refreshKey}) => {
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                             <dd>{offer.durationInWeeks}</dd>
                             <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
+                            <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                         </dl>
-                        <button
-                            type="button"
-                            className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
-                            onClick={() => handleToggleCandidates(offer.id)}
-                            disabled={offer.status !== "ACCEPTED"}
-                        >
-                            {selectedOfferId === offer.id
-                                ? t("employeurCandidats.masquerCandidats")
-                                : t("employeurCandidats.voirCandidats")}
-                        </button>
+                        <div className="flex gap-2 mt-3 flex-wrap">
+                            <button
+                                type="button"
+                                className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
+                                disabled={offer.status !== "ACCEPTED"}
+                            >
+                                {selectedOfferId === offer.id
+                                    ? t("employeurCandidats.masquerCandidats")
+                                    : t("employeurCandidats.voirCandidats")}
+                            </button>
+                            {offer.status === "DECLINED" && (
+                                <button
+                                    type="button"
+                                    className={btnSmPrimary}
+                                    onClick={(e) => { e.stopPropagation(); setExpandedFeedback(prev => ({ ...prev, [offer.id]: !prev[offer.id] })); }}
+                                >
+                                    {expandedFeedback[offer.id] ? t("personalSpaceEmployer.masquerFeedback") : t("personalSpaceEmployer.voirFeedback")}
+                                </button>
+                            )}
+                        </div>
+                        {expandedFeedback[offer.id] && (
+                            <div className="mt-2 rounded-md border border-red-200 bg-red-50 p-3">
+                                <p className="text-sm text-main/80 whitespace-pre-line">
+                                    {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
+                                </p>
+                            </div>
+                        )}
                         {selectedOfferId === offer.id && (
                             <CandidateList offerId={offer.id} />
                         )}

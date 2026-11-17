@@ -10,7 +10,7 @@ const VALIDATED_CV_STATUS = "ACCEPTED";
 const StudentJobOfferList = () => {
     const { t } = useTranslation();
     const [offers, setOffers] = useState([]);
-    const [acceptedCv, setAcceptedCv] = useState(null);
+    const [acceptedCvs, setAcceptedCvs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [noAcceptedCv, setNoAcceptedCv] = useState(false);
@@ -36,17 +36,17 @@ const StudentJobOfferList = () => {
                 const data = await offersRes.json();
                 if (!Array.isArray(data)) throw new Error("invalid response");
 
-                let validatedCv = null;
+                let validatedCvs = [];
                 if (cvRes.ok) {
                     const cvs = await cvRes.json();
-                    validatedCv = Array.isArray(cvs)
-                        ? cvs.find((cv) => cv.status === VALIDATED_CV_STATUS) ?? null
-                        : null;
+                    validatedCvs = Array.isArray(cvs)
+                        ? cvs.filter((cv) => cv.status === VALIDATED_CV_STATUS)
+                        : [];
                 }
 
                 if (!cancelled) {
                     setOffers(data);
-                    setAcceptedCv(validatedCv);
+                    setAcceptedCvs(validatedCvs);
                 }
             } catch (e) {
                 console.error("Erreur chargement offres :", e);
@@ -75,7 +75,7 @@ const StudentJobOfferList = () => {
                 <StudentJobOfferListItem
                     key={offer.id ?? `fallback-${i}`}
                     offer={offer}
-                    acceptedCv={acceptedCv}
+                    acceptedCvs={acceptedCvs}
                 />
             ))}
         </ul>

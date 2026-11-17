@@ -52,11 +52,11 @@ const PersonalSpaceManager = () => {
         void fetchPendingOffers();
     }, []);
 
-    const removeFromList = ((cvId) => {
+    const removeFromList = (cvId) => {
         setPendingCvs((current) => current.filter((cv) => cv.id !== cvId));
-    });
+    };
 
-    const handleAccept = (async (cvId) => {
+    const handleAccept = async (cvId) => {
         const response = await fetcher(`/gestionnaire/cv/${cvId}/accept`, {
             method: "PUT",
         });
@@ -64,9 +64,9 @@ const PersonalSpaceManager = () => {
             throw new Error(await getApiErrorKey(response));
         }
         removeFromList(cvId);
-    });
+    };
 
-    const handleDecline = (async (cvId, reviewPayload) => {
+    const handleDecline = async (cvId, reviewPayload) => {
         const response = await fetcher(`/gestionnaire/cv/${cvId}/decline`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -74,7 +74,7 @@ const PersonalSpaceManager = () => {
         });
         if (!response.ok) throw new Error(await getApiErrorKey(response));
         removeFromList(cvId);
-    });
+    };
 
     const handleAcceptOffer = async (offerId) => {
         const response = await fetcher(`/gestionnaire/offres/${offerId}/accept`, { method: "PUT" });
@@ -82,13 +82,18 @@ const PersonalSpaceManager = () => {
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };
 
-    const handleRefuseOffer = async (offerId) => {
-        const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, { method: "PUT" });
+    const handleRefuseOffer = async (offerId, feedbackPayload) => {
+        const response = await fetcher(`/gestionnaire/offres/${offerId}/refuse`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(feedbackPayload),
+        });
         if (!response.ok) throw new Error(await getApiErrorKey(response));
         setPendingOffers((current) => current.filter((o) => o.id !== offerId));
     };
 
     const isLoaded = status === "loaded";
+    const isOffersLoaded = offersStatus === "loaded";
 
     return (
         <div className={pageWrapper}>
@@ -130,10 +135,10 @@ const PersonalSpaceManager = () => {
                     {offersStatus === "error" && (
                         <p className={textError} role="alert">{t("gestionnaire.offres.error")}</p>
                     )}
-                    {offersStatus === "loaded" && pendingOffers.length === 0 && (
+                    {isOffersLoaded && pendingOffers.length === 0 && (
                         <p className={textMuted}>{t("gestionnaire.offres.none")}</p>
                     )}
-                    {offersStatus === "loaded" && pendingOffers.length > 0 && (
+                    {isOffersLoaded && pendingOffers.length > 0 && (
                         <div className="flex flex-col gap-3">
                             {pendingOffers.map((offer) => (
                                 <ManagerJobOfferListItem
