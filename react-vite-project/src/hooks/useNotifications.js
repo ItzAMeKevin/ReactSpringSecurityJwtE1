@@ -8,6 +8,7 @@ const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 const EVENT_TARGETS = {
     CV_UPLOADED: { path: "/gestionnaire", kind: "cv" },
     JOB_OFFER_CREATED: { path: "/gestionnaire", kind: "offer" },
+    JOB_OFFER_RESUBMITTED: { path: "/gestionnaire", kind: "offer" },
     CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
     CV_DECLINED: { path: "/etudiant", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
@@ -16,9 +17,8 @@ const EVENT_TARGETS = {
 
 const getTarget = (event, referenceId) => {
     const target = EVENT_TARGETS[event];
-    return target
-        ? { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } }
-        : null;
+    if (!target) return null;
+    return { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } };
 };
 
 const normalizeNotification = (n) => {
@@ -63,15 +63,9 @@ const useNotifications = () => {
     useEffect(() => {
         fetchNotifications();
 
-        pollingIntervalRef.current = setInterval(() => {
-            fetchNotifications();
-        }, POLLING_INTERVAL);
+        pollingIntervalRef.current = setInterval(fetchNotifications, POLLING_INTERVAL);
 
-        return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
+        return () => clearInterval(pollingIntervalRef.current);
     }, [fetchNotifications]);
 
     const markAsRead = useCallback(async (notificationId) => {

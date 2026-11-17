@@ -1,5 +1,6 @@
 import { useState } from "react";
 import fetcher from "../../utils/fetcher.js";
+import { getApiErrorKey } from "../../utils/apiError.js";
 
 //nous le guardon, exemple de fetch
 const EmprunteurHome = () => {
@@ -9,11 +10,8 @@ const EmprunteurHome = () => {
     setMessage("");
     fetcher("/user/gestionnaire/demo", { method: "GET" })
       .then(async (response) => {
-        if (response.status === 403) {
-          throw new Error("Accès refusé: endpoint réservé au gestionnaire (403).");
-        }
         if (!response.ok) {
-          throw new Error(`Erreur API (${response.status})`);
+          throw new Error(await getApiErrorKey(response));
         }
         const data = await response.text();
         setMessage(data);

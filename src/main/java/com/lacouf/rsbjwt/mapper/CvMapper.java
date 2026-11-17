@@ -11,7 +11,6 @@ public interface CvMapper {
     @Mapping(target = "studentFirstName", source = "student.firstName")
     @Mapping(target = "studentLastName",  source = "student.lastName")
     @Mapping(target = "studentMatricule", source = "student.matricule")
-    @Mapping(target = "erreur", ignore = true)
     PendingCvDto toDto(StudentCv entity);
 }
 

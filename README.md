@@ -50,7 +50,7 @@ Une tâche est terminée seulement quand chaque étape de sa section est complé
 
 ## Sprint 1
 
-## Point d'action 1
+## Point d'action 1 (PLUS NECESSAIRE)
 
 - **Spécifique** : Revoir les disponibilités de l'équipe et réaffecter les créneaux perdus
 - **Mesurable** : Tous les créneaux perdus réattribués
@@ -62,7 +62,7 @@ Une tâche est terminée seulement quand chaque étape de sa section est complé
 
 ---
 
-## Point d'action 2
+## Point d'action 2 (PLUS NECESSAIRE)
 
 - **Spécifique** : Vérifier que les tâches *in progress* sont bien assignées à quelqu'un
 - **Mesurable** : 100 % des tâches *in progress* assignées à chaque rencontre
@@ -74,7 +74,7 @@ Une tâche est terminée seulement quand chaque étape de sa section est complé
 
 ## Prochain Scrum Master pour le sprint 3
 
-## Point d'action 1
+## Point d'action 1 (PLUS NECESSAIRE)
 
 - **Spécifique** : Faire un merge de main dans la branche staging avant de merger dans main
 - **Mesurable** : Tous les pull requests doivent être à jour avec main avant d'être fusionnés
@@ -122,3 +122,35 @@ afin qu'elle puisse être réalisée du début à la fin sans blocage devant le 
 ➡️ **Formulation SMART** : « Dès le prochain sprint, renforcer la définition de done et planifier,
 dès le début du sprint, un bloc d'au moins 2 h de review en groupe (5 membres) chaque mercredi
 pour réviser 100 % des tâches terminées, afin d'assurer la cohérence du code et l'uniformité de l'UX. »
+
+---
+
+## Sprint 5 : Iulian Moraru
+
+## Point d'action 1
+
+- **Spécifique** : Mettre le chapeau du Product Owner avant de déclarer une tâche terminée : faire le parcours complet de la fonctionnalité dans la peau de l'utilisateur final (étudiant, employeur, gestionnaire) pour valider la clarté de la navigation, des libellés et des messages
+- **Mesurable** : 100 % des tâches front end sont testées en parcours utilisateur par un membre autre que le développeur, avec une liste de vérification UX (étapes claires, messages compréhensibles, retour visuel après chaque action, cohérence avec les autres pages), et chaque irritant relevé est corrigé avant le merge
+- **Atteignable** : Environ 15 minutes par tâche, intégrées à la review de groupe du mercredi
+- **Réaliste** : Aucune nouvelle technologie à apprendre, et l'expérience présentée au PO lors de la démo est directement améliorée
+- **Temporel** : Pour chaque tâche, dès le sprint 5 jusqu'à la fin du projet
+
+➡️ **Formulation SMART** : « Dès le sprint 5, avant de déclarer une tâche terminée, tous les membres des développeur
+met le chapeau du PO et fait le parcours complet de la fonctionnalité comme utilisateur final, à l'aide d'une liste de vérification UX,
+et 100 % des irritants relevés sont corrigés avant le merge, afin d'offrir une meilleure expérience utilisateur. »
+
+---
+
+## Point d'action 2
+
+- **Spécifique** : Créer un subtask Jira distinct pour chaque correctif demandé au sprint précédent, au lieu de tout regrouper dans un seul subtask « Correctif » de la story « Correction sprint précédent »
+- **Mesurable** : 100 % des correctifs relevés à la review ont leur propre subtask Jira, avec un titre clair, une personne assignée et un statut à jour
+- **Atteignable** : Les subtasks sont créés pendant la planification du sprint, à partir des commentaires reçus à la review
+- **Réaliste** : Quelques minutes suffisent, et cela permet de mieux voir qui fait quoi et ce qu'il reste à corriger
+- **Temporel** : À chaque planification de sprint, dès le sprint 5 jusqu'à la fin du projet
+
+➡️ **Formulation SMART** : « Dès le sprint 5, à chaque planification de sprint, créer un subtask Jira distinct pour chaque correctif
+du sprint précédent dans la story "Correction sprint précédent", avec une personne assignée et un statut à jour,
+afin de suivre 100 % des correctifs plutôt que de les regrouper dans un seul subtask "Correctif". »
+
+---

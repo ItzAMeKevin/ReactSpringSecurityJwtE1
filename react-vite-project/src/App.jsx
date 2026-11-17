@@ -13,6 +13,7 @@ import PersonalSpaceManager from "./components/page/personal-space-manager/Perso
 import PersonalSpaceEmployer from "./components/page/personal-space-employer/PersonalSpaceEmployer.jsx";
 import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import { getApiErrorKey } from "./utils/apiError.js";
 import CandidatureTracking from "./components/page/personal-space-manager/CandidatureTracking.jsx";
 
 function App() {
@@ -43,15 +44,16 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Login failed");
+        throw new Error(await getApiErrorKey(response, "errors.authenticationFailed"));
       }
 
       const data = await response.json();
       sessionStorage.setItem("token", data.accessToken);
 
       const userResponse = await fetcher("user/me", {});
-      if (!userResponse.ok) throw new Error("Failed to fetch user info");
+      if (!userResponse.ok) {
+        throw new Error(await getApiErrorKey(userResponse));
+      }
 
       const userData = await userResponse.json();
       setUser({...userData, isLoggedIn: true});
@@ -95,10 +97,13 @@ function App() {
                     case 401:
                       sessionStorage.clear();
                       setUser(null);
+                      throw new Error(await getApiErrorKey(res, "errors.authenticationFailed"));
                     case 403:
-                      throw new Error("Forbidden")
+                      throw new Error(await getApiErrorKey(res, "errors.accessDenied"));
                     case 404:
-                      throw new Error("Nothing here 404");
+                      throw new Error(await getApiErrorKey(res));
+                    default:
+                      throw new Error(await getApiErrorKey(res));
                   }
                 }
                 const data = await res.json();

@@ -1,7 +1,9 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
+import CvModal from "../../CvModal.jsx";
 import fetcher from "../../../utils/fetcher.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 import {
     cardItem,
     statusBadge,
@@ -11,6 +13,7 @@ import {
     btnSmPrimary,
     textError,
     textMuted,
+    inputField,
 } from "../../../styles/classes.js";
 
 const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
@@ -20,13 +23,14 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
     const [updating, setUpdating] = useState(false);
     const [pendingStatus, setPendingStatus] = useState(null);
     const [message, setMessage] = useState("");
-    const blobUrlRef = useRef(null);
+    const [isCvOpen, setIsCvOpen] = useState(false);
+    const [cvUrl, setCvUrl] = useState(null);
 
     useEffect(() => {
         return () => {
-            if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+            if (cvUrl) URL.revokeObjectURL(cvUrl);
         };
-    }, []);
+    }, [cvUrl]);
 
     const openConfirm = (status) => {
         setStatusError(null);
@@ -48,31 +52,27 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({status: pendingStatus, message: message.trim() || null}),
             });
-            if (!res.ok) throw new Error();
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
             onStatusChange(candidate.cvId, pendingStatus);
             cancelConfirm();
-        } catch {
-            setStatusError(t("employeurCandidats.erreurStatut"));
+        } catch (error) {
+            setStatusError(error.message?.startsWith("errors.")
+                ? t(error.message)
+                : t("employeurCandidats.erreurStatut"));
         } finally {
             setUpdating(false);
         }
     };
 
-    const handleViewCv = async () => {
+    const handleOpenCv = async () => {
+        setIsCvOpen(true);
+        if (cvUrl) return;
         setCvError(null);
-        const previewWindow = window.open("", "_blank");
-        if (!previewWindow) {
-            setCvError(t("employeurCandidats.popupBloque"));
-            return;
-        }
 
         try {
             const url = await fetchBlobUrl(`/employer/candidates/${candidate.cvId}/cv`);
-            if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
-            blobUrlRef.current = url;
-            previewWindow.location.href = url;
+            setCvUrl(url);
         } catch {
-            previewWindow.close();
             setCvError(t("employeurCandidats.erreurCv"));
         }
     };
@@ -81,7 +81,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
         <li className={`${cardItem} p-4 flex flex-col gap-2`}>
             <div className="flex items-start justify-between gap-2">
                 <div>
-                    <p className="font-bold text-black">{candidate.firstName} {candidate.lastName}</p>
+                    <p className="font-bold text-main">{candidate.firstName} {candidate.lastName}</p>
                     <p className={`text-sm ${textMuted}`}>{candidate.email}</p>
                     <p className={`text-sm ${textMuted}`}>
                         {new Date(candidate.appliedAt).toLocaleDateString()}
@@ -96,10 +96,11 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 <button
                     type="button"
                     className={btnSmPrimary}
-                    onClick={handleViewCv}
-                    aria-label={`${t("employeurCandidats.voirCv")} — ${candidate.firstName} ${candidate.lastName}`}
+                    onClick={handleOpenCv}
+                    aria-haspopup="dialog"
+                    aria-label={`${t("cvViewer.show")} — ${candidate.firstName} ${candidate.lastName}`}
                 >
-                    {t("employeurCandidats.voirCv")}
+                    {t("cvViewer.show")}
                 </button>
                 {candidate.status === "PENDING" && !pendingStatus && (
                     <>
@@ -113,10 +114,20 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 )}
             </div>
 
+            {isCvOpen && (
+                <CvModal
+                    title={`${candidate.firstName} ${candidate.lastName}`}
+                    file={cvUrl}
+                    error={cvError}
+                    loadingMessage={t("cvViewer.loading")}
+                    onClose={() => setIsCvOpen(false)}
+                />
+            )}
+
             {pendingStatus && (
                 <div className="mt-2 flex flex-col gap-2 border-t pt-3" role="group"
                      aria-label={t("employeurCandidats.confirmation.titre")}>
-                    <p className="text-sm font-semibold text-black">
+                    <p className="text-sm font-semibold text-main">
                         {t(pendingStatus === "ACCEPTED"
                                 ? "employeurCandidats.confirmation.accepter"
                                 : "employeurCandidats.confirmation.refuser",
@@ -127,7 +138,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                     </label>
                     <textarea
                         id={`msg-${candidate.cvId}`}
-                        className="border rounded p-2 text-sm"
+                        className={inputField}
                         rows={3}
                         maxLength={500}
                         value={message}
@@ -148,7 +159,6 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 </div>
             )}
 
-            {cvError && <p className={`text-sm ${textError}`}>{cvError}</p>}
             {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
         </li>
     );

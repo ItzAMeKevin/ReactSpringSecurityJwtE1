@@ -2,8 +2,11 @@ import {useEffect, useMemo, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
+import formatSalary from "../../../utils/formatSalary.js";
 import {btnPrimary, btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 import {compareSessionCodesDesc, getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
 
 const formatSessionLabel = (code, t) => {
@@ -12,7 +15,7 @@ const formatSessionLabel = (code, t) => {
     return t(`personalSpaceEmployer.sessions.${prefix}`, { year });
 };
 
-const ListJobOffer = ({refreshKey, onCreateOffer}) => {
+const ListJobOffer = ({refreshKey, onEdit, onCreateOffer}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +30,9 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+        Array.isArray(programs)
+            ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
+            : enumName;
 
     useEffect(() => {
         let cancelled = false;
@@ -37,11 +42,13 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
             setError(null);
             try {
                 const res = await fetcher("/employer", {method: "GET"});
-                if (!res.ok) throw new Error(`${res.status}`);
+                if (!res.ok) throw new Error(await getApiErrorKey(res));
                 const data = await res.json();
                 if (!cancelled) setOffers(Array.isArray(data) ? data : []);
-            } catch {
-                if (!cancelled) setError(t("errors.generic"));
+            } catch (error) {
+                if (!cancelled) {
+                    setError(error.message?.startsWith("errors.") ? t(error.message) : t("errors.generic"));
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -81,7 +88,7 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
     return (
         <div className="w-full max-w-4xl flex flex-col gap-4">
             <div className="flex items-center gap-3 w-full max-w-4xl">
-                <label htmlFor="session-select" className="text-sm font-medium text-black shrink-0">
+                <label htmlFor="session-select" className="text-sm font-medium text-main shrink-0">
                     {t("personalSpaceEmployer.sessionFilter.label")}
                 </label>
                 <select
@@ -111,39 +118,59 @@ const ListJobOffer = ({refreshKey, onCreateOffer}) => {
                     {filteredOffers.map((offer, i) => (
                         <li
                             key={offer.id ?? i}
+                            ref={isHighlighted("offer", offer.id) ? scrollIntoViewOnMount : undefined}
                             onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
                             className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
                         >
                             <div className="flex items-start justify-between gap-2">
-                                <h3 className="text-lg font-bold text-black">{offer.title}</h3>
+                                <h3 className="text-lg font-bold text-main">{offer.title}</h3>
                                 {offer.status && (
                                     <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
                                         {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
                                     </span>
                                 )}
                             </div>
-                            <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
+                            <p className="text-sm text-main/70">{programName(offer.programe)}</p>
                             <p className="mt-2 line-clamp-3">{offer.description}</p>
                             <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
-                                <dd>{offer.salary}</dd>
-                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
+                                <dd>{formatSalary(offer.salary, t)}</dd>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
                                 <dd>{offer.startingDate}</dd>
-                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
                                 <dd>{offer.durationInWeeks}</dd>
-                                <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                                <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
+                                <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
                             </dl>
-                            <button
-                                type="button"
-                                className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
-                                onClick={() => handleToggleCandidates(offer.id)}
-                                disabled={offer.status !== "ACCEPTED"}
-                            >
-                                {selectedOfferId === offer.id
-                                    ? t("employeurCandidats.masquerCandidats")
-                                    : t("employeurCandidats.voirCandidats")}
-                            </button>
+                            {offer.status === "DECLINED" && (
+                                <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                                    <p className="text-sm font-semibold text-red-800">{t("personalSpaceEmployer.feedbackTitre")}</p>
+                                    <p className="text-sm text-main mt-1 whitespace-pre-line break-words">
+                                        {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
+                                    </p>
+                                </div>
+                            )}
+                            <div className="flex flex-wrap gap-2 mt-3">
+                                <button
+                                    type="button"
+                                    className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
+                                    disabled={offer.status !== "ACCEPTED"}
+                                >
+                                    {selectedOfferId === offer.id
+                                        ? t("employeurCandidats.masquerCandidats")
+                                        : t("employeurCandidats.voirCandidats")}
+                                </button>
+                                {offer.status === "DECLINED" && (
+                                    <button
+                                        type="button"
+                                        className={btnSmPrimary}
+                                        onClick={(e) => { e.stopPropagation(); onEdit?.(offer); }}
+                                    >
+                                        {t("personalSpaceEmployer.editJobOffer")}
+                                    </button>
+                                )}
+                            </div>
                             {selectedOfferId === offer.id && (
                                 <CandidateList offerId={offer.id} />
                             )}

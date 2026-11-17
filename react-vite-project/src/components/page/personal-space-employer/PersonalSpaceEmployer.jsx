@@ -10,30 +10,33 @@ const PersonalSpaceEmployer = () => {
     const {t} = useTranslation();
     const [refreshKey, setRefreshKey] = useState(0);
     const [openForm, setOpenForm] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [editingOffer, setEditingOffer] = useState(null);
+    const [successMessageKey, setSuccessMessageKey] = useState(null);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    const handleOpenForm = () => {
+    const handleOpenForm = (offer = null) => {
+        setEditingOffer(offer);
         setOpenForm(true);
         setShowCloseConfirm(false);
     }
     const handleCloseForm = () => {
         setOpenForm(false);
+        setEditingOffer(null);
         setShowCloseConfirm(false);
     };
     const handleRequestClose = () => setShowCloseConfirm(true);
     const handleFormSuccess = () => {
+        setSuccessMessageKey(editingOffer ? "personalSpaceEmployer.offerUpdated" : "personalSpaceEmployer.offerCreated");
         handleCloseForm();
         setRefreshKey((key) => key + 1);
-        setShowSuccess(true);
     };
 
     useEffect(() => {
-        if (!showSuccess) return undefined;
+        if (!successMessageKey) return undefined;
 
-        const timeoutId = setTimeout(() => setShowSuccess(false), 3000);
+        const timeoutId = setTimeout(() => setSuccessMessageKey(null), 3000);
         return () => clearTimeout(timeoutId);
-    }, [showSuccess]);
+    }, [successMessageKey]);
 
     useEffect(() => {
         if (!openForm) {
@@ -52,16 +55,16 @@ const PersonalSpaceEmployer = () => {
     
     return (
         <>
-            {showSuccess && (
+            {successMessageKey && (
                 <SuccessPopup
-                    message={t("personalSpaceEmployer.offerCreated")}
-                    onClose={() => setShowSuccess(false)}
+                    message={t(successMessageKey)}
+                    onClose={() => setSuccessMessageKey(null)}
                 />
             )}
             <div className={pageWrapper}>
                 <div className={pageInner}>
                     <h1 className={pageTitle}>{t("personalSpaceEmployer.title")}</h1>
-                    <button className={btnPrimary} onClick={handleOpenForm}>
+                    <button className={btnPrimary} onClick={() => handleOpenForm()}>
                         {t("personalSpaceEmployer.createJobOffer")}
                     </button>
                     {openForm && (
@@ -82,17 +85,17 @@ const PersonalSpaceEmployer = () => {
                                     aria-labelledby="create-job-offer-title"
                                 >
                                     <div className="overflow-y-auto p-6">
-                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-black">
-                                            {t("personalSpaceEmployer.createJobOffer")}
+                                        <h2 id="create-job-offer-title" className="mb-2 text-lg font-bold text-main">
+                                            {t(editingOffer ? "personalSpaceEmployer.editJobOffer" : "personalSpaceEmployer.createJobOffer")}
                                         </h2>
-                                        <FormJobOffer onSuccess={handleFormSuccess} onCancel={handleRequestClose}/>
+                                        <FormJobOffer offer={editingOffer} onSuccess={handleFormSuccess} onCancel={handleRequestClose}/>
                                     </div>
                                 </div>
                             </div>
                             {showCloseConfirm && (
                                 <div className="fixed inset-0 z-[1001] flex items-center justify-center bg-black/40">
                                     <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
-                                        <h3 className="text-lg font-bold text-black mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
+                                        <h3 className="text-lg font-bold text-main mb-2">{t("personalSpaceEmployer.confirmClose.title")}</h3>
                                         <p className={`text-sm ${textMuted} mb-6`}>{t("personalSpaceEmployer.confirmClose.message")}</p>
                                         <div className="flex justify-end gap-2">
                                             <button
@@ -116,7 +119,7 @@ const PersonalSpaceEmployer = () => {
                         </>
                     )}
                     <h2 className={sectionTitle}>{t("personalSpaceEmployer.jobOffers")}</h2>
-                    <ListJobOffer refreshKey={refreshKey} onCreateOffer={handleOpenForm} />
+                    <ListJobOffer refreshKey={refreshKey} onEdit={handleOpenForm} onCreateOffer={() => handleOpenForm()} />
                 </div>
             </div>
         </>
