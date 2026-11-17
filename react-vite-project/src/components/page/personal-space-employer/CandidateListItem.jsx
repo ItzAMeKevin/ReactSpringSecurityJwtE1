@@ -24,6 +24,8 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
     const [message, setMessage] = useState("");
     const [isCvOpen, setIsCvOpen] = useState(false);
     const [cvUrl, setCvUrl] = useState(null);
+    const [hireError, setHireError] = useState(null);
+    const [hiring, setHiring] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -58,6 +60,22 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
             setStatusError(t("employeurCandidats.erreurStatut"));
         } finally {
             setUpdating(false);
+        }
+    };
+
+    const handleHire = async () => {
+        setHiring(true);
+        setHireError(null);
+        try {
+            const res = await fetcher(`/employer/${offerId}/candidates/${candidate.cvId}/hire`, {
+                method: "PUT",
+            });
+            if (!res.ok) throw new Error();
+            onStatusChange(candidate.cvId, "HIRED");
+        } catch {
+            setHireError(t("employeurCandidats.hireError"));
+        } finally {
+            setHiring(false);
         }
     };
 
@@ -109,6 +127,16 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                         </button>
                     </>
                 )}
+                {candidate.status === "ACCEPTED" && (
+                    <button
+                        type="button"
+                        className={btnSmPrimary}
+                        onClick={handleHire}
+                        disabled={hiring}
+                    >
+                        {hiring ? "…" : t("employeurCandidats.embaucher")}
+                    </button>
+                )}
             </div>
 
             {isCvOpen && (
@@ -157,6 +185,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
             )}
 
             {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
+            {hireError && <p className={`text-sm ${textError}`}>{hireError}</p>}
         </li>
     );
 };

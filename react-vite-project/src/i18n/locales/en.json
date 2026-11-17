@@ -300,6 +300,10 @@
         "title": "Your internship offer has been accepted",
         "message": "Your internship offer has been validated by a manager."
       },
+      "JOB_OFFER_HIRED": {
+        "title": "Congratulations, you've been hired!",
+        "message": "An employer has selected you for an internship. Check your offers for more details."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
@@ -355,10 +359,13 @@
     "statuts": {
       "PENDING": "Under review",
       "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected"
+      "DECLINED": "Candidate not selected",
+      "HIRED": "Hired"
     },
     "accepter": "Accept",
     "refuser": "Decline",
+    "embaucher": "Hire",
+    "hireError": "An error occurred while hiring the candidate.",
     "erreurStatut": "Unable to update status.",
 
     "confirmation": {
