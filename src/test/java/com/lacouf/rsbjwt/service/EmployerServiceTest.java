@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.CandidateMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import org.mapstruct.factory.Mappers;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
@@ -46,8 +48,8 @@ class EmployerServiceTest {
     @Mock
     private JobOfferMapper jobOfferMapper;
 
-    @Mock
-    private CandidateMapper candidateMapper;
+    @Spy
+    private CandidateMapper candidateMapper = Mappers.getMapper(CandidateMapper.class);
 
     @Mock
     private SystemeService systemeService;

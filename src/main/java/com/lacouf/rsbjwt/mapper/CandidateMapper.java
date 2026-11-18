@@ -23,5 +23,6 @@ public interface CandidateMapper {
     @Mapping(target = "firstName", source = "cv.student.firstName")
     @Mapping(target = "lastName", source = "cv.student.lastName")
     @Mapping(target = "email", source = "cv.student.email")
+    @Mapping(target = "status", source = "status")
     CandidateDto toDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status);
 }
