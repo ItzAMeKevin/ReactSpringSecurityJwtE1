@@ -3,7 +3,9 @@ package com.lacouf.rsbjwt.repository;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,6 +25,13 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
         WHERE jo.id = :id AND jo.employer.credentials.email = :email
         """)
     Optional<JobOffer> findByIdAndEmployerCredentialsEmail(@Param("id") Long id, @Param("email") String email);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT jo FROM JobOffer jo
+        WHERE jo.id = :id AND jo.employer.credentials.email = :email
+        """)
+    Optional<JobOffer> findOwnedOfferForUpdate(@Param("id") Long id, @Param("email") String email);
 
     boolean existsByEmployer_Credentials_EmailAndAppliedCvs_Id(String email, Long cvId);
 

@@ -119,6 +119,7 @@ class StudentCvServiceTest {
     @Test
     void appliesCvAndRejectsDuplicateOrMissingData() throws Exception {
         JobOffer offer = new JobOffer();
+        offer.setStatus(Status.ACCEPTED);
         StudentCv cv = new StudentCv();
         cv.setId(4L);
         cv.setStatus(Status.ACCEPTED);
@@ -134,7 +135,9 @@ class StudentCvServiceTest {
         when(jobOfferRepository.findById(3L)).thenReturn(Optional.empty());
         assertThrows(OffrerException.class,
                 () -> service.applyToJobOffer(3L, CvMetaDataDto.builder().id(4L).build()));
-        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(new JobOffer()));
+        JobOffer otherOffer = new JobOffer();
+        otherOffer.setStatus(Status.ACCEPTED);
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(otherOffer));
         when(studentCvRepository.findById(4L)).thenReturn(Optional.empty());
         assertThrows(CvException.class,
                 () -> service.applyToJobOffer(4L, CvMetaDataDto.builder().id(4L).build()));
@@ -144,6 +147,7 @@ class StudentCvServiceTest {
     @EnumSource(value = Status.class, names = "ACCEPTED", mode = EnumSource.Mode.EXCLUDE)
     void rejectsApplyingWithCvNotAccepted(Status cvStatus) {
         JobOffer offer = new JobOffer();
+        offer.setStatus(Status.ACCEPTED);
         StudentCv cv = new StudentCv();
         cv.setId(4L);
         cv.setStatus(cvStatus);
@@ -154,6 +158,21 @@ class StudentCvServiceTest {
                 () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));
 
         assertEquals("errors.noValidatedCv", exception.getMessage());
+        assertTrue(offer.getAppliedCvs().isEmpty());
+        verify(jobApplicationRepository, never()).save(any(JobApplication.class));
+    }
+
+    @ParameterizedTest(name = "une offre {0} n'accepte pas de candidature")
+    @EnumSource(value = Status.class, names = {"PENDING", "DECLINED", "FILLED"})
+    void rejectsApplyingToOfferNotAccepted(Status offerStatus) {
+        JobOffer offer = new JobOffer();
+        offer.setStatus(offerStatus);
+        when(jobOfferRepository.findById(2L)).thenReturn(Optional.of(offer));
+
+        OffrerException exception = assertThrows(OffrerException.class,
+                () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));
+
+        assertEquals("errors.offerNotOpen", exception.getMessage());
         assertTrue(offer.getAppliedCvs().isEmpty());
         verify(jobApplicationRepository, never()).save(any(JobApplication.class));
     }

@@ -353,6 +353,34 @@ class EmployerControllerTest {
                 .andExpect(status().isConflict());
     }
 
+    // ===== PUT /employer/{offerId}/candidates/{cvId}/hire =====
+
+    @Test
+    @DisplayName("PUT /employer/{id}/candidates/{cvId}/hire embauche le candidat")
+    void hireStudent_ok() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenReturn(
+                new CandidateDto(5L, "Jean", "Dupont", "jean@test.com",
+                        Instant.parse("2026-02-01T12:00:00Z"), Status.HIRED));
+
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("HIRED"));
+    }
+
+    @Test
+    void hireStudent_notFound_returns404() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void hireStudent_illegalState_returns409() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new IllegalStateException("errors.offerNotAccepted"));
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isConflict());
+    }
+
     // ===== GET /employer/candidates/{cvId}/cv =====
 
     @Test

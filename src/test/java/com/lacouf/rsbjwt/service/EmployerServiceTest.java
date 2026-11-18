@@ -487,4 +487,121 @@ class EmployerServiceTest {
         assertThrows(InvalidCvException.class,
                 () -> employerService.getCandidateCv(5L, "marie@acme.com"));
     }
+
+    private JobApplication acceptedApplication(StudentCv cv) {
+        JobApplication application = new JobApplication();
+        application.setJobOffer(jobOffer);
+        application.setStudentCv(cv);
+        application.setStatus(Status.ACCEPTED);
+        return application;
+    }
+
+    private void givenHireableOffer(int numberOfPositions) {
+        jobOffer.setStatus(Status.ACCEPTED);
+        jobOffer.setNumberOfPositions(numberOfPositions);
+        when(jobOfferRepository.findOwnedOfferForUpdate(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
+    }
+
+    @Test
+    @DisplayName("hireStudent passe le candidat à HIRED et notifie l'étudiant")
+    void hireStudent_setsHiredAndNotifiesStudent() {
+        givenHireableOffer(2);
+        StudentCv cv = cvWithStudent(5L);
+        JobApplication application = acceptedApplication(cv);
+        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.save(application)).thenReturn(application);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(1L);
+        when(candidateMapper.toCandidateDto(application)).thenReturn(
+                new CandidateDto(5L, "Jean", "Dupont", "jean@test.com", null, Status.HIRED));
+
+        CandidateDto result = employerService.hireStudent(1L, 5L, "marie@acme.com");
+
+        assertEquals(Status.HIRED, result.status());
+        assertEquals(Status.HIRED, application.getStatus());
+        verify(systemeService).notifyUsers(List.of(cv.getStudent()), NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_HIRED.message");
+    }
+
+    @Test
+    @DisplayName("hireStudent laisse l'offre ACCEPTED tant qu'il reste des postes")
+    void hireStudent_positionsRemaining_offerStaysAccepted() {
+        givenHireableOffer(2);
+        JobApplication application = acceptedApplication(cvWithStudent(5L));
+        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.save(application)).thenReturn(application);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(1L);
+
+        employerService.hireStudent(1L, 5L, "marie@acme.com");
+
+        assertEquals(Status.ACCEPTED, jobOffer.getStatus());
+        verify(jobOfferRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("hireStudent passe l'offre à FILLED quand le dernier poste est comblé")
+    void hireStudent_lastPosition_offerBecomesFilled() {
+        givenHireableOffer(2);
+        JobApplication application = acceptedApplication(cvWithStudent(5L));
+        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.save(application)).thenReturn(application);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(2L);
+
+        employerService.hireStudent(1L, 5L, "marie@acme.com");
+
+        assertEquals(Status.FILLED, jobOffer.getStatus());
+        verify(jobOfferRepository).save(jobOffer);
+    }
+
+    @Test
+    @DisplayName("hireStudent refuse une offre qui n'est pas ACCEPTED")
+    void hireStudent_offerNotAccepted_throwsIllegalState() {
+        jobOffer.setStatus(Status.FILLED);
+        when(jobOfferRepository.findOwnedOfferForUpdate(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
+
+        assertEquals("errors.offerNotAccepted", exception.getMessage());
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("hireStudent refuse un candidat qui n'est pas ACCEPTED")
+    void hireStudent_candidateNotAccepted_throwsIllegalState() {
+        givenHireableOffer(2);
+        JobApplication application = acceptedApplication(cvWithStudent(5L));
+        application.setStatus(Status.PENDING);
+        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
+
+        assertEquals("errors.candidateNotAccepted", exception.getMessage());
+        assertEquals(Status.PENDING, application.getStatus());
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("hireStudent lève ApplicationNotFoundException si l'offre n'appartient pas à l'employeur")
+    void hireStudent_offerNotOwned_throwsNotFound() {
+        when(jobOfferRepository.findOwnedOfferForUpdate(1L, "marie@acme.com")).thenReturn(Optional.empty());
+
+        assertThrows(ApplicationNotFoundException.class,
+                () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
+        verifyNoInteractions(jobApplicationRepository, systemeService);
+    }
+
+    @Test
+    @DisplayName("hireStudent lève ApplicationNotFoundException si la candidature n'existe pas")
+    void hireStudent_applicationMissing_throwsNotFound() {
+        givenHireableOffer(2);
+        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.empty());
+
+        assertThrows(ApplicationNotFoundException.class,
+                () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
 }

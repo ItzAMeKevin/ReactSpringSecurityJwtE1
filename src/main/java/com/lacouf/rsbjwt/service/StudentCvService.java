@@ -144,6 +144,9 @@ public class StudentCvService {
     @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
         JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("errors.offerNotFound"));
+        if (jobOffer.getStatus() != Status.ACCEPTED) {
+            throw new OffrerException("errors.offerNotOpen");
+        }
 
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
 

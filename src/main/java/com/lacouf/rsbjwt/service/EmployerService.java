@@ -149,7 +149,8 @@ public class EmployerService {
 
     @Transactional
     public CandidateDto hireStudent(Long offerId, Long cvId, String employerEmail) {
-        JobOffer offer = findOwnedOffer(offerId, employerEmail);
+        JobOffer offer = jobOfferRepository.findOwnedOfferForUpdate(offerId, employerEmail)
+                .orElseThrow(ApplicationNotFoundException::new);
         if (offer.getStatus() != Status.ACCEPTED) {
             throw new IllegalStateException("errors.offerNotAccepted");
         }

@@ -18,7 +18,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
     const selectedCv = (acceptedCvs ?? []).find((cv) => cv.id === selectedCvId) ?? null;
     const hasApplied = Boolean(offer.applied) || applyState === "success";
     const applicationStatus = offer.applicationStatus ?? "PENDING";
-    const canApply = Boolean(selectedCv) && !hasApplied && applyState !== "sending";
+    const canApply = offer.status === "ACCEPTED" && Boolean(selectedCv) && !hasApplied && applyState !== "sending";
 
     const handleApply = async () => {
         if (!canApply) return;

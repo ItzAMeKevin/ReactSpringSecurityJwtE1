@@ -98,7 +98,7 @@ public class StudentServiceTest {
     void getAcceptedJobOffers_returnsOffers() {
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+        when(jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
 
@@ -107,7 +107,7 @@ public class StudentServiceTest {
         assertEquals(1, result.size());
         assertEquals("Dev Java", result.get(0).getTitle());
         verify(studentRepository).findByCredentialsEmail(STUDENT_EMAIL);
-        verify(jobOfferRepository).findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE);
+        verify(jobOfferRepository).findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class StudentServiceTest {
     void getAcceptedJobOffers_returnsOffers_whenNoCvAccepted() {
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+        when(jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
 
@@ -130,7 +130,7 @@ public class StudentServiceTest {
     void getAcceptedJobOffers_returnsEmpty_whenNoOffersForProgram() {
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL))
                 .thenReturn(Optional.of(student));
-        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+        when(jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of());
 
         List<JobOfferDetailDTO> result = studentService.getAcceptedJobOffers(STUDENT_EMAIL);
@@ -159,7 +159,7 @@ public class StudentServiceTest {
         when(studentRepository.findByCredentialsEmail(STUDENT_EMAIL)).thenReturn(Optional.of(student));
         when(jobApplicationRepository.findByStudentIdWithOffer(1L))
                 .thenReturn(List.of(application(jobOffer, applicationStatus)));
-        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+        when(jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
 
@@ -177,7 +177,7 @@ public class StudentServiceTest {
         when(jobApplicationRepository.findByStudentIdWithOffer(1L)).thenReturn(List.of(
                 application(offer, Status.DECLINED),
                 application(offer, Status.PENDING)));
-        when(jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, Programe.TECHNIQUES_INFORMATIQUE))
+        when(jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), Programe.TECHNIQUES_INFORMATIQUE))
                 .thenReturn(List.of(offer));
         when(jobOfferMapper.toDto(offer)).thenReturn(dtoFor(10L));
 
