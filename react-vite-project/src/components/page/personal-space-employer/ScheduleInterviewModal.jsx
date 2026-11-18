@@ -135,7 +135,7 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => !isLoading && handleClose()}>
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50" onClick={() => !isLoading && handleClose()}>
             <div
                 ref={modalRef}
                 className="relative bg-white rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
