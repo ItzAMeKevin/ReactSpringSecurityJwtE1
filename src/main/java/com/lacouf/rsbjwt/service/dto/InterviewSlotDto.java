@@ -7,5 +7,6 @@ import java.time.LocalTime;
 
 public record InterviewSlotDto(@NotNull LocalDate date,
                                @NotNull LocalTime startTime,
-                               @NotNull LocalTime endTime
+                               @NotNull LocalTime endTime,
+                               boolean selected
 ) {}

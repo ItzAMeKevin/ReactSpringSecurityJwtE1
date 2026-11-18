@@ -1,15 +1,19 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
+import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.service.dto.InterviewDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +28,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final JobOfferMapper jobOfferMapper;
     private final JobApplicationRepository jobApplicationRepository;
+    private final InterviewMapper interviewMapper;
+    private final InterviewRepository interviewRepository;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
@@ -45,5 +51,20 @@ public class StudentService {
                                 applicationStatuses.containsKey(offer.getId()),
                                 applicationStatuses.get(offer.getId())))
                 .toList();
+    }
+
+    public List<InterviewDto> getInterviews(Authentication authentication) {
+        String email = authentication.getName();
+        return interviewRepository
+                .findByJobApplication_Student_Credentials_Email(email)
+                .stream()
+                .map(interviewMapper::toInterviewDto)
+                .toList();
+    }
+
+    public InterviewDto chooseInterview(InterviewDto interviewDto) {
+
+
+        return interviewDto;
     }
 }

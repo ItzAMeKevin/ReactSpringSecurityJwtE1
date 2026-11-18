@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.mapper;
 
 import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
+import com.lacouf.rsbjwt.service.dto.InterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
 import org.mapstruct.Mapper;
@@ -15,4 +16,6 @@ public interface InterviewMapper {
     InterviewResponseDto toDto(Interview interview);
 
     InterviewSlotDto toSlotDto(InterviewSlot slot);
+
+    InterviewDto toInterviewDto(Interview interview);
 }
