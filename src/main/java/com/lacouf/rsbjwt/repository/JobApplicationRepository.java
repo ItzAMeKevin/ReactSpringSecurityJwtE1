@@ -36,4 +36,14 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         ORDER BY ja.appliedAt DESC
         """)
     List<JobApplication> findByStudentIdWithOffer(@Param("studentId") Long studentId);
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer e
+        ORDER BY ja.appliedAt DESC
+        """)
+    List<JobApplication> findAllWithStudentAndOffer();
 }
