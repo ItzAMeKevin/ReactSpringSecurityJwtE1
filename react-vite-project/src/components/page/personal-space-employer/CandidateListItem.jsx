@@ -15,7 +15,7 @@ import {
     inputField,
 } from "../../../styles/classes.js";
 
-const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
+const CandidateListItem = ({candidate, offerId, canHire, onStatusChange}) => {
     const {t} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
@@ -70,6 +70,10 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
             const res = await fetcher(`/employer/${offerId}/candidates/${candidate.cvId}/hire`, {
                 method: "PUT",
             });
+            if (res.status === 409) {
+                setHireError(t("employeurCandidats.hireConflict"));
+                return;
+            }
             if (!res.ok) throw new Error();
             onStatusChange(candidate.cvId, "HIRED");
         } catch {
@@ -127,7 +131,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                         </button>
                     </>
                 )}
-                {candidate.status === "ACCEPTED" && (
+                {candidate.status === "ACCEPTED" && canHire && (
                     <button
                         type="button"
                         className={btnSmPrimary}

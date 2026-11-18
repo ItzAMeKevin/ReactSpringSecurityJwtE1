@@ -370,6 +370,7 @@
     "refuser": "Refuser",
     "embaucher": "Embaucher",
     "hireError": "Une erreur est survenue lors de l'embauche.",
+    "hireConflict": "Impossible d'embaucher : l'offre est déjà pourvue ou le candidat n'est plus retenu.",
     "erreurStatut": "Impossible de mettre à jour le statut.",
 
     "confirmation": {

@@ -4,7 +4,7 @@ import fetcher from "../../../utils/fetcher.js";
 import {sectionTitle, textError, textMuted} from "../../../styles/classes.js";
 import CandidateListItem from "./CandidateListItem.jsx";
 
-const CandidateList = ({offerId}) => {
+const CandidateList = ({offerId, canHire, onHired}) => {
     const {t} = useTranslation();
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -36,6 +36,7 @@ const CandidateList = ({offerId}) => {
         setCandidates((prev) =>
             prev.map((c) => (c.cvId === cvId ? {...c, status: newStatus} : c))
         );
+        if (newStatus === "HIRED") onHired?.(offerId);
     };
 
     if (loading) return <p className={textMuted}>{t("employeurCandidats.loading")}</p>;
@@ -53,6 +54,7 @@ const CandidateList = ({offerId}) => {
                         key={candidate.cvId}
                         candidate={candidate}
                         offerId={offerId}
+                        canHire={canHire}
                         onStatusChange={handleStatusChange}
                     />
                 ))}

@@ -371,6 +371,7 @@
     "refuser": "Decline",
     "embaucher": "Hire",
     "hireError": "An error occurred while hiring the candidate.",
+    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
     "erreurStatut": "Unable to update status.",
 
     "confirmation": {
