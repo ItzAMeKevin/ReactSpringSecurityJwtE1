@@ -131,7 +131,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainin
                 {candidate.status === "ACCEPTED" && (
                     <button
                         type="button"
-                        className={btnSmPrimary}
+                        className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
                         onClick={handleHire}
                         disabled={hiring || (remainingPositions != null && remainingPositions <= 0)}
                     >
