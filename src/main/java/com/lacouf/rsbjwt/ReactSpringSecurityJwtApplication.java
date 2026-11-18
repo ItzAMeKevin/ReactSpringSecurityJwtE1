@@ -440,22 +440,23 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         repo.save(offer);
     }
 
-    private void seedCv(StudentCvRepository repo, Student student, String fileName,
-                        Status status, String streamContent) {
-        boolean alreadyExists = repo.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
+    private StudentCv seedCv(StudentCvRepository repo, Student student, String fileName,
+                             Status status, String streamContent) {
+        return repo.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
                 .stream()
-                .anyMatch(cv -> cv.getFileName().equals(fileName));
-        if (alreadyExists) return;
-
-        byte[] content = wrapPdfStream(streamContent);
-        StudentCv cv = new StudentCv();
-        cv.setFileName(fileName);
-        cv.setContentType("application/pdf");
-        cv.setContent(content);
-        cv.setSize(content.length);
-        cv.setStatus(status);
-        cv.setStudent(student);
-        repo.save(cv);
+                .filter(cv -> cv.getFileName().equals(fileName))
+                .findFirst()
+                .orElseGet(() -> {
+                    byte[] content = wrapPdfStream(streamContent);
+                    StudentCv cv = new StudentCv();
+                    cv.setFileName(fileName);
+                    cv.setContentType("application/pdf");
+                    cv.setContent(content);
+                    cv.setSize(content.length);
+                    cv.setStatus(status);
+                    cv.setStudent(student);
+                    return repo.save(cv);
+                });
     }
 
     private void seedDemoApplicant(StudentRepository students, StudentCvRepository studentCvs,
@@ -466,19 +467,10 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         Student student = students.findByCredentialsEmail(email).orElse(null);
         if (student == null) return;
 
-        seedCv(studentCvs, student, fileName, Status.ACCEPTED,
+        StudentCv cv = seedCv(studentCvs, student, fileName, Status.ACCEPTED,
                 buildCvStream(name, contact, education, skills, experience));
 
-        StudentCv cv = studentCvs.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
-                .stream()
-                .filter(c -> c.getFileName().equals(fileName))
-                .findFirst().orElse(null);
-        if (cv == null) return;
-
-        boolean appExists = jobApps.findByOfferIdWithStudent(offer.getId())
-                .stream()
-                .anyMatch(app -> app.getStudentCv().getId().equals(cv.getId()));
-        if (appExists) return;
+        if (jobApps.existsByStudentCv_IdAndJobOffer_Id(cv.getId(), offer.getId())) return;
 
         JobApplication app = new JobApplication();
         app.setJobOffer(offer);
