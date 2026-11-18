@@ -67,9 +67,6 @@ const CandidatureTrackingItem = ({ candidature }) => {
                                         {candidature.student?.firstName} {candidature.student?.lastName}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.table.matricule")}: {candidature.student?.matricule || "N/A"}
-                                    </p>
-                                    <p className="text-main/80 text-sm">
                                         {t("candidatureTracking.details.email")}: {candidature.student?.email || "N/A"}
                                     </p>
                                 </div>
