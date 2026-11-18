@@ -391,6 +391,7 @@
     "loading": "Loading offers...",
     "noOffers": "No internship offers available for your program.",
     "noOffersForSession": "No internship offers for this semester.",
+    "notCurrentSession": "Applications are only open for internships in the current semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",

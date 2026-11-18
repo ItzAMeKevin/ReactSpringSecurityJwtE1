@@ -390,6 +390,7 @@
     "loading": "Chargement des offres...",
     "noOffers": "Aucune offre de stage disponible pour votre programme.",
     "noOffersForSession": "Aucune offre de stage pour cette session.",
+    "notCurrentSession": "Les candidatures sont ouvertes seulement pour les stages de la session en cours.",
     "company": "Entreprise",
     "weeks": "sem.",
     "readMore": "En savoir plus",
