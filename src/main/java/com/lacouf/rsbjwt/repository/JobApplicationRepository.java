@@ -51,6 +51,14 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     @Query("""
         SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE ja.id = :id
+        """)
+    Optional<JobApplication> findByIdWithEmployer(@Param("id") Long id);
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
         JOIN FETCH ja.studentCv cv
         JOIN FETCH cv.student s
         JOIN FETCH ja.jobOffer jo

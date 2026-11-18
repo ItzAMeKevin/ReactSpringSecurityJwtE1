@@ -437,6 +437,7 @@
     },
     "accepter": "Accept",
     "refuser": "Decline",
+    "scheduleInterview": "Schedule an interview",
     "embaucher": "Hire",
     "hireError": "An error occurred while hiring the candidate.",
     "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
@@ -449,6 +450,53 @@
       "motifLabel": "Message or reason (optional)",
       "confirmer": "Confirm",
       "annuler": "Cancel"
+    }
+  },
+  "scheduleInterview": {
+    "title": "Schedule an interview",
+    "with": "With:",
+    "proposeSlots": "Propose slots",
+    "scheduling": "Scheduling...",
+    "cancel": "Cancel",
+    "form": {
+      "date": "Interview date",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "type": "Interview type",
+      "typeOnline": "Online",
+      "typeInPerson": "In-person",
+      "videoLink": "Videoconference link",
+      "videoLinkHint": "Paste your Zoom, Teams or Google Meet link",
+      "address": "Address / Location",
+      "numeroCivic": "Civic no.",
+      "rue": "Street",
+      "ville": "City",
+      "codePostal": "Postal code",
+      "pays": "Country",
+      "notes": "Notes for candidate",
+      "notesPlaceholder": "Add instructions or notes for the candidate...",
+      "notesHelp": "Optional"
+    },
+    "slots": {
+      "title": "Available slots",
+      "addSlot": "Add a slot",
+      "noSlots": "No slots added yet",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "errors": {
+      "title": "Error",
+      "generic": "An error occurred while scheduling the interview, please try again later.",
+      "dateRequired": "Date required",
+      "dateInPast": "Date cannot be before today",
+      "timeRequired": "Time required",
+      "endTimeAfterStart": "End time must be after start time",
+      "videoLinkRequired": "Videoconference link required",
+      "addressRequired": "Address is required",
+      "fillAllFields": "Please fill in all fields and add at least one slot",
+      "retry": "Retry"
     }
   }
 }

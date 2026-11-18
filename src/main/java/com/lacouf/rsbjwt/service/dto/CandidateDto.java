@@ -6,6 +6,7 @@ import java.time.Instant;
 
 public record CandidateDto(
         Long cvId,
+        Long candidatureId,
         String firstName,
         String lastName,
         String email,
