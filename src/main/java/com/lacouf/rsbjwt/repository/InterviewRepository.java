@@ -11,4 +11,6 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     List<Interview> findByJobApplication_Student_Credentials_Email(String email);
 
     Optional<Interview> findByIdAndJobApplication_Student_Credentials_Email(Long id, String email);
+
+    boolean existsByJobApplicationId(Long jobApplicationId);
 }

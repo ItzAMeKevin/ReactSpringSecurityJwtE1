@@ -20,8 +20,8 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_application_id", nullable = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_application_id", nullable = false, unique = true)
     private JobApplication jobApplication;
 
     @Enumerated(EnumType.STRING)

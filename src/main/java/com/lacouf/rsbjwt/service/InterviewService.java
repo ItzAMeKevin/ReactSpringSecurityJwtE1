@@ -37,6 +37,10 @@ public class InterviewService {
             throw new ApplicationNotFoundException();
         }
 
+        if (interviewRepository.existsByJobApplicationId(dto.candidatureId())) {
+            throw new ApplicationNotFoundException();
+        }
+
         Interview interview = new Interview();
         interview.setJobApplication(application);
         interview.setType(dto.type());
