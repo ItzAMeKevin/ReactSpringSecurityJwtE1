@@ -18,7 +18,8 @@ public record InterviewDto(
         Instant scheduledAt,
         List<InterviewSlotDto> slots,
         InterviewStatus status,
-        String studentMessage
+        String studentMessage,
+        boolean expired
 ) {
 
 }

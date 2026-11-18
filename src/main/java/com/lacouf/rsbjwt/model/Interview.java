@@ -50,5 +50,5 @@ public class Interview {
     @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InterviewSlot> slots = new ArrayList<>();
 
-    InterviewStatus status = InterviewStatus.PROPOSED;
+    InterviewStatus status = InterviewStatus.PENDING;
 }

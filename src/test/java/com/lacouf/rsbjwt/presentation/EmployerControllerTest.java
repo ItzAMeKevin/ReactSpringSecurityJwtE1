@@ -141,13 +141,13 @@ class EmployerControllerTest {
 
         scheduleRequest = new ScheduleInterviewRequestDto(
                 1L, InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
-                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0)))
+                List.of(new InterviewSlotDto(null, LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0), null))
         );
 
         interviewResponseDto = new InterviewResponseDto(
                 10L, 1L, InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
                 Instant.now(),
-                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0)))
+                List.of(new InterviewSlotDto(null, LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0), null))
         );
     }
 

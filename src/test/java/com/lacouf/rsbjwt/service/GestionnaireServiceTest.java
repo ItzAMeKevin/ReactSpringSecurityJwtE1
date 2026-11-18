@@ -135,7 +135,7 @@ class GestionnaireServiceTest {
         application.setJobOffer(offer);
         application.setStatus(Status.PENDING);
 
-        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of(application));
+        when(jobApplicationRepository.findAll()).thenReturn(List.of(application));
         List<CandidatureDto> result = service.getAllCandidatures();
         assertEquals(1, result.size());
         CandidatureDto dto = result.get(0);
@@ -146,7 +146,7 @@ class GestionnaireServiceTest {
         assertEquals(12, dto.jobOffer().durationInWeeks());
         assertEquals(Status.PENDING, dto.status());
 
-        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of());
+        when(jobApplicationRepository.findAll()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
     }
 }

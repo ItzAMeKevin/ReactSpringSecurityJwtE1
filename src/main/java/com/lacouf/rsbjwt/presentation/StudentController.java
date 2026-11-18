@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.InterviewDto;
+import com.lacouf.rsbjwt.service.dto.InterviewRespondRequest;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,11 +31,12 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getInterviews(authentication));
     }
 
-    @PostMapping("/interviews")
+    @PutMapping("/interviews/{id}/respond")
     @PreAuthorize("hasAuthority('STUDENT')")
-    public ResponseEntity<InterviewDto> createInterview(Authentication authentication, @RequestBody InterviewDto interviewDto) {
-
-        return ResponseEntity.ok(studentService.chooseInterview(interviewDto));
+    public ResponseEntity<InterviewDto> respondToInterview(@PathVariable Long id,
+                                                           @RequestBody InterviewRespondRequest request,
+                                                           Authentication authentication) {
+        return ResponseEntity.ok(studentService.respondToInterview(id, request, authentication));
     }
 
 }

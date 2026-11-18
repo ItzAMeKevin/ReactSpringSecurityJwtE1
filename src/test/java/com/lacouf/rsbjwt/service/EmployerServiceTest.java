@@ -64,9 +64,6 @@ class EmployerServiceTest {
     @Mock
     private StudentCvRepository studentCvRepository;
 
-    @Spy
-    private CandidateMapper candidateMapper = Mappers.getMapper(CandidateMapper.class);
-
     @InjectMocks
     private EmployerService employerService;
 

@@ -17,5 +17,10 @@ public interface InterviewMapper {
 
     InterviewSlotDto toSlotDto(InterviewSlot slot);
 
+    @Mapping(source = "jobApplication.id", target = "candidatureId")
+    @Mapping(source = "adresse", target = "address")
+    @Mapping(source = "jobApplication.jobOffer.employer.companyName", target = "companyName")
+    @Mapping(source = "jobApplication.jobOffer.title", target = "offerTitle")
+    @Mapping(target = "expired", ignore = true)
     InterviewDto toInterviewDto(Interview interview);
 }

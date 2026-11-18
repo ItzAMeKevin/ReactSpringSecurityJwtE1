@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.model;
 
 public enum InterviewStatus {
-    PROPOSED,
+    PENDING,
     ACCEPTED,
     DECLINED,
     SCHEDULED,

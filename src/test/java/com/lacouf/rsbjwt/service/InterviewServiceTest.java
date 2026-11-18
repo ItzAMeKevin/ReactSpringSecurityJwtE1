@@ -72,9 +72,11 @@ class InterviewServiceTest {
                 null,
                 "Bring portfolio",
                 List.of(new InterviewSlotDto(
+                        null,
                         LocalDate.of(2026, 11, 20),
                         LocalTime.of(9, 0),
-                        LocalTime.of(10, 0)))
+                        LocalTime.of(10, 0),
+                        null))
         );
     }
 
@@ -102,7 +104,7 @@ class InterviewServiceTest {
 
         ScheduleInterviewRequestDto dto = new ScheduleInterviewRequestDto(
                 99L, InterviewType.ONLINE, "https://zoom.us/j/123", null, null,
-                List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+                List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null)));
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> interviewService.schedule(dto, EMPLOYER_EMAIL));
@@ -127,7 +129,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.ONLINE, "https://zoom.us", null, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);
@@ -148,7 +150,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.IN_PERSON, "https://zoom.us", adresseDto, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);

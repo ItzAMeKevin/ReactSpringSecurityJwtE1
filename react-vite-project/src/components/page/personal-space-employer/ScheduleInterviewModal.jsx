@@ -92,6 +92,7 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
 
         try {
             const response = await fetcher('/employer/interview/schedule', {
+
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -108,7 +109,8 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
                         endTime: slot.endTime
                     }))
                 })
-            });
+            }
+        );
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));

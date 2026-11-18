@@ -1,7 +1,11 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.model.Interview;
+import com.lacouf.rsbjwt.model.InterviewSlot;
+import com.lacouf.rsbjwt.model.InterviewStatus;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
@@ -11,11 +15,14 @@ import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.InterviewDto;
+import com.lacouf.rsbjwt.service.dto.InterviewRespondRequest;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,13 +65,41 @@ public class StudentService {
         return interviewRepository
                 .findByJobApplication_Student_Credentials_Email(email)
                 .stream()
-                .map(interviewMapper::toInterviewDto)
+                .map(this::withExpired)
                 .toList();
     }
 
-    public InterviewDto chooseInterview(InterviewDto interviewDto) {
+    @Transactional
+    public InterviewDto respondToInterview(Long interviewId, InterviewRespondRequest request, Authentication authentication) {
+        String email = authentication.getName();
 
+        var interview = interviewRepository
+                .findByIdAndJobApplication_Student_Credentials_Email(interviewId, email)
+                .orElseThrow(ApplicationNotFoundException::new);
 
-        return interviewDto;
+        if (interview.getStatus() != InterviewStatus.PENDING) {
+            throw new ApplicationNotFoundException();
+        }
+
+        if (request.status() == InterviewStatus.ACCEPTED) {
+            InterviewSlot chosen = interview.getSlots().stream()
+                    .filter(s -> s.getId().equals(request.selectedSlotId()))
+                    .findFirst()
+                    .orElseThrow(ApplicationNotFoundException::new);
+            chosen.setSelected(true);
+        }
+
+        interview.setStatus(request.status());
+        return withExpired(interviewRepository.save(interview));
+    }
+
+    private InterviewDto withExpired(Interview interview) {
+        InterviewDto dto = interviewMapper.toInterviewDto(interview);
+        boolean expired = interview.getStatus() == InterviewStatus.PENDING
+                && !interview.getSlots().isEmpty()
+                && interview.getSlots().stream().allMatch(s -> s.getDate().isBefore(LocalDate.now()));
+        return new InterviewDto(dto.id(), dto.candidatureId(), dto.companyName(), dto.offerTitle(),
+                dto.type(), dto.videoLink(), dto.address(), dto.notes(), dto.scheduledAt(),
+                dto.slots(), dto.status(), dto.studentMessage(), expired);
     }
 }
