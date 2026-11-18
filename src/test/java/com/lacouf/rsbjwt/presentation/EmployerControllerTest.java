@@ -14,6 +14,7 @@ import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
+import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.InterviewService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -389,7 +390,7 @@ class EmployerControllerTest {
     @DisplayName("PUT /employer/{id}/candidates/{cvId}/hire embauche le candidat")
     void hireStudent_ok() throws Exception {
         when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenReturn(
-                new CandidateDto(5L, "Jean", "Dupont", "jean@test.com",
+                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
                         Instant.parse("2026-02-01T12:00:00Z"), Status.HIRED));
 
         mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))

@@ -82,11 +82,7 @@ public class EmployerController {
     public ResponseEntity<InterviewResponseDto> scheduleInterview(
             @Valid @RequestBody ScheduleInterviewRequestDto request,
             Authentication authentication) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(interviewService.schedule(request, authentication.getName()));
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(interviewService.schedule(request, authentication.getName()));
     }
 }
