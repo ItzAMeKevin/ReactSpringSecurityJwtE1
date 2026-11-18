@@ -19,6 +19,18 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
         setSelectedOfferId((prev) => (prev === offerId ? null : offerId));
     };
 
+    const handleHireInOffer = (offerId) => {
+        setOffers((prev) => prev.map((o) => {
+            if (o.id !== offerId) return o;
+            const newHiredCount = (o.hiredCount ?? 0) + 1;
+            return {
+                ...o,
+                hiredCount: newHiredCount,
+                status: o.numberOfPositions != null && newHiredCount >= o.numberOfPositions ? "FILLED" : o.status,
+            };
+        }));
+    };
+
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
         Array.isArray(programs)
@@ -121,7 +133,11 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                             )}
                         </div>
                         {selectedOfferId === offer.id && (
-                            <CandidateList offerId={offer.id} />
+                            <CandidateList
+                                offerId={offer.id}
+                                onHire={() => handleHireInOffer(offer.id)}
+                                remainingPositions={offer.numberOfPositions != null ? offer.numberOfPositions - (offer.hiredCount ?? 0) : null}
+                            />
                         )}
                     </li>
                 ))}

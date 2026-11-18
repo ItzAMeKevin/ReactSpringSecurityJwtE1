@@ -4,7 +4,7 @@ import fetcher from "../../../utils/fetcher.js";
 import {sectionTitle, textError, textMuted} from "../../../styles/classes.js";
 import CandidateListItem from "./CandidateListItem.jsx";
 
-const CandidateList = ({offerId}) => {
+const CandidateList = ({offerId, onHire, remainingPositions}) => {
     const {t} = useTranslation();
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -54,6 +54,8 @@ const CandidateList = ({offerId}) => {
                         candidate={candidate}
                         offerId={offerId}
                         onStatusChange={handleStatusChange}
+                        onHire={onHire}
+                        remainingPositions={remainingPositions}
                     />
                 ))}
             </ul>
