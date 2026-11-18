@@ -21,6 +21,7 @@ public interface JobOfferMapper {
 
     @Mapping(target = "companyName", source = "employer.companyName")
     @Mapping(target = "location", source = "adresse")
+    @Mapping(target = "refusalFeedback", source = "refusalFeedback")
     JobOfferDetailDTO toDto(JobOffer entity);
 
 

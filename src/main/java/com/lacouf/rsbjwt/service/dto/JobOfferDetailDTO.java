@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@SuperBuilder
-public class JobOfferDetailDTO extends GenericDto {
+@SuperBuilder(toBuilder = true)
+public class JobOfferDetailDTO {
 
     private Long id;
     private String title;
@@ -29,20 +29,20 @@ public class JobOfferDetailDTO extends GenericDto {
     private String companyName;
     private boolean applied;
     private Status applicationStatus;
+    private String refusalFeedback;
 
     public JobOfferDetailDTO(Long id, String title, String description, String prerequisites,
                              AdresseDTO location, String salary, Status status,
                              LocalDate publicationDate, LocalDate startingDate,
                              Integer durationInWeeks, Programe programe, String companyName) {
         this(id, title, description, prerequisites, location, salary, status,
-                publicationDate, startingDate, durationInWeeks, programe, companyName, false, null);
+                publicationDate, startingDate, durationInWeeks, programe, companyName, false, null, null);
     }
 
     public JobOfferDetailDTO withApplication(boolean applied, Status applicationStatus) {
-        JobOfferDetailDTO copy = new JobOfferDetailDTO(id, title, description, prerequisites, location, salary,
-                status, publicationDate, startingDate, durationInWeeks, programe,
-                companyName, applied, applicationStatus);
-        copy.setErreur(getErreur());
-        return copy;
+        return this.toBuilder()
+                .applied(applied)
+                .applicationStatus(applicationStatus)
+                .build();
     }
 }

@@ -1,8 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect } from "react";
-import { Document, Page } from "react-pdf";
+import CvModal from "../../CvModal.jsx";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 import {
     cardItem,
     cardHighlighted,
@@ -13,41 +15,6 @@ import {
     textError,
     textMuted
 } from "../../../styles/classes.js";
-
-const CvPreview = ({ file }) => {
-    const [numPages, setNumPages] = useState(0);
-    const [containerWidth, setContainerWidth] = useState(null);
-    const containerRef = useRef(null);
-
-    useEffect(() => {
-        const observer = new ResizeObserver(([entry]) => {
-            setContainerWidth(entry.contentRect.width);
-        });
-        observer.observe(containerRef.current);
-        return () => observer.disconnect();
-    }, []);
-
-    return (
-        <div ref={containerRef} className="mt-3 w-full overflow-hidden">
-            {containerWidth && (
-                <Document
-                    file={file}
-                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                    onLoadError={(error) => console.error("Erreur de chargement PDF :", error)}
-                >
-                    {Array.from({ length: numPages }, (_, index) => (
-                        <Page
-                            key={index}
-                            pageNumber={index + 1}
-                            width={containerWidth}
-                            className="mb-2"
-                        />
-                    ))}
-                </Document>
-            )}
-        </div>
-    );
-};
 
 const CvListItem = ({
                         cv,
@@ -73,7 +40,7 @@ const CvListItem = ({
         setFeedbackError(false);
         fetcher(`/student-cv/${cv.id}/review`)
             .then(async (response) => {
-                if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                if (!response.ok) throw new Error(await getApiErrorKey(response));
                 const text = await response.text();
                 if (!cancelled) setFeedback(text);
             })
@@ -123,7 +90,6 @@ const CvListItem = ({
         );
     };
 
-    // The new version is a regular upload; the page hides this one if the file name is the same
     const handleReplaceFile = async (event) => {
         const file = event.target.files?.[0];
         event.target.value = "";
@@ -154,13 +120,14 @@ const CvListItem = ({
         return (
             <>
                 <p className="text-sm font-semibold text-red-800">{t("televerser.feedbackTitre")}</p>
-                <p className="text-sm text-black mt-1 whitespace-pre-line break-words">{feedback}</p>
+                <p className="text-sm text-main mt-1 whitespace-pre-line break-words">{feedback}</p>
             </>
         );
     };
 
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} border-2 ${isHighlighted ? cardHighlighted : ''}`}
         >
@@ -196,10 +163,10 @@ const CvListItem = ({
                     <button
                         type="button"
                         onClick={onToggle}
-                        aria-expanded={isOpen}
+                        aria-haspopup="dialog"
                         className={`${btnSmPrimary}`}
                     >
-                        {isOpen ? t("televerser.masquer") : t("televerser.afficher")}
+                        {t("cvViewer.show")}
                     </button>
                 </div>
             </div>
@@ -214,9 +181,15 @@ const CvListItem = ({
                 </div>
             )}
 
-            <div className="w-full">
-                {isOpen && renderPreview()}
-            </div>
+            {isOpen && (
+                <CvModal
+                    title={cv.fileName}
+                    file={cv.file ?? previewUrl}
+                    error={previewError ? t("televerser.apercuIndisponible") : null}
+                    loadingMessage={t("televerser.chargementApercu")}
+                    onClose={onToggle}
+                />
+            )}
         </div>
     );
 };

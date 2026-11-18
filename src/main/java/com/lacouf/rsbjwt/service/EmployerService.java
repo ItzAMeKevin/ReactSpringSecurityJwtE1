@@ -9,12 +9,12 @@ import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
-import com.lacouf.rsbjwt.repository.EmployerRepository;
-import com.lacouf.rsbjwt.repository.JobApplicationRepository;
-import com.lacouf.rsbjwt.repository.JobOfferRepository;
-import com.lacouf.rsbjwt.repository.StudentCvRepository;
+import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
@@ -68,7 +68,7 @@ public class EmployerService {
     public Optional<JobOfferDetailDTO> updateRefusedJobOffer(Long id, JobOfferCreateDTO dto, String employerEmail) {
         return jobOfferRepository.findByIdAndEmployerCredentialsEmail(id, employerEmail).map(offer -> {
             if (offer.getStatus() != Status.DECLINED) {
-                throw new IllegalStateException("errors.jobOfferUpdateFailed");
+                throw new JobOfferUpdateException();
             }
             JobOffer updated = jobOfferMapper.toEntity(dto);
             offer.setTitle(updated.getTitle());
@@ -80,7 +80,11 @@ public class EmployerService {
             offer.setPrograme(updated.getPrograme());
             offer.setAdresse(updated.getAdresse());
             offer.setStatus(Status.PENDING);
-            return jobOfferMapper.toDto(jobOfferRepository.save(offer));
+            offer.setRefusalFeedback(null);
+            JobOffer savedOffer = jobOfferRepository.save(offer);
+            systemeService.notifyManagers(NotificationType.JOB_OFFER, savedOffer.getId(),
+                    "notification.types.JOB_OFFER_RESUBMITTED.message");
+            return jobOfferMapper.toDto(savedOffer);
         });
     }
 
@@ -109,13 +113,13 @@ public class EmployerService {
     @Transactional
     public CandidateDto updateCandidateStatus(Long offerId, Long cvId, Status newStatus, String employerEmail) {
         if (newStatus != Status.ACCEPTED && newStatus != Status.DECLINED) {
-            throw new IllegalArgumentException("Statut de candidature invalide.");
+            throw new InvalidApplicationStatusException();
         }
         JobOffer offer = findOwnedOffer(offerId, employerEmail);
         JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
                 .orElseGet(() -> createApplicationFromAppliedCv(offer, cvId));
         if (application.getStatus() != Status.PENDING) {
-            throw new IllegalStateException("Seules les candidatures en attente peuvent être mises à jour.");
+            throw new ApplicationStateException();
         }
         application.setStatus(newStatus);
         return candidateMapper.toDto(jobApplicationRepository.save(application));
@@ -130,7 +134,7 @@ public class EmployerService {
         }
         return studentCvRepository.findById(cvId)
                 .map(StudentCv::getContent)
-                .orElseThrow(() -> new InvalidCvException("CV not found"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
     }
 
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {
@@ -148,5 +152,7 @@ public class EmployerService {
         application.setStudentCv(cv);
         return application;
     }
+
+
 
 }

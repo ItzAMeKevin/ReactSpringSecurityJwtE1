@@ -1,44 +1,23 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statusBadge } from "../../../styles/classes.js";
+import { statusBadge, statusBadgeColor } from "../../../styles/classes.js";
+
+const formatDate = (dateString, locale) => {
+    if (!dateString) return "N/A";
+    try {
+        return new Date(dateString).toLocaleDateString(locale, {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
+    } catch {
+        return "N/A";
+    }
+};
 
 const CandidatureTrackingItem = ({ candidature }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [showDetails, setShowDetails] = useState(false);
-
-    const formatDate = (dateString) => {
-        if (!dateString) return "N/A";
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString("fr-CA", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-            });
-        } catch {
-            return "N/A";
-        }
-    };
-
-    const getStatusInfo = (status) => {
-        const statusMap = {
-            ACCEPTED: {
-                label: t("candidatureTracking.statuses.accepted"),
-                color: "bg-green-100 text-green-800",
-            },
-            DECLINED: {
-                label: t("candidatureTracking.statuses.declined"),
-                color: "bg-red-100 text-red-800",
-            },
-            PENDING: {
-                label: t("candidatureTracking.statuses.pending"),
-                color: "bg-yellow-100 text-yellow-800",
-            },
-        };
-        return statusMap[status] || { label: status, color: "bg-gray-100 text-gray-800" };
-    };
-
-    const statusInfo = getStatusInfo(candidature.status);
 
     return (
         <>
@@ -52,21 +31,22 @@ const CandidatureTrackingItem = ({ candidature }) => {
                     </div>
                 </td>
                 <td className="px-4 py-3 text-main">
-                    {candidature.jobOffer?.company?.name || "N/A"}
+                    {candidature.jobOffer?.companyName || "N/A"}
                 </td>
                 <td className="px-4 py-3 text-main">
                     {candidature.jobOffer?.title || "N/A"}
                 </td>
                 <td className="px-4 py-3">
-                    <span className={`${statusBadge} ${statusInfo.color}`}>
-                        {statusInfo.label}
+                    <span className={`${statusBadge} ${statusBadgeColor(candidature.status)}`}>
+                        {t(`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`)}
                     </span>
                 </td>
                 <td className="px-4 py-3 text-main">
-                    {formatDate(candidature.updatedAt || candidature.createdAt)}
+                    {formatDate(candidature.updatedAt || candidature.createdAt, i18n.language)}
                 </td>
                 <td className="px-4 py-3 text-center">
                     <button
+                        type="button"
                         onClick={() => setShowDetails(!showDetails)}
                         className="text-brand hover:underline font-semibold text-sm transition-colors"
                     >
@@ -101,7 +81,7 @@ const CandidatureTrackingItem = ({ candidature }) => {
                                         {t("candidatureTracking.details.position")}: {candidature.jobOffer?.title || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.company")}: {candidature.jobOffer?.company?.name || "N/A"}
+                                        {t("candidatureTracking.details.company")}: {candidature.jobOffer?.companyName || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
                                         {t("candidatureTracking.details.duration")}: {candidature.jobOffer?.durationInWeeks || "N/A"} {t("candidatureTracking.details.weeks")}
@@ -113,10 +93,10 @@ const CandidatureTrackingItem = ({ candidature }) => {
                                     {t("candidatureTracking.details.dates")}
                                 </p>
                                 <p className="text-main/80 text-sm">
-                                    {t("candidatureTracking.details.submitted")}: {formatDate(candidature.createdAt)}
+                                    {t("candidatureTracking.details.submitted")}: {formatDate(candidature.createdAt, i18n.language)}
                                 </p>
                                 <p className="text-main/80 text-sm">
-                                    {t("candidatureTracking.details.lastModified")}: {formatDate(candidature.updatedAt)}
+                                    {t("candidatureTracking.details.lastModified")}: {formatDate(candidature.updatedAt, i18n.language)}
                                 </p>
                             </div>
                         </div>

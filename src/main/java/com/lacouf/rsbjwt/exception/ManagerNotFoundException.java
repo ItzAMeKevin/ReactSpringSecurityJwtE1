@@ -1,11 +1,13 @@
 package com.lacouf.rsbjwt.exception;
 
-public class ManagerNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ManagerNotFoundException extends APIException {
     public ManagerNotFoundException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 
     public ManagerNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+        super(HttpStatus.NOT_FOUND, message, cause);
     }
 }

@@ -1,9 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class NotificationNotFound extends Exception {
+import org.springframework.http.HttpStatus;
 
-
+public class NotificationNotFound extends APIException {
     public NotificationNotFound() {
-        super("erreur.notification.notfound");
+        super(HttpStatus.NOT_FOUND, "errors.notificationNotFound");
     }
 }
