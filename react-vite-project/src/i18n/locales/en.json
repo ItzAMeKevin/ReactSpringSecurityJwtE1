@@ -230,15 +230,15 @@
       "cancel": "Cancel",
       "confirm": "Confirm"
     },
+    "noOffersForSession": "You have no internship offers for this semester."
+  },
+  "sessionFilter": {
+    "label": "Filter by semester",
     "sessions": {
       "A": "Fall {{year}}",
       "H": "Winter {{year}}",
       "E": "Summer {{year}}"
-    },
-    "sessionFilter": {
-      "label": "Filter by semester"
-    },
-    "noOffersForSession": "You have no internship offers for this semester."
+    }
   },
   "gestionnaire": {
     "title": "Manager Space",
@@ -390,6 +390,7 @@
     "title": "Available internship offers",
     "loading": "Loading offers...",
     "noOffers": "No internship offers available for your program.",
+    "noOffersForSession": "No internship offers for this semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",

@@ -1,26 +1,21 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import formatSalary from "../../../utils/formatSalary.js";
-import {btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
+import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
 import { getApiErrorKey } from "../../../utils/apiError.js";
-import {compareSessionCodesDesc, getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
-
-const formatSessionLabel = (code, t) => {
-    const prefix = code[0];
-    const year = code.slice(1);
-    return t(`personalSpaceEmployer.sessions.${prefix}`, { year });
-};
+import useSessionFilter from "../../../hooks/useSessionFilter.js";
+import SessionFilter from "../../SessionFilter.jsx";
 
 const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedSession, setSelectedSession] = useState(getCurrentSessionCode);
+    const { sessions, selectedSession, setSelectedSession, filteredOffers } = useSessionFilter(offers);
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
@@ -72,18 +67,6 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
         };
     }, [refreshKey]);
 
-    const allSessions = useMemo(() => {
-        const current = getCurrentSessionCode();
-        const derived = getSessionsFromOffers(offers);
-        if (!derived.includes(current)) derived.push(current);
-        return derived.sort(compareSessionCodesDesc);
-    }, [offers]);
-
-    const filteredOffers = useMemo(
-        () => offers.filter(o => getSessionCode(o.startingDate) === selectedSession),
-        [offers, selectedSession]
-    );
-
     if (loading) return <p className={textMuted}>{t("personalSpaceEmployer.loading")}</p>;
     if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) {
@@ -92,21 +75,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
 
     return (
         <div className="w-full max-w-4xl flex flex-col gap-4">
-            <div className="flex items-center gap-3 w-full max-w-4xl">
-                <label htmlFor="session-select" className="text-sm font-medium text-main shrink-0">
-                    {t("personalSpaceEmployer.sessionFilter.label")}
-                </label>
-                <select
-                    id="session-select"
-                    value={selectedSession}
-                    onChange={e => setSelectedSession(e.target.value)}
-                    className={`${inputField} max-w-xs`}
-                >
-                    {allSessions.map(code => (
-                        <option key={code} value={code}>{formatSessionLabel(code, t)}</option>
-                    ))}
-                </select>
-            </div>
+            <SessionFilter sessions={sessions} value={selectedSession} onChange={setSelectedSession}/>
 
             {filteredOffers.length === 0 ? (
                 <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>

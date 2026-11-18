@@ -4,6 +4,8 @@ import fetcher from "../../../utils/fetcher.js";
 import { textError, textMuted } from "../../../styles/classes.js";
 import StudentJobOfferListItem from "./StudentJobOfferListItem.jsx";
 import { getApiErrorKey } from "../../../utils/apiError.js";
+import useSessionFilter from "../../../hooks/useSessionFilter.js";
+import SessionFilter from "../../SessionFilter.jsx";
 
 const VALIDATED_CV_STATUS = "ACCEPTED";
 
@@ -13,6 +15,7 @@ const StudentJobOfferList = () => {
     const [acceptedCvs, setAcceptedCvs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { sessions, selectedSession, setSelectedSession, filteredOffers } = useSessionFilter(offers);
 
     useEffect(() => {
         let cancelled = false;
@@ -69,15 +72,20 @@ const StudentJobOfferList = () => {
                     {t("etudiantOffres.noValidatedCv")}
                 </p>
             )}
-            <ul className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-2">
-                {offers.map((offer, i) => (
-                    <StudentJobOfferListItem
-                        key={offer.id ?? `fallback-${i}`}
-                        offer={offer}
-                        acceptedCvs={acceptedCvs}
-                    />
-                ))}
-            </ul>
+            <SessionFilter sessions={sessions} value={selectedSession} onChange={setSelectedSession}/>
+            {filteredOffers.length === 0 ? (
+                <p className={`${textMuted} text-sm`}>{t("etudiantOffres.noOffersForSession")}</p>
+            ) : (
+                <ul className="grid w-full grid-cols-1 items-start gap-4 md:grid-cols-2">
+                    {filteredOffers.map((offer, i) => (
+                        <StudentJobOfferListItem
+                            key={offer.id ?? `fallback-${i}`}
+                            offer={offer}
+                            acceptedCvs={acceptedCvs}
+                        />
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

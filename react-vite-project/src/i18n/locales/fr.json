@@ -229,15 +229,15 @@
       "cancel": "Annuler",
       "confirm": "Confirmer"
     },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
+  },
+  "sessionFilter": {
+    "label": "Filtrer par session",
     "sessions": {
       "A": "Automne {{year}}",
       "H": "Hiver {{year}}",
       "E": "Été {{year}}"
-    },
-    "sessionFilter": {
-      "label": "Filtrer par session"
-    },
-    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
+    }
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
@@ -389,6 +389,7 @@
     "title": "Offres de stage disponibles",
     "loading": "Chargement des offres...",
     "noOffers": "Aucune offre de stage disponible pour votre programme.",
+    "noOffersForSession": "Aucune offre de stage pour cette session.",
     "company": "Entreprise",
     "weeks": "sem.",
     "readMore": "En savoir plus",
