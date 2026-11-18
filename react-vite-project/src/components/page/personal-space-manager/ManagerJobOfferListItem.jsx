@@ -19,7 +19,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
             ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
             : enumName;
 
-    const loc = offer.location;
+    const loc = offer.adresse;
     const address = loc
         ? [
             [loc.numeroCivic, loc.rue].filter(Boolean).join(" "),
