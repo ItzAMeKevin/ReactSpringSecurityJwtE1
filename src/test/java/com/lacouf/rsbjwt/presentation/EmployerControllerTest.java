@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -381,10 +382,11 @@ class EmployerControllerTest {
     }
 
     @Test
-    void hireStudent_illegalState_returns409() throws Exception {
-        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new IllegalStateException("errors.offerNotAccepted"));
+    void hireStudent_invalidState_returns409() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new InvalidStateTransitionException("errors.offerNotAccepted"));
         mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("errors.offerNotAccepted"));
     }
 
     // ===== GET /employer/candidates/{cvId}/cv =====

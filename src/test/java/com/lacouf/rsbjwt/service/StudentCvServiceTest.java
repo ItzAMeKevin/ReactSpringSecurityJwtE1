@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
@@ -165,7 +166,7 @@ class StudentCvServiceTest {
         offer.setStatus(offerStatus);
         when(jobOfferRepository.findById(2L)).thenReturn(Optional.of(offer));
 
-        OffrerException exception = assertThrows(OffrerException.class,
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
                 () -> service.applyToJobOffer(2L, CvMetaDataDto.builder().id(4L).build()));
 
         assertEquals("errors.offerNotOpen", exception.getMessage());

@@ -14,6 +14,7 @@ import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
@@ -155,12 +156,12 @@ public class EmployerService {
         JobOffer offer = jobOfferRepository.findOwnedOfferForUpdate(offerId, employerEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
         if (offer.getStatus() != Status.ACCEPTED) {
-            throw new IllegalStateException("errors.offerNotAccepted");
+            throw new InvalidStateTransitionException("errors.offerNotAccepted");
         }
         JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
                 .orElseThrow(ApplicationNotFoundException::new);
         if (application.getStatus() != Status.ACCEPTED) {
-            throw new IllegalStateException("errors.candidateNotAccepted");
+            throw new InvalidStateTransitionException("errors.candidateNotAccepted");
         }
         application.setStatus(Status.HIRED);
         JobApplication saved = jobApplicationRepository.save(application);

@@ -1,7 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
@@ -68,13 +66,7 @@ public class EmployerController {
             @PathVariable Long offerId,
             @PathVariable Long cvId,
             Authentication authentication) {
-        try {
-            return ResponseEntity.ok(employerService.hireStudent(offerId, cvId, authentication.getName()));
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        return ResponseEntity.ok(employerService.hireStudent(offerId, cvId, authentication.getName()));
     }
 
     @GetMapping("/candidates/{cvId}/cv")

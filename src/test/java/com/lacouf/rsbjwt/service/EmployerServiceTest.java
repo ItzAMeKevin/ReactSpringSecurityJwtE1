@@ -13,6 +13,7 @@ import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -559,11 +560,11 @@ class EmployerServiceTest {
 
     @Test
     @DisplayName("hireStudent refuse une offre qui n'est pas ACCEPTED")
-    void hireStudent_offerNotAccepted_throwsIllegalState() {
+    void hireStudent_offerNotAccepted_throwsInvalidState() {
         jobOffer.setStatus(Status.FILLED);
         when(jobOfferRepository.findOwnedOfferForUpdate(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
                 () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
 
         assertEquals("errors.offerNotAccepted", exception.getMessage());
@@ -573,13 +574,13 @@ class EmployerServiceTest {
 
     @Test
     @DisplayName("hireStudent refuse un candidat qui n'est pas ACCEPTED")
-    void hireStudent_candidateNotAccepted_throwsIllegalState() {
+    void hireStudent_candidateNotAccepted_throwsInvalidState() {
         givenHireableOffer(2);
         JobApplication application = acceptedApplication(cvWithStudent(5L));
         application.setStatus(Status.PENDING);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
 
-        IllegalStateException exception = assertThrows(IllegalStateException.class,
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
                 () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
 
         assertEquals("errors.candidateNotAccepted", exception.getMessage());
