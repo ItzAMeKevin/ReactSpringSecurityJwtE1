@@ -1,8 +1,5 @@
-package com.lacouf.rsbjwt.model.auth;
+package com.lacouf.rsbjwt.model;
 
-import com.lacouf.rsbjwt.model.JobOffer;
-import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +23,8 @@ public class Candidature {
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
         @JoinColumn(name = "student_id", nullable = false)
         private Student student;
+
+
 
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
         @JoinColumn(name = "job_offer_id", nullable = false)

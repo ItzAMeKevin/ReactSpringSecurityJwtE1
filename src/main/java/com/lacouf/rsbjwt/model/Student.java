@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.model;
 
-import com.lacouf.rsbjwt.model.auth.Candidature;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 
 import jakarta.persistence.*;

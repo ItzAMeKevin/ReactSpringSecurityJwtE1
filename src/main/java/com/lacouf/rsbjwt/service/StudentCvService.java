@@ -158,5 +158,6 @@ public class StudentCvService {
         application.setJobOffer(jobOffer);
         application.setStudentCv(studentCv);
         jobApplicationRepository.save(application);
+
     }
 }

@@ -1,6 +1,5 @@
 package com.lacouf.rsbjwt.model;
 
-import com.lacouf.rsbjwt.model.auth.Candidature;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
