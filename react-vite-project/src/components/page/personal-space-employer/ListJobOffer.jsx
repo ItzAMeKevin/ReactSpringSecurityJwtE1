@@ -101,9 +101,6 @@ const ListJobOffer = ({refreshKey, onEdit, onCreateOffer}) => {
                         <option key={code} value={code}>{formatSessionLabel(code, t)}</option>
                     ))}
                 </select>
-                <span className={`${statusBadge} bg-brand/10 text-brand shrink-0`}>
-                    {selectedSession ? formatSessionLabel(selectedSession, t) : ""}
-                </span>
             </div>
 
             {filteredOffers.length === 0 ? (

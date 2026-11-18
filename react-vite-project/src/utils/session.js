@@ -17,7 +17,6 @@ export function compareSessionCodesDesc(a, b) {
     return yearDiff !== 0 ? yearDiff : SEASON_ORDER[b[0]] - SEASON_ORDER[a[0]];
 }
 
-// Returns sorted descending (A2026, H2026, A2025, …) with no duplicates
 export function getSessionsFromOffers(offers) {
     const codes = new Set(offers.map(o => getSessionCode(o.startingDate)));
     return [...codes].sort(compareSessionCodesDesc);
