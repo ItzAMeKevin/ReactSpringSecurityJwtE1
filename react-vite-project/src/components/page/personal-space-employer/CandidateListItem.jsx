@@ -15,7 +15,7 @@ import {
     inputField,
 } from "../../../styles/classes.js";
 
-const CandidateListItem = ({candidate, offerId, canHire, onStatusChange}) => {
+const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainingPositions}) => {
     const {t} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
@@ -76,6 +76,7 @@ const CandidateListItem = ({candidate, offerId, canHire, onStatusChange}) => {
             }
             if (!res.ok) throw new Error();
             onStatusChange(candidate.cvId, "HIRED");
+            onHire?.();
         } catch {
             setHireError(t("employeurCandidats.hireError"));
         } finally {
@@ -131,12 +132,12 @@ const CandidateListItem = ({candidate, offerId, canHire, onStatusChange}) => {
                         </button>
                     </>
                 )}
-                {candidate.status === "ACCEPTED" && canHire && (
+                {candidate.status === "ACCEPTED" && (
                     <button
                         type="button"
                         className={btnSmPrimary}
                         onClick={handleHire}
-                        disabled={hiring}
+                        disabled={hiring || (remainingPositions != null && remainingPositions <= 0)}
                     >
                         {hiring ? "…" : t("employeurCandidats.embaucher")}
                     </button>

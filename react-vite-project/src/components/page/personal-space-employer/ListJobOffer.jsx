@@ -19,12 +19,15 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
         setSelectedOfferId((prev) => (prev === offerId ? null : offerId));
     };
 
-    const handleHired = (offerId) => {
+    const handleHireInOffer = (offerId) => {
         setOffers((prev) => prev.map((o) => {
             if (o.id !== offerId) return o;
-            const hiredCount = (o.hiredCount ?? 0) + 1;
-            const filled = o.numberOfPositions != null && hiredCount >= o.numberOfPositions;
-            return {...o, hiredCount, status: filled ? "FILLED" : o.status};
+            const newHiredCount = (o.hiredCount ?? 0) + 1;
+            return {
+                ...o,
+                hiredCount: newHiredCount,
+                status: o.numberOfPositions != null && newHiredCount >= o.numberOfPositions ? "FILLED" : o.status,
+            };
         }));
     };
 
@@ -111,7 +114,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                         <div className="flex flex-wrap gap-2 mt-3">
                             <button
                                 type="button"
-                                className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className={btnSmPrimary}
                                 onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
                                 disabled={offer.status !== "ACCEPTED" && offer.status !== "FILLED"}
                             >
@@ -132,8 +135,8 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                         {selectedOfferId === offer.id && (
                             <CandidateList
                                 offerId={offer.id}
-                                canHire={offer.status === "ACCEPTED"}
-                                onHired={handleHired}
+                                onHire={() => handleHireInOffer(offer.id)}
+                                remainingPositions={offer.numberOfPositions != null ? offer.numberOfPositions - (offer.hiredCount ?? 0) : null}
                             />
                         )}
                     </li>

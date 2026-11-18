@@ -15,6 +15,7 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     List<JobOffer> findAllByStatus(Status status);
     List<JobOffer> getJobOffersByEmployerId(Long employerId);
     List<JobOffer> findAllByStatusAndPrograme(Status status, Programe programe);
+    List<JobOffer> findAllByStatusInAndPrograme(List<Status> statuses, Programe programe);
     @Query("""
         SELECT jo FROM JobOffer jo
         LEFT JOIN FETCH jo.appliedCvs cv

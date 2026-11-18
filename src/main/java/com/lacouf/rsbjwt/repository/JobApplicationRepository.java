@@ -29,6 +29,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     Optional<JobApplication> findByOfferIdAndCvIdWithStudent(@Param("offerId") Long offerId, @Param("cvId") Long cvId);
 
     boolean existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(Long cvId, String email);
+    boolean existsByStudentCv_IdAndJobOffer_Id(Long cvId, Long offerId);
 
     long countByJobOffer_IdAndStatus(Long jobOfferId, Status status);
 
