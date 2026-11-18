@@ -12,12 +12,12 @@ const CandidatureTracking = () => {
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [searchTerm, setSearchTerm] = useState("");
 
-    const STATUS_OPTIONS = [
+    const STATUS_OPTIONS = useMemo(() => [
         { value: "ALL", label: t("candidatureTracking.filters.all") },
         { value: "ACCEPTED", label: t("candidatureTracking.filters.accepted") },
         { value: "DECLINED", label: t("candidatureTracking.filters.declined") },
         { value: "PENDING", label: t("candidatureTracking.filters.pending") },
-    ];
+    ], [t]);
 
     useEffect(() => {
         const fetchCandidatures = async () => {
@@ -52,7 +52,7 @@ const CandidatureTracking = () => {
         };
 
         fetchCandidatures();
-    }, [t]);
+    }, []);
 
     const filteredCandidatures = useMemo(() => {
         return candidatures.filter((candidature) => {
@@ -65,7 +65,7 @@ const CandidatureTracking = () => {
                 const studentName = `${candidature.student?.firstName || ""} ${candidature.student?.lastName || ""}`.toLowerCase();
                 const matricule = candidature.student?.matricule?.toLowerCase() || "";
                 const offerTitle = candidature.jobOffer?.title?.toLowerCase() || "";
-                const companyName = candidature.jobOffer?.company?.name?.toLowerCase() || "";
+                const companyName = candidature.jobOffer?.companyName?.toLowerCase() || "";
 
                 return (
                     studentName.includes(searchLower) ||
@@ -108,7 +108,7 @@ const CandidatureTracking = () => {
 
                         <div className="flex flex-col gap-2">
                             <label htmlFor="search-input" className="font-semibold text-main">
-                                {t("candidatureTracking.filters.searchPlaceholder")}
+                                {t("candidatureTracking.filters.searchHint")}
                             </label>
                             <input
                                 id="search-input"
@@ -118,9 +118,6 @@ const CandidatureTracking = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className={inputField}
                             />
-                            <p className={textMuted + " text-xs"}>
-                                {t("candidatureTracking.filters.searchHint")}
-                            </p>
                         </div>
                     </div>
 
@@ -129,13 +126,13 @@ const CandidatureTracking = () => {
                     )}
 
                     {error && !loading && (
-                        <div className={textError + " p-4 rounded bg-red-50 border border-red-200"} role="alert">
+                        <div className={`${textError} p-4 rounded bg-red-50 border border-red-200`} role="alert">
                             {error}
                         </div>
                     )}
 
                     {!loading && !error && filteredCandidatures.length === 0 && (
-                        <p className={textMuted + " text-center py-8"}>
+                        <p className={`${textMuted} text-center py-8`}>
                             {candidatures.length === 0 
                                 ? t("candidatureTracking.noCandidatures")
                                 : t("candidatureTracking.noResults")}
@@ -144,7 +141,7 @@ const CandidatureTracking = () => {
 
                     {!loading && !error && filteredCandidatures.length > 0 && (
                         <div>
-                            <p className={textMuted + " mb-4"}>
+                            <p className={`${textMuted} mb-4`}>
                                 {t("candidatureTracking.resultCount", { 
                                     count: filteredCandidatures.length,
                                     total: candidatures.length 

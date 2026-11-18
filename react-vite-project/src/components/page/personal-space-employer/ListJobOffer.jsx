@@ -2,14 +2,20 @@ import {useEffect, useState} from "react";
 import {useTranslation} from "react-i18next";
 import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
+import formatSalary from "../../../utils/formatSalary.js";
 import {btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
+import { getApiErrorKey } from "../../../utils/apiError.js";
+import useSessionFilter from "../../../hooks/useSessionFilter.js";
+import SessionFilter from "../../SessionFilter.jsx";
 
-const ListJobOffer = ({refreshKey}) => {
+const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { sessions, selectedSession, setSelectedSession, filteredOffers } = useSessionFilter(offers);
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [selectedOfferId, setSelectedOfferId] = useState(null);
 
@@ -17,9 +23,23 @@ const ListJobOffer = ({refreshKey}) => {
         setSelectedOfferId((prev) => (prev === offerId ? null : offerId));
     };
 
+    const handleHireInOffer = (offerId) => {
+        setOffers((prev) => prev.map((o) => {
+            if (o.id !== offerId) return o;
+            const newHiredCount = (o.hiredCount ?? 0) + 1;
+            return {
+                ...o,
+                hiredCount: newHiredCount,
+                status: o.numberOfPositions != null && newHiredCount >= o.numberOfPositions ? "FILLED" : o.status,
+            };
+        }));
+    };
+
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
-        programs.find((p) => p.enumName === enumName)?.name ?? enumName;
+        Array.isArray(programs)
+            ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
+            : enumName;
 
     useEffect(() => {
         let cancelled = false;
@@ -29,11 +49,13 @@ const ListJobOffer = ({refreshKey}) => {
             setError(null);
             try {
                 const res = await fetcher("/employer", {method: "GET"});
-                if (!res.ok) throw new Error(`${res.status}`);
+                if (!res.ok) throw new Error(await getApiErrorKey(res));
                 const data = await res.json();
                 if (!cancelled) setOffers(Array.isArray(data) ? data : []);
-            } catch {
-                if (!cancelled) setError(t("errors.generic"));
+            } catch (error) {
+                if (!cancelled) {
+                    setError(error.message?.startsWith("errors.") ? t(error.message) : t("errors.generic"));
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -53,49 +75,85 @@ const ListJobOffer = ({refreshKey}) => {
 
     return (
         <div className="w-full max-w-4xl flex flex-col gap-4">
-            <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
-                {offers.map((offer, i) => (
-                    <li
-                        key={offer.id ?? i}
-                        onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
-                        className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
-                    >
-                        <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-lg font-bold text-black">{offer.title}</h3>
-                            {offer.status && (
-                                <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
-                                    {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
-                                </span>
-                            )}
-                        </div>
-                        <p className="text-sm text-gray-600">{programName(offer.programe)}</p>
-                        <p className="mt-2 line-clamp-3">{offer.description}</p>
-                        <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.salary")}</dt>
-                            <dd>{offer.salary}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.startingDate")}</dt>
-                            <dd>{offer.startingDate}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
-                            <dd>{offer.durationInWeeks}</dd>
-                            <dt className="font-bold text-black">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>{offer.location.numeroCivic} {offer.location.rue}, {offer.location.ville}, {offer.location.pays}</dd>
-                        </dl>
-                        <button
-                            type="button"
-                            className={`${btnSmPrimary} mt-3 disabled:opacity-50 disabled:cursor-not-allowed`}
-                            onClick={() => handleToggleCandidates(offer.id)}
-                            disabled={offer.status !== "ACCEPTED"}
+            <SessionFilter sessions={sessions} value={selectedSession} onChange={setSelectedSession}/>
+
+            {filteredOffers.length === 0 ? (
+                <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>
+            ) : (
+                <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:items-start">
+                    {filteredOffers.map((offer, i) => (
+                        <li
+                            key={offer.id ?? i}
+                            ref={isHighlighted("offer", offer.id) ? scrollIntoViewOnMount : undefined}
+                            onClick={isHighlighted("offer", offer.id) ? clearHighlight : undefined}
+                            className={`${cardItem} p-4 ${isHighlighted("offer", offer.id) ? cardHighlighted : ''}`}
                         >
-                            {selectedOfferId === offer.id
-                                ? t("employeurCandidats.masquerCandidats")
-                                : t("employeurCandidats.voirCandidats")}
-                        </button>
-                        {selectedOfferId === offer.id && (
-                            <CandidateList offerId={offer.id} />
-                        )}
-                    </li>
-                ))}
-            </ul>
+                            <div className="flex items-start justify-between gap-2">
+                                <h3 className="text-lg font-bold text-main">{offer.title}</h3>
+                                {offer.status && (
+                                    <span className={`${statusBadge} ${statusBadgeColor(offer.status)}`}>
+                                        {t(`personalSpaceEmployer.statuts.${offer.status}`, offer.status)}
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-sm text-main/70">{programName(offer.programe)}</p>
+                            <p className="mt-2 line-clamp-3">{offer.description}</p>
+                            <dl className="mt-3 grid grid-cols-2 gap-1 text-sm">
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
+                                <dd>{formatSalary(offer.salary, t)}</dd>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                                <dd>{offer.startingDate}</dd>
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                                <dd>{offer.durationInWeeks}</dd>
+                                {offer.numberOfPositions != null && (
+                                    <>
+                                        <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.positions")}</dt>
+                                        <dd>{offer.hiredCount ?? 0} / {offer.numberOfPositions} {t("personalSpaceEmployer.fields.positionsFilled")}</dd>
+                                    </>
+                                )}
+                                <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
+                                <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
+                            </dl>
+                            {offer.status === "DECLINED" && (
+                                <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
+                                    <p className="text-sm font-semibold text-red-800">{t("personalSpaceEmployer.feedbackTitre")}</p>
+                                    <p className="text-sm text-main mt-1 whitespace-pre-line break-words">
+                                        {offer.refusalFeedback ?? t("personalSpaceEmployer.noFeedback")}
+                                    </p>
+                                </div>
+                            )}
+                            <div className="flex flex-wrap gap-2 mt-3">
+                                <button
+                                    type="button"
+                                    className={btnSmPrimary}
+                                    onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
+                                    disabled={offer.status !== "ACCEPTED" && offer.status !== "FILLED"}
+                                >
+                                    {selectedOfferId === offer.id
+                                        ? t("employeurCandidats.masquerCandidats")
+                                        : t("employeurCandidats.voirCandidats")}
+                                </button>
+                                {offer.status === "DECLINED" && (
+                                    <button
+                                        type="button"
+                                        className={btnSmPrimary}
+                                        onClick={(e) => { e.stopPropagation(); onEdit?.(offer); }}
+                                    >
+                                        {t("personalSpaceEmployer.editJobOffer")}
+                                    </button>
+                                )}
+                            </div>
+                            {selectedOfferId === offer.id && (
+                                <CandidateList
+                                    offerId={offer.id}
+                                    onHire={() => handleHireInOffer(offer.id)}
+                                    remainingPositions={offer.numberOfPositions != null ? offer.numberOfPositions - (offer.hiredCount ?? 0) : null}
+                                />
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

@@ -7,7 +7,11 @@ import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.SecurityConfiguration;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
+import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.InterviewService;
@@ -117,7 +121,8 @@ class EmployerControllerTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE
+                Programe.TECHNIQUES_INFORMATIQUE,
+                3
         );
 
         jobOfferDetailDTO = new JobOfferDetailDTO(
@@ -276,13 +281,14 @@ class EmployerControllerTest {
     @Test
     void updateJobOffer_conflict_returns409() throws Exception {
         when(employerService.updateRefusedJobOffer(eq(1L), any(JobOfferCreateDTO.class), anyString()))
-                .thenThrow(new IllegalStateException());
+                .thenThrow(new JobOfferUpdateException());
 
         mockMvc.perform(put("/employer/updateJobOffer/1")
                         .with(employer())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(jobOfferCreateDTO)))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("errors.jobOfferUpdateFailed"));
     }
 
     // ===== GET /employer/{offerId}/candidates =====
@@ -360,18 +366,49 @@ class EmployerControllerTest {
 
     @Test
     void updateCandidateStatus_illegalArgument_returns400() throws Exception {
-        when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com")).thenThrow(new IllegalArgumentException());
+        when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com")).thenThrow(new InvalidApplicationStatusException());
         mockMvc.perform(put("/employer/1/candidates/5/status").with(employer())
                         .contentType(MediaType.APPLICATION_JSON).content(statusBody()))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("errors.invalidApplicationStatus"));
     }
 
     @Test
     void updateCandidateStatus_illegalState_returns409() throws Exception {
-        when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com")).thenThrow(new IllegalStateException());
+        when(employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com")).thenThrow(new ApplicationStateException());
         mockMvc.perform(put("/employer/1/candidates/5/status").with(employer())
                         .contentType(MediaType.APPLICATION_JSON).content(statusBody()))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("errors.applicationNotPending"));
+    }
+
+    // ===== PUT /employer/{offerId}/candidates/{cvId}/hire =====
+
+    @Test
+    @DisplayName("PUT /employer/{id}/candidates/{cvId}/hire embauche le candidat")
+    void hireStudent_ok() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenReturn(
+                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
+                        Instant.parse("2026-02-01T12:00:00Z"), Status.HIRED));
+
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("HIRED"));
+    }
+
+    @Test
+    void hireStudent_notFound_returns404() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void hireStudent_invalidState_returns409() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new InvalidStateTransitionException("errors.offerNotAccepted"));
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("errors.offerNotAccepted"));
     }
 
     // ===== GET /employer/candidates/{cvId}/cv =====
@@ -395,8 +432,10 @@ class EmployerControllerTest {
 
     @Test
     void getCandidateCv_invalidCv_returns404() throws Exception {
-        when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new InvalidCvException("CV not found"));
-        mockMvc.perform(get("/employer/candidates/5/cv").with(employer())).andExpect(status().isNotFound());
+        when(employerService.getCandidateCv(5L, "marie@acme.com")).thenThrow(new CvException("errors.cvNotFound"));
+        mockMvc.perform(get("/employer/candidates/5/cv").with(employer()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("errors.cvNotFound"));
     }
 
     // ===== POST /employer/interview/schedule =====

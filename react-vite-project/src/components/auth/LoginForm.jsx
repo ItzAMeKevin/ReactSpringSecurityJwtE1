@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import fetcher from "../../utils/fetcher";
 import {useTranslation} from "react-i18next";
 import {btnPrimary} from "../../styles/classes.js";
+import { getApiErrorKey, translateErrorKey } from "../../utils/apiError.js";
 
 
 const LoginForm = ({user, setUser, setError}) => {
@@ -99,8 +100,11 @@ const LoginForm = ({user, setUser, setError}) => {
         }),
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        setAuthError(errorData.message ? t(errorData.message) : t("errors.authenticationFailed"));
+        setAuthError(translateErrorKey(
+          await getApiErrorKey(response, "errors.authenticationFailed"),
+          t,
+          "errors.authenticationFailed",
+        ));
         return;
       }
       const data = await response.json();
@@ -109,7 +113,7 @@ const LoginForm = ({user, setUser, setError}) => {
       // Fetch user info to get role
       const userResponse = await fetcher('user/me', {});
       if (!userResponse.ok) {
-        throw new Error("Failed to fetch user info");
+        throw new Error(await getApiErrorKey(userResponse));
       }
       const userData = await userResponse.json();
       setUser({ ...userData, isLoggedIn: true });
@@ -126,7 +130,7 @@ const LoginForm = ({user, setUser, setError}) => {
         navigate("/");
       }
     } catch(error) {
-      setAuthError(error.message || t("errors.generic"));
+      setAuthError(translateErrorKey(error.message, t));
       console.log(error.message);
     }
   }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -37,4 +38,7 @@ public class JobApplication {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant appliedAt;
+
+    @UpdateTimestamp
+    private Instant updatedAt;
 }

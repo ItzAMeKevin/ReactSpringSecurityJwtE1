@@ -53,6 +53,7 @@
     "positiveNumber": "Entrez un nombre entier supérieur à 0.",
     "identifiantTaken": "Cet identifiant est déjà attribué.",
     "authenticationFailed": "Courriel ou mot de passe invalide.",
+    "invalidToken": "Le jeton d'authentification est invalide.",
     "fileNameRequired": "Le nom du fichier est obligatoire.",
     "fileNameTooLong": "Le nom du fichier est trop long.",
     "fileTypeRequired": "Le type de fichier est requis.",
@@ -83,8 +84,14 @@
     "cvAlreadyApplied": "Ce CV a déjà été utilisé pour postuler à cette offre.",
     "jobOfferNotFound": "Offre d'emploi introuvable.",
     "userNotFound": "Utilisateur introuvable.",
+    "applicationNotFound": "Candidature introuvable.",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
-    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées."
+    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
+    "employerNotFound": "Employeur introuvable.",
+    "notificationNotFound": "Notification introuvable.",
+    "invalidApplicationStatus": "Statut de candidature invalide.",
+    "applicationNotPending": "Seules les candidatures en attente peuvent être mises à jour.",
+    "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
   },
   "header": {
     "title": "ZeROSE",
@@ -110,8 +117,6 @@
     "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "mesCvs": "Mes CVs téléversés",
-    "masquer": "Masquer le CV",
-    "afficher": "Afficher le CV",
     "remplacerCv": "Remplacer le CV",
     "remplacementEnCours": "Remplacement...",
     "apercuIndisponible": "Aperçu indisponible",
@@ -174,9 +179,17 @@
     "statuts": {
       "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",
-      "DECLINED": "Refusée"
+      "DECLINED": "Refusée",
+      "FILLED": "Pourvue"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
+    "offerUpdated": "L'offre a été resoumise pour approbation.",
+    "editJobOffer": "Modifier l'offre",
+    "resubmit": "Resoumettre l'offre",
+    "feedbackTitre": "Commentaire du gestionnaire :",
+    "noFeedback": "Aucun commentaire de refus disponible.",
+    "salaryPerHour": "{{salary}} $/heure",
+    "salaryToDiscuss": "À discuter",
     "submit": "Publier l'offre",
     "fields": {
       "title": "Titre",
@@ -191,7 +204,9 @@
       "civicNumber": "Numéro civique",
       "street": "Rue",
       "durationInWeeks": "Durée (semaines)",
-      "programe": "Programme d'études"
+      "programe": "Programme d'études",
+      "positions": "Postes",
+      "positionsFilled": "pourvus"
     },
     "placeholders": {
       "title": "ex. Stagiaire en développement web",
@@ -200,6 +215,7 @@
       "salary": "ex. 20 dollars de l'heure",
       "startingDate": "Sélectionnez une date de début",
       "durationInWeeks": "ex. 12",
+      "positions": "ex. 3",
       "programe": "Sélectionnez un programme",
       "city": "ex. Montréal",
       "country": "ex. Canada",
@@ -212,6 +228,15 @@
       "message": "Les données non sauvegardées seront perdues.",
       "cancel": "Annuler",
       "confirm": "Confirmer"
+    },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
+  },
+  "sessionFilter": {
+    "label": "Filtrer par session",
+    "sessions": {
+      "A": "Automne {{year}}",
+      "H": "Hiver {{year}}",
+      "E": "Été {{year}}"
     }
   },
   "gestionnaire": {
@@ -220,8 +245,6 @@
     "loadingCvs": "Chargement des CV en attente de validation...",
     "errorLoadingCvs": "Une erreur est survenue lors du chargement des CV.",
     "noCvsPending": "Aucun CV en attente de validation.",
-    "consulter": "Consulter",
-    "masquer": "Masquer",
     "accepter": "Accepter",
     "refuser": "Refuser",
     "preview": {
@@ -242,7 +265,11 @@
         "refuser": "Refuser l'offre «\u00a0{{title}}\u00a0»\u00a0?",
         "confirmer": "Confirmer",
         "annuler": "Annuler"
-      }
+      },
+      "feedbackTitle": "Écrivez votre feedback avant de confirmer le refus.",
+      "feedbackPlaceholder": "Expliquez pourquoi l'offre a été refusée...",
+      "feedbackRequired": "Vous devez écrire un feedback avant de confirmer le refus.",
+      "errorProcessing": "Une erreur est survenue lors du traitement de cette offre. Veuillez réessayer."
     },
     "accept": {
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
@@ -258,7 +285,7 @@
   },
   "candidatureTracking": {
     "title": "Suivi des candidatures",
-    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres d'emploi",
+    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres de stage",
     "loading": "Chargement des candidatures...",
     "noCandidatures": "Aucune candidature trouvée.",
     "noResults": "Aucun résultat ne correspond à votre recherche.",
@@ -334,9 +361,17 @@
         "title": "Nouvelle offre de stage à valider",
         "message": "Un employeur a soumis une nouvelle offre de stage. Veuillez l'examiner et la valider."
       },
+      "JOB_OFFER_RESUBMITTED": {
+        "title": "Offre de stage modifiée à valider",
+        "message": "Un employeur a corrigé une offre refusée. Veuillez la réexaminer."
+      },
       "JOB_OFFER_ACCEPTED": {
         "title": "Votre offre de stage a été acceptée",
         "message": "Votre offre de stage a été validée par un gestionnaire."
+      },
+      "JOB_OFFER_HIRED": {
+        "title": "Félicitations, vous avez été embauché !",
+        "message": "Un employeur vous a sélectionné pour un stage. Consultez vos offres pour plus de détails."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
@@ -353,8 +388,8 @@
   "etudiantOffres": {
     "title": "Offres de stage disponibles",
     "loading": "Chargement des offres...",
-    "noAcceptedCv": "Votre CV doit être accepté pour voir les offres de stage.",
     "noOffers": "Aucune offre de stage disponible pour votre programme.",
+    "noOffersForSession": "Aucune offre de stage pour cette session.",
     "company": "Entreprise",
     "weeks": "sem.",
     "readMore": "En savoir plus",
@@ -364,14 +399,26 @@
     "applied": "Candidature envoyée",
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "choisirCv": "Choisir un CV pour postuler",
+    "noValidatedCv": "Vous pourrez postuler lorsque votre CV sera accepté par le gestionnaire.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",
-      "DECLINED": "Candidature refusée"
+      "DECLINED": "Candidature refusée",
+      "HIRED": "Embauché(e)"
     }
   },
 
+  "modal": {
+    "close": "Fermer"
+  },
+  "cvViewer": {
+    "show": "Afficher le CV",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "resetZoom": "Réinitialiser le zoom",
+    "loading": "Chargement du CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidats",
     "voirCandidats": "Voir les candidats",
@@ -379,17 +426,19 @@
     "loading": "Chargement des candidats...",
     "aucunCandidats": "Aucune candidature reçue pour le moment.",
     "erreurChargement": "Une erreur est survenue lors du chargement des candidats, veuillez réessayer plus tard.",
-    "voirCv": "Voir le CV",
-    "popupBloque": "Le CV n'a pas pu s'ouvrir. Autorisez les pop-ups dans votre navigateur.",
     "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",
       "ACCEPTED": "Candidat retenu",
-      "DECLINED": "Candidat non retenu"
+      "DECLINED": "Candidat non retenu",
+      "HIRED": "Embauché"
     },
     "accepter": "Accepter",
     "refuser": "Refuser",
     "scheduleInterview": "Planifier une entrevue",
+    "embaucher": "Embaucher",
+    "hireError": "Une erreur est survenue lors de l'embauche.",
+    "hireConflict": "Impossible d'embaucher : l'offre est déjà pourvue ou le candidat n'est plus retenu.",
     "erreurStatut": "Impossible de mettre à jour le statut.",
 
     "confirmation": {

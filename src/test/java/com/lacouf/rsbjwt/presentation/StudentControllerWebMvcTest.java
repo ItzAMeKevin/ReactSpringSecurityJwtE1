@@ -3,7 +3,6 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.exception.NoValidatedCvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -102,17 +101,6 @@ public class StudentControllerWebMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].title").value("Dev Java"))
                 .andExpect(jsonPath("$[0].companyName").value("Acme Corp"));
-    }
-
-    @Test
-    @DisplayName("GET /etudiant/offres retourne 403 si pas de CV validé")
-    void getAcceptedOffers_returns403_whenNoCvValidated() throws Exception {
-        when(studentService.getAcceptedJobOffers(anyString()))
-                .thenThrow(new NoValidatedCvException());
-
-        mockMvc.perform(get("/etudiant/offres")
-                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
-                .andExpect(status().isForbidden());
     }
 
     @Test

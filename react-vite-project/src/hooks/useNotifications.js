@@ -8,6 +8,7 @@ const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 const EVENT_TARGETS = {
     CV_UPLOADED: { path: "/gestionnaire", kind: "cv" },
     JOB_OFFER_CREATED: { path: "/gestionnaire", kind: "offer" },
+    JOB_OFFER_RESUBMITTED: { path: "/gestionnaire", kind: "offer" },
     CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
     CV_DECLINED: { path: "/etudiant", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
@@ -16,9 +17,8 @@ const EVENT_TARGETS = {
 
 const getTarget = (event, referenceId) => {
     const target = EVENT_TARGETS[event];
-    return target
-        ? { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } }
-        : null;
+    if (!target) return null;
+    return { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } };
 };
 
 const normalizeNotification = (n) => {
@@ -50,9 +50,10 @@ const useNotifications = () => {
             }
             const data = (await response.json())
                 .map(normalizeNotification)
+                .filter((n) => !n.isRead)
                 .sort((a, b) => new Date(b.date) - new Date(a.date));
             setNotifications(data);
-            setUnreadCount(data.filter((n) => !n.isRead).length);
+            setUnreadCount(data.length);
             setStatus(data.length === 0 ? "empty" : "ready");
         } catch (error) {
             console.error("Erreur lors du chargement des notifications :", error);
@@ -63,15 +64,9 @@ const useNotifications = () => {
     useEffect(() => {
         fetchNotifications();
 
-        pollingIntervalRef.current = setInterval(() => {
-            fetchNotifications();
-        }, POLLING_INTERVAL);
+        pollingIntervalRef.current = setInterval(fetchNotifications, POLLING_INTERVAL);
 
-        return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
+        return () => clearInterval(pollingIntervalRef.current);
     }, [fetchNotifications]);
 
     const markAsRead = useCallback(async (notificationId) => {
@@ -83,11 +78,7 @@ const useNotifications = () => {
                 console.error("Erreur lors du marquage de la notification comme lue");
                 return;
             }
-            setNotifications((current) =>
-                current.map((n) =>
-                    n.id === notificationId ? { ...n, isRead: true } : n
-                )
-            );
+            setNotifications((current) => current.filter((n) => n.id !== notificationId));
             setUnreadCount((current) => Math.max(0, current - 1));
         } catch (error) {
             console.error("Erreur lors du marquage de la notification :", error);
@@ -96,7 +87,7 @@ const useNotifications = () => {
 
     return {
         notifications,
-        status,
+        status: status === "ready" && notifications.length === 0 ? "empty" : status,
         unreadCount,
         markAsRead,
         refetch: fetchNotifications,
