@@ -54,6 +54,7 @@
     "positiveNumber": "Enter a whole number greater than 0.",
     "identifiantTaken": "This identifier is already assigned.",
     "authenticationFailed": "Invalid email or password.",
+    "invalidToken": "The authentication token is invalid.",
     "fileNameRequired": "The file name is required.",
     "fileNameTooLong": "The file name is too long.",
     "fileTypeRequired": "The file type is required.",
@@ -84,8 +85,14 @@
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
+    "applicationNotFound": "Application not found.",
     "noValidatedCv": "You must have a validated CV to apply.",
-    "jobOfferUpdateFailed": "Only declined offers can be modified."
+    "jobOfferUpdateFailed": "Only declined offers can be modified.",
+    "employerNotFound": "Employer not found.",
+    "notificationNotFound": "Notification not found.",
+    "invalidApplicationStatus": "Invalid application status.",
+    "applicationNotPending": "Only pending applications can be updated.",
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
     "title": "ZeROSE",
@@ -94,6 +101,7 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
+    "candidatureTracking": "Application Tracking",
     "greeting": "Hello",
     "roles": {
       "STUDENT": "Student",
@@ -221,7 +229,16 @@
       "message": "Unsaved data will be lost.",
       "cancel": "Cancel",
       "confirm": "Confirm"
-    }
+    },
+    "sessions": {
+      "A": "Fall {{year}}",
+      "H": "Winter {{year}}",
+      "E": "Summer {{year}}"
+    },
+    "sessionFilter": {
+      "label": "Filter by semester"
+    },
+    "noOffersForSession": "You have no internship offers for this semester."
   },
   "gestionnaire": {
     "title": "Manager Space",
@@ -265,6 +282,55 @@
       "processing": "Sending...",
       "errorNoFeedback": "You must write feedback before confirming the rejection.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
+    }
+  },
+  "candidatureTracking": {
+    "title": "Application Tracking",
+    "subtitle": "Monitor the status of student applications for all internship offers",
+    "loading": "Loading applications...",
+    "noCandidatures": "No applications found.",
+    "noResults": "No results match your search.",
+    "resultCount": "{{count}} application(s) out of {{total}}",
+    "filters": {
+      "all": "All statuses",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "pending": "Pending",
+      "filterByStatus": "Filter by status",
+      "searchPlaceholder": "Search by name, first name, matricule or offer",
+      "searchHint": "Search a student by their name, first name, matricule, or job offer title"
+    },
+    "statuses": {
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "pending": "Pending"
+    },
+    "table": {
+      "student": "Student",
+      "company": "Company",
+      "position": "Job Title",
+      "status": "Status",
+      "lastModified": "Last Modified",
+      "actions": "Actions",
+      "matricule": "Matricule"
+    },
+    "details": {
+      "student": "Student Information",
+      "email": "Email",
+      "offer": "Offer Information",
+      "position": "Job Title",
+      "company": "Company",
+      "duration": "Duration",
+      "weeks": "wks",
+      "dates": "Important dates",
+      "submitted": "Submission date",
+      "lastModified": "Last modified"
+    },
+    "viewDetails": "View details",
+    "hideDetails": "Hide details",
+    "errors": {
+      "loadingFailed": "An error occurred while loading the student list, please try again later.",
+      "accessDenied": "Access denied. Only managers can access this section."
     }
   },
   "notifications": {
@@ -334,7 +400,7 @@
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
     "choisirCv": "Choose a CV to apply with",
-    "noValidatedCv": "You need a validated CV to apply.",
+    "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",

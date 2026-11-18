@@ -33,7 +33,7 @@ class SystemeControllerTest {
         when(service.getNotifications(authentication)).thenReturn(List.of());
         assertEquals(HttpStatus.OK, controller.getNotifications(authentication).getStatusCode());
         when(service.getNotifications(authentication)).thenThrow(new RuntimeException());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, controller.getNotifications(authentication).getStatusCode());
+        assertThrows(RuntimeException.class, () -> controller.getNotifications(authentication));
     }
 
     @Test
@@ -42,8 +42,8 @@ class SystemeControllerTest {
         when(service.updateNotificationStatus(authentication, 1L)).thenReturn(dto);
         assertEquals(dto, controller.updateNotification(authentication, 1L).getBody());
         when(service.updateNotificationStatus(authentication, 2L)).thenThrow(new NotificationNotFound());
-        assertEquals(HttpStatus.NOT_FOUND, controller.updateNotification(authentication, 2L).getStatusCode());
+        assertThrows(NotificationNotFound.class, () -> controller.updateNotification(authentication, 2L));
         when(service.updateNotificationStatus(authentication, 3L)).thenThrow(new RuntimeException());
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, controller.updateNotification(authentication, 3L).getStatusCode());
+        assertThrows(RuntimeException.class, () -> controller.updateNotification(authentication, 3L));
     }
 }

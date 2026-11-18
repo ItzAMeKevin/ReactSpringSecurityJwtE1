@@ -100,6 +100,17 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             student2.setPrograme(Programe.TECHNIQUES_GESTION_HOTELIERE);
             userAppService.inscription(student2);
         }
+        if (userAppService.getUserByEmail("bb@b.com") == null) {
+            StudentCreateDto student2 = new StudentCreateDto();
+            student2.setFirstName("Mars");
+            student2.setLastname("Jupiter");
+            student2.setMatricule("2121213");
+            student2.setEmail("bb@b.com");
+            student2.setPassword(passwordEncoder.encode("bib"));
+            student2.setRole(Role.STUDENT);
+            student2.setPrograme(Programe.TECHNIQUES_LOGISTIQUE_TRANSPORT);
+            userAppService.inscription(student2);
+        }
 
         if (userAppService.getUserByEmail("jaime.laguerre@yahoo.com") == null) {
             StudentCreateDto jaime = new StudentCreateDto();
@@ -355,7 +366,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
         // --- Seed CVs ---
         // ACCEPTED: student already has an accepted CV so the offers list is unlocked on login
-        seedCv(studentCvs, student, "cv-sophie-web.pdf", Status.ACCEPTED,
+        seedCv(studentCvs, student, "cv-sophie-web.pdf", Status.PENDING,
                 buildCvStream(
                         "Sophie Tremblay",
                         "ll@l.com  |  514-555-0192  |  Montreal, QC",

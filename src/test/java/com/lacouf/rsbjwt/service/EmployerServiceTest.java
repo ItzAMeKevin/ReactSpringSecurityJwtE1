@@ -1,16 +1,19 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
+import com.lacouf.rsbjwt.mapper.CandidateMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
-import com.lacouf.rsbjwt.repository.CandidateMapper;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
@@ -21,7 +24,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
@@ -55,8 +60,8 @@ class EmployerServiceTest {
     @Mock
     private StudentCvRepository studentCvRepository;
 
-    @Mock
-    private CandidateMapper candidateMapper;
+    @Spy
+    private CandidateMapper candidateMapper = Mappers.getMapper(CandidateMapper.class);
 
     @InjectMocks
     private EmployerService employerService;
@@ -244,7 +249,7 @@ class EmployerServiceTest {
                 "notification.types.JOB_OFFER_RESUBMITTED.message");
 
         offer.setStatus(Status.ACCEPTED);
-        assertThrows(IllegalStateException.class,
+        assertThrows(JobOfferUpdateException.class,
                 () -> employerService.updateRefusedJobOffer(1L, validCreateDto(), email));
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(2L, email)).thenReturn(Optional.empty());
         assertTrue(employerService.updateRefusedJobOffer(2L, validCreateDto(), email).isEmpty());
@@ -347,7 +352,7 @@ class EmployerServiceTest {
     @Test
     @DisplayName("updateCandidateStatus refuse un statut autre que ACCEPTED ou DECLINED")
     void updateCandidateStatus_invalidStatus() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(InvalidApplicationStatusException.class,
                 () -> employerService.updateCandidateStatus(1L, 5L, Status.PENDING, "marie@acme.com"));
         verifyNoInteractions(jobApplicationRepository);
     }
@@ -432,7 +437,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
 
-        assertThrows(IllegalStateException.class,
+        assertThrows(ApplicationStateException.class,
                 () -> employerService.updateCandidateStatus(1L, 5L, Status.DECLINED, "marie@acme.com"));
         verify(jobApplicationRepository, never()).save(any());
     }
@@ -480,11 +485,11 @@ class EmployerServiceTest {
     }
 
     @Test
-    void getCandidateCv_cvMissing_throwsInvalidCv() {
+    void getCandidateCv_cvMissing_throwsCvException() {
         when(jobApplicationRepository.existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(5L, "marie@acme.com")).thenReturn(true);
         when(studentCvRepository.findById(5L)).thenReturn(Optional.empty());
 
-        assertThrows(InvalidCvException.class,
+        assertThrows(CvException.class,
                 () -> employerService.getCandidateCv(5L, "marie@acme.com"));
     }
 

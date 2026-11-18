@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class OfferAlreadyProcessedException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class OfferAlreadyProcessedException extends APIException {
   public OfferAlreadyProcessedException(String message) {
-    super(message);
+    super(HttpStatus.CONFLICT, message);
   }
 }

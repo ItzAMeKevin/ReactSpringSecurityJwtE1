@@ -4,6 +4,7 @@ import CvModal from "../../CvModal.jsx";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import fetcher from "../../../utils/fetcher.js";
 import { fetchBlobUrl } from "../../../utils/downloadFile.js";
+import { getApiErrorKey } from "../../../utils/apiError.js";
 import {
     cardItem,
     cardHighlighted,
@@ -39,7 +40,7 @@ const CvListItem = ({
         setFeedbackError(false);
         fetcher(`/student-cv/${cv.id}/review`)
             .then(async (response) => {
-                if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+                if (!response.ok) throw new Error(await getApiErrorKey(response));
                 const text = await response.text();
                 if (!cancelled) setFeedback(text);
             })

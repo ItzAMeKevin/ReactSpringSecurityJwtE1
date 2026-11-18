@@ -53,6 +53,7 @@
     "positiveNumber": "Entrez un nombre entier supérieur à 0.",
     "identifiantTaken": "Cet identifiant est déjà attribué.",
     "authenticationFailed": "Courriel ou mot de passe invalide.",
+    "invalidToken": "Le jeton d'authentification est invalide.",
     "fileNameRequired": "Le nom du fichier est obligatoire.",
     "fileNameTooLong": "Le nom du fichier est trop long.",
     "fileTypeRequired": "Le type de fichier est requis.",
@@ -83,8 +84,14 @@
     "cvAlreadyApplied": "Ce CV a déjà été utilisé pour postuler à cette offre.",
     "jobOfferNotFound": "Offre d'emploi introuvable.",
     "userNotFound": "Utilisateur introuvable.",
+    "applicationNotFound": "Candidature introuvable.",
     "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
-    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées."
+    "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
+    "employerNotFound": "Employeur introuvable.",
+    "notificationNotFound": "Notification introuvable.",
+    "invalidApplicationStatus": "Statut de candidature invalide.",
+    "applicationNotPending": "Seules les candidatures en attente peuvent être mises à jour.",
+    "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
   },
   "header": {
     "title": "ZeROSE",
@@ -93,6 +100,7 @@
     "about": "À propos",
     "logout": "Déconnexion",
     "login": "Connexion",
+    "candidatureTracking": "Suivi des candidatures",
     "greeting": "Bonjour",
     "roles": {
       "STUDENT": "Étudiant",
@@ -220,7 +228,16 @@
       "message": "Les données non sauvegardées seront perdues.",
       "cancel": "Annuler",
       "confirm": "Confirmer"
-    }
+    },
+    "sessions": {
+      "A": "Automne {{year}}",
+      "H": "Hiver {{year}}",
+      "E": "Été {{year}}"
+    },
+    "sessionFilter": {
+      "label": "Filtrer par session"
+    },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
@@ -264,6 +281,55 @@
       "processing": "Envoi en cours...",
       "errorNoFeedback": "Vous devez écrire un feedback avant de confirmer le refus.",
       "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
+    }
+  },
+  "candidatureTracking": {
+    "title": "Suivi des candidatures",
+    "subtitle": "Suivez le statut des candidatures des étudiants pour toutes les offres de stage",
+    "loading": "Chargement des candidatures...",
+    "noCandidatures": "Aucune candidature trouvée.",
+    "noResults": "Aucun résultat ne correspond à votre recherche.",
+    "resultCount": "{{count}} candidature(s) sur {{total}}",
+    "filters": {
+      "all": "Tous les statuts",
+      "accepted": "Acceptés",
+      "declined": "Refusés",
+      "pending": "En attente",
+      "filterByStatus": "Filtrer par statut",
+      "searchPlaceholder": "Rechercher par nom, prénom, matricule ou offre",
+      "searchHint": "Recherchez un étudiant par son nom, prénom, matricule ou le titre de l'offre d'emploi"
+    },
+    "statuses": {
+      "accepted": "Acceptée",
+      "declined": "Refusée",
+      "pending": "En attente"
+    },
+    "table": {
+      "student": "Étudiant",
+      "company": "Entreprise",
+      "position": "Titre du poste",
+      "status": "Statut",
+      "lastModified": "Dernière modification",
+      "actions": "Actions",
+      "matricule": "Matricule"
+    },
+    "details": {
+      "student": "Informations de l'étudiant",
+      "email": "Courriel",
+      "offer": "Informations de l'offre",
+      "position": "Titre du poste",
+      "company": "Entreprise",
+      "duration": "Durée",
+      "weeks": "sem.",
+      "dates": "Dates importantes",
+      "submitted": "Date de soumission",
+      "lastModified": "Dernière modification"
+    },
+    "viewDetails": "Voir les détails",
+    "hideDetails": "Masquer les détails",
+    "errors": {
+      "loadingFailed": "Une erreur est survenue lors du chargement de la liste des étudiants, veuillez réessayer plus tard.",
+      "accessDenied": "Accès refusé. Seuls les gestionnaires peuvent accéder à cette section."
     }
   },
   "notifications": {
@@ -333,7 +399,7 @@
     "applySuccess": "Votre candidature a été envoyée avec succès.",
     "applyError": "Une erreur est survenue lors de l'envoi de la candidature.",
     "choisirCv": "Choisir un CV pour postuler",
-    "noValidatedCv": "Vous devez avoir un CV validé pour postuler.",
+    "noValidatedCv": "Vous pourrez postuler lorsque votre CV sera accepté par le gestionnaire.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",

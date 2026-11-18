@@ -1,4 +1,4 @@
-package com.lacouf.rsbjwt.repository;
+package com.lacouf.rsbjwt.mapper;
 
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
