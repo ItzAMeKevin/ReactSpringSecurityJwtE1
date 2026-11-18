@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
 import CvModal from "../../CvModal.jsx";
