@@ -114,7 +114,7 @@ const ListJobOffer = ({refreshKey, onEdit}) => {
                         <div className="flex flex-wrap gap-2 mt-3">
                             <button
                                 type="button"
-                                className={`${btnSmPrimary} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className={btnSmPrimary}
                                 onClick={(e) => { e.stopPropagation(); handleToggleCandidates(offer.id); }}
                                 disabled={offer.status !== "ACCEPTED" && offer.status !== "FILLED"}
                             >
