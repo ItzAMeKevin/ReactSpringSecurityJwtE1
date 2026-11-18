@@ -29,7 +29,7 @@ public class Student extends User {
 
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Candidature> candidatures = new ArrayList<>();
+    private List<JobApplication> jobApplications = new ArrayList<>();
 
 
     @Builder

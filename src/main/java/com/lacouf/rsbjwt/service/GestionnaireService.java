@@ -2,6 +2,8 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.mapper.CandidateMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,8 @@ public class GestionnaireService {
     private final CvMapper cvMapper;
 
     private final JobOfferMapper jobOfferMapper;
+
+    private final CandidatureMapper candidatureMapper;
 
 
     public List<PendingCvDto> getPendingCvs() {
@@ -94,10 +99,7 @@ public class GestionnaireService {
     }
 
     public List<CandidatureDto> getAllCandidatures() {
-
-
-        return jobApplicationRepository.findAll
-
+        return jobApplicationRepository.findAll().stream().map(candidatureMapper::toDto).collect(Collectors.toList());
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {

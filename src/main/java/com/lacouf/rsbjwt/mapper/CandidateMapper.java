@@ -31,4 +31,7 @@ public interface CandidateMapper {
     @Mapping(target = "status",        source = "status")
     @Mapping(target = "appliedAt",     source = "appliedAt")
     CandidateDto toDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status);
+
+
+
 }

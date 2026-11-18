@@ -61,7 +61,7 @@ public class JobOffer {
     private String refusalFeedback;
 
     @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Candidature> candidatures = new ArrayList<>();
+    private List<JobApplication> jobApplications = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
