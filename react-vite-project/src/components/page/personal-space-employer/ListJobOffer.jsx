@@ -4,7 +4,7 @@ import fetcher from "../../../utils/fetcher.js";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
 import formatSalary from "../../../utils/formatSalary.js";
-import {btnPrimary, btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
+import {btnSmPrimary, cardItem, cardHighlighted, inputField, statusBadge, statusBadgeColor, textError, textMuted} from "../../../styles/classes.js";
 import CandidateList from "./CandidateList.jsx";
 import { getApiErrorKey } from "../../../utils/apiError.js";
 import {compareSessionCodesDesc, getSessionCode, getCurrentSessionCode, getSessionsFromOffers} from "../../../utils/session.js";
@@ -15,7 +15,7 @@ const formatSessionLabel = (code, t) => {
     return t(`personalSpaceEmployer.sessions.${prefix}`, { year });
 };
 
-const ListJobOffer = ({refreshKey, onEdit, onCreateOffer}) => {
+const ListJobOffer = ({refreshKey, onEdit}) => {
     const {t} = useTranslation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -75,14 +75,7 @@ const ListJobOffer = ({refreshKey, onEdit, onCreateOffer}) => {
     if (loading) return <p className={textMuted}>{t("personalSpaceEmployer.loading")}</p>;
     if (error) return <p className={textError}>{error}</p>;
     if (offers.length === 0) {
-        return (
-            <div className="flex flex-col items-center gap-3">
-                <p className={textMuted}>{t("personalSpaceEmployer.noJobOffers")}</p>
-                <button className={btnPrimary} onClick={onCreateOffer}>
-                    {t("personalSpaceEmployer.createJobOffer")}
-                </button>
-            </div>
-        );
+        return <p className={textMuted}>{t("personalSpaceEmployer.noJobOffers")}</p>;
     }
 
     return (
@@ -104,12 +97,7 @@ const ListJobOffer = ({refreshKey, onEdit, onCreateOffer}) => {
             </div>
 
             {filteredOffers.length === 0 ? (
-                <div className="flex flex-col items-center gap-3">
-                    <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>
-                    <button className={btnPrimary} onClick={onCreateOffer}>
-                        {t("personalSpaceEmployer.createJobOffer")}
-                    </button>
-                </div>
+                <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>
             ) : (
                 <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
                     {filteredOffers.map((offer, i) => (
