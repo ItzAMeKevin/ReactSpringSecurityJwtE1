@@ -5,6 +5,7 @@ import { labelClass } from "../Field.jsx";
 import fetcher from "../../../utils/fetcher.js";
 import formatSalary from "../../../utils/formatSalary.js";
 import { getApiErrorKey } from "../../../utils/apiError.js";
+import { getCurrentSessionCode, getSessionCode } from "../../../utils/session.js";
 
 const dtClass = "text-sm font-bold text-main";
 const ddClass = "text-sm leading-relaxed text-main/70";
@@ -19,7 +20,8 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
     const selectedCv = (acceptedCvs ?? []).find((cv) => cv.id === selectedCvId) ?? null;
     const hasApplied = Boolean(offer.applied) || applyState === "success";
     const applicationStatus = offer.applicationStatus ?? "PENDING";
-    const canApply = Boolean(selectedCv) && !hasApplied && applyState !== "sending";
+    const isCurrentSession = Boolean(offer.startingDate) && getSessionCode(offer.startingDate) === getCurrentSessionCode();
+    const canApply = offer.status === "ACCEPTED" && isCurrentSession && Boolean(selectedCv) && !hasApplied && applyState !== "sending";
 
     const handleApply = async () => {
         if (!canApply) return;
@@ -142,6 +144,9 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                                     : t("etudiantOffres.apply")}
                         </button>
 
+                        {!isCurrentSession && !hasApplied && (
+                            <p className="mt-2 text-sm text-main/70">{t("etudiantOffres.notCurrentSession")}</p>
+                        )}
                         {applyState === "success" && (
                             <p className={`mt-2 text-sm font-medium ${textSuccess}`} role="status">
                                 {t("etudiantOffres.applySuccess")}

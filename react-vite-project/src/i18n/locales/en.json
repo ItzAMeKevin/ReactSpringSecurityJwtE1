@@ -181,7 +181,8 @@
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
-      "DECLINED": "Declined"
+      "DECLINED": "Declined",
+      "FILLED": "Filled"
     },
     "offerCreated": "Internship offer published successfully.",
     "offerUpdated": "The offer has been resubmitted for approval.",
@@ -205,7 +206,9 @@
       "civicNumber": "Civic number",
       "street": "Street",
       "durationInWeeks": "Duration (weeks)",
-      "programe": "Program of study"
+      "programe": "Program of study",
+      "positions": "Positions",
+      "positionsFilled": "filled"
     },
     "placeholders": {
       "title": "e.g. Web developer intern",
@@ -214,6 +217,7 @@
       "salary": "e.g. 20 dollars per hour",
       "startingDate": "Select a starting date",
       "durationInWeeks": "e.g. 12",
+      "positions": "e.g. 3",
       "programe": "Select a program",
       "city": "e.g. Montreal",
       "country": "e.g. Canada",
@@ -227,15 +231,15 @@
       "cancel": "Cancel",
       "confirm": "Confirm"
     },
+    "noOffersForSession": "You have no internship offers for this semester."
+  },
+  "sessionFilter": {
+    "label": "Filter by semester",
     "sessions": {
       "A": "Fall {{year}}",
       "H": "Winter {{year}}",
       "E": "Summer {{year}}"
-    },
-    "sessionFilter": {
-      "label": "Filter by semester"
-    },
-    "noOffersForSession": "You have no internship offers for this semester."
+    }
   },
   "gestionnaire": {
     "title": "Manager Space",
@@ -367,6 +371,10 @@
         "title": "Your internship offer has been accepted",
         "message": "Your internship offer has been validated by a manager."
       },
+      "JOB_OFFER_HIRED": {
+        "title": "Congratulations, you've been hired!",
+        "message": "An employer has selected you for an internship. Check your offers for more details."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
@@ -383,6 +391,8 @@
     "title": "Available internship offers",
     "loading": "Loading offers...",
     "noOffers": "No internship offers available for your program.",
+    "noOffersForSession": "No internship offers for this semester.",
+    "notCurrentSession": "Applications are only open for internships in the current semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",
@@ -397,7 +407,8 @@
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",
-      "DECLINED": "Application declined"
+      "DECLINED": "Application declined",
+      "HIRED": "Hired"
     }
   },
 
@@ -422,10 +433,14 @@
     "statuts": {
       "PENDING": "Under review",
       "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected"
+      "DECLINED": "Candidate not selected",
+      "HIRED": "Hired"
     },
     "accepter": "Accept",
     "refuser": "Decline",
+    "embaucher": "Hire",
+    "hireError": "An error occurred while hiring the candidate.",
+    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
     "scheduleInterview": "Schedule an interview",
     "erreurStatut": "Unable to update status.",
 

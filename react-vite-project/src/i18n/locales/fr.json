@@ -180,7 +180,8 @@
     "statuts": {
       "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",
-      "DECLINED": "Refusée"
+      "DECLINED": "Refusée",
+      "FILLED": "Pourvue"
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "offerUpdated": "L'offre a été resoumise pour approbation.",
@@ -204,7 +205,9 @@
       "civicNumber": "Numéro civique",
       "street": "Rue",
       "durationInWeeks": "Durée (semaines)",
-      "programe": "Programme d'études"
+      "programe": "Programme d'études",
+      "positions": "Postes",
+      "positionsFilled": "pourvus"
     },
     "placeholders": {
       "title": "ex. Stagiaire en développement web",
@@ -213,6 +216,7 @@
       "salary": "ex. 20 dollars de l'heure",
       "startingDate": "Sélectionnez une date de début",
       "durationInWeeks": "ex. 12",
+      "positions": "ex. 3",
       "programe": "Sélectionnez un programme",
       "city": "ex. Montréal",
       "country": "ex. Canada",
@@ -226,6 +230,10 @@
       "cancel": "Annuler",
       "confirm": "Confirmer"
     },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
+  },
+  "sessionFilter": {
+    "label": "Filtrer par session",
     "sessions": {
       "A": "Automne {{year}}",
       "H": "Hiver {{year}}",
@@ -366,6 +374,10 @@
         "title": "Votre offre de stage a été acceptée",
         "message": "Votre offre de stage a été validée par un gestionnaire."
       },
+      "JOB_OFFER_HIRED": {
+        "title": "Félicitations, vous avez été embauché !",
+        "message": "Un employeur vous a sélectionné pour un stage. Consultez vos offres pour plus de détails."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
@@ -382,6 +394,8 @@
     "title": "Offres de stage disponibles",
     "loading": "Chargement des offres...",
     "noOffers": "Aucune offre de stage disponible pour votre programme.",
+    "noOffersForSession": "Aucune offre de stage pour cette session.",
+    "notCurrentSession": "Les candidatures sont ouvertes seulement pour les stages de la session en cours.",
     "company": "Entreprise",
     "weeks": "sem.",
     "readMore": "En savoir plus",
@@ -396,7 +410,8 @@
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",
-      "DECLINED": "Candidature refusée"
+      "DECLINED": "Candidature refusée",
+      "HIRED": "Embauché(e)"
     }
   },
 
@@ -421,11 +436,15 @@
     "statuts": {
       "PENDING": "En attente d'évaluation",
       "ACCEPTED": "Candidat retenu",
-      "DECLINED": "Candidat non retenu"
+      "DECLINED": "Candidat non retenu",
+      "HIRED": "Embauché"
     },
     "accepter": "Accepter",
     "refuser": "Refuser",
     "scheduleInterview": "Planifier une entrevue",
+    "embaucher": "Embaucher",
+    "hireError": "Une erreur est survenue lors de l'embauche.",
+    "hireConflict": "Impossible d'embaucher : l'offre est déjà pourvue ou le candidat n'est plus retenu.",
     "erreurStatut": "Impossible de mettre à jour le statut.",
 
     "confirmation": {

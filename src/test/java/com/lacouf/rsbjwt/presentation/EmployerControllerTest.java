@@ -12,6 +12,7 @@ import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.InterviewService;
@@ -121,7 +122,8 @@ class EmployerControllerTest {
                 "60000$",
                 LocalDate.of(2025, 3, 1),
                 12,
-                Programe.TECHNIQUES_INFORMATIQUE
+                Programe.TECHNIQUES_INFORMATIQUE,
+                3
         );
 
         jobOfferDetailDTO = new JobOfferDetailDTO(
@@ -379,6 +381,35 @@ class EmployerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).content(statusBody()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("errors.applicationNotPending"));
+    }
+
+    // ===== PUT /employer/{offerId}/candidates/{cvId}/hire =====
+
+    @Test
+    @DisplayName("PUT /employer/{id}/candidates/{cvId}/hire embauche le candidat")
+    void hireStudent_ok() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenReturn(
+                new CandidateDto(5L, "Jean", "Dupont", "jean@test.com",
+                        Instant.parse("2026-02-01T12:00:00Z"), Status.HIRED));
+
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("HIRED"));
+    }
+
+    @Test
+    void hireStudent_notFound_returns404() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new ApplicationNotFoundException());
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void hireStudent_invalidState_returns409() throws Exception {
+        when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenThrow(new InvalidStateTransitionException("errors.offerNotAccepted"));
+        mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("errors.offerNotAccepted"));
     }
 
     // ===== GET /employer/candidates/{cvId}/cv =====

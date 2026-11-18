@@ -63,6 +63,9 @@ public class JobOffer {
     @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobApplication> jobApplications = new ArrayList<>();
 
+    @Column(nullable = false)
+    private int numberOfPositions;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
             inverseJoinColumns = @JoinColumn(name = "student_cv_id"))
@@ -71,7 +74,8 @@ public class JobOffer {
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     Adresse adresse, String salary,
-                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer) {
+                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer,
+                    int numberOfPositions) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
@@ -81,6 +85,7 @@ public class JobOffer {
         this.durationInWeeks = durationInWeeks;
         this.programe = programe;
         this.employer = employer;
+        this.numberOfPositions = numberOfPositions > 0 ? numberOfPositions : 1;
     }
 
     @PrePersist

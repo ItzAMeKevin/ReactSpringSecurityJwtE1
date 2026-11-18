@@ -14,6 +14,7 @@ import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
@@ -140,6 +141,9 @@ public class StudentCvService {
     @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
         JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("errors.offerNotFound"));
+        if (jobOffer.getStatus() != Status.ACCEPTED) {
+            throw new InvalidStateTransitionException("errors.offerNotOpen");
+        }
 
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
 

@@ -8,11 +8,13 @@ import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
+import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
@@ -41,11 +43,22 @@ public class EmployerService {
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
 
+    @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
         Employer employer = findEmployerByEmail(employerEmail);
-        return jobOfferRepository.getJobOffersByEmployerId(employer.getId())
+        List<JobOfferDetailDTO> dtos = jobOfferRepository.getJobOffersByEmployerId(employer.getId())
                 .stream()
                 .map(jobOfferMapper::toDto)
+                .toList();
+        if (dtos.isEmpty()) return dtos;
+        List<Long> offerIds = dtos.stream().map(JobOfferDetailDTO::getId).toList();
+        Map<Long, Long> hiredCounts = jobApplicationRepository.countByOfferIdsAndStatus(offerIds, Status.HIRED)
+                .stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
+        return dtos.stream()
+                .map(dto -> (JobOfferDetailDTO) dto.toBuilder()
+                        .hiredCount(hiredCounts.getOrDefault(dto.getId(), 0L))
+                        .build())
                 .toList();
     }
 
@@ -79,6 +92,7 @@ public class EmployerService {
             offer.setDurationInWeeks(updated.getDurationInWeeks());
             offer.setPrograme(updated.getPrograme());
             offer.setAdresse(updated.getAdresse());
+            offer.setNumberOfPositions(updated.getNumberOfPositions());
             offer.setStatus(Status.PENDING);
             offer.setRefusalFeedback(null);
             JobOffer savedOffer = jobOfferRepository.save(offer);
@@ -137,6 +151,34 @@ public class EmployerService {
                 .orElseThrow(() -> new CvException("errors.cvNotFound"));
     }
 
+    @Transactional
+    public CandidateDto hireStudent(Long offerId, Long cvId, String employerEmail) {
+        JobOffer offer = jobOfferRepository.findOwnedOfferForUpdate(offerId, employerEmail)
+                .orElseThrow(ApplicationNotFoundException::new);
+        if (offer.getStatus() != Status.ACCEPTED) {
+            throw new InvalidStateTransitionException("errors.offerNotAccepted");
+        }
+        JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
+                .orElseThrow(ApplicationNotFoundException::new);
+        if (application.getStatus() != Status.ACCEPTED) {
+            throw new InvalidStateTransitionException("errors.candidateNotAccepted");
+        }
+        application.setStatus(Status.HIRED);
+        JobApplication saved = jobApplicationRepository.save(application);
+
+        Student student = application.getStudentCv().getStudent();
+        systemeService.notifyUsers(List.of(student), NotificationType.JOB_OFFER, offerId,
+                "notification.types.JOB_OFFER_HIRED.message");
+
+        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatus(offerId, Status.HIRED);
+        if (hiredCount >= offer.getNumberOfPositions()) {
+            offer.setStatus(Status.FILLED);
+            jobOfferRepository.save(offer);
+        }
+
+        return candidateMapper.toCandidateDto(saved);
+    }
+
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {
         return jobOfferRepository.findByIdAndEmployerCredentialsEmail(offerId, employerEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
@@ -152,7 +194,4 @@ public class EmployerService {
         application.setStudentCv(cv);
         return application;
     }
-
-
-
 }

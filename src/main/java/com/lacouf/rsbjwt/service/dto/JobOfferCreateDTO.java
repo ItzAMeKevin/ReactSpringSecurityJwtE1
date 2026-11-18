@@ -41,4 +41,8 @@ public class JobOfferCreateDTO {
 
     @NotNull
     private Programe programe;
+
+    @NotNull(message = "errors.numberOfPositionsRequired")
+    @Positive
+    private Integer numberOfPositions;
 }

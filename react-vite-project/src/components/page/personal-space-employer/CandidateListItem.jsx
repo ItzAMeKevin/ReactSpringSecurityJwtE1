@@ -17,7 +17,7 @@ import {
     inputField,
 } from "../../../styles/classes.js";
 
-const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
+const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainingPositions}) => {
     const {t} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
@@ -28,6 +28,8 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
     const [cvUrl, setCvUrl] = useState(null);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
     const blobUrlRef = useRef(null);
+    const [hireError, setHireError] = useState(null);
+    const [hiring, setHiring] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -64,6 +66,27 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                 : t("employeurCandidats.erreurStatut"));
         } finally {
             setUpdating(false);
+        }
+    };
+
+    const handleHire = async () => {
+        setHiring(true);
+        setHireError(null);
+        try {
+            const res = await fetcher(`/employer/${offerId}/candidates/${candidate.cvId}/hire`, {
+                method: "PUT",
+            });
+            if (res.status === 409) {
+                setHireError(t("employeurCandidats.hireConflict"));
+                return;
+            }
+            if (!res.ok) throw new Error();
+            onStatusChange(candidate.cvId, "HIRED");
+            onHire?.();
+        } catch {
+            setHireError(t("employeurCandidats.hireError"));
+        } finally {
+            setHiring(false);
         }
     };
 
@@ -125,6 +148,16 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                         </button>
                     </>
                 )}
+                {candidate.status === "ACCEPTED" && (
+                    <button
+                        type="button"
+                        className={btnSmPrimary}
+                        onClick={handleHire}
+                        disabled={hiring || (remainingPositions != null && remainingPositions <= 0)}
+                    >
+                        {hiring ? "…" : t("employeurCandidats.embaucher")}
+                    </button>
+                )}
             </div>
 
             {isCvOpen && (
@@ -183,6 +216,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange}) => {
                     setIsScheduleModalOpen(false);
                 }}
             />
+            {hireError && <p className={`text-sm ${textError}`}>{hireError}</p>}
         </li>
     );
 };

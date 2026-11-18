@@ -5,7 +5,7 @@ import {sectionTitle, textError, textMuted} from "../../../styles/classes.js";
 import CandidateListItem from "./CandidateListItem.jsx";
 import { getApiErrorKey } from "../../../utils/apiError.js";
 
-const CandidateList = ({offerId}) => {
+const CandidateList = ({offerId, onHire, remainingPositions}) => {
     const {t} = useTranslation();
     const [candidates, setCandidates] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -60,6 +60,8 @@ const CandidateList = ({offerId}) => {
                         candidate={candidate}
                         offerId={offerId}
                         onStatusChange={handleStatusChange}
+                        onHire={onHire}
+                        remainingPositions={remainingPositions}
                     />
                 ))}
             </ul>
