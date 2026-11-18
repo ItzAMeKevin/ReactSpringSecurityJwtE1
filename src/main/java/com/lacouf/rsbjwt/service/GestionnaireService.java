@@ -94,30 +94,10 @@ public class GestionnaireService {
     }
 
     public List<CandidatureDto> getAllCandidatures() {
-        return jobApplicationRepository.findAllWithStudentAndOffer()
-                .stream()
-                .map(ja -> {
-                    Student student = ja.getStudentCv().getStudent();
-                    JobOffer offer = ja.getJobOffer();
-                    return new CandidatureDto(
-                            ja.getId(),
-                            new CandidatureDto.StudentInfoDto(
-                                    student.getFirstName(),
-                                    student.getLastName(),
-                                    student.getMatricule(),
-                                    student.getCredentials().getEmail()
-                            ),
-                            new CandidatureDto.JobOfferInfoDto(
-                                    offer.getTitle(),
-                                    offer.getEmployer().getCompanyName(),
-                                    offer.getDurationInWeeks()
-                            ),
-                            ja.getStatus(),
-                            ja.getAppliedAt(),
-                            ja.getUpdatedAt()
-                    );
-                })
-                .toList();
+
+
+        return jobApplicationRepository.findAll
+
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {

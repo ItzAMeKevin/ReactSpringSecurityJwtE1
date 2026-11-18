@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.model.auth.Candidature;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,6 +60,9 @@ public class JobOffer {
 
     @Column(length = 2000)
     private String refusalFeedback;
+
+    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Candidature> candidatures = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
