@@ -38,7 +38,7 @@ public class StudentService {
                         (mostRecent, older) -> mostRecent
                 ));
 
-        return jobOfferRepository.findAllByStatusAndPrograme(Status.ACCEPTED, student.getPrograme())
+        return jobOfferRepository.findAllByStatusInAndPrograme(List.of(Status.ACCEPTED, Status.FILLED), student.getPrograme())
                 .stream()
                 .map(offer -> jobOfferMapper.toDto(offer)
                         .withApplication(
