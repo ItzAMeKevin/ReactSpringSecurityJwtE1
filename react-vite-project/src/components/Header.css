@@ -41,16 +41,3 @@
     color: white;
     text-decoration: none;
 }
-
-.user-greeting {
-    margin-left: 20px;
-    padding-left: 16px;
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
-    white-space: nowrap;
-    font-size: 0.875rem;
-    color: white;
-}
-
-.user-name {
-    font-weight: bold;
-}

@@ -101,8 +101,8 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
-    "candidatureTracking": "Application Tracking",
     "greeting": "Hello",
+    "userMenu": "User menu",
     "roles": {
       "STUDENT": "Student",
       "MANAGER": "Manager",
@@ -111,13 +111,14 @@
   },
   "televerser": {
     "choisirFichier": "Upload your CV",
+    "selectionnerFichier": "Choose a PDF file",
+    "changerFichier": "Change file",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
     "envoyerCv": "Send CV",
     "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
@@ -126,7 +127,6 @@
     "chargementFeedback": "Loading feedback...",
     "erreurFeedback": "Unable to load the feedback.",
     "chargement": "Loading your CVs...",
-    "aucunCv": "No CV uploaded yet.",
     "erreurChargement": "Unable to load your CVs. Please try again later.",
     "statuts": {
       "PENDING": "Pending validation",
@@ -240,8 +240,17 @@
       "E": "Summer {{year}}"
     }
   },
+  "dashboard": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
   "gestionnaire": {
     "title": "Manager Space",
+    "nav": {
+      "cvs": "CVs to review",
+      "offres": "Offers to review",
+      "suivi": "Application tracking"
+    },
     "cvSection": "CVs pending validation",
     "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
@@ -386,12 +395,26 @@
     "EMPLOYER": "Employer"
   },
 
+  "etudiant": {
+    "title": "Student Space",
+    "nav": {
+      "cvPending": "Pending CVs",
+      "cvAccepted": "Approved CVs",
+      "cvDeclined": "Declined CVs",
+      "offres": "Internship offers"
+    },
+    "cv": {
+      "emptyPending": "No CV pending validation.",
+      "emptyAccepted": "No approved CV.",
+      "emptyDeclined": "No declined CV."
+    }
+  },
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
     "noOffers": "No internship offers available for your program.",
     "noOffersForSession": "No internship offers for this semester.",
-    "notCurrentSession": "Applications are only open for internships in the current semester.",
+    "notApplicationSession": "Applications are only open for internships in the upcoming semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",

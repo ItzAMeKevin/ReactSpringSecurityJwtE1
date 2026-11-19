@@ -1,11 +1,14 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef, useState } from "react";
 import fetcher from "../../../utils/fetcher.js";
-import CvListItem from "./CvListItem.jsx";
-import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
-import StudentJobOfferList from "./StudentJobOfferList.jsx";
-import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
 import { getApiErrorKey } from "../../../utils/apiError.js";
+import { getNextSessionCode, getSessionCode } from "../../../utils/session.js";
+import useFetchList from "../../../hooks/useFetchList.js";
+import DashboardLayout from "../../DashboardLayout.jsx";
+import CvUploadModal from "./CvUploadModal.jsx";
+import { STUDENT_CV_SECTIONS } from "./studentCvSections.js";
+import { btnPrimary } from "../../../styles/classes.js";
 
 const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -15,181 +18,63 @@ const fileToBase64 = (file) =>
         reader.readAsDataURL(file);
     });
 
+const isUniqueFileName = (cv, index, all) => all.findIndex((other) => other.fileName === cv.fileName) === index;
+
 const PersonalSpaceStudent = () => {
-    const {t} = useTranslation();
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
-    const inputRef = useRef(null);
-    const [fileError, setFileError] = useState(null);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadState, setUploadState] = useState("idle");
-    const [cvList, setCvList] = useState([]);
-    const [openCvId, setOpenCvId] = useState(null);
-    const [isLoadingList, setIsLoadingList] = useState(true);
-    const [listError, setListError] = useState(null);
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const cvs = useFetchList("/student-cv");
+    const offers = useFetchList("/etudiant/offres");
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-    useEffect(() => {
-        const loadCvList = async () => {
-            try {
-                const response = await fetcher("/student-cv");
-                if (!response.ok) {
-                    setListError(t(await getApiErrorKey(response, "televerser.erreurChargement")));
-                    return;
-                }
-                const data = await response.json();
-                setCvList(data);
-            } catch (error) {
-                console.error("Erreur lors du chargement des CVs :", error);
-                setListError(t("televerser.erreurChargement"));
-            } finally {
-                setIsLoadingList(false);
-            }
-        };
-        void loadCvList();
-    }, [t]);
+    const visibleCvs = cvs.items.filter(isUniqueFileName);
+    const acceptedCvs = cvs.items.filter((cv) => cv.status === "ACCEPTED");
+    const nextSession = getNextSessionCode();
+    const applicableOffers = offers.items.filter((offer) => offer.startingDate && getSessionCode(offer.startingDate) === nextSession);
 
-    const handleInputChange = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) {
-            setSelectedFile(null);
-            return;
-        }
-
-        if (file.type !== "application/pdf") {
-            setFileError(t("televerser.erreurTypeFichier"));
-            setSelectedFile(null);
-            event.target.value = "";
-            return;
-        }
-
-        setFileError(null);
-        setSelectedFile(file);
-        setUploadState("idle");
-    };
+    const countCvs = (status) => (cvs.status === "loaded" ? visibleCvs.filter((cv) => cv.status === status).length : null);
 
     const uploadCv = async (file) => {
-        const content = await fileToBase64(file);
         const response = await fetcher("/student-cv", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                fileName: file.name,
-                contentType: file.type,
-                content,
-            }),
+            body: JSON.stringify({ fileName: file.name, contentType: file.type, content: await fileToBase64(file) }),
         });
-        if (response.status !== 201) {
-            throw new Error(await getApiErrorKey(response));
-        }
+        if (response.status !== 201) throw new Error(await getApiErrorKey(response));
         const cvMeta = await response.json();
-        setCvList((prev) => [{ ...cvMeta, file }, ...prev]);
-        return true;
+        cvs.setItems((current) => [{ ...cvMeta, file }, ...current]);
+        return cvMeta;
     };
 
-    const handleUpload = async () => {
-        if (!selectedFile) return;
-        setUploadState("uploading");
-        try {
-            if (await uploadCv(selectedFile)) {
-                setUploadState("success");
-                setSelectedFile(null);
-            } else {
-                setUploadState("error");
-            }
-        } catch (error) {
-            console.error("Erreur lors de l'envoi du fichier :", error);
-            setUploadState("error");
-        }
+    const handleUploaded = (cv) => {
+        setIsUploadOpen(false);
+        navigate("cv/en-attente", { state: { highlight: { kind: "cv", id: cv.id } } });
     };
 
-    const visibleCvs = cvList.filter(
-        (cv, index) => cvList.findIndex((other) => other.fileName === cv.fileName) === index
+    const items = [
+        ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
+        { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
+    ];
+
+    const actions = (
+        <button type="button" onClick={() => setIsUploadOpen(true)} className={`${btnPrimary} w-full`}>
+            {t("televerser.choisirFichier")}
+        </button>
     );
 
     return (
-        <div className={pageWrapper}>
-            <div className={pageInner}>
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleInputChange}
-                    className="hidden"
-                />
-                <button
-                    type="button"
-                    onClick={() => inputRef.current?.click()}
-                    className={btnAcceptLg}
-                >
-                    {t("televerser.choisirFichier")}
-                </button>
-                {fileError && (
-                    <p className={`${textError} text-sm`}>{fileError}</p>
-                )}
-
-                {selectedFile && (
-                    <>
-                        <p className="font-medium text-lg">
-                            {t("televerser.fichierChoisi")} : {selectedFile.name}
-                        </p>
-
-                        <button
-                            onClick={handleUpload}
-                            disabled={uploadState === "uploading"}
-                            className={btnAcceptLg}
-                        >
-                            {uploadState === "uploading"
-                                ? t("televerser.envoieEnCours")
-                                : t("televerser.envoyerCv")}
-                        </button>
-                    </>
-                )}
-
-                {uploadState === "success" && (
-                    <p className={textSuccess}>{t("televerser.envoieSuccess")}</p>
-                )}
-                {uploadState === "error" && (
-                    <p className={textError}>{t("televerser.envoieErreur")}</p>
-                )}
-
-                <div className="w-full max-w-3xl mx-auto mt-10">
-                    <h2 className="text-main text-center text-xl font-bold mb-3">
-                        {t("televerser.mesCvs")}
-                    </h2>
-                    {isLoadingList && (
-                        <p className={`${textMuted} text-sm`}>{t("televerser.chargement")}</p>
-                    )}
-                    {listError && (
-                        <p className={`${textError} text-sm`} role="alert">{listError}</p>
-                    )}
-                    {!isLoadingList && !listError && cvList.length === 0 && (
-                        <p className={`${textMuted} text-sm`}>{t("televerser.aucunCv")}</p>
-                    )}
-                    <div className="flex flex-col gap-3">
-                        {visibleCvs.map((cv) => (
-                            <CvListItem
-                                key={cv.id}
-                                cv={cv}
-                                isOpen={openCvId === cv.id}
-                                onToggle={() =>
-                                    setOpenCvId((current) => (current === cv.id ? null : cv.id))
-                                }
-                                isHighlighted={isHighlighted("cv", cv.id)}
-                                onClearHighlight={clearHighlight}
-                                onReplace={uploadCv}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                <div className="w-full max-w-3xl mx-auto mt-10">
-                    <h2 className="text-main text-center text-xl font-bold mb-3">
-                        {t("etudiantOffres.title")}
-                    </h2>
-                    <StudentJobOfferList />
-                </div>
-            </div>
-        </div>
+        <>
+            <DashboardLayout
+                title={t("etudiant.title")}
+                items={items}
+                actions={actions}
+                context={{ cvs, visibleCvs, acceptedCvs, offers, uploadCv }}
+            />
+            {isUploadOpen && (
+                <CvUploadModal onUpload={uploadCv} onUploaded={handleUploaded} onClose={() => setIsUploadOpen(false)} />
+            )}
+        </>
     );
-}
+};
 
-export default PersonalSpaceStudent
+export default PersonalSpaceStudent;

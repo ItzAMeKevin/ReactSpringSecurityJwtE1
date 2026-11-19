@@ -15,6 +15,11 @@ import Inscription from "./components/page/inscription/Inscription.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { getApiErrorKey } from "./utils/apiError.js";
 import CandidatureTracking from "./components/page/personal-space-manager/CandidatureTracking.jsx";
+import ManagerCvSection from "./components/page/personal-space-manager/ManagerCvSection.jsx";
+import ManagerOfferSection from "./components/page/personal-space-manager/ManagerOfferSection.jsx";
+import StudentCvSection from "./components/page/personal-space-student/StudentCvSection.jsx";
+import StudentOfferSection from "./components/page/personal-space-student/StudentOfferSection.jsx";
+import { STUDENT_CV_SECTIONS } from "./components/page/personal-space-student/studentCvSections.js";
 
 function App() {
   const [user, setUser] = useState({})
@@ -137,9 +142,19 @@ function App() {
           <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
           <Route path='emprunteur' element={<EmprunteurHome/>}/>
-          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
-          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
-          <Route path='gestionnaire/suivi' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><CandidatureTracking/></ProtectedRoute>}/>
+          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}>
+            <Route index element={<Navigate to="cv/en-attente" replace />}/>
+            {STUDENT_CV_SECTIONS.map((section) => (
+              <Route key={section.path} path={section.path} element={<StudentCvSection {...section}/>}/>
+            ))}
+            <Route path='offres' element={<StudentOfferSection/>}/>
+          </Route>
+          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
+            <Route index element={<Navigate to="cv" replace />}/>
+            <Route path='cv' element={<ManagerCvSection/>}/>
+            <Route path='offres' element={<ManagerOfferSection/>}/>
+            <Route path='suivi' element={<CandidatureTracking/>}/>
+          </Route>
           <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
