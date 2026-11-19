@@ -154,3 +154,14 @@ du sprint précédent dans la story "Correction sprint précédent", avec une pe
 afin de suivre 100 % des correctifs plutôt que de les regrouper dans un seul subtask "Correctif". »
 
 ---
+
+## Sprint 6 : Luis Carlos Quezada valle
+
+## Point d'action 1
+À partir de ce sprint et jusqu'a la mort,
+l'équipe s'engage à compléter 100% des user stories planifiées
+et à finaliser la présentation, avec un point d'avancement 
+quotidien pour évaluer la progression
+et adapter les efforts si nécessaire.
+On the brighest day...
+**Every ai used was for good!---
