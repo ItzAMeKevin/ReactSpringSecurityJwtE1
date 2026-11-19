@@ -9,6 +9,7 @@ import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
+import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,13 @@ public class InterviewService {
 
         Interview saved = interviewRepository.save(interview);
         return interviewMapper.toDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmployerInterviewDto> getEmployerInterviews(String employerEmail) {
+        return interviewRepository.findAllByEmployerEmail(employerEmail).stream()
+                .map(interviewMapper::toEmployerDto)
+                .toList();
     }
 }
 

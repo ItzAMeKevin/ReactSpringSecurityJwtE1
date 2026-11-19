@@ -10,7 +10,7 @@ import { textMuted } from "../../../styles/classes.js";
 
 const EmployerOfferSection = ({ statuses, labelKey, emptyKey }) => {
     const { t } = useTranslation();
-    const { offers, openForm, hireInOffer } = useOutletContext();
+    const { offers, openForm, hireInOffer, onInterviewScheduled } = useOutletContext();
     const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
     const [openCandidatesId, setOpenCandidatesId] = useState(null);
 
@@ -44,6 +44,7 @@ const EmployerOfferSection = ({ statuses, labelKey, emptyKey }) => {
                             onToggleCandidates={() => setOpenCandidatesId((current) => (current === offer.id ? null : offer.id))}
                             onEdit={() => openForm(offer)}
                             onHire={() => hireInOffer(offer.id)}
+                            onInterviewScheduled={onInterviewScheduled}
                         />
                     ))}
                 </ul>

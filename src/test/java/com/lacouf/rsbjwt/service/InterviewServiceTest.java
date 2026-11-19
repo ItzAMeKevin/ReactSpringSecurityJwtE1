@@ -8,6 +8,7 @@ import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
+import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
@@ -155,5 +156,35 @@ class InterviewServiceTest {
         verify(interviewRepository).save(captor.capture());
         assertNull(captor.getValue().getVideoLink());
         assertSame(adresse, captor.getValue().getAdresse());
+    }
+
+    @Test
+    void getEmployerInterviews_mapsEachInterview() {
+        Interview first = new Interview();
+        Interview second = new Interview();
+        EmployerInterviewDto firstDto = employerInterviewDto(1L);
+        EmployerInterviewDto secondDto = employerInterviewDto(2L);
+        when(interviewRepository.findAllByEmployerEmail(EMPLOYER_EMAIL)).thenReturn(List.of(first, second));
+        when(interviewMapper.toEmployerDto(first)).thenReturn(firstDto);
+        when(interviewMapper.toEmployerDto(second)).thenReturn(secondDto);
+
+        List<EmployerInterviewDto> result = interviewService.getEmployerInterviews(EMPLOYER_EMAIL);
+
+        assertEquals(List.of(firstDto, secondDto), result);
+    }
+
+    @Test
+    void getEmployerInterviews_returnsEmptyListWhenNone() {
+        when(interviewRepository.findAllByEmployerEmail(EMPLOYER_EMAIL)).thenReturn(List.of());
+
+        List<EmployerInterviewDto> result = interviewService.getEmployerInterviews(EMPLOYER_EMAIL);
+
+        assertTrue(result.isEmpty());
+        verify(interviewMapper, never()).toEmployerDto(any());
+    }
+
+    private EmployerInterviewDto employerInterviewDto(Long id) {
+        return new EmployerInterviewDto(id, 1L, 3L, "Développeur Java", "Jean", "Dupont", "jean@test.com",
+                InterviewType.ONLINE, "https://zoom.us/j/123", null, null, Instant.now(), List.of());
     }
 }

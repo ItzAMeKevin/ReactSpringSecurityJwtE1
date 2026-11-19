@@ -21,6 +21,7 @@ import StudentCvSection from "./components/page/personal-space-student/StudentCv
 import StudentOfferSection from "./components/page/personal-space-student/StudentOfferSection.jsx";
 import { STUDENT_CV_SECTIONS } from "./components/page/personal-space-student/studentCvSections.js";
 import EmployerOfferSection from "./components/page/personal-space-employer/EmployerOfferSection.jsx";
+import EmployerInterviewSection from "./components/page/personal-space-employer/EmployerInterviewSection.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "./components/page/personal-space-employer/employerOfferSections.js";
 
 function App() {
@@ -162,6 +163,7 @@ function App() {
             {EMPLOYER_OFFER_SECTIONS.map(({ path, ...section }) => (
               <Route key={path} path={path} element={<EmployerOfferSection {...section}/>}/>
             ))}
+            <Route path='entrevues' element={<EmployerInterviewSection/>}/>
           </Route>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>

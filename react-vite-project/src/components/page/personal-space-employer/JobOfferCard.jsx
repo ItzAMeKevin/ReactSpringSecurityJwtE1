@@ -6,7 +6,7 @@ import { btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor 
 
 const CANDIDATE_STATUSES = ["ACCEPTED", "FILLED"];
 
-const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, onToggleCandidates, onEdit, onHire }) => {
+const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, onToggleCandidates, onEdit, onHire, onInterviewScheduled }) => {
     const { t } = useTranslation();
     const programs = t("inscription.programsList", { returnObjects: true });
     const programName = Array.isArray(programs)
@@ -70,7 +70,14 @@ const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, 
                     )}
                 </div>
             )}
-            {showCandidates && <CandidateList offerId={offer.id} onHire={onHire} remainingPositions={remainingPositions} />}
+            {showCandidates && (
+                <CandidateList
+                    offerId={offer.id}
+                    onHire={onHire}
+                    onInterviewScheduled={onInterviewScheduled}
+                    remainingPositions={remainingPositions}
+                />
+            )}
         </li>
     );
 };

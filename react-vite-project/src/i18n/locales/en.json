@@ -173,7 +173,8 @@
     "nav": {
       "accepted": "Approved offers",
       "pending": "Offers pending approval",
-      "declined": "Declined offers"
+      "declined": "Declined offers",
+      "interviews": "Students invited to interview"
     },
     "empty": {
       "accepted": "No approved offer.",
@@ -481,6 +482,11 @@
       "confirmer": "Confirm",
       "annuler": "Cancel"
     }
+  },
+  "employerInterviews": {
+    "loading": "Loading interviews...",
+    "empty": "No student invited to interview.",
+    "offer": "Offer"
   },
   "scheduleInterview": {
     "title": "Schedule an interview",

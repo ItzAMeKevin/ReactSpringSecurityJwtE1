@@ -19,6 +19,7 @@ const PersonalSpaceEmployer = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const offers = useFetchList("/employer");
+    const interviews = useFetchList("/employer/interviews");
     const [form, setForm] = useState(null);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [successMessageKey, setSuccessMessageKey] = useState(null);
@@ -52,11 +53,14 @@ const PersonalSpaceEmployer = () => {
     const countOffers = (status) =>
         offers.status === "loaded" ? offers.items.filter((offer) => offer.status === status).length : null;
 
-    const items = EMPLOYER_OFFER_SECTIONS.map(({ path, labelKey, countedStatus }) => ({
-        to: path,
-        label: t(labelKey),
-        count: countOffers(countedStatus),
-    }));
+    const items = [
+        ...EMPLOYER_OFFER_SECTIONS.map(({ path, labelKey, countedStatus }) => ({
+            to: path,
+            label: t(labelKey),
+            count: countOffers(countedStatus),
+        })),
+        { to: "entrevues", label: t("personalSpaceEmployer.nav.interviews"), count: interviews.count },
+    ];
 
     const actions = (
         <button type="button" onClick={() => openForm()} className={`${btnPrimary} w-full`}>
@@ -71,7 +75,7 @@ const PersonalSpaceEmployer = () => {
                 title={t("personalSpaceEmployer.title")}
                 items={items}
                 actions={actions}
-                context={{ offers, openForm, hireInOffer }}
+                context={{ offers, interviews, openForm, hireInOffer, onInterviewScheduled: interviews.reload }}
             />
             {form && (
                 <Modal

@@ -172,7 +172,8 @@
     "nav": {
       "accepted": "Offres validées",
       "pending": "Offres en attente de validation",
-      "declined": "Offres refusées"
+      "declined": "Offres refusées",
+      "interviews": "Étudiants convoqués en entrevue"
     },
     "empty": {
       "accepted": "Aucune offre validée.",
@@ -480,6 +481,11 @@
       "confirmer": "Confirmer",
       "annuler": "Annuler"
     }
+  },
+  "employerInterviews": {
+    "loading": "Chargement des entrevues...",
+    "empty": "Aucun étudiant convoqué en entrevue.",
+    "offer": "Offre"
   },
   "scheduleInterview": {
     "title": "Planifier une entrevue",

@@ -17,7 +17,7 @@ import {
     inputField,
 } from "../../../styles/classes.js";
 
-const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainingPositions}) => {
+const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions}) => {
     const {t} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
@@ -214,6 +214,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainin
                 candidatureId={candidate.candidatureId}
                 onSuccess={() => {
                     setIsScheduleModalOpen(false);
+                    onInterviewScheduled?.();
                 }}
             />
         </li>
