@@ -117,7 +117,6 @@
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
     "envoyerCv": "Send CV",
-    "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
@@ -171,12 +170,20 @@
   },
   "personalSpaceEmployer": {
     "title": "Employer space",
+    "nav": {
+      "accepted": "Approved offers",
+      "pending": "Offers pending approval",
+      "declined": "Declined offers"
+    },
+    "empty": {
+      "accepted": "No approved offer.",
+      "pending": "No offer pending approval.",
+      "declined": "No declined offer."
+    },
     "createJobOffer": "Create internship offer",
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
-    "jobOffers": "My internship offers",
     "loading": "Loading offers...",
-    "noJobOffers": "You have no internship offers yet.",
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",

@@ -12,7 +12,7 @@ const UserMenu = ({ user }) => {
     useDismiss(menuRef, isOpen, close);
 
     const role = user.role?.replace("ROLE_", "");
-    const companyName = role === "EMPLOYER" ? user.companyName : null;
+    const displayName = role === "EMPLOYER" ? user.companyName : `${user.firstName} ${user.lastname}`;
 
     return (
         <div ref={menuRef} className="relative ml-2">
@@ -37,9 +37,8 @@ const UserMenu = ({ user }) => {
                 <div role="menu" className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-brand/20 bg-white text-main shadow-lg">
                     <div className="border-b border-brand/10 p-3">
                         <p className="text-sm">
-                            {t("header.greeting")} <span className="font-bold">{user.firstName} {user.lastName}</span>
+                            {t("header.greeting")} <span className="font-bold">{displayName}</span>
                         </p>
-                        {companyName && <p className="text-sm font-semibold text-brand">{companyName}</p>}
                         {role && <p className="text-xs text-main/60">{t(`header.roles.${role}`)}</p>}
                     </div>
                     <div className="border-b border-brand/10 p-3 text-sm">

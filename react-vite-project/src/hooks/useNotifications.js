@@ -11,8 +11,8 @@ const EVENT_TARGETS = {
     JOB_OFFER_RESUBMITTED: { path: "/gestionnaire/offres", kind: "offer" },
     CV_ACCEPTED: { path: "/etudiant/cv/valides", kind: "cv" },
     CV_DECLINED: { path: "/etudiant/cv/refuses", kind: "cv" },
-    JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
-    JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer" },
+    JOB_OFFER_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
+    JOB_OFFER_DECLINED: { path: "/employeur/offres/refusees", kind: "offer" },
 };
 
 const getTarget = (event, referenceId) => {

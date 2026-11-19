@@ -116,7 +116,6 @@
     "erreurTypeFichier": "Seuls les fichiers pdf sont acceptés.",
     "envoieEnCours": "Envoi en cours...",
     "envoyerCv": "Envoyer le CV",
-    "envoieSuccess": "CV envoyé avec succès !",
     "envoieErreur": "Une erreur est survenue, réessaie.",
     "remplacerCv": "Remplacer le CV",
     "remplacementEnCours": "Remplacement...",
@@ -170,12 +169,20 @@
   },
   "personalSpaceEmployer": {
     "title": "Espace employeur",
+    "nav": {
+      "accepted": "Offres validées",
+      "pending": "Offres en attente de validation",
+      "declined": "Offres refusées"
+    },
+    "empty": {
+      "accepted": "Aucune offre validée.",
+      "pending": "Aucune offre en attente de validation.",
+      "declined": "Aucune offre refusée."
+    },
     "createJobOffer": "Créer une offre de stage",
     "createJobOfferDescription": "Remplissez les informations de votre offre de stage.",
     "close": "Fermer",
-    "jobOffers": "Mes offres de stage",
     "loading": "Chargement des offres...",
-    "noJobOffers": "Aucune offre de stage publiée",
     "statuts": {
       "PENDING": "En attente de validation",
       "ACCEPTED": "Acceptée",

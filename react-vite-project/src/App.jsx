@@ -20,6 +20,8 @@ import ManagerOfferSection from "./components/page/personal-space-manager/Manage
 import StudentCvSection from "./components/page/personal-space-student/StudentCvSection.jsx";
 import StudentOfferSection from "./components/page/personal-space-student/StudentOfferSection.jsx";
 import { STUDENT_CV_SECTIONS } from "./components/page/personal-space-student/studentCvSections.js";
+import EmployerOfferSection from "./components/page/personal-space-employer/EmployerOfferSection.jsx";
+import { EMPLOYER_OFFER_SECTIONS } from "./components/page/personal-space-employer/employerOfferSections.js";
 
 function App() {
   const [user, setUser] = useState({})
@@ -155,7 +157,12 @@ function App() {
             <Route path='offres' element={<ManagerOfferSection/>}/>
             <Route path='suivi' element={<CandidatureTracking/>}/>
           </Route>
-          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
+          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}>
+            <Route index element={<Navigate to="offres/validees" replace />}/>
+            {EMPLOYER_OFFER_SECTIONS.map(({ path, ...section }) => (
+              <Route key={path} path={path} element={<EmployerOfferSection {...section}/>}/>
+            ))}
+          </Route>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>
