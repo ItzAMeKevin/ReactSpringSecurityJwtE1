@@ -16,6 +16,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
 
     const [actionState, setActionState] = useState("idle");
     const [isDeclining, setIsDeclining] = useState(false);
+    const [isConfirmingAccept, setIsConfirmingAccept] = useState(false);
     const [reviewFeedback, setReviewFeedback] = useState("");
     const [reviewError, setReviewError] = useState(null);
 
@@ -51,6 +52,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         setActionState("processing");
         try {
             await onAccept(cv.id);
+            setIsConfirmingAccept(false);
         } catch (error) {
             console.error("Erreur lors de l'acceptation du CV :", error);
             setActionState("acceptError");
@@ -69,6 +71,12 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
             console.error("Erreur lors du refus du CV :", error);
             setActionState("declineError");
         }
+    };
+
+    const cancelDecline = () => {
+        setIsDeclining(false);
+        setReviewFeedback("");
+        setReviewError(null);
     };
 
     return (
@@ -117,16 +125,16 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                     </button>
                     <button
                         type="button"
-                        onClick={handleAccept}
-                        disabled={actionState === "processing" || isDeclining}
+                        onClick={() => setIsConfirmingAccept(true)}
+                        disabled={actionState === "processing" || isDeclining || isConfirmingAccept}
                         className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
                     <button
                         type="button"
-                        onClick={() => setIsDeclining((current) => !current)}
-                        disabled={actionState === "processing"}
+                        onClick={() => setIsDeclining(true)}
+                        disabled={actionState === "processing" || isConfirmingAccept || isDeclining}
                         className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
@@ -144,6 +152,22 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                 />
             )}
 
+            {isConfirmingAccept && (
+                <div className="mt-3 flex flex-col gap-2 rounded-md border border-green-200 bg-green-50 p-3" role="group">
+                    <p className="text-sm font-semibold text-main">
+                        {t("gestionnaire.accept.question", { name: `${cv.studentFirstName} ${cv.studentLastName}` })}
+                    </p>
+                    <div className="flex gap-2">
+                        <button type="button" onClick={handleAccept} disabled={actionState === "processing"} className={btnAccept}>
+                            {actionState === "processing" ? t("gestionnaire.accept.processing") : t("gestionnaire.accept.confirm")}
+                        </button>
+                        <button type="button" onClick={() => setIsConfirmingAccept(false)} disabled={actionState === "processing"} className={btnSmPrimary}>
+                            {t("gestionnaire.accept.cancel")}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {isDeclining && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
                     <p className="text-sm text-main mb-2">
@@ -156,7 +180,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                         rows={3}
                         className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
                     />
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-2">
                         <button
                             type="button"
                             onClick={handleConfirmDecline}
@@ -164,6 +188,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                             className={btnRefuse}
                         >
                             {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={cancelDecline}
+                            disabled={actionState === "processing"}
+                            className={btnSmPrimary}
+                        >
+                            {t("gestionnaire.decline.cancel")}
                         </button>
                     </div>
                     {reviewError && <p className={`${textError} text-sm mt-2`} role="alert">{reviewError}</p>}

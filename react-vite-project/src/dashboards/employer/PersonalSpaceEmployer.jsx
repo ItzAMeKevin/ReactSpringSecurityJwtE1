@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useFetchList from "@/hooks/useFetchList.js";
+import useToast from "@/hooks/useToast.js";
 import DashboardLayout from "@/components/layout/DashboardLayout.jsx";
 import Modal from "@/components/ui/Modal.jsx";
-import SuccessPopup from "@/components/ui/SuccessPopup.jsx";
+import ToastPopup from "@/components/ui/ToastPopup.jsx";
 import FormJobOffer from "@/dashboards/employer/components/FormJobOffer.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 import { btnPrimary, btnOutline, btnModalPrimary, textMuted } from "@/styles/classes.js";
@@ -22,13 +23,7 @@ const PersonalSpaceEmployer = () => {
     const interviews = useFetchList("/employer/interviews");
     const [form, setForm] = useState(null);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-    const [successMessageKey, setSuccessMessageKey] = useState(null);
-
-    useEffect(() => {
-        if (!successMessageKey) return undefined;
-        const timeoutId = setTimeout(() => setSuccessMessageKey(null), 3000);
-        return () => clearTimeout(timeoutId);
-    }, [successMessageKey]);
+    const { message, showMessage, clearMessage } = useToast();
 
     const openForm = (offer = null) => {
         setForm({ offer });
@@ -41,7 +36,7 @@ const PersonalSpaceEmployer = () => {
     };
 
     const handleFormSuccess = () => {
-        setSuccessMessageKey(form.offer ? "personalSpaceEmployer.offerUpdated" : "personalSpaceEmployer.offerCreated");
+        showMessage(form.offer ? "personalSpaceEmployer.offerUpdated" : "personalSpaceEmployer.offerCreated");
         closeForm();
         void offers.reload();
         navigate("offres/en-attente");
@@ -70,7 +65,7 @@ const PersonalSpaceEmployer = () => {
 
     return (
         <>
-            {successMessageKey && <SuccessPopup message={t(successMessageKey)} onClose={() => setSuccessMessageKey(null)} />}
+            {message && <ToastPopup message={t(message.key, message.params)} variant={message.variant} onClose={clearMessage} />}
             <DashboardLayout
                 title={t("personalSpaceEmployer.title")}
                 items={items}

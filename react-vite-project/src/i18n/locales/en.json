@@ -287,17 +287,26 @@
       "feedbackTitle": "Write your feedback before confirming the refusal.",
       "feedbackPlaceholder": "Explain why the offer was declined...",
       "feedbackRequired": "You must write feedback before confirming the refusal.",
-      "errorProcessing": "An error occurred while processing this offer. Please try again."
+      "errorProcessing": "An error occurred while processing this offer. Please try again.",
+      "acceptSuccess": "The offer \"{{title}}\" has been approved.",
+      "refuseSuccess": "The offer \"{{title}}\" has been declined."
     },
     "accept": {
+      "question": "Accept {{name}}'s CV?",
+      "success": "{{name}}'s CV has been accepted.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "processing": "Accepting...",
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
       "title": "Write your feedback before confirming the rejection.",
       "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
+      "cancel": "Cancel",
       "processing": "Sending...",
       "errorNoFeedback": "You must write feedback before confirming the rejection.",
+      "success": "{{name}}'s CV has been rejected.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },

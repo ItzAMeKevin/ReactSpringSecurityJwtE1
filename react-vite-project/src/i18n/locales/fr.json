@@ -286,17 +286,26 @@
       "feedbackTitle": "Écrivez votre feedback avant de confirmer le refus.",
       "feedbackPlaceholder": "Expliquez pourquoi l'offre a été refusée...",
       "feedbackRequired": "Vous devez écrire un feedback avant de confirmer le refus.",
-      "errorProcessing": "Une erreur est survenue lors du traitement de cette offre. Veuillez réessayer."
+      "errorProcessing": "Une erreur est survenue lors du traitement de cette offre. Veuillez réessayer.",
+      "acceptSuccess": "L'offre « {{title}} » a été acceptée.",
+      "refuseSuccess": "L'offre « {{title}} » a été refusée."
     },
     "accept": {
+      "question": "Accepter le CV de {{name}} ?",
+      "success": "Le CV de {{name}} a été accepté.",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "processing": "Acceptation en cours...",
       "errorProcessing": "Une erreur est survenue lors de l'acceptation de ce CV. Veuillez réessayer."
     },
     "decline": {
       "title": "Écrivez votre feedback avant de confirmer le refus.",
       "placeholder": "Expliquez pourquoi le CV a été refusé...",
       "confirmDecline": "Confirmer le refus",
+      "cancel": "Annuler",
       "processing": "Envoi en cours...",
       "errorNoFeedback": "Vous devez écrire un feedback avant de confirmer le refus.",
+      "success": "Le CV de {{name}} a été refusé.",
       "errorProcessing": "Une erreur est survenue lors du traitement de ce CV. Veuillez réessayer."
     }
   },
