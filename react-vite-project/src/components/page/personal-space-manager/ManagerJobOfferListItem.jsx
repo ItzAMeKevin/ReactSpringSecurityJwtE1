@@ -1,5 +1,7 @@
 import {useState} from "react";
 import { useTranslation } from "react-i18next";
+import scrollIntoViewOnMount from "../../../utils/scrollIntoViewOnMount.js";
+import formatSalary from "../../../utils/formatSalary.js";
 import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "../../../styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
@@ -8,6 +10,8 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
     const [processing, setProcessing] = useState(null);
     const [pendingAction, setPendingAction] = useState(null);
     const [expanded, setExpanded] = useState(false);
+    const [feedback, setFeedback] = useState("");
+    const [feedbackError, setFeedbackError] = useState(null);
 
     const programs = t("inscription.programsList", {returnObjects: true});
     const programName = (enumName) =>
@@ -15,7 +19,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
             ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
             : enumName;
 
-    const loc = offer.location;
+    const loc = offer.adresse;
     const address = loc
         ? [
             [loc.numeroCivic, loc.rue].filter(Boolean).join(" "),
@@ -33,23 +37,32 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
         setPendingAction(action);
     };
 
-    const cancelConfirm = () => setPendingAction(null);
+    const cancelConfirm = () => {
+        setPendingAction(null);
+        setFeedback("");
+        setFeedbackError(null);
+    };
 
     const handleConfirm = async () => {
         setActionError(null);
+        if (!isAccept && !feedback.trim()) {
+            setFeedbackError(t("gestionnaire.offres.feedbackRequired"));
+            return;
+        }
         setProcessing(pendingAction);
         try {
             if (isAccept) await onAccept(offer.id);
-            else await onRefuse(offer.id);
+            else await onRefuse(offer.id, { feedback: feedback.trim() });
             setPendingAction(null);
         } catch {
-            setActionError(t("gestionnaire.decline.errorProcessing"));
+            setActionError(t("gestionnaire.offres.errorProcessing"));
         } finally {
             setProcessing(null);
         }
     };
     return (
         <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
             onClick={isHighlighted ? onClearHighlight : undefined}
             className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
         >
@@ -86,7 +99,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                             {offer.salary != null && (
                                 <>
                                     <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.salary")}</dt>
-                                    <dd className="text-main/70">{offer.salary} $/h</dd>
+                                    <dd className="text-main/70">{formatSalary(offer.salary, t)}</dd>
                                 </>
                             )}
                             <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.startingDate")}</dt>
@@ -112,7 +125,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                     </button>
                 </div>
 
-                <div className="flex flex-col gap-2 shrink-0">
+                <div className="flex flex-row gap-2 shrink-0">
                     <button
                         type="button"
                         onClick={() => openConfirm("accept")}
@@ -135,10 +148,23 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
             {pendingAction && (
                 <div className="mt-3 flex flex-col gap-2 border-t pt-3" role="group"
                      aria-label={t("gestionnaire.offres.confirmation.confirmer")}>
-                    <p className="text-sm font-semibold text-black">
+                    <p className="text-sm font-semibold text-main">
                         {t(`gestionnaire.offres.confirmation.${isAccept ? "accepter" : "refuser"}`,
                             {title: offer.title})}
                     </p>
+                    {!isAccept && (
+                        <>
+                            <p className="text-sm text-main">{t("gestionnaire.offres.feedbackTitle")}</p>
+                            <textarea
+                                value={feedback}
+                                onChange={(e) => { setFeedback(e.target.value); setFeedbackError(null); }}
+                                placeholder={t("gestionnaire.offres.feedbackPlaceholder")}
+                                rows={3}
+                                className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400"
+                            />
+                            {feedbackError && <p className={`${textError} text-sm`} role="alert">{feedbackError}</p>}
+                        </>
+                    )}
                     <div className="flex gap-2">
                         <button
                             type="button"

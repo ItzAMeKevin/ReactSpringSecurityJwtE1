@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.CvAlreadyAppliedException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.OffrerException;
 import com.lacouf.rsbjwt.mapper.CvMetaDataMapper;
@@ -13,6 +14,7 @@ import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
@@ -107,22 +109,17 @@ public class StudentCvService {
     }
 
     public String getReviewFile(Long cvId, String authenticatedEmail) {
-        StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
-
         Student student = findStudentByEmail(authenticatedEmail);
-        if (!cv.getStudent().getId().equals(student.getId())) {
-            throw new InvalidCvException("errors.accessDenied");
-        }
-
-        return cv.getReviewFeedback();
+        return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
+                .getReviewFeedback();
     }
 
     @Transactional(readOnly = true)
     public byte[] getCvContent(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
                 .getContent();
     }
 
@@ -144,14 +141,20 @@ public class StudentCvService {
     @Transactional
     public void applyToJobOffer(long offerID, CvMetaDataDto cvDto) throws CvException, OffrerException {
         JobOffer jobOffer = jobOfferRepository.findById(offerID).orElseThrow(() -> new OffrerException("errors.offerNotFound"));
+        if (jobOffer.getStatus() != Status.ACCEPTED) {
+            throw new InvalidStateTransitionException("errors.offerNotOpen");
+        }
 
         List<StudentCv> appliedCvs = jobOffer.getAppliedCvs();
 
         if (appliedCvs.stream().anyMatch(cv -> cv.getId().equals(cvDto.getId()))) {
-            throw new OffrerException("errors.cvAlreadyApplied");
+            throw new CvAlreadyAppliedException();
         }
         StudentCv studentCv = studentCvRepository.findById(cvDto.getId())
                 .orElseThrow(() -> new CvException("errors.cvNotFound"));
+        if (studentCv.getStatus() != Status.ACCEPTED) {
+            throw new CvException("errors.noValidatedCv");
+        }
         appliedCvs.add(studentCv);
         jobOfferRepository.save(jobOffer);
 

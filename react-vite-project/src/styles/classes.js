@@ -4,7 +4,7 @@
 export const btnPrimary = "bg-brand text-white px-4 border border-black py-2 hover:shadow-md hover:shadow-brand rounded hover:bg-brand-soft transition-colors duration-300";
 
 /** Small primary button — used in CV/offer list items */
-export const btnSmPrimary = "bg-brand text-white text-sm font-medium py-1.5 px-3 border border-black py-2 hover:shadow-md hover:shadow-brand rounded-md hover:bg-brand-hover transition-colors";
+export const btnSmPrimary = "bg-brand text-white text-sm font-medium py-1.5 px-3 border border-black py-2 hover:shadow-md hover:shadow-brand rounded-md hover:bg-brand-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
 /** Accept / upload button (small) — used in manager and student pages */
 export const btnAccept = "bg-accept text-white text-sm font-bold py-1.5 px-3 border border-black py-2 hover:shadow-md hover:shadow-accept rounded-md hover:bg-accept-hover transition-colors disabled:opacity-60";
@@ -39,6 +39,8 @@ const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
+    HIRED: "bg-blue-100 text-blue-800",
+    FILLED: "bg-purple-100 text-purple-800",
 };
 
 export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";

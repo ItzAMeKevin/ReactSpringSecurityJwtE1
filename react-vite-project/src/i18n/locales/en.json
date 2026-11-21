@@ -54,6 +54,7 @@
     "positiveNumber": "Enter a whole number greater than 0.",
     "identifiantTaken": "This identifier is already assigned.",
     "authenticationFailed": "Invalid email or password.",
+    "invalidToken": "The authentication token is invalid.",
     "fileNameRequired": "The file name is required.",
     "fileNameTooLong": "The file name is too long.",
     "fileTypeRequired": "The file type is required.",
@@ -84,8 +85,14 @@
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
+    "applicationNotFound": "Application not found.",
     "noValidatedCv": "You must have a validated CV to apply.",
-    "jobOfferUpdateFailed": "Only declined offers can be modified."
+    "jobOfferUpdateFailed": "Only declined offers can be modified.",
+    "employerNotFound": "Employer not found.",
+    "notificationNotFound": "Notification not found.",
+    "invalidApplicationStatus": "Invalid application status.",
+    "applicationNotPending": "Only pending applications can be updated.",
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
     "title": "ZeROSE",
@@ -111,8 +118,6 @@
     "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
     "mesCvs": "My uploaded CVs",
-    "masquer": "Hide CV",
-    "afficher": "Show CV",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
@@ -175,9 +180,17 @@
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
-      "DECLINED": "Declined"
+      "DECLINED": "Declined",
+      "FILLED": "Filled"
     },
     "offerCreated": "Internship offer published successfully.",
+    "offerUpdated": "The offer has been resubmitted for approval.",
+    "editJobOffer": "Edit offer",
+    "resubmit": "Resubmit offer",
+    "feedbackTitre": "Manager's comment:",
+    "noFeedback": "No refusal comment available.",
+    "salaryPerHour": "${{salary}}/hour",
+    "salaryToDiscuss": "To be discussed",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",
@@ -192,7 +205,9 @@
       "civicNumber": "Civic number",
       "street": "Street",
       "durationInWeeks": "Duration (weeks)",
-      "programe": "Program of study"
+      "programe": "Program of study",
+      "positions": "Positions",
+      "positionsFilled": "filled"
     },
     "placeholders": {
       "title": "e.g. Web developer intern",
@@ -201,6 +216,7 @@
       "salary": "e.g. 20 dollars per hour",
       "startingDate": "Select a starting date",
       "durationInWeeks": "e.g. 12",
+      "positions": "e.g. 3",
       "programe": "Select a program",
       "city": "e.g. Montreal",
       "country": "e.g. Canada",
@@ -213,6 +229,15 @@
       "message": "Unsaved data will be lost.",
       "cancel": "Cancel",
       "confirm": "Confirm"
+    },
+    "noOffersForSession": "You have no internship offers for this semester."
+  },
+  "sessionFilter": {
+    "label": "Filter by semester",
+    "sessions": {
+      "A": "Fall {{year}}",
+      "H": "Winter {{year}}",
+      "E": "Summer {{year}}"
     }
   },
   "gestionnaire": {
@@ -221,8 +246,6 @@
     "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
-    "consulter": "View",
-    "masquer": "Hide",
     "accepter": "Accept",
     "refuser": "Decline",
     "preview": {
@@ -243,7 +266,11 @@
         "refuser": "Decline the offer \u201c{{title}}\u201d?",
         "confirmer": "Confirm",
         "annuler": "Cancel"
-      }
+      },
+      "feedbackTitle": "Write your feedback before confirming the refusal.",
+      "feedbackPlaceholder": "Explain why the offer was declined...",
+      "feedbackRequired": "You must write feedback before confirming the refusal.",
+      "errorProcessing": "An error occurred while processing this offer. Please try again."
     },
     "accept": {
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
@@ -335,9 +362,17 @@
         "title": "New internship offer to validate",
         "message": "An employer submitted a new internship offer. Please review and validate it."
       },
+      "JOB_OFFER_RESUBMITTED": {
+        "title": "Revised internship offer to validate",
+        "message": "An employer revised a declined offer. Please review it again."
+      },
       "JOB_OFFER_ACCEPTED": {
         "title": "Your internship offer has been accepted",
         "message": "Your internship offer has been validated by a manager."
+      },
+      "JOB_OFFER_HIRED": {
+        "title": "Congratulations, you've been hired!",
+        "message": "An employer has selected you for an internship. Check your offers for more details."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
@@ -354,8 +389,9 @@
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
-    "noAcceptedCv": "Your CV must be accepted to view internship offers.",
     "noOffers": "No internship offers available for your program.",
+    "noOffersForSession": "No internship offers for this semester.",
+    "notCurrentSession": "Applications are only open for internships in the current semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",
@@ -365,14 +401,26 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You need a validated CV to apply.",
+    "choisirCv": "Choose a CV to apply with",
+    "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",
-      "DECLINED": "Application declined"
+      "DECLINED": "Application declined",
+      "HIRED": "Hired"
     }
   },
 
+  "modal": {
+    "close": "Close"
+  },
+  "cvViewer": {
+    "show": "Show CV",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "loading": "Loading CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidates",
     "voirCandidats": "View candidates",
@@ -380,16 +428,19 @@
     "loading": "Loading candidates...",
     "aucunCandidats": "No applications received yet.",
     "erreurChargement": "An error occurred while loading candidates, please try again later.",
-    "voirCv": "View CV",
-    "popupBloque": "The CV could not open. Please allow pop-ups in your browser.",
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
       "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected"
+      "DECLINED": "Candidate not selected",
+      "HIRED": "Hired"
     },
     "accepter": "Accept",
     "refuser": "Decline",
+    "scheduleInterview": "Schedule an interview",
+    "embaucher": "Hire",
+    "hireError": "An error occurred while hiring the candidate.",
+    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
     "erreurStatut": "Unable to update status.",
 
     "confirmation": {
@@ -399,6 +450,53 @@
       "motifLabel": "Message or reason (optional)",
       "confirmer": "Confirm",
       "annuler": "Cancel"
+    }
+  },
+  "scheduleInterview": {
+    "title": "Schedule an interview",
+    "with": "With:",
+    "proposeSlots": "Propose slots",
+    "scheduling": "Scheduling...",
+    "cancel": "Cancel",
+    "form": {
+      "date": "Interview date",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "type": "Interview type",
+      "typeOnline": "Online",
+      "typeInPerson": "In-person",
+      "videoLink": "Videoconference link",
+      "videoLinkHint": "Paste your Zoom, Teams or Google Meet link",
+      "address": "Address / Location",
+      "numeroCivic": "Civic no.",
+      "rue": "Street",
+      "ville": "City",
+      "codePostal": "Postal code",
+      "pays": "Country",
+      "notes": "Notes for candidate",
+      "notesPlaceholder": "Add instructions or notes for the candidate...",
+      "notesHelp": "Optional"
+    },
+    "slots": {
+      "title": "Available slots",
+      "addSlot": "Add a slot",
+      "noSlots": "No slots added yet",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "errors": {
+      "title": "Error",
+      "generic": "An error occurred while scheduling the interview, please try again later.",
+      "dateRequired": "Date required",
+      "dateInPast": "Date cannot be before today",
+      "timeRequired": "Time required",
+      "endTimeAfterStart": "End time must be after start time",
+      "videoLinkRequired": "Videoconference link required",
+      "addressRequired": "Address is required",
+      "fillAllFields": "Please fill in all fields and add at least one slot",
+      "retry": "Retry"
     }
   }
 }

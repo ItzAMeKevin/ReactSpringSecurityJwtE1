@@ -7,7 +7,7 @@ import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +49,7 @@ class GestionnaireServiceTest {
     @Test
     void rejectsMissingCvContent() {
         when(studentCvRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(InvalidCvException.class, () -> service.getCvContent(1L));
+        assertThrows(CvException.class, () -> service.getCvContent(1L));
     }
 
     @Test
@@ -66,7 +66,7 @@ class GestionnaireServiceTest {
         verify(studentCvRepository).save(cv);
         verify(notificationRepository).save(any(Notification.class));
 
-        CvDeclineFeedbackDto feedback = new CvDeclineFeedbackDto("Needs changes");
+        FeedbackDto feedback = new FeedbackDto("Needs changes");
         service.declineCv(4L, feedback);
         assertEquals(Status.DECLINED, cv.getStatus());
         assertEquals("Needs changes", cv.getReviewFeedback());
@@ -86,9 +86,27 @@ class GestionnaireServiceTest {
         assertEquals(dto, service.acceptOffer(8L));
         assertEquals(Status.ACCEPTED, offer.getStatus());
 
-        assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L));
+        assertThrows(InvalidStateTransitionException.class, () -> service.refuseOffer(8L, new FeedbackDto("feedback")));
         when(jobOfferRepository.findById(9L)).thenReturn(Optional.empty());
         assertThrows(JobOfferNotFoundException.class, () -> service.acceptOffer(9L));
+    }
+
+    @Test
+    void refusesOfferWithFeedback() throws Throwable {
+        JobOffer offer = new JobOffer();
+        offer.setId(10L);
+        offer.setStatus(Status.PENDING);
+        offer.setEmployer(new Employer());
+        JobOfferDto dto = JobOfferDto.builder().id(10L).build();
+        when(jobOfferRepository.findById(10L)).thenReturn(Optional.of(offer));
+        when(jobOfferMapper.toDtoSimple(offer)).thenReturn(dto);
+
+        FeedbackDto feedback = new FeedbackDto("Not suitable");
+        assertEquals(dto, service.refuseOffer(10L, feedback));
+        assertEquals(Status.DECLINED, offer.getStatus());
+        assertEquals("Not suitable", offer.getRefusalFeedback());
+        verify(jobOfferRepository).save(offer);
+        verify(notificationRepository).save(any(Notification.class));
     }
 
     @Test

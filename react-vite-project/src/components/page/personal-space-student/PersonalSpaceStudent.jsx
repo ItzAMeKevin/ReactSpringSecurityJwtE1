@@ -1,16 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
-import { pdfjs } from "react-pdf";
-import "react-pdf/dist/Page/AnnotationLayer.css";
-import "react-pdf/dist/Page/TextLayer.css";
-import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import fetcher from "../../../utils/fetcher.js";
 import CvListItem from "./CvListItem.jsx";
 import useHighlightWhenNotified from "../../../hooks/useHighlightWhenNotified.js";
 import StudentJobOfferList from "./StudentJobOfferList.jsx";
 import { btnAcceptLg, pageWrapper, pageInner, textError, textMuted, textSuccess } from "../../../styles/classes.js";
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+import { getApiErrorKey } from "../../../utils/apiError.js";
 
 const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
@@ -37,7 +32,7 @@ const PersonalSpaceStudent = () => {
             try {
                 const response = await fetcher("/student-cv");
                 if (!response.ok) {
-                    setListError(t("televerser.erreurChargement"));
+                    setListError(t(await getApiErrorKey(response, "televerser.erreurChargement")));
                     return;
                 }
                 const data = await response.json();
@@ -82,7 +77,9 @@ const PersonalSpaceStudent = () => {
                 content,
             }),
         });
-        if (response.status !== 201) return false;
+        if (response.status !== 201) {
+            throw new Error(await getApiErrorKey(response));
+        }
         const cvMeta = await response.json();
         setCvList((prev) => [{ ...cvMeta, file }, ...prev]);
         return true;
@@ -154,7 +151,7 @@ const PersonalSpaceStudent = () => {
                     <p className={textError}>{t("televerser.envoieErreur")}</p>
                 )}
 
-                <div className="w-full mx-auto mt-10">
+                <div className="w-full max-w-3xl mx-auto mt-10">
                     <h2 className="text-main text-center text-xl font-bold mb-3">
                         {t("televerser.mesCvs")}
                     </h2>
@@ -184,7 +181,7 @@ const PersonalSpaceStudent = () => {
                     </div>
                 </div>
 
-                <div className="w-full mx-auto mt-10">
+                <div className="w-full max-w-3xl mx-auto mt-10">
                     <h2 className="text-main text-center text-xl font-bold mb-3">
                         {t("etudiantOffres.title")}
                     </h2>

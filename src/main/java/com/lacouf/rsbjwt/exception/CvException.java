@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class CvException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class CvException extends APIException {
     public CvException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

@@ -6,9 +6,9 @@ import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.service.dto.FeedbackDto;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
 import lombok.RequiredArgsConstructor;
@@ -43,14 +43,14 @@ public class GestionnaireService {
 
     public byte[] getCvContent(Long cvId) {
         return studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"))
+                .orElseThrow(() -> new CvException("errors.cvNotFound"))
                 .getContent();
     }
 
     @Transactional
     public PendingCvDto acceptCv(Long cvId) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
         cv.setStatus(Status.ACCEPTED);
         studentCvRepository.save(cv);
         this.notificationRepository.save(Notification.builder()
@@ -63,18 +63,18 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public void declineCv(Long cvId, CvDeclineFeedbackDto feedbackRequest) {
+    public void declineCv(Long cvId, FeedbackDto feedbackRequest) {
         StudentCv cv = studentCvRepository.findById(cvId)
-                .orElseThrow(() -> new InvalidCvException("errors.cvNotFound"));
+                .orElseThrow(() -> new CvException("errors.cvNotFound"));
         cv.setStatus(Status.DECLINED);
         cv.setReviewFeedback(feedbackRequest.getFeedback());
+        studentCvRepository.save(cv);
         this.notificationRepository.save(Notification.builder()
                 .message("notification.types.CV_DECLINED.message")
                 .user(cv.getStudent())
                 .notificationType(NotificationType.CV)
                 .referenceId(cv.getId())
                 .build());
-        studentCvRepository.save(cv);
     }
 
 
@@ -85,15 +85,12 @@ public class GestionnaireService {
 
     @Transactional
     public JobOfferDto acceptOffer(Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
-        return changeOfferStatus(id, Status.ACCEPTED,
-                "notification.types.JOB_OFFER_ACCEPTED.message");
+        return changeOfferStatus(id, Status.ACCEPTED, "notification.types.JOB_OFFER_ACCEPTED.message", null);
     }
 
-
     @Transactional
-    public JobOfferDto refuseOffer(Long id) throws JobOfferNotFoundException, InvalidStateTransitionException {
-        return changeOfferStatus(id, Status.DECLINED,
-                "notification.types.JOB_OFFER_DECLINED.message");
+    public JobOfferDto refuseOffer(Long id, FeedbackDto feedbackRequest) throws JobOfferNotFoundException, InvalidStateTransitionException {
+        return changeOfferStatus(id, Status.DECLINED, "notification.types.JOB_OFFER_DECLINED.message", feedbackRequest.getFeedback());
     }
 
     public List<CandidatureDto> getAllCandidatures() {
@@ -123,7 +120,7 @@ public class GestionnaireService {
                 .toList();
     }
 
-    private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey) throws JobOfferNotFoundException, InvalidStateTransitionException {
+    private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {
         JobOffer offer = jobOfferRepository
                 .findById(id)
                 .orElseThrow(() -> new JobOfferNotFoundException("errors.jobOfferNotFound"));
@@ -133,6 +130,10 @@ public class GestionnaireService {
         }
 
         offer.setStatus(newStatus);
+        if (feedback != null) {
+            offer.setRefusalFeedback(feedback);
+        }
+        jobOfferRepository.save(offer);
 
         notificationRepository.save(Notification.builder()
                 .message(messageKey)
