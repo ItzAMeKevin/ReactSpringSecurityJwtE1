@@ -174,7 +174,8 @@
       "accepted": "Approved offers",
       "pending": "Offers pending approval",
       "declined": "Declined offers",
-      "interviews": "Students invited to interview"
+      "interviews": "Students invited to interview",
+      "hirePending": "Students pending hire"
     },
     "empty": {
       "accepted": "No approved offer.",
@@ -250,7 +251,8 @@
   },
   "dashboard": {
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "comingSoon": "This section will be available soon."
   },
   "gestionnaire": {
     "title": "Manager Space",
@@ -418,7 +420,8 @@
       "cvPending": "Pending CVs",
       "cvAccepted": "Approved CVs",
       "cvDeclined": "Declined CVs",
-      "offres": "Internship offers"
+      "offres": "Internship offers",
+      "hireOffers": "Hiring offers"
     },
     "cv": {
       "emptyPending": "No CV pending validation.",

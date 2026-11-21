@@ -54,6 +54,7 @@ const PersonalSpaceStudent = () => {
     const items = [
         ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
         { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
+        { to: "embauches", label: t("etudiant.nav.hireOffers"), count: null },
     ];
 
     const actions = (

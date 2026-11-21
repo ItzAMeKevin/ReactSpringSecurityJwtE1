@@ -173,7 +173,8 @@
       "accepted": "Offres validées",
       "pending": "Offres en attente de validation",
       "declined": "Offres refusées",
-      "interviews": "Étudiants convoqués en entrevue"
+      "interviews": "Étudiants convoqués en entrevue",
+      "hirePending": "Étudiants en attente d'embauche"
     },
     "empty": {
       "accepted": "Aucune offre validée.",
@@ -249,7 +250,8 @@
   },
   "dashboard": {
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "comingSoon": "Cette section sera bientôt disponible."
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
@@ -417,7 +419,8 @@
       "cvPending": "CV en attente",
       "cvAccepted": "CV validés",
       "cvDeclined": "CV refusés",
-      "offres": "Offres de stage"
+      "offres": "Offres de stage",
+      "hireOffers": "Offres d'embauche"
     },
     "cv": {
       "emptyPending": "Aucun CV en attente de validation.",

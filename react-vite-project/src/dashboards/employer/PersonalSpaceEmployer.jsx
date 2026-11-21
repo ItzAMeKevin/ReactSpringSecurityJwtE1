@@ -55,6 +55,7 @@ const PersonalSpaceEmployer = () => {
             count: countOffers(countedStatus),
         })),
         { to: "entrevues", label: t("personalSpaceEmployer.nav.interviews"), count: interviews.count },
+        { to: "embauches-en-attente", label: t("personalSpaceEmployer.nav.hirePending"), count: null },
     ];
 
     const actions = (
