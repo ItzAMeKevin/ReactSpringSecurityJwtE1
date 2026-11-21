@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import getLocalizedNotification from "./getLocalizedNotification.js";
+import getLocalizedNotification from "@/utils/getLocalizedNotification.js";
 
 const makeT = (dictionary) => (key) => dictionary[key] ?? key;
 

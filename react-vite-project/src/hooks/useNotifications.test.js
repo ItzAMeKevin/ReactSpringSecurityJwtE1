@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import useNotifications from "./useNotifications.js";
-import fetcher from "../utils/fetcher.js";
+import useNotifications from "@/hooks/useNotifications.js";
+import fetcher from "@/utils/fetcher.js";
 
-vi.mock("../utils/fetcher.js", () => ({
+vi.mock("@/utils/fetcher.js", () => ({
     default: vi.fn(),
 }));
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import fetcher from "../utils/fetcher.js";
+import fetcher from "@/utils/fetcher.js";
 
 const useFetchList = (url) => {
     const [items, setItems] = useState([]);

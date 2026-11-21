@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { compareSessionCodesDesc, getNextSessionCode, getSessionCode, getSessionsFromOffers } from "../utils/session.js";
+import { compareSessionCodesDesc, getNextSessionCode, getSessionCode, getSessionsFromOffers } from "@/utils/session.js";
 
 const useSessionFilter = (offers) => {
     const [selectedSession, setSelectedSession] = useState(() => getNextSessionCode());

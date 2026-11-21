@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import fetcher from "../utils/fetcher.js";
+import fetcher from "@/utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
