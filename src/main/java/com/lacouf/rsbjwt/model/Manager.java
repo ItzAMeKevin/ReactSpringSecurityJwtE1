@@ -5,6 +5,8 @@ import com.lacouf.rsbjwt.model.auth.Credentials;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,10 @@ public class Manager extends User {
 
     @Column (unique = true, nullable = false)
     private String matricule;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "contract_id", unique = true)
+    private Contract contract;
     
     @Builder
     public Manager(

@@ -7,6 +7,10 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.mapper.ContractMapper;
+import com.lacouf.rsbjwt.service.dto.ContractDto;
 import com.lacouf.rsbjwt.service.dto.CvDeclineFeedbackDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
 import com.lacouf.rsbjwt.service.dto.PendingCvDto;
@@ -30,6 +34,16 @@ public class GestionnaireService {
     private final CvMapper cvMapper;
 
     private final JobOfferMapper jobOfferMapper;
+
+    private final ContractRepository contractRepository;
+
+    private final ContractMapper contractMapper;
+
+    private final StudentRepository studentRepository;
+
+    private final EmployerRepository employerRepository;
+
+    private final ManagerRepository managerRepository;
 
 
     public List<PendingCvDto> getPendingCvs() {
@@ -115,5 +129,33 @@ public class GestionnaireService {
         return jobOfferMapper.toDtoSimple(offer);
     }
 
+    @Transactional
+    public ContractDto createContract(ContractDto contractDto) {
+        Contract contract = contractMapper.toEntity(contractDto);
+        contract.setStatus(Status.UNSIGNED);
+        if (contract.getContent() != null) {
+            contract.setSize(contract.getContent().length);
+        }
 
+        Student student = studentRepository.findById(contractDto.getStudentId())
+                .orElseThrow(UserNotFoundException::new);
+        Employer employer = employerRepository.findById(contractDto.getEmployerId())
+                .orElseThrow(UserNotFoundException::new);
+        Manager manager = managerRepository.findById(contractDto.getManagerId())
+                .orElseThrow(UserNotFoundException::new);
+
+        contract = contractRepository.save(contract);
+        contract.setStudent(student);
+        contract.setEmployer(employer);
+        contract.setManager(manager);
+
+        student.setContract(contract);
+        employer.setContract(contract);
+        manager.setContract(contract);
+        studentRepository.save(student);
+        employerRepository.save(employer);
+        managerRepository.save(manager);
+
+        return contractMapper.toDto(contract);
+    }
 }

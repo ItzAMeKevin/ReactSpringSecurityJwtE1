@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,10 @@ public class Student extends User {
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_manager_id", nullable = true)
     private Manager assignedManager;
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "contract_id", unique = true)
+    private Contract contract;
     
     @Builder
     public Student(

@@ -5,5 +5,7 @@ public enum Status {
     ACCEPTED,
     DECLINED,
     READ,
-    UNREAD
+    UNREAD,
+    SIGNED,
+    UNSIGNED
 }
