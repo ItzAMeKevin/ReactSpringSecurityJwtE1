@@ -34,9 +34,9 @@ const EmployerOfferSection = ({ statuses, labelKey, emptyKey }) => {
                 <p className={textMuted}>{t("personalSpaceEmployer.noOffersForSession")}</p>
             ) : (
                 <ul className="grid w-full grid-cols-1 gap-4 lg:grid-cols-2 lg:items-start">
-                    {filteredOffers.map((offer, i) => (
+                    {filteredOffers.map((offer) => (
                         <JobOfferCard
-                            key={offer.id ?? i}
+                            key={offer.id}
                             offer={offer}
                             isHighlighted={isHighlighted("offer", offer.id)}
                             onClearHighlight={clearHighlight}
