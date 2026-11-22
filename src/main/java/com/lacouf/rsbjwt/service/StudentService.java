@@ -1,17 +1,26 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
+import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.service.dto.InterviewDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
+import com.lacouf.rsbjwt.service.dto.StudentInterviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +33,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final JobOfferMapper jobOfferMapper;
     private final JobApplicationRepository jobApplicationRepository;
+    private final InterviewRepository interviewRepository;
+    private final InterviewMapper interviewMapper;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
@@ -45,5 +56,36 @@ public class StudentService {
                                 applicationStatuses.containsKey(offer.getId()),
                                 applicationStatuses.get(offer.getId())))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<InterviewDto> getInterviews(String studentEmail) {
+        return interviewRepository.findAllByStudentEmail(studentEmail).stream()
+                .map(this::withExpired)
+                .toList();
+    }
+
+    @Transactional
+    public InterviewDto respondToInterview(Long interviewId, StudentInterviewResponseDto response, String studentEmail) {
+        Interview interview = interviewRepository.findByIdAndStudentEmail(interviewId, studentEmail)
+                .orElseThrow(ApplicationNotFoundException::new);
+
+        if (interview.getStatus() != Status.PENDING) {
+            throw new ApplicationStateException();
+        }
+
+        interview.setStatus(response.accepted() ? Status.ACCEPTED : Status.DECLINED);
+        interview.setStudentMessage(response.message());
+        return withExpired(interviewRepository.save(interview));
+    }
+
+    private InterviewDto withExpired(Interview interview) {
+        InterviewDto dto = interviewMapper.toInterviewDto(interview);
+        boolean expired = interview.getStatus() == Status.PENDING
+                && !interview.getSlots().isEmpty()
+                && interview.getSlots().stream().allMatch(s -> s.getDate().isBefore(LocalDate.now()));
+        return new InterviewDto(dto.id(), dto.candidatureId(), dto.companyName(), dto.offerTitle(),
+                dto.type(), dto.videoLink(), dto.address(), dto.notes(), dto.scheduledAt(),
+                dto.slots(), dto.status(), dto.studentMessage(), expired);
     }
 }

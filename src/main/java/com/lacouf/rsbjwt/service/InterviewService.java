@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.OfferAlreadyProcessedException;
 import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.model.Interview;
@@ -36,6 +37,10 @@ public class InterviewService {
                 .getEmployer().getCredentials().getEmail();
         if (!offerOwnerEmail.equals(employerEmail)) {
             throw new ApplicationNotFoundException();
+        }
+
+        if (interviewRepository.existsByJobApplicationId(dto.candidatureId())) {
+            throw new OfferAlreadyProcessedException("errors.interviewAlreadyScheduled");
         }
 
         Interview interview = new Interview();
