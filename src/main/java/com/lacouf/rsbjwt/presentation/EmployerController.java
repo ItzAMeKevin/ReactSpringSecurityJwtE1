@@ -85,4 +85,9 @@ public class EmployerController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(interviewService.schedule(request, authentication.getName()));
     }
+
+    @GetMapping("/interviews")
+    public ResponseEntity<List<EmployerInterviewDto>> getInterviews(Authentication authentication) {
+        return ResponseEntity.ok(interviewService.getEmployerInterviews(authentication.getName()));
+    }
 }

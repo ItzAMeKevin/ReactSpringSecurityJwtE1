@@ -1,5 +1,5 @@
-import mergeHeaders from "./mergeheader";
-import BASE_URL from "../components/config/Config.jsx";
+import mergeHeaders from "@/utils/mergeheader";
+import BASE_URL from "@/config/api.js";
 
 async function fetcher(input, options = {}) {
   const token = sessionStorage.getItem("token");

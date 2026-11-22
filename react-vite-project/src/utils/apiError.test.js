@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getApiErrorKey, translateErrorKey } from "./apiError.js";
+import { getApiErrorKey, translateErrorKey } from "@/utils/apiError.js";
 
 describe("apiError", () => {
     it("reads the backend error key without consuming the response", async () => {
