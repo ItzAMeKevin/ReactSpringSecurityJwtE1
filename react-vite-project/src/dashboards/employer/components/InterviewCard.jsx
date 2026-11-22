@@ -1,13 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { cardItem, statusBadge, textMuted } from "@/styles/classes.js";
+import formatAddress from "@/utils/formatAddress.js";
 
 const formatSlotDate = (date, language) =>
     new Date(`${date}T00:00:00`).toLocaleDateString(language, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
 const formatTime = (time) => time?.slice(0, 5);
-
-const formatAddress = (address) =>
-    address ? `${address.numeroCivic} ${address.rue}, ${address.ville}, ${address.codePostal}, ${address.pays}` : null;
 
 const InterviewCard = ({ interview }) => {
     const { t, i18n } = useTranslation();

@@ -4,6 +4,8 @@ import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textS
 import { labelClass } from "@/components/ui/Field.jsx";
 import fetcher from "@/utils/fetcher.js";
 import formatSalary from "@/utils/formatSalary.js";
+import formatAddress from "@/utils/formatAddress.js";
+import getProgramName from "@/utils/getProgramName.js";
 import { getApiErrorKey } from "@/utils/apiError.js";
 import { getNextSessionCode, getSessionCode } from "@/utils/session.js";
 
@@ -42,20 +44,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
 
 
     const programs = t("inscription.programsList", { returnObjects: true });
-    const programName = (enumName) => {
-        if (!Array.isArray(programs)) return enumName;
-        return programs.find((p) => p.enumName === enumName)?.name ?? enumName;
-    };
-
-    const loc = offer.location;
-    const address = loc
-        ? [
-            [loc.numeroCivic, loc.rue].filter(Boolean).join(" "),
-            loc.ville,
-            loc.codePostal,
-            loc.pays,
-        ].filter(Boolean).join(", ")
-        : null;
+    const address = formatAddress(offer.location);
 
     return (
         <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
@@ -70,7 +59,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                 </div>
             </div>
 
-            <p className="mt-1 text-sm text-main/70">{programName(offer.programe)}</p>
+            <p className="mt-1 text-sm text-main/70">{getProgramName(programs, offer.programe)}</p>
             {offer.companyName && (
                 <p className="mt-1 text-sm text-main/70">
                     {t("etudiantOffres.company")}: <span className="font-medium">{offer.companyName}</span>

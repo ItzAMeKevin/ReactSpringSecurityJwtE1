@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
 import formatSalary from "@/utils/formatSalary.js";
+import formatAddress from "@/utils/formatAddress.js";
+import getProgramName from "@/utils/getProgramName.js";
 import CandidateList from "@/dashboards/employer/components/CandidateList.jsx";
 import { btnSmPrimary, cardItem, cardHighlighted, statusBadge, statusBadgeColor } from "@/styles/classes.js";
 
@@ -9,9 +11,7 @@ const CANDIDATE_STATUSES = ["ACCEPTED", "FILLED"];
 const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, onToggleCandidates, onEdit, onHire, onInterviewScheduled }) => {
     const { t } = useTranslation();
     const programs = t("inscription.programsList", { returnObjects: true });
-    const programName = Array.isArray(programs)
-        ? programs.find((p) => p.enumName === offer.programe)?.name ?? offer.programe
-        : offer.programe;
+    const programName = getProgramName(programs, offer.programe);
     const isDeclined = offer.status === "DECLINED";
     const canViewCandidates = CANDIDATE_STATUSES.includes(offer.status);
     const remainingPositions = offer.numberOfPositions != null ? offer.numberOfPositions - (offer.hiredCount ?? 0) : null;
@@ -46,7 +46,7 @@ const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, 
                     </>
                 )}
                 <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
-                <dd>{offer.location?.numeroCivic} {offer.location?.rue}, {offer.location?.ville}, {offer.location?.pays}</dd>
+                <dd>{formatAddress(offer.location)}</dd>
             </dl>
             {isDeclined && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 px-3 py-2">
