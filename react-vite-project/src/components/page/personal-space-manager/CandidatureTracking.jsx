@@ -34,7 +34,32 @@ const CandidatureTracking = () => {
                     if (response.status === 403) {
                         setError(t("candidatureTracking.errors.accessDenied"));
                     } else if (response.status === 404) {
-                        setCandidatures([]);
+                        // Une donnée de test pour vérifier "Générer contrat"
+                        setCandidatures([
+                            {
+                                id: "cand-001",
+                                status: "ACCEPTED",
+                                createdAt: "2024-11-15T10:30:00Z",
+                                student: {
+                                    id: "stu-001",
+                                    firstName: "Jean",
+                                    lastName: "Dupont",
+                                    matricule: "M20241001",
+                                    email: "jean.dupont@example.com"
+                                },
+                                jobOffer: {
+                                    id: "offer-001",
+                                    title: "Développeur Frontend React",
+                                    company: {
+                                        id: "comp-001",
+                                        name: "TechCorp Solutions"
+                                    },
+                                    startDate: "2025-01-15",
+                                    endDate: "2025-04-30",
+                                    duration: 16
+                                }
+                            }
+                        ]);
                     } else {
                         setError(t("candidatureTracking.errors.loadingFailed"));
                     }

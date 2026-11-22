@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { statusBadge } from "../../../styles/classes.js";
+import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
 const CandidatureTrackingItem = ({ candidature }) => {
     const { t } = useTranslation();
     const [showDetails, setShowDetails] = useState(false);
+    const [showContractModal, setShowContractModal] = useState(false);
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A";
@@ -39,6 +41,7 @@ const CandidatureTrackingItem = ({ candidature }) => {
     };
 
     const statusInfo = getStatusInfo(candidature.status);
+    const isAccepted = candidature.status === "ACCEPTED";
 
     return (
         <>
@@ -66,12 +69,22 @@ const CandidatureTrackingItem = ({ candidature }) => {
                     {formatDate(candidature.updatedAt || candidature.createdAt)}
                 </td>
                 <td className="px-4 py-3 text-center">
-                    <button
-                        onClick={() => setShowDetails(!showDetails)}
-                        className="text-brand hover:underline font-semibold text-sm transition-colors"
-                    >
-                        {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
-                    </button>
+                    <div className="flex gap-2 justify-center">
+                        <button
+                            onClick={() => setShowDetails(!showDetails)}
+                            className="text-brand hover:underline font-semibold text-sm transition-colors"
+                        >
+                            {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
+                        </button>
+                        {isAccepted && (
+                            <button
+                                onClick={() => setShowContractModal(true)}
+                                className="text-green-600 hover:text-green-800 font-semibold text-sm transition-colors"
+                            >
+                                {t("contractGeneration.generateButton")}
+                            </button>
+                        )}
+                    </div>
                 </td>
             </tr>
             {showDetails && (
@@ -123,6 +136,11 @@ const CandidatureTrackingItem = ({ candidature }) => {
                     </td>
                 </tr>
             )}
+            <ContractGenerationModal 
+                isOpen={showContractModal}
+                onClose={() => setShowContractModal(false)}
+                candidature={candidature}
+            />
         </>
     );
 };

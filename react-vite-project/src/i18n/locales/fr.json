@@ -463,5 +463,64 @@
   "common": {
     "online": "En ligne",
     "inPerson": "Présentiel"
+  },
+  "contractGeneration": {
+    "title": "Génération de contrat",
+    "generateButton": "Générer le contrat",
+    "contractModal": {
+      "title": "Générer un contrat de stage",
+      "subtitle": "Vérifiez et complétez les informations avant de générer le contrat",
+      "submit": "Générer le PDF",
+      "submitting": "Génération en cours...",
+      "cancel": "Annuler",
+      "close": "Fermer"
+    },
+    "form": {
+      "studentInfo": "Informations de l'étudiant",
+      "employerInfo": "Informations de l'employeur",
+      "positionInfo": "Informations du poste",
+      "contractTerms": "Conditions du contrat",
+      "additionalInfo": "Informations supplémentaires",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Courriel",
+      "matricule": "Matricule",
+      "programme": "Programme d'étude",
+      "companyName": "Nom de l'entreprise",
+      "companyEmail": "Courriel de l'entreprise",
+      "companyPhone": "Téléphone",
+      "companyAddress": "Adresse",
+      "companyCity": "Ville",
+      "companyPostalCode": "Code postal",
+      "companyCountry": "Pays",
+      "jobTitle": "Titre du poste",
+      "jobDescription": "Description du poste",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "durationWeeks": "Durée (semaines)",
+      "hourlyRate": "Taux horaire ($)",
+      "supervisor": "Superviseur sur place",
+      "supervisorEmail": "Courriel du superviseur",
+      "supervisorPhone": "Téléphone du superviseur",
+      "workSchedule": "Horaire de travail",
+      "workSchedulePlaceholder": "Ex: Lundi à vendredi, 9h-17h",
+      "objectives": "Objectifs d'apprentissage",
+      "objectivesPlaceholder": "Décrivez les objectifs et compétences à développer...",
+      "additionalTerms": "Conditions additionnelles",
+      "additionalTermsPlaceholder": "Toute autre information importante pour le contrat...",
+      "notes": "Notes"
+    },
+    "errors": {
+      "title": "Erreur",
+      "missingFields": "Champs manquants",
+      "pleaseComplete": "Veuillez compléter les champs obligatoires marqués avec *",
+      "generic": "Une erreur est survenue lors de la génération du contrat. Veuillez réessayer.",
+      "retry": "Réessayer"
+    },
+    "success": {
+      "title": "Contrat généré",
+      "message": "Le contrat PDF a été généré et téléchargé avec succès.",
+      "close": "Fermer"
+    }
   }
 }
