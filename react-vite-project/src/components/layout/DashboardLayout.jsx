@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import useDismiss from "@/hooks/useDismiss.js";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher.jsx";
 import { pageTitle } from "@/styles/classes.js";
 
 const linkBase = "flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors";
@@ -33,7 +34,7 @@ const DashboardLayout = ({ title, items, actions, context }) => {
                 ref={drawerRef}
                 className={`fixed top-[60px] bottom-0 left-0 z-50 w-3/4 max-w-72 shrink-0 overflow-y-auto border-r border-brand/20 bg-white transition-transform duration-300 md:static md:z-auto md:w-64 md:max-w-none md:translate-x-0 md:overflow-visible md:bg-white/80 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
             >
-                <div className="flex flex-col gap-4 p-4 md:sticky md:top-[60px]">
+                <div className="flex h-full flex-col gap-4 p-4 md:sticky md:top-[60px] md:h-[calc(100vh-60px)] md:max-h-full">
                     <div className="flex items-start justify-between gap-2">
                         <h1 className={pageTitle}>{title}</h1>
                         <button type="button" onClick={close} aria-label={t("dashboard.closeMenu")} className={`${iconButton} hover:bg-mint-bg md:hidden`}>
@@ -41,7 +42,7 @@ const DashboardLayout = ({ title, items, actions, context }) => {
                         </button>
                     </div>
                     {actions}
-                    <nav className="flex flex-col gap-1">
+                    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
                         {items.map((item) => (
                             <NavLink
                                 key={item.to}
@@ -61,6 +62,17 @@ const DashboardLayout = ({ title, items, actions, context }) => {
                             </NavLink>
                         ))}
                     </nav>
+                    <div className="mt-auto flex flex-col gap-3 border-t border-brand/20 pt-4">
+                        <div className="px-3 text-sm">
+                            <LanguageSwitcher
+                                activeClassName="rounded bg-brand px-2 py-1 font-bold text-white"
+                                idleClassName="rounded px-2 py-1 text-main hover:bg-mint-bg"
+                            />
+                        </div>
+                        <Link to="/logout" className={`${linkBase} ${linkIdle}`}>
+                            {t("header.logout")}
+                        </Link>
+                    </div>
                 </div>
             </aside>
             <main className="min-w-0 flex-1 px-4 pb-20 md:px-8">
