@@ -176,7 +176,7 @@ public class EmployerService {
             jobOfferRepository.save(offer);
         }
 
-        return candidateMapper.toCandidateDto(saved);
+        return candidateMapper.toDto(saved);
     }
 
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {

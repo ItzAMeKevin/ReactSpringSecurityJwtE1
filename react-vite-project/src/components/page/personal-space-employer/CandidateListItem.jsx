@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "../../../utils/downloadFile.js";
 import CvModal from "../../CvModal.jsx";
@@ -30,7 +30,6 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, remainin
     const blobUrlRef = useRef(null);
     const [hireError, setHireError] = useState(null);
     const [hiring, setHiring] = useState(false);
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
     useEffect(() => {
         return () => {

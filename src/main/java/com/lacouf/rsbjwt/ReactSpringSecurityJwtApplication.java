@@ -486,6 +486,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         JobApplication app = new JobApplication();
         app.setJobOffer(offer);
         app.setStudentCv(cv);
+        app.setStudent(student);
         app.setStatus(Status.ACCEPTED);
         app.setAppliedAt(Instant.now());
         jobApps.save(app);
