@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { statusBadge } from "../../../styles/classes.js";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
-const CandidatureTrackingItem = ({ candidature }) => {
+const CandidatureTrackingItem = ({ candidature, user }) => {
     const { t } = useTranslation();
     const [showDetails, setShowDetails] = useState(false);
     const [showContractModal, setShowContractModal] = useState(false);
@@ -140,6 +140,7 @@ const CandidatureTrackingItem = ({ candidature }) => {
                 isOpen={showContractModal}
                 onClose={() => setShowContractModal(false)}
                 candidature={candidature}
+                user={user}
             />
         </>
     );

@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import CandidatureTrackingItem from "./CandidatureTrackingItem.jsx";
 
-const CandidatureTrackingList = ({ candidatures }) => {
+const CandidatureTrackingList = ({ candidatures, user }) => {
     const { t } = useTranslation();
 
     return (
@@ -33,7 +33,8 @@ const CandidatureTrackingList = ({ candidatures }) => {
                     {candidatures.map((candidature, index) => (
                         <CandidatureTrackingItem 
                             key={candidature.id || index} 
-                            candidature={candidature} 
+                            candidature={candidature}
+                            user={user}
                         />
                     ))}
                 </tbody>

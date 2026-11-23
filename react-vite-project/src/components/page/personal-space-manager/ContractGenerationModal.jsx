@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import fetcher from '../../../utils/fetcher.js';
 import { btnOutline, btnPrimary, inputField, textError } from '../../../styles/classes.js';
 
-const ContractGenerationModal = ({ isOpen, onClose, candidature }) => {
+const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
     const { t } = useTranslation();
     const modalRef = useRef(null);
 
@@ -88,13 +88,15 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature }) => {
 
         try {
             const endDate = calculateEndDate();
-            const response = await fetcher('/manager/contract/generate', {
-                method: 'POST',
+            const response = await fetcher('/gestionnaire/contract/create', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    candidatureId: candidature.id,
+                    studentId: candidature.student?.id,
+                    employerId: candidature.jobOffer?.employer?.id,
+                    managerId: user.id,
                     ...formData,
                     endDate
                 })
@@ -105,16 +107,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature }) => {
                 throw new Error(errorData.message || t('contractGeneration.errors.generic'));
             }
 
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', `contrat_${candidature.student?.matricule}_${new Date().getTime()}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-
+            const data = await response.json();
             setApiError(null);
             onClose();
         } catch (error) {
@@ -265,8 +258,8 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature }) => {
                             <input
                                 type="text"
                                 value={formData.studentProgramme}
-                                disabled
-                                className={inputField + ' bg-gray-100 cursor-not-allowed'}
+                                onChange={(e) => handleFieldChange('studentProgramme', e.target.value)}
+                                className={inputField}
                             />
                         </div>
                     </fieldset>
