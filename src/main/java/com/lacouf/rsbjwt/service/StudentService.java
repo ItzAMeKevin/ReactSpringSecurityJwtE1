@@ -18,6 +18,7 @@ import com.lacouf.rsbjwt.service.dto.InterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewRespondRequest;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,15 +73,17 @@ public class StudentService {
     @Transactional
     public InterviewDto respondToInterview(Long interviewId, InterviewRespondRequest request, Authentication authentication) {
         String email = authentication.getName();
-
-        var interview = interviewRepository
-                .findByIdAndJobApplication_Student_Credentials_Email(interviewId, email)
-                .orElseThrow(ApplicationNotFoundException::new);
-
+        var interview = getInterview(interviewId, email);
         if (interview.getStatus() != InterviewStatus.PENDING) {
             throw new ApplicationNotFoundException();
         }
+        selectChosenSlot(interview, request);
+        interview.setStatus(request.status());
+        return withExpired(interviewRepository.save(interview));
+    }
 
+    private void selectChosenSlot(Interview interview, InterviewRespondRequest request) {
+        interview.getSlots().forEach(s -> s.setSelected(false));
         if (request.status() == InterviewStatus.ACCEPTED) {
             InterviewSlot chosen = interview.getSlots().stream()
                     .filter(s -> s.getId().equals(request.selectedSlotId()))
@@ -88,9 +91,13 @@ public class StudentService {
                     .orElseThrow(ApplicationNotFoundException::new);
             chosen.setSelected(true);
         }
+    }
 
-        interview.setStatus(request.status());
-        return withExpired(interviewRepository.save(interview));
+    private @NonNull Interview getInterview(Long interviewId, String email) {
+        var interview = interviewRepository
+                .findByIdAndJobApplication_Student_Credentials_Email(interviewId, email)
+                .orElseThrow(ApplicationNotFoundException::new);
+        return interview;
     }
 
     private InterviewDto withExpired(Interview interview) {
