@@ -64,7 +64,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
                 <div className="flex flex-col items-end gap-1">
                     {hasApplied && (
                         <span className={`${statusBadge} ${statusBadgeColor(applicationStatus)} text-center`}>
-            {t(`etudiantOffres.applicationStatuts.${applicationStatus}`)}
+            {t([`etudiantOffres.applicationStatuts.${applicationStatus}`, `applicationStatuses.${applicationStatus}`])}
         </span>
                     )}
                 </div>

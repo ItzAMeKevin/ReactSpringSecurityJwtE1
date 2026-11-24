@@ -203,12 +203,11 @@ public class StudentServiceTest {
         CandidatureDto dto = new CandidatureDto(7L, null, null,
                 Status.INTERVIEW_COMPLETED, null, null);
 
-        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
-                "employer@test.com", Status.INTERVIEW_COMPLETED))
-                .thenReturn(Optional.of(List.of(application)));
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.INTERVIEW_COMPLETED))
+                .thenReturn(List.of(application));
         when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
 
-        List<CandidatureDto> result = studentService.getHires("employer@test.com");
+        List<CandidatureDto> result = studentService.getHires(STUDENT_EMAIL);
 
         assertEquals(List.of(dto), result);
         verify(candidatureMapper).toCandidateDto(application);
@@ -217,11 +216,10 @@ public class StudentServiceTest {
     @Test
     @DisplayName("getHires retourne une liste vide")
     void getHires_returnsEmptyList() {
-        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
-                "employer@test.com", Status.INTERVIEW_COMPLETED))
-                .thenReturn(Optional.of(List.of()));
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.INTERVIEW_COMPLETED))
+                .thenReturn(List.of());
 
-        assertTrue(studentService.getHires("employer@test.com").isEmpty());
+        assertTrue(studentService.getHires(STUDENT_EMAIL).isEmpty());
     }
 
     private JobApplication interviewCompletedApplication() {

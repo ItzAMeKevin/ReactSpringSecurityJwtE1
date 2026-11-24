@@ -168,7 +168,7 @@ public class EmployerService {
         if (application.getStatus() != Status.ACCEPTED) {
             throw new InvalidStateTransitionException("errors.candidateNotAccepted");
         }
-        application.setStatus(Status.AWAITING_CONTRACT);
+        application.setStatus(Status.INTERVIEW_COMPLETED);
         JobApplication saved = jobApplicationRepository.save(application);
 
         Student student = application.getStudentCv().getStudent();
@@ -201,7 +201,7 @@ public class EmployerService {
     }
 
     public List<CandidateDto> getHirePendingCandidates(String name) {
-        List<JobApplication> applications = jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(name, Status.PENDING_INTERVIEW)
+        List<JobApplication> applications = jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(name, Status.INTERVIEW_COMPLETED)
         .orElseThrow(() -> new EmployerNotFoundException(name));
         return applications.stream()
                 .map(candidateMapper::toCandidateDto)

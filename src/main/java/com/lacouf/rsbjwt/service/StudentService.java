@@ -55,13 +55,12 @@ public class StudentService {
                 .toList();
     }
 
-        public List<CandidatureDto> getHires(String studentEmail) throws UserNotFoundException {
-                return jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(studentEmail, Status.INTERVIEW_COMPLETED)
-                .orElseThrow(() -> new UserNotFoundException())
+    public List<CandidatureDto> getHires(String studentEmail) {
+        return jobApplicationRepository.findByStudentEmailAndStatus(studentEmail, Status.INTERVIEW_COMPLETED)
                 .stream()
                 .map(candidatureMapper::toCandidateDto)
                 .toList();
-        }
+    }
 
          public CandidatureDto acceptHire(Long id, CandidateDto candiatureDto, String name) {
                 JobApplication application = jobApplicationRepository.findById(id)

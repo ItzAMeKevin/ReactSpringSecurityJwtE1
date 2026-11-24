@@ -429,6 +429,31 @@
       "emptyDeclined": "No declined CV."
     }
   },
+  "etudiantEmbauches": {
+    "loading": "Loading hire offers...",
+    "empty": "No hire offers yet.",
+    "weeks": "{{count}} weeks",
+    "accept": "Accept offer",
+    "decline": "Decline offer",
+    "confirmAccept": "Accept the offer \"{{title}}\" at {{company}}?",
+    "confirmDecline": "Decline the offer \"{{title}}\" at {{company}}? This decision is final.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "processing": "Sending...",
+    "acceptSuccess": "You accepted the offer \"{{title}}\".",
+    "declineSuccess": "You declined the offer \"{{title}}\".",
+    "error": "An error occurred. Please try again."
+  },
+  "applicationStatuses": {
+    "PENDING_INTERVIEW": "Awaiting interview",
+    "INTERVIEW_SCHEDULED": "Interview scheduled",
+    "INTERVIEW_COMPLETED": "Awaiting the student's response",
+    "AWAITING_CONTRACT": "Awaiting contract",
+    "AWAITING_SIGNATURES": "Awaiting signatures",
+    "CONTRACT_SIGNED": "Contract signed",
+    "WORKING": "Internship in progress",
+    "COMPLETED": "Internship completed"
+  },
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
@@ -450,7 +475,8 @@
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",
       "DECLINED": "Application declined",
-      "HIRED": "Hired"
+      "HIRED": "Hired",
+      "INTERVIEW_COMPLETED": "Hire offer received"
     }
   },
 
@@ -494,6 +520,12 @@
       "confirmer": "Confirm",
       "annuler": "Cancel"
     }
+  },
+  "employerHirePending": {
+    "loading": "Loading students awaiting hire...",
+    "empty": "No students awaiting a response to a hire offer.",
+    "awaitingAnswer": "Awaiting the student's response",
+    "appliedOn": "Applied on {{date}}"
   },
   "employerInterviews": {
     "loading": "Loading interviews...",

@@ -21,6 +21,7 @@ const PersonalSpaceEmployer = () => {
     const navigate = useNavigate();
     const offers = useFetchList("/employer");
     const interviews = useFetchList("/employer/interviews");
+    const hirePending = useFetchList("/employer/candidates/hire-pending");
     const [form, setForm] = useState(null);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const { message, showMessage, clearMessage } = useToast();
@@ -55,7 +56,7 @@ const PersonalSpaceEmployer = () => {
             count: countOffers(countedStatus),
         })),
         { to: "entrevues", label: t("personalSpaceEmployer.nav.interviews"), count: interviews.count },
-        { to: "embauches-en-attente", label: t("personalSpaceEmployer.nav.hirePending"), count: null },
+        { to: "embauches-en-attente", label: t("personalSpaceEmployer.nav.hirePending"), count: hirePending.count },
     ];
 
     const actions = (
@@ -71,7 +72,7 @@ const PersonalSpaceEmployer = () => {
                 title={t("personalSpaceEmployer.title")}
                 items={items}
                 actions={actions}
-                context={{ offers, interviews, openForm, hireInOffer, onInterviewScheduled: interviews.reload }}
+                context={{ offers, interviews, hirePending, openForm, hireInOffer, onInterviewScheduled: interviews.reload }}
             />
             {form && (
                 <Modal

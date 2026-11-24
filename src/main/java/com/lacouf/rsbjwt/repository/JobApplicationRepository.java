@@ -78,6 +78,17 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         """)
     Optional<List<JobApplication>> findByJobOfferEmployerCredentialsEmailAndPendingStatus(String email, Status status);
 
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE s.credentials.email = :email AND ja.status = :status
+        ORDER BY ja.appliedAt DESC
+        """)
+    List<JobApplication> findByStudentEmailAndStatus(@Param("email") String email, @Param("status") Status status);
+
     @Modifying
     @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")
     int updateStatus(@Param("applicationId") Long applicationId, @Param("status") Status status);

@@ -428,6 +428,31 @@
       "emptyDeclined": "Aucun CV refusé."
     }
   },
+  "etudiantEmbauches": {
+    "loading": "Chargement des offres d'embauche...",
+    "empty": "Aucune offre d'embauche pour le moment.",
+    "weeks": "{{count}} semaines",
+    "accept": "Accepter l'offre",
+    "decline": "Refuser l'offre",
+    "confirmAccept": "Accepter l'offre « {{title}} » chez {{company}} ?",
+    "confirmDecline": "Refuser l'offre « {{title}} » chez {{company}} ? Cette décision est définitive.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "processing": "Envoi en cours...",
+    "acceptSuccess": "Vous avez accepté l'offre « {{title}} ».",
+    "declineSuccess": "Vous avez refusé l'offre « {{title}} ».",
+    "error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "applicationStatuses": {
+    "PENDING_INTERVIEW": "En attente d'entrevue",
+    "INTERVIEW_SCHEDULED": "Entrevue planifiée",
+    "INTERVIEW_COMPLETED": "En attente de la réponse de l'étudiant",
+    "AWAITING_CONTRACT": "En attente du contrat",
+    "AWAITING_SIGNATURES": "En attente des signatures",
+    "CONTRACT_SIGNED": "Contrat signé",
+    "WORKING": "Stage en cours",
+    "COMPLETED": "Stage terminé"
+  },
   "etudiantOffres": {
     "title": "Offres de stage disponibles",
     "loading": "Chargement des offres...",
@@ -449,7 +474,8 @@
       "PENDING": "Candidature envoyée",
       "ACCEPTED": "Candidature acceptée",
       "DECLINED": "Candidature refusée",
-      "HIRED": "Embauché(e)"
+      "HIRED": "Embauché(e)",
+      "INTERVIEW_COMPLETED": "Offre d'embauche reçue"
     }
   },
 
@@ -493,6 +519,12 @@
       "confirmer": "Confirmer",
       "annuler": "Annuler"
     }
+  },
+  "employerHirePending": {
+    "loading": "Chargement des étudiants en attente d'embauche...",
+    "empty": "Aucun étudiant en attente de réponse à une offre d'embauche.",
+    "awaitingAnswer": "En attente de la réponse de l'étudiant",
+    "appliedOn": "Candidature reçue le {{date}}"
   },
   "employerInterviews": {
     "loading": "Chargement des entrevues...",

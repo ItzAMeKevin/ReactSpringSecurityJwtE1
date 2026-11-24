@@ -113,7 +113,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                     </p>
                 </div>
                 <span className={`${statusBadge} ${statusBadgeColor(candidate.status)}`}>
-                      {t(`employeurCandidats.statuts.${candidate.status}`, candidate.status)}
+                      {t([`employeurCandidats.statuts.${candidate.status}`, `applicationStatuses.${candidate.status}`], candidate.status)}
                   </span>
             </div>
 
