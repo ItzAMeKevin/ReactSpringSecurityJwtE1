@@ -50,14 +50,12 @@ public class EmployerController {
         return ResponseEntity.ok(employerService.getCandidates(offerId, authentication.getName()));
     }
 
-    @PutMapping("/{offerId}/candidates/{cvId}/status")
-    public ResponseEntity<CandidateDto> updateCandidateStatus(
+    @PutMapping("/{offerId}/candidates/{cvId}/reject")
+    public ResponseEntity<CandidateDto> rejectCandidate(
             @PathVariable Long offerId,
             @PathVariable Long cvId,
-            @Valid @RequestBody UpdateCandidateStatusDto request,
             Authentication authentication) {
-        return ResponseEntity.ok(
-                employerService.updateCandidateStatus(offerId, cvId, request.status(), authentication.getName()));
+        return ResponseEntity.ok(employerService.rejectCandidate(offerId, cvId, authentication.getName()));
     }
 
     @PutMapping("/{offerId}/candidates/{cvId}/hire")
@@ -92,7 +90,7 @@ public class EmployerController {
     }
     
     @GetMapping("/candidates/hire-pending")
-    public ResponseEntity<List<CandidateDto>> getHirePendingCandidates(Authentication authentication) {
+    public ResponseEntity<List<CandidatureDto>> getHirePendingCandidates(Authentication authentication) {
         return ResponseEntity.ok(employerService.getHirePendingCandidates(authentication.getName()));
     }
 }

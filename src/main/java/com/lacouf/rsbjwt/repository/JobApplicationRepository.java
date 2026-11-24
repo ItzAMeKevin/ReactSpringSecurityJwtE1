@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     boolean existsByStudentCv_IdAndJobOffer_Id(Long cvId, Long offerId);
 
     long countByJobOffer_IdAndStatus(Long jobOfferId, Status status);
+    long countByJobOffer_IdAndStatusIn(Long jobOfferId, Collection<Status> statuses);
 
     @Query("""
         SELECT ja.jobOffer.id, COUNT(ja)
@@ -67,6 +69,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         ORDER BY ja.appliedAt DESC
         """)
     List<JobApplication> findAllWithStudentAndOffer();
+
     @Query("""
         SELECT ja FROM JobApplication ja
         JOIN FETCH ja.studentCv cv
@@ -76,7 +79,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         WHERE e.credentials.email = :email AND ja.status = :status
         ORDER BY ja.appliedAt DESC
         """)
-    Optional<List<JobApplication>> findByJobOfferEmployerCredentialsEmailAndPendingStatus(String email, Status status);
+    List<JobApplication> findByEmployerEmailAndStatus(@Param("email") String email, @Param("status") Status status);
 
     @Query("""
         SELECT ja FROM JobApplication ja
@@ -88,6 +91,16 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         ORDER BY ja.appliedAt DESC
         """)
     List<JobApplication> findByStudentEmailAndStatus(@Param("email") String email, @Param("status") Status status);
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE ja.id = :id AND s.credentials.email = :email
+        """)
+    Optional<JobApplication> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
 
     @Modifying
     @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")

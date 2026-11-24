@@ -15,4 +15,5 @@ public enum Status {
     CONTRACT_SIGNED,
     WORKING,
     COMPLETED,
+    HIRE_PENDING
 }

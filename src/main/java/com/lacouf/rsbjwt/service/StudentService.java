@@ -1,27 +1,26 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.JobApplication;
+import com.lacouf.rsbjwt.model.JobOffer;
+import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
-import com.lacouf.rsbjwt.mapper.CandidatureMapper;
-import com.lacouf.rsbjwt.service.dto.CandidateDto;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +31,7 @@ public class StudentService {
     private final JobOfferMapper jobOfferMapper;
     private final JobApplicationRepository jobApplicationRepository;
     private final CandidatureMapper candidatureMapper;
+    private final SystemeService systemeService;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
@@ -55,39 +55,50 @@ public class StudentService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<CandidatureDto> getHires(String studentEmail) {
-        return jobApplicationRepository.findByStudentEmailAndStatus(studentEmail, Status.INTERVIEW_COMPLETED)
+        return jobApplicationRepository.findByStudentEmailAndStatus(studentEmail, Status.HIRE_PENDING)
                 .stream()
                 .map(candidatureMapper::toCandidateDto)
                 .toList();
     }
 
-         public CandidatureDto acceptHire(Long id, CandidateDto candiatureDto, String name) {
-                JobApplication application = jobApplicationRepository.findById(id)
-                        .orElseThrow(() -> new UserNotFoundException());
-                if (!application.getStudentCv().getStudent().getCredentials().getEmail().equals(name)) {
-                        throw new UserNotFoundException();
-                }
-                if (application.getStatus() != Status.INTERVIEW_COMPLETED) {
-                        throw new InvalidStateTransitionException("errors.candidateNotInterviewCompleted");
-                }
-                application.setStatus(Status.AWAITING_CONTRACT);
-                JobApplication saved = jobApplicationRepository.save(application);
-                return candidatureMapper.toCandidateDto(saved);
-        }
+    @Transactional
+    public CandidatureDto acceptHire(Long applicationId, String studentEmail) {
+        JobApplication application = findOwnHire(applicationId, studentEmail);
+        JobOffer offer = jobOfferRepository.findByIdForUpdate(application.getJobOffer().getId())
+                .orElseThrow(ApplicationNotFoundException::new);
+        application.acceptHire();
+        jobApplicationRepository.save(application);
+        fillOfferIfComplete(offer);
+        notifyEmployer(application, "notification.types.JOB_OFFER_HIRE_ACCEPTED.message");
+        return candidatureMapper.toCandidateDto(application);
+    }
 
-        public CandidatureDto declineHire(Long id, CandidateDto candiatureDto, String name) {
-                JobApplication application = jobApplicationRepository.findById(id)
-                        .orElseThrow(() -> new UserNotFoundException());
-                if (!application.getStudentCv().getStudent().getCredentials().getEmail().equals(name)) {
-                        throw new UserNotFoundException();
-                }
-                if (application.getStatus() != Status.INTERVIEW_COMPLETED) {
-                        throw new InvalidStateTransitionException("errors.candidateNotInterviewCompleted");
-                }
-                application.setStatus(Status.DECLINED);
-                JobApplication saved = jobApplicationRepository.save(application);
-                return candidatureMapper.toCandidateDto(saved);
+    @Transactional
+    public CandidatureDto declineHire(Long applicationId, String studentEmail) {
+        JobApplication application = findOwnHire(applicationId, studentEmail);
+        application.declineHire();
+        jobApplicationRepository.save(application);
+        notifyEmployer(application, "notification.types.JOB_OFFER_HIRE_DECLINED.message");
+        return candidatureMapper.toCandidateDto(application);
+    }
+
+    private JobApplication findOwnHire(Long applicationId, String studentEmail) {
+        return jobApplicationRepository.findByIdAndStudentEmail(applicationId, studentEmail)
+                .orElseThrow(ApplicationNotFoundException::new);
+    }
+
+    private void fillOfferIfComplete(JobOffer offer) {
+        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatusIn(offer.getId(), JobApplication.HIRED_STATUSES);
+        if (hiredCount >= offer.getNumberOfPositions()) {
+            offer.setStatus(Status.FILLED);
+            jobOfferRepository.save(offer);
         }
-    
+    }
+
+    private void notifyEmployer(JobApplication application, String messageKey) {
+        JobOffer offer = application.getJobOffer();
+        systemeService.notifyUsers(List.of(offer.getEmployer()), NotificationType.JOB_OFFER, offer.getId(), messageKey);
+    }
 }

@@ -2,22 +2,21 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.CandidateMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Employer;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
 import com.lacouf.rsbjwt.model.NotificationType;
 import com.lacouf.rsbjwt.model.Status;
-import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.CvException;
-import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
-import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +42,7 @@ public class EmployerService {
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
     private final CandidateMapper candidateMapper;
+    private final CandidatureMapper candidatureMapper;
 
     @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
@@ -53,11 +53,7 @@ public class EmployerService {
                 .toList();
         if (dtos.isEmpty()) return dtos;
         List<Long> offerIds = dtos.stream().map(JobOfferDetailDTO::getId).toList();
-        Map<Long, Long> hiredCounts = List.of(
-                Status.AWAITING_CONTRACT,
-                Status.AWAITING_SIGNATURES,
-                Status.CONTRACT_SIGNED)
-            .stream()
+        Map<Long, Long> hiredCounts = JobApplication.HIRED_STATUSES.stream()
             .flatMap(status -> jobApplicationRepository.countByOfferIdsAndStatus(offerIds, status).stream())
             .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1], Long::sum));
         return dtos.stream()
@@ -130,17 +126,10 @@ public class EmployerService {
     }
 
     @Transactional
-    public CandidateDto updateCandidateStatus(Long offerId, Long cvId, Status newStatus, String employerEmail) {
-        if (newStatus != Status.ACCEPTED && newStatus != Status.DECLINED) {
-            throw new InvalidApplicationStatusException();
-        }
+    public CandidateDto rejectCandidate(Long offerId, Long cvId, String employerEmail) {
         JobOffer offer = findOwnedOffer(offerId, employerEmail);
-        JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
-                .orElseGet(() -> createApplicationFromAppliedCv(offer, cvId));
-        if (application.getStatus() != Status.PENDING) {
-            throw new ApplicationStateException();
-        }
-        application.setStatus(newStatus);
+        JobApplication application = findOrCreateApplication(offer, cvId);
+        application.reject();
         return candidateMapper.toCandidateDto(jobApplicationRepository.save(application));
     }
 
@@ -160,28 +149,36 @@ public class EmployerService {
     public CandidateDto hireStudent(Long offerId, Long cvId, String employerEmail) {
         JobOffer offer = jobOfferRepository.findOwnedOfferForUpdate(offerId, employerEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
+        requireOpenPosition(offer);
+        JobApplication application = findOrCreateApplication(offer, cvId);
+        application.offerHire();
+        JobApplication saved = jobApplicationRepository.save(application);
+        systemeService.notifyUsers(List.of(saved.getStudentCv().getStudent()), NotificationType.JOB_OFFER, offerId,
+                "notification.types.JOB_OFFER_HIRED.message");
+        return candidateMapper.toCandidateDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CandidatureDto> getHirePendingCandidates(String employerEmail) {
+        return jobApplicationRepository.findByEmployerEmailAndStatus(employerEmail, Status.HIRE_PENDING)
+                .stream()
+                .map(candidatureMapper::toCandidateDto)
+                .toList();
+    }
+
+    private void requireOpenPosition(JobOffer offer) {
         if (offer.getStatus() != Status.ACCEPTED) {
             throw new InvalidStateTransitionException("errors.offerNotAccepted");
         }
-        JobApplication application = jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offerId, cvId)
-                .orElseThrow(ApplicationNotFoundException::new);
-        if (application.getStatus() != Status.ACCEPTED) {
-            throw new InvalidStateTransitionException("errors.candidateNotAccepted");
+        long heldSeats = jobApplicationRepository.countByJobOffer_IdAndStatusIn(offer.getId(), JobApplication.SEAT_HOLDING_STATUSES);
+        if (heldSeats >= offer.getNumberOfPositions()) {
+            throw new InvalidStateTransitionException("errors.noPositionsLeft");
         }
-        application.setStatus(Status.INTERVIEW_COMPLETED);
-        JobApplication saved = jobApplicationRepository.save(application);
+    }
 
-        Student student = application.getStudentCv().getStudent();
-        systemeService.notifyUsers(List.of(student), NotificationType.JOB_OFFER, offerId,
-                "notification.types.JOB_OFFER_HIRED.message");
-
-        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatus(offerId, Status.AWAITING_CONTRACT);
-        if (hiredCount >= offer.getNumberOfPositions()) {
-            offer.setStatus(Status.FILLED);
-            jobOfferRepository.save(offer);
-        }
-
-        return candidateMapper.toCandidateDto(saved);
+    private JobApplication findOrCreateApplication(JobOffer offer, Long cvId) {
+        return jobApplicationRepository.findByOfferIdAndCvIdWithStudent(offer.getId(), cvId)
+                .orElseGet(() -> createApplicationFromAppliedCv(offer, cvId));
     }
 
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {
@@ -198,13 +195,5 @@ public class EmployerService {
         application.setJobOffer(offer);
         application.setStudentCv(cv);
         return application;
-    }
-
-    public List<CandidateDto> getHirePendingCandidates(String name) {
-        List<JobApplication> applications = jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(name, Status.INTERVIEW_COMPLETED)
-        .orElseThrow(() -> new EmployerNotFoundException(name));
-        return applications.stream()
-                .map(candidateMapper::toCandidateDto)
-                .collect(Collectors.toList());
     }
 }

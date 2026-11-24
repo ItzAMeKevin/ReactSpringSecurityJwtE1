@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Entity
 @Table(
@@ -41,4 +44,36 @@ public class JobApplication {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public static final Set<Status> HIRED_STATUSES = EnumSet.of(
+            Status.AWAITING_CONTRACT, Status.AWAITING_SIGNATURES, Status.CONTRACT_SIGNED, Status.WORKING, Status.COMPLETED);
+
+    public static final Set<Status> SEAT_HOLDING_STATUSES = EnumSet.of(
+            Status.HIRE_PENDING, Status.AWAITING_CONTRACT, Status.AWAITING_SIGNATURES, Status.CONTRACT_SIGNED, Status.WORKING, Status.COMPLETED);
+
+    private static final Set<Status> OPEN_STATUSES = EnumSet.of(
+            Status.PENDING, Status.PENDING_INTERVIEW, Status.INTERVIEW_SCHEDULED, Status.INTERVIEW_COMPLETED);
+
+    public void offerHire() {
+        transition(OPEN_STATUSES, Status.HIRE_PENDING, "errors.applicationNotOpen");
+    }
+
+    public void reject() {
+        transition(OPEN_STATUSES, Status.DECLINED, "errors.applicationNotOpen");
+    }
+
+    public void acceptHire() {
+        transition(EnumSet.of(Status.HIRE_PENDING), Status.AWAITING_CONTRACT, "errors.applicationNotHirePending");
+    }
+
+    public void declineHire() {
+        transition(EnumSet.of(Status.HIRE_PENDING), Status.DECLINED, "errors.applicationNotHirePending");
+    }
+
+    private void transition(Set<Status> allowedFrom, Status target, String errorKey) {
+        if (!allowedFrom.contains(status)) {
+            throw new InvalidStateTransitionException(errorKey);
+        }
+        status = target;
+    }
 }
