@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.CandidateMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
@@ -10,12 +11,11 @@ import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentCvRepository;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.exception.CvException;
-import com.lacouf.rsbjwt.exception.InvalidApplicationStatusException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
@@ -63,6 +63,9 @@ class EmployerServiceTest {
 
     @Spy
     private CandidateMapper candidateMapper = Mappers.getMapper(CandidateMapper.class);
+
+    @Mock
+    private CandidatureMapper candidatureMapper;
 
     @InjectMocks
     private EmployerService employerService;
@@ -320,42 +323,17 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("updateCandidateStatus accepte une candidature en attente")
-    void updateCandidateStatus_acceptsPending() {
-        String email = "marie@acme.com";
-        Student student = new Student();
-        student.setFirstName("Jean");
-        student.setLastName("Dupont");
-        student.setCredentials(Credentials.builder()
-                .email("jean@test.com").password("x").role(Role.STUDENT).build());
-        StudentCv cv = new StudentCv();
-        cv.setId(5L);
-        cv.setStudent(student);
-
-        JobApplication application = new JobApplication();
-        application.setStudentCv(cv);
-        application.setStatus(Status.PENDING);
-        application.setAppliedAt(Instant.parse("2026-02-01T12:00:00Z"));
-
-        when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(jobOffer));
+    @DisplayName("rejectCandidate passe une candidature en attente à DECLINED")
+    void rejectCandidate_pendingApplication_setsDeclined() {
+        JobApplication application = pendingApplication(cvWithStudent(5L));
+        when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
-                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
-                        Instant.parse("2026-02-01T12:00:00Z"), Status.ACCEPTED));
 
-        CandidateDto result = employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, email);
+        CandidateDto result = employerService.rejectCandidate(1L, 5L, "marie@acme.com");
 
-        assertEquals(Status.ACCEPTED, result.status());
-        assertEquals(Status.ACCEPTED, application.getStatus());
-    }
-
-    @Test
-    @DisplayName("updateCandidateStatus refuse un statut autre que ACCEPTED ou DECLINED")
-    void updateCandidateStatus_invalidStatus() {
-        assertThrows(InvalidApplicationStatusException.class,
-                () -> employerService.updateCandidateStatus(1L, 5L, Status.PENDING, "marie@acme.com"));
-        verifyNoInteractions(jobApplicationRepository);
+        assertEquals(Status.DECLINED, result.status());
+        assertEquals(Status.DECLINED, application.getStatus());
     }
 
     @Test
@@ -431,20 +409,23 @@ class EmployerServiceTest {
     }
 
     @Test
-    void updateCandidateStatus_notPending_throwsIllegalState() {
-        JobApplication application = new JobApplication();
-        application.setStudentCv(cvWithStudent(5L));
-        application.setStatus(Status.ACCEPTED);
+    @DisplayName("rejectCandidate refuse une candidature qui n'est plus ouverte")
+    void rejectCandidate_closedApplication_throws() {
+        JobApplication application = pendingApplication(cvWithStudent(5L));
+        application.setStatus(Status.HIRE_PENDING);
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
 
-        assertThrows(ApplicationStateException.class,
-                () -> employerService.updateCandidateStatus(1L, 5L, Status.DECLINED, "marie@acme.com"));
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
+                () -> employerService.rejectCandidate(1L, 5L, "marie@acme.com"));
+
+        assertEquals("errors.applicationNotOpen", exception.getMessage());
         verify(jobApplicationRepository, never()).save(any());
     }
 
     @Test
-    void updateCandidateStatus_createsApplicationFromAppliedCv() {
+    @DisplayName("rejectCandidate crée la candidature à partir du CV posé sur l'offre")
+    void rejectCandidate_createsApplicationFromAppliedCv() {
         StudentCv cv = cvWithStudent(5L);
         jobOffer.setAppliedCvs(new ArrayList<>(List.of(cv)));
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
@@ -455,7 +436,7 @@ class EmployerServiceTest {
             return new CandidateDto(app.getStudentCv().getId(), app.getId(), null, null, null, null, app.getStatus());
         });
 
-        CandidateDto result = employerService.updateCandidateStatus(1L, 5L, Status.DECLINED, "marie@acme.com");
+        CandidateDto result = employerService.rejectCandidate(1L, 5L, "marie@acme.com");
 
         assertEquals(Status.DECLINED, result.status());
         ArgumentCaptor<JobApplication> captor = ArgumentCaptor.forClass(JobApplication.class);
@@ -465,13 +446,14 @@ class EmployerServiceTest {
     }
 
     @Test
-    void updateCandidateStatus_cvNotAppliedToOffer_throwsNotFound() {
+    @DisplayName("rejectCandidate lève ApplicationNotFoundException si le CV n'a pas été posé sur l'offre")
+    void rejectCandidate_cvNotAppliedToOffer_throwsNotFound() {
         jobOffer.setAppliedCvs(new ArrayList<>());
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.empty());
 
         assertThrows(ApplicationNotFoundException.class,
-                () -> employerService.updateCandidateStatus(1L, 5L, Status.ACCEPTED, "marie@acme.com"));
+                () -> employerService.rejectCandidate(1L, 5L, "marie@acme.com"));
     }
 
     @Test
@@ -494,48 +476,45 @@ class EmployerServiceTest {
                 () -> employerService.getCandidateCv(5L, "marie@acme.com"));
     }
 
-    private JobApplication acceptedApplication(StudentCv cv) {
+    private JobApplication pendingApplication(StudentCv cv) {
         JobApplication application = new JobApplication();
         application.setJobOffer(jobOffer);
         application.setStudentCv(cv);
-        application.setStatus(Status.ACCEPTED);
+        application.setStatus(Status.PENDING);
         return application;
     }
 
-    private void givenHireableOffer(int numberOfPositions) {
+    private void givenHireableOffer(int numberOfPositions, long heldSeats) {
         jobOffer.setStatus(Status.ACCEPTED);
         jobOffer.setNumberOfPositions(numberOfPositions);
         when(jobOfferRepository.findOwnedOfferForUpdate(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
+        when(jobApplicationRepository.countByJobOffer_IdAndStatusIn(1L, JobApplication.SEAT_HOLDING_STATUSES)).thenReturn(heldSeats);
     }
 
     @Test
-    @DisplayName("hireStudent passe le candidat à AWAITING_CONTRACT et notifie l'étudiant")
-    void hireStudent_setsAwaitingContractAndNotifiesStudent() {
-        givenHireableOffer(2);
+    @DisplayName("hireStudent passe le candidat à HIRE_PENDING et notifie l'étudiant")
+    void hireStudent_setsHirePendingAndNotifiesStudent() {
+        givenHireableOffer(2, 0L);
         StudentCv cv = cvWithStudent(5L);
-        JobApplication application = acceptedApplication(cv);
+        JobApplication application = pendingApplication(cv);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(1L);
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
-                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com", null, Status.AWAITING_CONTRACT));
 
         CandidateDto result = employerService.hireStudent(1L, 5L, "marie@acme.com");
 
-        assertEquals(Status.AWAITING_CONTRACT, result.status());
-        assertEquals(Status.AWAITING_CONTRACT, application.getStatus());
+        assertEquals(Status.HIRE_PENDING, result.status());
+        assertEquals(Status.HIRE_PENDING, application.getStatus());
         verify(systemeService).notifyUsers(List.of(cv.getStudent()), NotificationType.JOB_OFFER, 1L,
                 "notification.types.JOB_OFFER_HIRED.message");
     }
 
     @Test
-    @DisplayName("hireStudent laisse l'offre ACCEPTED tant qu'il reste des postes")
+    @DisplayName("hireStudent ne change pas le statut de l'offre tant que l'étudiant n'a pas accepté")
     void hireStudent_positionsRemaining_offerStaysAccepted() {
-        givenHireableOffer(2);
-        JobApplication application = acceptedApplication(cvWithStudent(5L));
+        givenHireableOffer(2, 1L);
+        JobApplication application = pendingApplication(cvWithStudent(5L));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(1L);
 
         employerService.hireStudent(1L, 5L, "marie@acme.com");
 
@@ -544,18 +523,16 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("hireStudent passe l'offre à FILLED quand le dernier poste est comblé")
-    void hireStudent_lastPosition_offerBecomesFilled() {
-        givenHireableOffer(2);
-        JobApplication application = acceptedApplication(cvWithStudent(5L));
-        when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
-        when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(2L);
+    @DisplayName("hireStudent refuse l'envoi quand tous les postes sont déjà réservés")
+    void hireStudent_allPositionsHeld_throwsNoPositionsLeft() {
+        givenHireableOffer(2, 2L);
 
-        employerService.hireStudent(1L, 5L, "marie@acme.com");
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
+                () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
 
-        assertEquals(Status.FILLED, jobOffer.getStatus());
-        verify(jobOfferRepository).save(jobOffer);
+        assertEquals("errors.noPositionsLeft", exception.getMessage());
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
     }
 
     @Test
@@ -573,18 +550,18 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("hireStudent refuse un candidat qui n'est pas ACCEPTED")
-    void hireStudent_candidateNotAccepted_throwsInvalidState() {
-        givenHireableOffer(2);
-        JobApplication application = acceptedApplication(cvWithStudent(5L));
-        application.setStatus(Status.PENDING);
+    @DisplayName("hireStudent refuse une candidature qui n'est plus ouverte")
+    void hireStudent_closedApplication_throws() {
+        givenHireableOffer(2, 0L);
+        JobApplication application = pendingApplication(cvWithStudent(5L));
+        application.setStatus(Status.DECLINED);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
 
         InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
                 () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
 
-        assertEquals("errors.candidateNotAccepted", exception.getMessage());
-        assertEquals(Status.PENDING, application.getStatus());
+        assertEquals("errors.applicationNotOpen", exception.getMessage());
+        assertEquals(Status.DECLINED, application.getStatus());
         verify(jobApplicationRepository, never()).save(any());
         verifyNoInteractions(systemeService);
     }
@@ -602,7 +579,7 @@ class EmployerServiceTest {
     @Test
     @DisplayName("hireStudent lève ApplicationNotFoundException si la candidature n'existe pas")
     void hireStudent_applicationMissing_throwsNotFound() {
-        givenHireableOffer(2);
+        givenHireableOffer(2, 0L);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.empty());
 
         assertThrows(ApplicationNotFoundException.class,
@@ -612,19 +589,16 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("getHirePendingCandidates mappe les candidatures en attente d'entretien")
+    @DisplayName("getHirePendingCandidates mappe les offres d'embauche en attente de réponse")
     void getHirePendingCandidates_mapsApplications() {
-        JobApplication application = acceptedApplication(cvWithStudent(5L));
-        application.setStatus(Status.PENDING_INTERVIEW);
-        CandidateDto dto = new CandidateDto(5L, 1L, "Jean", "Dupont",
-                "jean@test.com", null, Status.PENDING_INTERVIEW);
-        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
-                "marie@acme.com", Status.PENDING_INTERVIEW))
-                .thenReturn(Optional.of(List.of(application)));
-        when(candidateMapper.toCandidateDto(application)).thenReturn(dto);
+        JobApplication application = pendingApplication(cvWithStudent(5L));
+        application.setStatus(Status.HIRE_PENDING);
+        CandidatureDto dto = new CandidatureDto(1L, null, null, Status.HIRE_PENDING, null, null);
+        when(jobApplicationRepository.findByEmployerEmailAndStatus("marie@acme.com", Status.HIRE_PENDING))
+                .thenReturn(List.of(application));
+        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
 
-        List<CandidateDto> result =
-                employerService.getHirePendingCandidates("marie@acme.com");
+        List<CandidatureDto> result = employerService.getHirePendingCandidates("marie@acme.com");
 
         assertEquals(List.of(dto), result);
     }
@@ -632,21 +606,9 @@ class EmployerServiceTest {
     @Test
     @DisplayName("getHirePendingCandidates retourne une liste vide")
     void getHirePendingCandidates_returnsEmptyList() {
-        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
-                "marie@acme.com", Status.PENDING_INTERVIEW))
-                .thenReturn(Optional.of(List.of()));
+        when(jobApplicationRepository.findByEmployerEmailAndStatus("marie@acme.com", Status.HIRE_PENDING))
+                .thenReturn(List.of());
 
         assertTrue(employerService.getHirePendingCandidates("marie@acme.com").isEmpty());
-    }
-
-    @Test
-    @DisplayName("getHirePendingCandidates lève EmployerNotFoundException quand aucune candidature n'est trouvée")
-    void getHirePendingCandidates_missingThrows() {
-        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
-                "missing@acme.com", Status.PENDING_INTERVIEW))
-                .thenReturn(Optional.empty());
-
-        assertThrows(EmployerNotFoundException.class,
-                () -> employerService.getHirePendingCandidates("missing@acme.com"));
     }
 }
