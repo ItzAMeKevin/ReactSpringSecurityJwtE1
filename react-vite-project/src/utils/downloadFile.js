@@ -1,5 +1,5 @@
-import fetcher from "./fetcher.js";
-import { getApiErrorKey } from "./apiError.js";
+import fetcher from "@/utils/fetcher.js";
+import { getApiErrorKey } from "@/utils/apiError.js";
 
 export const fetchBlobUrl = async (url) => {
     const response = await fetcher(url);

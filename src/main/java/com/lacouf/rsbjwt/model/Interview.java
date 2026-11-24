@@ -20,9 +20,16 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_application_id", nullable = false, unique = true)
     private JobApplication jobApplication;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Status status = Status.PENDING;
+
+    @Column(length = 1000)
+    private String studentMessage;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -49,6 +56,4 @@ public class Interview {
 
     @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InterviewSlot> slots = new ArrayList<>();
-
-    InterviewStatus status = InterviewStatus.PENDING;
 }

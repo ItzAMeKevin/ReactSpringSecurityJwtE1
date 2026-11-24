@@ -1,9 +1,9 @@
 package com.lacouf.rsbjwt.service.dto;
 
-import com.lacouf.rsbjwt.model.InterviewStatus;
+import com.lacouf.rsbjwt.model.Status;
 
 public record InterviewRespondRequest(
-        InterviewStatus status,
+        Status status,
         Long selectedSlotId,
         String message
 ) {}

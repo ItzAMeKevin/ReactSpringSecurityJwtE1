@@ -1,0 +1,82 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import fetcher from "@/utils/fetcher.js";
+import { getApiErrorKey } from "@/utils/apiError.js";
+import { getNextSessionCode, getSessionCode } from "@/utils/session.js";
+import useFetchList from "@/hooks/useFetchList.js";
+import DashboardLayout from "@/components/layout/DashboardLayout.jsx";
+import CvUploadModal from "@/dashboards/student/components/CvUploadModal.jsx";
+import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
+import { btnPrimary } from "@/styles/classes.js";
+
+const fileToBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+    });
+
+const isUniqueFileName = (cv, index, all) => all.findIndex((other) => other.fileName === cv.fileName) === index;
+
+const PersonalSpaceStudent = () => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const cvs = useFetchList("/student-cv");
+    const offers = useFetchList("/etudiant/offres");
+    const interviews = useFetchList("/etudiant/interviews");
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
+
+    const visibleCvs = cvs.items.filter(isUniqueFileName);
+    const acceptedCvs = cvs.items.filter((cv) => cv.status === "ACCEPTED");
+    const nextSession = getNextSessionCode();
+    const applicableOffers = offers.items.filter((offer) => offer.startingDate && getSessionCode(offer.startingDate) === nextSession);
+
+    const countCvs = (status) => (cvs.status === "loaded" ? visibleCvs.filter((cv) => cv.status === status).length : null);
+
+    const uploadCv = async (file) => {
+        const response = await fetcher("/student-cv", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fileName: file.name, contentType: file.type, content: await fileToBase64(file) }),
+        });
+        if (response.status !== 201) throw new Error(await getApiErrorKey(response));
+        const cvMeta = await response.json();
+        cvs.setItems((current) => [{ ...cvMeta, file }, ...current]);
+        return cvMeta;
+    };
+
+    const handleUploaded = (cv) => {
+        setIsUploadOpen(false);
+        navigate("cv/en-attente", { state: { highlight: { kind: "cv", id: cv.id } } });
+    };
+
+    const items = [
+        ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
+        { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
+        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.count },
+    ];
+
+    const actions = (
+        <button type="button" onClick={() => setIsUploadOpen(true)} className={`${btnPrimary} w-full`}>
+            {t("televerser.choisirFichier")}
+        </button>
+    );
+
+    return (
+        <>
+            <DashboardLayout
+                title={t("etudiant.title")}
+                items={items}
+                actions={actions}
+                context={{ cvs, visibleCvs, acceptedCvs, offers, interviews, uploadCv }}
+            />
+            {isUploadOpen && (
+                <CvUploadModal onUpload={uploadCv} onUploaded={handleUploaded} onClose={() => setIsUploadOpen(false)} />
+            )}
+        </>
+    );
+};
+
+export default PersonalSpaceStudent;

@@ -19,6 +19,7 @@ import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.InterviewService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
+import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.InterviewSlotDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
@@ -491,6 +492,37 @@ class EmployerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(scheduleRequest)))
                 .andExpect(status().isNotFound());
+    }
+
+    // ===== GET /employer/interviews =====
+
+    @Test
+    void getInterviews_returnsEmployerInterviews() throws Exception {
+        EmployerInterviewDto interview = new EmployerInterviewDto(
+                10L, 1L, 3L, "Développeur Java", "Jean", "Dupont", "jean@test.com",
+                InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
+                Instant.parse("2026-11-01T12:00:00Z"),
+                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+        when(interviewService.getEmployerInterviews("marie@acme.com")).thenReturn(List.of(interview));
+
+        mockMvc.perform(get("/employer/interviews").with(employer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(10))
+                .andExpect(jsonPath("$[0].offerTitle").value("Développeur Java"))
+                .andExpect(jsonPath("$[0].studentFirstName").value("Jean"))
+                .andExpect(jsonPath("$[0].studentLastName").value("Dupont"))
+                .andExpect(jsonPath("$[0].type").value("ONLINE"))
+                .andExpect(jsonPath("$[0].slots.length()").value(1));
+    }
+
+    @Test
+    void getInterviews_wrongRole_returns403() throws Exception {
+        mockMvc.perform(get("/employer/interviews")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
+                .andExpect(status().isForbidden());
+
+        verify(interviewService, never()).getEmployerInterviews(any());
     }
 
     // ===== helpers =====

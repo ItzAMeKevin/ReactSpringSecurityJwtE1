@@ -72,6 +72,7 @@ export const textSuccess = "text-green-700";
 
 /** Success toast / popup card colors */
 export const successCard = "border border-green-200 bg-green-50 text-green-800";
+export const dangerCard = "border border-red-200 bg-red-50 text-red-800";
 
 // ── Forms ─────────────────────────────────────────────────────────────────────
 

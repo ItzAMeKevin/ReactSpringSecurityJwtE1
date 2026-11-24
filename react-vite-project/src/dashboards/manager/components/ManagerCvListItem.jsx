@@ -1,0 +1,214 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import CvModal from "@/components/cv/CvModal.jsx";
+import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
+import { fetchBlobUrl, downloadFile } from "@/utils/downloadFile.js";
+import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textError } from "@/styles/classes.js";
+
+const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDecline }) => {
+    const { t } = useTranslation();
+    const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
+    const [isOpen, setIsOpen] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewError, setPreviewError] = useState(null);
+
+    const [actionState, setActionState] = useState("idle");
+    const [reviewFeedback, setReviewFeedback] = useState("");
+    const [reviewError, setReviewError] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
+
+    const handleOpen = async () => {
+        setIsOpen(true);
+        if (previewUrl) return;
+        setPreviewError(null);
+
+        try {
+            const url = await fetchBlobUrl(contentUrl);
+            setPreviewUrl(url);
+        } catch (error) {
+            console.error("Erreur lors du chargement de l'aperçu :", error);
+            setPreviewError(t("gestionnaire.preview.errorLoading"));
+        }
+    };
+
+    const handleDownload = async () => {
+        try {
+            await downloadFile(contentUrl, cv.fileName || "cv.pdf");
+        } catch (error) {
+            console.error("Erreur lors du téléchargement du CV :", error);
+        }
+    };
+
+    const handleAccept = async () => {
+        setActionState("processing");
+        try {
+            await onAccept(cv.id);
+        } catch (error) {
+            console.error("Erreur lors de l'acceptation du CV :", error);
+            setActionState("acceptError");
+        }
+    };
+
+    const handleConfirmDecline = async () => {
+        if (!reviewFeedback.trim()) {
+            setReviewError(t("gestionnaire.decline.errorNoFeedback"));
+            return;
+        }
+        setActionState("processing");
+        try {
+            await onDecline(cv.id, { feedback: reviewFeedback.trim() });
+        } catch (error) {
+            console.error("Erreur lors du refus du CV :", error);
+            setActionState("declineError");
+        }
+    };
+
+    const cancelDecline = () => {
+        setActionState("idle");
+        setReviewFeedback("");
+        setReviewError(null);
+    };
+
+    return (
+        <div
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} ${isHighlighted ? cardHighlighted : ''}`}
+        >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="min-w-0">
+                    <p className="text-main font-medium truncate">{cv.fileName}</p>
+                    <p className="text-sm text-main/70 truncate">
+                        {cv.studentFirstName} {cv.studentLastName}
+                        {cv.studentMatricule ? ` · ${cv.studentMatricule}` : ""}
+                    </p>
+                </div>
+
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={handleDownload}
+                        className={`${btnSmPrimary} flex items-center`}
+                    >
+                        <svg
+                            width="19"
+                            height="19"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleOpen}
+                        aria-haspopup="dialog"
+                        className={btnSmPrimary}
+                    >
+                        {t("cvViewer.show")}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActionState("confirmingAccept")}
+                        disabled={actionState !== "idle"}
+                        className={btnAccept}
+                    >
+                        {t("gestionnaire.accepter")}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActionState("decliningMode")}
+                        disabled={actionState !== "idle"}
+                        className={btnRefuse}
+                    >
+                        {t("gestionnaire.refuser")}
+                    </button>
+                </div>
+            </div>
+
+            {isOpen && (
+                <CvModal
+                    title={`${cv.studentFirstName} ${cv.studentLastName} — ${cv.fileName}`}
+                    file={previewUrl}
+                    error={previewError}
+                    loadingMessage={t("gestionnaire.preview.loading")}
+                    onClose={() => setIsOpen(false)}
+                />
+            )}
+
+            {actionState === "confirmingAccept" && (
+                <div className="mt-3 flex flex-col gap-2 rounded-md border border-green-200 bg-green-50 p-3" role="group">
+                    <p className="text-sm font-semibold text-main">
+                        {t("gestionnaire.accept.question", { name: `${cv.studentFirstName} ${cv.studentLastName}` })}
+                    </p>
+                    <div className="flex gap-2">
+                        <button type="button" onClick={handleAccept} disabled={actionState === "processing"} className={btnAccept}>
+                            {actionState === "processing" ? t("gestionnaire.accept.processing") : t("gestionnaire.accept.confirm")}
+                        </button>
+                        <button type="button" onClick={() => setActionState("idle")} disabled={actionState === "processing"} className={btnSmPrimary}>
+                            {t("gestionnaire.accept.cancel")}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {actionState === "decliningMode" && (
+                <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
+                    <p className="text-sm text-main mb-2">
+                        {t("gestionnaire.decline.title")}
+                    </p>
+                    <textarea
+                        value={reviewFeedback}
+                        onChange={(e) => setReviewFeedback(e.target.value)}
+                        placeholder={t("gestionnaire.decline.placeholder")}
+                        rows={3}
+                        className="w-full border border-red-300 rounded-md py-2 px-3 text-sm text-main bg-white resize-y focus:outline-none focus:ring-2 focus:ring-red-400 mb-2"
+                    />
+                    <div className="flex justify-end gap-2">
+                        <button
+                            type="button"
+                            onClick={handleConfirmDecline}
+                            disabled={actionState === "processing"}
+                            className={btnRefuse}
+                        >
+                            {actionState === "processing" ? t("gestionnaire.decline.processing") : t("gestionnaire.decline.confirmDecline")}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={cancelDecline}
+                            disabled={actionState === "processing"}
+                            className={btnSmPrimary}
+                        >
+                            {t("gestionnaire.decline.cancel")}
+                        </button>
+                    </div>
+                    {reviewError && <p className={`${textError} text-sm mt-2`} role="alert">{reviewError}</p>}
+                </div>
+            )}
+
+            {actionState === "acceptError" && (
+                <p className={`${textError} text-sm mt-2`} role="alert">
+                    {t("gestionnaire.accept.errorProcessing")}
+                </p>
+            )}
+            {actionState === "declineError" && (
+                <p className={`${textError} text-sm mt-2`} role="alert">
+                    {t("gestionnaire.decline.errorProcessing")}
+                </p>
+            )}
+        </div>
+    );
+};
+
+export default ManagerCvListItem;

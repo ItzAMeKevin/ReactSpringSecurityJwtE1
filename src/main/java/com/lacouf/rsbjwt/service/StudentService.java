@@ -1,11 +1,11 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
-import com.lacouf.rsbjwt.model.InterviewStatus;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
@@ -18,7 +18,6 @@ import com.lacouf.rsbjwt.service.dto.InterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewRespondRequest;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +34,8 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final JobOfferMapper jobOfferMapper;
     private final JobApplicationRepository jobApplicationRepository;
-    private final InterviewMapper interviewMapper;
     private final InterviewRepository interviewRepository;
+    private final InterviewMapper interviewMapper;
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
@@ -60,28 +59,23 @@ public class StudentService {
                 .toList();
     }
 
-    public List<InterviewDto> getInterviews(Authentication authentication) {
-        String email = authentication.getName();
-        return interviewRepository
-                .findByJobApplication_Student_Credentials_Email(email)
-                .stream()
+    @Transactional(readOnly = true)
+    public List<InterviewDto> getInterviews(String studentEmail) {
+        return interviewRepository.findAllByStudentEmail(studentEmail).stream()
                 .map(this::withExpired)
                 .toList();
     }
 
     @Transactional
-    public InterviewDto respondToInterview(Long interviewId, InterviewRespondRequest request, Authentication authentication) {
-        String email = authentication.getName();
-
-        var interview = interviewRepository
-                .findByIdAndJobApplication_Student_Credentials_Email(interviewId, email)
+    public InterviewDto respondToInterview(Long interviewId, InterviewRespondRequest request, String studentEmail) {
+        Interview interview = interviewRepository.findByIdAndStudentEmail(interviewId, studentEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
 
-        if (interview.getStatus() != InterviewStatus.PENDING) {
-            throw new ApplicationNotFoundException();
+        if (interview.getStatus() != Status.PENDING) {
+            throw new ApplicationStateException();
         }
 
-        if (request.status() == InterviewStatus.ACCEPTED) {
+        if (request.status() == Status.ACCEPTED) {
             InterviewSlot chosen = interview.getSlots().stream()
                     .filter(s -> s.getId().equals(request.selectedSlotId()))
                     .findFirst()
@@ -90,12 +84,13 @@ public class StudentService {
         }
 
         interview.setStatus(request.status());
+        interview.setStudentMessage(request.message());
         return withExpired(interviewRepository.save(interview));
     }
 
     private InterviewDto withExpired(Interview interview) {
         InterviewDto dto = interviewMapper.toInterviewDto(interview);
-        boolean expired = interview.getStatus() == InterviewStatus.PENDING
+        boolean expired = interview.getStatus() == Status.PENDING
                 && !interview.getSlots().isEmpty()
                 && interview.getSlots().stream().allMatch(s -> s.getDate().isBefore(LocalDate.now()));
         return new InterviewDto(dto.id(), dto.candidatureId(), dto.companyName(), dto.offerTitle(),
