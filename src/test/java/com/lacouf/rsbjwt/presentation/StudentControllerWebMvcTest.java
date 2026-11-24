@@ -8,6 +8,8 @@ import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
+import com.lacouf.rsbjwt.service.dto.CandidateDto;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,7 +29,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -126,6 +132,52 @@ public class StudentControllerWebMvcTest {
         mockMvc.perform(get("/etudiant/offres")
                         .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("GET /etudiant/embauches retourne les candidatures")
+    void getHires_returns200() throws Exception {
+        CandidatureDto dto = new CandidatureDto(7L, null, null,
+                Status.INTERVIEW_COMPLETED, null, null);
+        when(studentService.getHires("student@test.com")).thenReturn(List.of(dto));
+
+        mockMvc.perform(get("/etudiant/embauches")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(7))
+                .andExpect(jsonPath("$[0].status").value("INTERVIEW_COMPLETED"));
+    }
+
+    @Test
+    @DisplayName("PUT /etudiant/embauche/{id}/accepter accepte une embauche")
+    void acceptHire_returns200() throws Exception {
+        CandidatureDto dto = new CandidatureDto(7L, null, null,
+                Status.AWAITING_CONTRACT, null, null);
+        when(studentService.acceptHire(eq(7L), any(CandidateDto.class), eq("student@test.com")))
+                .thenReturn(dto);
+
+        mockMvc.perform(put("/etudiant/embauche/7/accepter")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("AWAITING_CONTRACT"));
+    }
+
+    @Test
+    @DisplayName("PUT /etudiant/embauche/{id}/decliner refuse une embauche")
+    void declineHire_returns200() throws Exception {
+        CandidatureDto dto = new CandidatureDto(7L, null, null,
+                Status.DECLINED, null, null);
+        when(studentService.declineHire(eq(7L), any(CandidateDto.class), eq("student@test.com")))
+                .thenReturn(dto);
+
+        mockMvc.perform(put("/etudiant/embauche/7/decliner")
+                        .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("DECLINED"));
     }
 
 

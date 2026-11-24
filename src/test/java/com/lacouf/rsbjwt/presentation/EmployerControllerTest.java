@@ -390,11 +390,11 @@ class EmployerControllerTest {
     void hireStudent_ok() throws Exception {
         when(employerService.hireStudent(1L, 5L, "marie@acme.com")).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
-                        Instant.parse("2026-02-01T12:00:00Z"), Status.HIRED));
+                        Instant.parse("2026-02-01T12:00:00Z"), Status.AWAITING_CONTRACT));
 
         mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("HIRED"));
+                .andExpect(jsonPath("$.status").value("AWAITING_CONTRACT"));
     }
 
     @Test
@@ -410,6 +410,20 @@ class EmployerControllerTest {
         mockMvc.perform(put("/employer/1/candidates/5/hire").with(employer()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("errors.offerNotAccepted"));
+    }
+
+    @Test
+    @DisplayName("GET /employer/candididates/hire-pending retourne les embauches en attente")
+    void getHirePendingCandidates_returnsList() throws Exception {
+        CandidateDto dto = new CandidateDto(5L, 1L, "Jean", "Dupont",
+                "jean@test.com", null, Status.PENDING_INTERVIEW);
+        when(employerService.getHirePendingCandidates("marie@acme.com"))
+                .thenReturn(List.of(dto));
+
+        mockMvc.perform(get("/employer/candididates/hire-pending").with(employer()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].candidatureId").value(1))
+                .andExpect(jsonPath("$[0].status").value("PENDING_INTERVIEW"));
     }
 
     // ===== GET /employer/candidates/{cvId}/cv =====

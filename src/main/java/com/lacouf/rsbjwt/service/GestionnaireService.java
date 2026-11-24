@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.service.dto.FeedbackDto;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferDto;
@@ -32,6 +33,8 @@ public class GestionnaireService {
     private final CvMapper cvMapper;
 
     private final JobOfferMapper jobOfferMapper;
+
+    private final CandidatureMapper candidatureMapper;
 
 
     public List<PendingCvDto> getPendingCvs() {
@@ -94,30 +97,7 @@ public class GestionnaireService {
     }
 
     public List<CandidatureDto> getAllCandidatures() {
-        return jobApplicationRepository.findAllWithStudentAndOffer()
-                .stream()
-                .map(ja -> {
-                    Student student = ja.getStudentCv().getStudent();
-                    JobOffer offer = ja.getJobOffer();
-                    return new CandidatureDto(
-                            ja.getId(),
-                            new CandidatureDto.StudentInfoDto(
-                                    student.getFirstName(),
-                                    student.getLastName(),
-                                    student.getMatricule(),
-                                    student.getCredentials().getEmail()
-                            ),
-                            new CandidatureDto.JobOfferInfoDto(
-                                    offer.getTitle(),
-                                    offer.getEmployer().getCompanyName(),
-                                    offer.getDurationInWeeks()
-                            ),
-                            ja.getStatus(),
-                            ja.getAppliedAt(),
-                            ja.getUpdatedAt()
-                    );
-                })
-                .toList();
+        return candidatureMapper.toDtoList(jobApplicationRepository.findAllWithStudentAndOffer());
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {

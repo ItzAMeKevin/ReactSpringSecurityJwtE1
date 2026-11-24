@@ -90,4 +90,9 @@ public class EmployerController {
     public ResponseEntity<List<EmployerInterviewDto>> getInterviews(Authentication authentication) {
         return ResponseEntity.ok(interviewService.getEmployerInterviews(authentication.getName()));
     }
+    
+    @GetMapping("/candididates/hire-pending")
+    public ResponseEntity<List<CandidateDto>> getHirePendingCandidates(Authentication authentication) {
+        return ResponseEntity.ok(employerService.getHirePendingCandidates(authentication.getName()));
+    }
 }

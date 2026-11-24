@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
 import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.model.JobApplication;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
@@ -56,6 +57,7 @@ public class InterviewService {
         interview.setSlots(slots);
 
         Interview saved = interviewRepository.save(interview);
+        jobApplicationRepository.updateStatus(application.getId(), Status.INTERVIEW_SCHEDULED);
         return interviewMapper.toDto(saved);
     }
 

@@ -1,13 +1,18 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
+import com.lacouf.rsbjwt.service.dto.CandidateDto;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +45,9 @@ public class StudentServiceTest {
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
+
+    @Mock
+    private CandidatureMapper candidatureMapper;
 
     @InjectMocks
     private StudentService studentService;
@@ -185,6 +193,106 @@ public class StudentServiceTest {
 
         assertEquals(1, result.size());
         assertEquals(Status.DECLINED, result.get(0).getApplicationStatus());
+    }
+
+    @Test
+    @DisplayName("getHires mappe les candidatures dont l'entretien est terminé")
+    void getHires_mapsCompletedInterviews() {
+        JobApplication application = new JobApplication();
+        application.setId(7L);
+        CandidatureDto dto = new CandidatureDto(7L, null, null,
+                Status.INTERVIEW_COMPLETED, null, null);
+
+        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
+                "employer@test.com", Status.INTERVIEW_COMPLETED))
+                .thenReturn(Optional.of(List.of(application)));
+        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
+
+        List<CandidatureDto> result = studentService.getHires("employer@test.com");
+
+        assertEquals(List.of(dto), result);
+        verify(candidatureMapper).toCandidateDto(application);
+    }
+
+    @Test
+    @DisplayName("getHires retourne une liste vide")
+    void getHires_returnsEmptyList() {
+        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
+                "employer@test.com", Status.INTERVIEW_COMPLETED))
+                .thenReturn(Optional.of(List.of()));
+
+        assertTrue(studentService.getHires("employer@test.com").isEmpty());
+    }
+
+    private JobApplication interviewCompletedApplication() {
+        StudentCv cv = new StudentCv();
+        cv.setStudent(student);
+        JobApplication application = new JobApplication();
+        application.setId(9L);
+        application.setStudentCv(cv);
+        application.setStatus(Status.INTERVIEW_COMPLETED);
+        return application;
+    }
+
+    @Test
+    @DisplayName("acceptHire passe l'entretien terminé à AWAITING_CONTRACT")
+    void acceptHire_changesStatus() {
+        JobApplication application = interviewCompletedApplication();
+        CandidatureDto dto = new CandidatureDto(9L, null, null,
+                Status.AWAITING_CONTRACT, null, null);
+        when(jobApplicationRepository.findById(9L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.save(application)).thenReturn(application);
+        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
+
+        CandidatureDto result = studentService.acceptHire(9L,
+                new CandidateDto(null, null, null, null, null, null, null),
+                STUDENT_EMAIL);
+
+        assertEquals(Status.AWAITING_CONTRACT, application.getStatus());
+        assertEquals(dto, result);
+    }
+
+    @Test
+    @DisplayName("declineHire passe l'entretien terminé à DECLINED")
+    void declineHire_changesStatus() {
+        JobApplication application = interviewCompletedApplication();
+        CandidatureDto dto = new CandidatureDto(9L, null, null,
+                Status.DECLINED, null, null);
+        when(jobApplicationRepository.findById(9L)).thenReturn(Optional.of(application));
+        when(jobApplicationRepository.save(application)).thenReturn(application);
+        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
+
+        CandidatureDto result = studentService.declineHire(9L,
+                new CandidateDto(null, null, null, null, null, null, null),
+                STUDENT_EMAIL);
+
+        assertEquals(Status.DECLINED, application.getStatus());
+        assertEquals(dto, result);
+    }
+
+    @Test
+    @DisplayName("acceptHire refuse une candidature dont l'étudiant ne possède pas")
+    void acceptHire_wrongStudentThrows() {
+        JobApplication application = interviewCompletedApplication();
+        when(jobApplicationRepository.findById(9L)).thenReturn(Optional.of(application));
+
+        assertThrows(UserNotFoundException.class, () -> studentService.acceptHire(9L,
+                new CandidateDto(null, null, null, null, null, null, null),
+                "other@test.com"));
+        verify(jobApplicationRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("declineHire refuse une candidature qui n'a pas terminé l'entretien")
+    void declineHire_invalidStateThrows() {
+        JobApplication application = interviewCompletedApplication();
+        application.setStatus(Status.INTERVIEW_SCHEDULED);
+        when(jobApplicationRepository.findById(9L)).thenReturn(Optional.of(application));
+
+        assertThrows(InvalidStateTransitionException.class, () -> studentService.declineHire(9L,
+                new CandidateDto(null, null, null, null, null, null, null),
+                STUDENT_EMAIL));
+        verify(jobApplicationRepository, never()).save(any());
     }
 }
 

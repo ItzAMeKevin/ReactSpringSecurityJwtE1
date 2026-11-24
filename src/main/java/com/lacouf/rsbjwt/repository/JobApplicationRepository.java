@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.repository;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -66,4 +67,18 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         ORDER BY ja.appliedAt DESC
         """)
     List<JobApplication> findAllWithStudentAndOffer();
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer e
+        WHERE e.credentials.email = :email AND ja.status = :status
+        ORDER BY ja.appliedAt DESC
+        """)
+    Optional<List<JobApplication>> findByJobOfferEmployerCredentialsEmailAndPendingStatus(String email, Status status);
+
+    @Modifying
+    @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")
+    int updateStatus(@Param("applicationId") Long applicationId, @Param("status") Status status);
 }

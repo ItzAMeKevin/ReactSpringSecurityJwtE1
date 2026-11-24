@@ -95,6 +95,7 @@ class InterviewServiceTest {
         assertNotNull(result);
         verify(interviewRepository).save(any(Interview.class));
         verify(interviewMapper).toDto(any(Interview.class));
+        verify(jobApplicationRepository).updateStatus(1L, Status.INTERVIEW_SCHEDULED);
     }
 
     @Test

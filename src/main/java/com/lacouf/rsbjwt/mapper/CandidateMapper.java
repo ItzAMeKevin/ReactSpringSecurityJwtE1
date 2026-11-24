@@ -6,6 +6,7 @@ import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import java.util.List;
 
 import java.time.Instant;
 
@@ -29,4 +30,6 @@ public interface CandidateMapper {
     @Mapping(source = "cv.student.email",     target = "email")
     @Mapping(source = "status",               target = "status")
     CandidateDto toCandidateDto(StudentCv cv, Instant appliedAt, Status status);
+
+    List<CandidateDto> toDTOList(List<JobApplication> applications);
 }

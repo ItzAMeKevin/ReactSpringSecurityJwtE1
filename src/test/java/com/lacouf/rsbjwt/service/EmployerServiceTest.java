@@ -111,7 +111,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.getJobOffersByEmployerId(employer.getId()))
                 .thenReturn(List.of(jobOffer, jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
-        when(jobApplicationRepository.countByOfferIdsAndStatus(any(), eq(Status.HIRED)))
+        when(jobApplicationRepository.countByOfferIdsAndStatus(any(), eq(Status.AWAITING_CONTRACT)))
                 .thenReturn(List.of());
 
         // Act
@@ -509,21 +509,21 @@ class EmployerServiceTest {
     }
 
     @Test
-    @DisplayName("hireStudent passe le candidat à HIRED et notifie l'étudiant")
-    void hireStudent_setsHiredAndNotifiesStudent() {
+    @DisplayName("hireStudent passe le candidat à AWAITING_CONTRACT et notifie l'étudiant")
+    void hireStudent_setsAwaitingContractAndNotifiesStudent() {
         givenHireableOffer(2);
         StudentCv cv = cvWithStudent(5L);
         JobApplication application = acceptedApplication(cv);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(1L);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(1L);
         when(candidateMapper.toCandidateDto(application)).thenReturn(
-                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com", null, Status.HIRED));
+                new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com", null, Status.AWAITING_CONTRACT));
 
         CandidateDto result = employerService.hireStudent(1L, 5L, "marie@acme.com");
 
-        assertEquals(Status.HIRED, result.status());
-        assertEquals(Status.HIRED, application.getStatus());
+        assertEquals(Status.AWAITING_CONTRACT, result.status());
+        assertEquals(Status.AWAITING_CONTRACT, application.getStatus());
         verify(systemeService).notifyUsers(List.of(cv.getStudent()), NotificationType.JOB_OFFER, 1L,
                 "notification.types.JOB_OFFER_HIRED.message");
     }
@@ -535,7 +535,7 @@ class EmployerServiceTest {
         JobApplication application = acceptedApplication(cvWithStudent(5L));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(1L);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(1L);
 
         employerService.hireStudent(1L, 5L, "marie@acme.com");
 
@@ -550,7 +550,7 @@ class EmployerServiceTest {
         JobApplication application = acceptedApplication(cvWithStudent(5L));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(2L);
+        when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.AWAITING_CONTRACT)).thenReturn(2L);
 
         employerService.hireStudent(1L, 5L, "marie@acme.com");
 
@@ -609,5 +609,44 @@ class EmployerServiceTest {
                 () -> employerService.hireStudent(1L, 5L, "marie@acme.com"));
         verify(jobApplicationRepository, never()).save(any());
         verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("getHirePendingCandidates mappe les candidatures en attente d'entretien")
+    void getHirePendingCandidates_mapsApplications() {
+        JobApplication application = acceptedApplication(cvWithStudent(5L));
+        application.setStatus(Status.PENDING_INTERVIEW);
+        CandidateDto dto = new CandidateDto(5L, 1L, "Jean", "Dupont",
+                "jean@test.com", null, Status.PENDING_INTERVIEW);
+        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
+                "marie@acme.com", Status.PENDING_INTERVIEW))
+                .thenReturn(Optional.of(List.of(application)));
+        when(candidateMapper.toCandidateDto(application)).thenReturn(dto);
+
+        List<CandidateDto> result =
+                employerService.getHirePendingCandidates("marie@acme.com");
+
+        assertEquals(List.of(dto), result);
+    }
+
+    @Test
+    @DisplayName("getHirePendingCandidates retourne une liste vide")
+    void getHirePendingCandidates_returnsEmptyList() {
+        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
+                "marie@acme.com", Status.PENDING_INTERVIEW))
+                .thenReturn(Optional.of(List.of()));
+
+        assertTrue(employerService.getHirePendingCandidates("marie@acme.com").isEmpty());
+    }
+
+    @Test
+    @DisplayName("getHirePendingCandidates lève EmployerNotFoundException quand aucune candidature n'est trouvée")
+    void getHirePendingCandidates_missingThrows() {
+        when(jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(
+                "missing@acme.com", Status.PENDING_INTERVIEW))
+                .thenReturn(Optional.empty());
+
+        assertThrows(EmployerNotFoundException.class,
+                () -> employerService.getHirePendingCandidates("missing@acme.com"));
     }
 }

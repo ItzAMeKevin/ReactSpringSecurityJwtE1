@@ -21,6 +21,7 @@ import com.lacouf.rsbjwt.service.dto.CandidateDto;
 import com.lacouf.rsbjwt.service.dto.JobOfferCreateDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,9 +53,13 @@ public class EmployerService {
                 .toList();
         if (dtos.isEmpty()) return dtos;
         List<Long> offerIds = dtos.stream().map(JobOfferDetailDTO::getId).toList();
-        Map<Long, Long> hiredCounts = jobApplicationRepository.countByOfferIdsAndStatus(offerIds, Status.HIRED)
-                .stream()
-                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
+        Map<Long, Long> hiredCounts = List.of(
+                Status.AWAITING_CONTRACT,
+                Status.AWAITING_SIGNATURES,
+                Status.CONTRACT_SIGNED)
+            .stream()
+            .flatMap(status -> jobApplicationRepository.countByOfferIdsAndStatus(offerIds, status).stream())
+            .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1], Long::sum));
         return dtos.stream()
                 .map(dto -> (JobOfferDetailDTO) dto.toBuilder()
                         .hiredCount(hiredCounts.getOrDefault(dto.getId(), 0L))
@@ -163,14 +168,14 @@ public class EmployerService {
         if (application.getStatus() != Status.ACCEPTED) {
             throw new InvalidStateTransitionException("errors.candidateNotAccepted");
         }
-        application.setStatus(Status.HIRED);
+        application.setStatus(Status.AWAITING_CONTRACT);
         JobApplication saved = jobApplicationRepository.save(application);
 
         Student student = application.getStudentCv().getStudent();
         systemeService.notifyUsers(List.of(student), NotificationType.JOB_OFFER, offerId,
                 "notification.types.JOB_OFFER_HIRED.message");
 
-        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatus(offerId, Status.HIRED);
+        long hiredCount = jobApplicationRepository.countByJobOffer_IdAndStatus(offerId, Status.AWAITING_CONTRACT);
         if (hiredCount >= offer.getNumberOfPositions()) {
             offer.setStatus(Status.FILLED);
             jobOfferRepository.save(offer);
@@ -193,5 +198,13 @@ public class EmployerService {
         application.setJobOffer(offer);
         application.setStudentCv(cv);
         return application;
+    }
+
+    public List<CandidateDto> getHirePendingCandidates(String name) {
+        List<JobApplication> applications = jobApplicationRepository.findByJobOfferEmployerCredentialsEmailAndPendingStatus(name, Status.PENDING_INTERVIEW)
+        .orElseThrow(() -> new EmployerNotFoundException(name));
+        return applications.stream()
+                .map(candidateMapper::toCandidateDto)
+                .collect(Collectors.toList());
     }
 }
