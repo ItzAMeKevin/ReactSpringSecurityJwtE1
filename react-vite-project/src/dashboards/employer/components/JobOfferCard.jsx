@@ -71,12 +71,14 @@ const JobOfferCard = ({ offer, isHighlighted, onClearHighlight, showCandidates, 
                 </div>
             )}
             {showCandidates && (
-                <CandidateList
-                    offerId={offer.id}
-                    onHire={onHire}
-                    onInterviewScheduled={onInterviewScheduled}
-                    remainingPositions={remainingPositions}
-                />
+                <div className="mt-6">
+                    <CandidateList
+                        offerId={offer.id}
+                        onHire={onHire}
+                        onInterviewScheduled={onInterviewScheduled}
+                        remainingPositions={remainingPositions}
+                    />
+                </div>
             )}
         </li>
     );

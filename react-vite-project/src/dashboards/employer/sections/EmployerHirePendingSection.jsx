@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DashboardSection from "@/components/layout/DashboardSection.jsx";
-import { cardItem, statusBadge, textMuted } from "@/styles/classes.js";
+import { cardItem, statusBadge, statusBadgeColor, textMuted } from "@/styles/classes.js";
 
 const EmployerHirePendingSection = () => {
     const { t, i18n } = useTranslation();
@@ -16,20 +16,23 @@ const EmployerHirePendingSection = () => {
             errorText={t("errors.generic")}
             emptyText={t("employerHirePending.empty")}
         >
-            {hirePending.items.map((candidate) => (
-                <div key={candidate.candidatureId} className={cardItem}>
+            {hirePending.items.map(({ id, student, jobOffer, status, updatedAt }) => (
+                <div key={id} className={cardItem}>
                     <div className="flex flex-wrap items-start justify-between gap-2">
                         <div className="min-w-0">
-                            <p className="font-bold text-main">{candidate.firstName} {candidate.lastName}</p>
-                            <p className={`break-all text-sm ${textMuted}`}>{candidate.email}</p>
+                            <p className="font-bold text-main">{student.firstName} {student.lastName}</p>
+                            <p className={`break-all text-sm ${textMuted}`}>{student.email}</p>
                         </div>
-                        <span className={`${statusBadge} bg-yellow-100 text-yellow-800`}>
+                        <span className={`${statusBadge} ${statusBadgeColor(status)}`}>
                             {t("employerHirePending.awaitingAnswer")}
                         </span>
                     </div>
-                    {candidate.appliedAt && (
-                        <p className={`mt-2 text-sm ${textMuted}`}>
-                            {t("employerHirePending.appliedOn", { date: new Date(candidate.appliedAt).toLocaleDateString(i18n.language) })}
+                    <p className="mt-2 text-sm">
+                        <span className="font-semibold">{t("employerInterviews.offer")} :</span> {jobOffer.title}
+                    </p>
+                    {updatedAt && (
+                        <p className={`mt-1 text-sm ${textMuted}`}>
+                            {t("employerHirePending.sentOn", { date: new Date(updatedAt).toLocaleDateString(i18n.language) })}
                         </p>
                     )}
                 </div>

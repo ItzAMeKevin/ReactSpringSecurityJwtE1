@@ -89,8 +89,10 @@
     "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
     "employerNotFound": "Employeur introuvable.",
     "notificationNotFound": "Notification introuvable.",
-    "invalidApplicationStatus": "Statut de candidature invalide.",
-    "applicationNotPending": "Seules les candidatures en attente peuvent être mises à jour.",
+    "applicationNotOpen": "Cette candidature n'est plus ouverte : une offre d'embauche a déjà été envoyée ou le candidat n'a pas été retenu.",
+    "applicationNotHirePending": "Cette offre d'embauche n'attend plus de réponse.",
+    "noPositionsLeft": "Tous les postes de cette offre sont déjà réservés par des offres d'embauche envoyées ou acceptées.",
+    "offerNotAccepted": "L'offre de stage doit être validée et encore ouverte pour embaucher.",
     "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
   },
   "header": {
@@ -193,6 +195,7 @@
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "offerUpdated": "L'offre a été resoumise pour approbation.",
+    "hireOfferSent": "Offre d'embauche envoyée. L'étudiant doit maintenant y répondre.",
     "editJobOffer": "Modifier l'offre",
     "resubmit": "Resoumettre l'offre",
     "feedbackTitre": "Commentaire du gestionnaire :",
@@ -320,7 +323,7 @@
     "resultCount": "{{count}} candidature(s) sur {{total}}",
     "filters": {
       "all": "Tous les statuts",
-      "accepted": "Acceptés",
+      "hire_pending": "Offre d'embauche envoyée",
       "declined": "Refusés",
       "pending": "En attente",
       "filterByStatus": "Filtrer par statut",
@@ -328,7 +331,6 @@
       "searchHint": "Recherchez un étudiant par son nom, prénom, matricule ou le titre de l'offre d'emploi"
     },
     "statuses": {
-      "accepted": "Acceptée",
       "declined": "Refusée",
       "pending": "En attente"
     },
@@ -398,8 +400,16 @@
         "message": "Votre offre de stage a été validée par un gestionnaire."
       },
       "JOB_OFFER_HIRED": {
-        "title": "Félicitations, vous avez été embauché !",
-        "message": "Un employeur vous a sélectionné pour un stage. Consultez vos offres pour plus de détails."
+        "title": "Vous avez reçu une offre d'embauche !",
+        "message": "Un employeur souhaite vous embaucher. Acceptez ou refusez son offre dans Offres d'embauche."
+      },
+      "JOB_OFFER_HIRE_ACCEPTED": {
+        "title": "Offre d'embauche acceptée",
+        "message": "Un étudiant a accepté votre offre d'embauche."
+      },
+      "JOB_OFFER_HIRE_DECLINED": {
+        "title": "Offre d'embauche refusée",
+        "message": "Un étudiant a refusé votre offre d'embauche. Le poste est de nouveau disponible."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
@@ -436,17 +446,20 @@
     "decline": "Refuser l'offre",
     "confirmAccept": "Accepter l'offre « {{title}} » chez {{company}} ?",
     "confirmDecline": "Refuser l'offre « {{title}} » chez {{company}} ? Cette décision est définitive.",
-    "confirm": "Confirmer",
-    "cancel": "Annuler",
-    "processing": "Envoi en cours...",
     "acceptSuccess": "Vous avez accepté l'offre « {{title}} ».",
     "declineSuccess": "Vous avez refusé l'offre « {{title}} ».",
     "error": "Une erreur est survenue. Veuillez réessayer."
   },
+  "confirmPanel": {
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "processing": "Envoi en cours..."
+  },
   "applicationStatuses": {
     "PENDING_INTERVIEW": "En attente d'entrevue",
     "INTERVIEW_SCHEDULED": "Entrevue planifiée",
-    "INTERVIEW_COMPLETED": "En attente de la réponse de l'étudiant",
+    "INTERVIEW_COMPLETED": "Entrevue terminée",
+    "HIRE_PENDING": "Offre d'embauche envoyée",
     "AWAITING_CONTRACT": "En attente du contrat",
     "AWAITING_SIGNATURES": "En attente des signatures",
     "CONTRACT_SIGNED": "Contrat signé",
@@ -472,10 +485,8 @@
     "noValidatedCv": "Vous pourrez postuler lorsque votre CV sera accepté par le gestionnaire.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
-      "ACCEPTED": "Candidature acceptée",
       "DECLINED": "Candidature refusée",
-      "HIRED": "Embauché(e)",
-      "INTERVIEW_COMPLETED": "Offre d'embauche reçue"
+      "HIRE_PENDING": "Offre d'embauche reçue"
     }
   },
 
@@ -499,32 +510,22 @@
     "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",
-      "ACCEPTED": "Candidat retenu",
-      "DECLINED": "Candidat non retenu",
-      "HIRED": "Embauché"
+      "DECLINED": "Candidat non retenu"
     },
-    "accepter": "Accepter",
-    "refuser": "Refuser",
     "scheduleInterview": "Planifier une entrevue",
     "embaucher": "Embaucher",
-    "hireError": "Une erreur est survenue lors de l'embauche.",
-    "hireConflict": "Impossible d'embaucher : l'offre est déjà pourvue ou le candidat n'est plus retenu.",
-    "erreurStatut": "Impossible de mettre à jour le statut.",
-
+    "nePasRetenir": "Ne pas retenir",
+    "erreurStatut": "Impossible de mettre à jour la candidature.",
     "confirmation": {
-      "titre": "Confirmation de la décision",
-      "accepter": "Accepter la candidature de {{nom}} ?",
-      "refuser": "Refuser la candidature de {{nom}} ?",
-      "motifLabel": "Message ou motif (optionnel)",
-      "confirmer": "Confirmer",
-      "annuler": "Annuler"
+      "embaucher": "Envoyer une offre d'embauche à {{nom}} ? L'étudiant devra l'accepter ou la refuser.",
+      "nePasRetenir": "Ne pas retenir la candidature de {{nom}} ? Cette décision est définitive."
     }
   },
   "employerHirePending": {
     "loading": "Chargement des étudiants en attente d'embauche...",
     "empty": "Aucun étudiant en attente de réponse à une offre d'embauche.",
     "awaitingAnswer": "En attente de la réponse de l'étudiant",
-    "appliedOn": "Candidature reçue le {{date}}"
+    "sentOn": "Offre d'embauche envoyée le {{date}}"
   },
   "employerInterviews": {
     "loading": "Chargement des entrevues...",

@@ -58,7 +58,7 @@ const PersonalSpaceStudent = () => {
 
     const respondToHire = (action, messageKey, variant) => async (id) => {
         const hire = hires.items.find((item) => item.id === id);
-        await sendPut(`/etudiant/embauche/${id}/${action}`, {});
+        await sendPut(`/etudiant/embauches/${id}/${action}`);
         hires.removeById(id);
         showMessage(messageKey, { title: hire?.jobOffer.title }, variant);
     };

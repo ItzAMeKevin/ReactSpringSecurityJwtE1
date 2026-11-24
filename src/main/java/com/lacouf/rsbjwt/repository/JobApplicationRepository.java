@@ -33,7 +33,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     boolean existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(Long cvId, String email);
     boolean existsByStudentCv_IdAndJobOffer_Id(Long cvId, Long offerId);
 
-    long countByJobOffer_IdAndStatus(Long jobOfferId, Status status);
     long countByJobOffer_IdAndStatusIn(Long jobOfferId, Collection<Status> statuses);
 
     @Query("""

@@ -2,10 +2,12 @@ import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DashboardSection from "@/components/layout/DashboardSection.jsx";
 import HireOfferListItem from "@/dashboards/student/components/HireOfferListItem.jsx";
+import useHighlightWhenNotified from "@/hooks/useHighlightWhenNotified.js";
 
 const StudentHireOfferSection = () => {
     const { t } = useTranslation();
     const { hires, acceptHire, declineHire } = useOutletContext();
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
 
     return (
         <DashboardSection
@@ -17,7 +19,14 @@ const StudentHireOfferSection = () => {
             emptyText={t("etudiantEmbauches.empty")}
         >
             {hires.items.map((hire) => (
-                <HireOfferListItem key={hire.id} hire={hire} onAccept={acceptHire} onDecline={declineHire} />
+                <HireOfferListItem
+                    key={hire.id}
+                    hire={hire}
+                    isHighlighted={isHighlighted("hire", hire.id)}
+                    onClearHighlight={clearHighlight}
+                    onAccept={acceptHire}
+                    onDecline={declineHire}
+                />
             ))}
         </DashboardSection>
     );

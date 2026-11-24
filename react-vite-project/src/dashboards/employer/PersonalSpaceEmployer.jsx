@@ -10,12 +10,6 @@ import FormJobOffer from "@/dashboards/employer/components/FormJobOffer.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 import { btnPrimary, btnOutline, btnModalPrimary, textMuted } from "@/styles/classes.js";
 
-const withNewHire = (offer) => {
-    const hiredCount = (offer.hiredCount ?? 0) + 1;
-    const isFilled = offer.numberOfPositions != null && hiredCount >= offer.numberOfPositions;
-    return { ...offer, hiredCount, status: isFilled ? "FILLED" : offer.status };
-};
-
 const PersonalSpaceEmployer = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -43,8 +37,10 @@ const PersonalSpaceEmployer = () => {
         navigate("offres/en-attente");
     };
 
-    const hireInOffer = (offerId) =>
-        offers.setItems((current) => current.map((offer) => (offer.id === offerId ? withNewHire(offer) : offer)));
+    const hireInOffer = () => {
+        showMessage("personalSpaceEmployer.hireOfferSent");
+        void hirePending.reload();
+    };
 
     const countOffers = (status) =>
         offers.status === "loaded" ? offers.items.filter((offer) => offer.status === status).length : null;

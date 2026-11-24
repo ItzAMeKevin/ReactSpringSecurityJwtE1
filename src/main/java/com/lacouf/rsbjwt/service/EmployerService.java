@@ -153,7 +153,7 @@ public class EmployerService {
         JobApplication application = findOrCreateApplication(offer, cvId);
         application.offerHire();
         JobApplication saved = jobApplicationRepository.save(application);
-        systemeService.notifyUsers(List.of(saved.getStudentCv().getStudent()), NotificationType.JOB_OFFER, offerId,
+        systemeService.notifyUsers(List.of(saved.getStudentCv().getStudent()), NotificationType.JOB_OFFER, saved.getId(),
                 "notification.types.JOB_OFFER_HIRED.message");
         return candidateMapper.toCandidateDto(saved);
     }

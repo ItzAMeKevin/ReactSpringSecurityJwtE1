@@ -497,6 +497,7 @@ class EmployerServiceTest {
         givenHireableOffer(2, 0L);
         StudentCv cv = cvWithStudent(5L);
         JobApplication application = pendingApplication(cv);
+        application.setId(9L);
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
 
@@ -504,7 +505,7 @@ class EmployerServiceTest {
 
         assertEquals(Status.HIRE_PENDING, result.status());
         assertEquals(Status.HIRE_PENDING, application.getStatus());
-        verify(systemeService).notifyUsers(List.of(cv.getStudent()), NotificationType.JOB_OFFER, 1L,
+        verify(systemeService).notifyUsers(List.of(cv.getStudent()), NotificationType.JOB_OFFER, 9L,
                 "notification.types.JOB_OFFER_HIRED.message");
     }
 
