@@ -77,6 +77,7 @@ public class StudentService {
         if (interview.getStatus() != InterviewStatus.PENDING) {
             throw new ApplicationNotFoundException();
         }
+
         selectChosenSlot(interview, request);
         interview.setStatus(request.status());
         return withExpired(interviewRepository.save(interview));
