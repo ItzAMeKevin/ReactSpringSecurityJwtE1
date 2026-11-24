@@ -502,7 +502,7 @@ class EmployerControllerTest {
                 10L, 1L, 3L, "Développeur Java", "Jean", "Dupont", "jean@test.com",
                 InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
                 Instant.parse("2026-11-01T12:00:00Z"),
-                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+                List.of(new InterviewSlotDto(null, LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0), null)));
         when(interviewService.getEmployerInterviews("marie@acme.com")).thenReturn(List.of(interview));
 
         mockMvc.perform(get("/employer/interviews").with(employer()))

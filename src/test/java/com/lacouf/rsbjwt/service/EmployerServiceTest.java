@@ -304,7 +304,7 @@ class EmployerServiceTest {
 
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdWithStudent(1L)).thenReturn(List.of(application));
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
+        when(candidateMapper.toDto(application)).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
                         Instant.parse("2026-02-01T12:00:00Z"), Status.PENDING));
 
@@ -341,7 +341,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, email)).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
+        when(candidateMapper.toDto(application)).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
                         Instant.parse("2026-02-01T12:00:00Z"), Status.ACCEPTED));
 
@@ -403,7 +403,7 @@ class EmployerServiceTest {
         jobOffer.setAppliedCvs(new ArrayList<>(List.of(cv)));
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdWithStudent(1L)).thenReturn(List.of());
-        when(candidateMapper.toCandidateDto(cv, cv.getUploadedAt(), Status.PENDING)).thenReturn(
+        when(candidateMapper.toDto(cv, null, cv.getUploadedAt(), Status.PENDING)).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com",
                         Instant.parse("2026-01-15T10:00:00Z"), Status.PENDING));
 
@@ -422,7 +422,7 @@ class EmployerServiceTest {
         application.setStatus(Status.ACCEPTED);
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdWithStudent(1L)).thenReturn(List.of(application));
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
+        when(candidateMapper.toDto(application)).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com", null, Status.ACCEPTED));
 
         List<CandidateDto> result = employerService.getCandidates(1L, "marie@acme.com");
@@ -451,7 +451,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.findByIdAndEmployerCredentialsEmail(1L, "marie@acme.com")).thenReturn(Optional.of(jobOffer));
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.empty());
         when(jobApplicationRepository.save(any(JobApplication.class))).thenAnswer(i -> i.getArgument(0));
-        when(candidateMapper.toCandidateDto(any(JobApplication.class))).thenAnswer(i -> {
+        when(candidateMapper.toDto(any(JobApplication.class))).thenAnswer(i -> {
             JobApplication app = i.getArgument(0);
             return new CandidateDto(app.getStudentCv().getId(), app.getId(), null, null, null, null, app.getStatus());
         });
@@ -518,7 +518,7 @@ class EmployerServiceTest {
         when(jobApplicationRepository.findByOfferIdAndCvIdWithStudent(1L, 5L)).thenReturn(Optional.of(application));
         when(jobApplicationRepository.save(application)).thenReturn(application);
         when(jobApplicationRepository.countByJobOffer_IdAndStatus(1L, Status.HIRED)).thenReturn(1L);
-        when(candidateMapper.toCandidateDto(application)).thenReturn(
+        when(candidateMapper.toDto(application)).thenReturn(
                 new CandidateDto(5L, 1L, "Jean", "Dupont", "jean@test.com", null, Status.HIRED));
 
         CandidateDto result = employerService.hireStudent(1L, 5L, "marie@acme.com");
