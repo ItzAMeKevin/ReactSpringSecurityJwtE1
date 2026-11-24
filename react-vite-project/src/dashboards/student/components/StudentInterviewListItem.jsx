@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cardItem, textMuted } from '../../../styles/classes.js';
+import { cardItem, statusBadge, statusBadgeColor, textMuted } from '../../../styles/classes.js';
+import { formatSlotDate } from '../../../utils/dateFormatting.js';
 import StudentInterviewResponseModal from './StudentInterviewResponseModal.jsx';
-
-const STATUS_STYLES = {
-    PENDING: 'bg-yellow-100 text-yellow-800',
-    ACCEPTED: 'bg-green-100 text-green-800',
-    DECLINED: 'bg-red-100 text-red-800',
-    EXPIRED: 'bg-gray-100 text-gray-600',
-};
 
 const TYPE_STYLES = {
     ONLINE: 'bg-blue-100 text-blue-800',
@@ -27,11 +21,7 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
         ? interview.slots.reduce((a, b) => a.date < b.date ? a : b)
         : null;
 
-    const formattedDate = earliestSlot
-        ? new Date(earliestSlot.date + 'T00:00:00').toLocaleDateString(i18n.language, {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-        })
-        : null;
+    const formattedDate = earliestSlot ? formatSlotDate(earliestSlot.date, i18n.language) : null;
 
     const canRespond = isPending && !isExpired;
 
@@ -43,7 +33,7 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${TYPE_STYLES[interview.type] ?? 'bg-gray-100 text-gray-700'}`}>
                             {t(`convocations.type.${interview.type}`)}
                         </span>
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLES[displayStatus] ?? 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`${statusBadge} ${statusBadgeColor(displayStatus)}`}>
                             {t(`convocations.status.${displayStatus}`)}
                         </span>
                     </div>
@@ -52,7 +42,7 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
                     {formattedDate && (
                         <p className={`${textMuted} text-xs mt-1`}>{formattedDate}</p>
                     )}
-                    {isPending && isExpired && (
+                    {displayStatus === 'EXPIRED' && (
                         <p className="text-xs text-gray-500 mt-1 italic">{t('convocations.expired')}</p>
                     )}
                     {interview.status === 'DECLINED' && interview.studentMessage && (

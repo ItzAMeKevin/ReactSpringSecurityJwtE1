@@ -55,7 +55,7 @@ const PersonalSpaceStudent = () => {
     const items = [
         ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
         { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
-        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.count },
+        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.status === "loaded" ? interviews.items.filter((i) => i.status === "PENDING").length : null },
     ];
 
     const actions = (

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import fetcher from '../../../utils/fetcher.js';
+import formatAddress from '../../../utils/formatAddress.js';
+import { formatSlotDate } from '../../../utils/dateFormatting.js';
 import { btnAccept, btnOutline, btnRefuse, inputField, textError, textMuted } from '../../../styles/classes.js';
 
 const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }) => {
@@ -36,11 +38,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                 })
             });
             if (res.status === 409) {
-                const body = await res.json().catch(() => ({}));
-                const key = body.message === 'expired'
-                    ? 'convocations.errors.expired'
-                    : 'convocations.errors.alreadyResponded';
-                throw new Error(t(key));
+                throw new Error(t('convocations.errors.alreadyResponded'));
             }
             if (!res.ok) throw new Error(t('convocations.errors.generic'));
             const updated = await res.json();
@@ -51,11 +49,6 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
             setLoading(false);
         }
     };
-
-    const formatDate = (date) =>
-        new Date(date + 'T00:00:00').toLocaleDateString(i18n.language, {
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-        });
 
     return (
         <div
@@ -98,8 +91,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                             </Row>
                         )}
                         {interview.address && (
-                            <Row label={t('convocations.modal.address')}
-                                value={[interview.address.numeroCivic, interview.address.rue, interview.address.ville, interview.address.codePostal].filter(Boolean).join(', ')} />
+                            <Row label={t('convocations.modal.address')} value={formatAddress(interview.address)} />
                         )}
                         {interview.notes && (
                             <Row label={t('convocations.modal.notes')} value={interview.notes} />
@@ -128,7 +120,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                                                         : 'border-brand/20 bg-white text-main/70 hover:bg-brand/5'}
                                                     ${declining ? 'opacity-50 cursor-default' : 'cursor-pointer'}`}
                                             >
-                                                {formatDate(slot.date)} • {slot.startTime} – {slot.endTime}
+                                                {formatSlotDate(slot.date, i18n.language)} • {slot.startTime} – {slot.endTime}
                                                 {selected && <span className="ml-2 text-brand">✓</span>}
                                             </button>
                                         </li>

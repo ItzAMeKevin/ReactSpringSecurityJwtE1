@@ -39,7 +39,7 @@ public class StudentService {
 
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
 
         Map<Long, Status> applicationStatuses = jobApplicationRepository
                 .findByStudentIdWithOffer(student.getId())

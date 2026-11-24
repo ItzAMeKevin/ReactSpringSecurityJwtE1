@@ -48,3 +48,9 @@ export const getTodayDateString = () => {
     const day = String(today.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 };
+
+/** Format a YYYY-MM-DD date string for display (locale-aware, full weekday + date) */
+export const formatSlotDate = (dateString, language) =>
+    new Date(dateString + 'T00:00:00').toLocaleDateString(language, {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    });

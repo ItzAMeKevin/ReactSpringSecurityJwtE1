@@ -36,7 +36,7 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     List<Interview> findAllByStudentEmail(@Param("email") String email);
 
     @Query("""
-            SELECT i FROM Interview i
+            SELECT DISTINCT i FROM Interview i
             JOIN FETCH i.jobApplication ja
             JOIN FETCH ja.jobOffer jo
             JOIN FETCH jo.employer
