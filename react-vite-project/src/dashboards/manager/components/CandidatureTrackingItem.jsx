@@ -57,21 +57,24 @@ const CandidatureTrackingItem = ({ candidature }) => {
             {showDetails && (
                 <tr className="bg-brand/5 border-b border-brand/20">
                     <td colSpan="6" className="px-4 py-4">
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <p className="font-semibold text-main text-sm mb-1">
+                                    <p className="font-semibold text-main text-sm mb-2">
                                         {t("candidatureTracking.details.student")}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {candidature.student?.firstName} {candidature.student?.lastName}
+                                        <span className="font-medium">{candidature.student?.firstName} {candidature.student?.lastName}</span>
                                     </p>
                                     <p className="text-main/80 text-sm">
                                         {t("candidatureTracking.details.email")}: {candidature.student?.email || "N/A"}
                                     </p>
+                                    <p className="text-main/80 text-sm">
+                                        {t("candidatureTracking.details.programme")}: {candidature.student?.programme || "N/A"}
+                                    </p>
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-main text-sm mb-1">
+                                    <p className="font-semibold text-main text-sm mb-2">
                                         {t("candidatureTracking.details.offer")}
                                     </p>
                                     <p className="text-main/80 text-sm">
@@ -81,12 +84,58 @@ const CandidatureTrackingItem = ({ candidature }) => {
                                         {t("candidatureTracking.details.company")}: {candidature.jobOffer?.companyName || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.duration")}: {candidature.jobOffer?.durationInWeeks || "N/A"} {t("candidatureTracking.details.weeks")}
+                                        {t("candidatureTracking.details.salary")}: {candidature.jobOffer?.salary || "N/A"}
                                     </p>
                                 </div>
                             </div>
+
                             <div>
-                                <p className="font-semibold text-main text-sm mb-1">
+                                <p className="font-semibold text-main text-sm mb-2">
+                                    {t("candidatureTracking.details.positionDetails")}
+                                </p>
+                                <p className="text-main/80 text-sm mb-2">
+                                    <span className="font-medium">{t("candidatureTracking.details.description")}:</span>
+                                </p>
+                                <p className="text-main/80 text-sm mb-3 italic">
+                                    {candidature.jobOffer?.description || "N/A"}
+                                </p>
+                                <p className="text-main/80 text-sm mb-2">
+                                    <span className="font-medium">{t("candidatureTracking.details.prerequisites")}:</span>
+                                </p>
+                                <p className="text-main/80 text-sm italic">
+                                    {candidature.jobOffer?.prerequisites || "N/A"}
+                                </p>
+                            </div>
+
+                            {/* Duration & Dates */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p className="font-semibold text-main text-sm mb-2">
+                                        {t("candidatureTracking.details.timeline")}
+                                    </p>
+                                    <p className="text-main/80 text-sm">
+                                        {t("candidatureTracking.details.startDate")}: {formatDate(candidature.jobOffer?.startingDate, i18n.language)}
+                                    </p>
+                                    <p className="text-main/80 text-sm">
+                                        {t("candidatureTracking.details.duration")}: {candidature.jobOffer?.durationInWeeks || "N/A"} {t("candidatureTracking.details.weeks")}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-main text-sm mb-2">
+                                        {t("candidatureTracking.details.employerContact")}
+                                    </p>
+                                    <p className="text-main/80 text-sm">
+                                        {t("candidatureTracking.details.email")}: {candidature.jobOffer?.employer?.email || "N/A"}
+                                    </p>
+                                    <p className="text-main/80 text-sm">
+                                        {t("candidatureTracking.details.phone")}: {candidature.jobOffer?.employer?.phoneNumber || "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Application Dates */}
+                            <div>
+                                <p className="font-semibold text-main text-sm mb-2">
                                     {t("candidatureTracking.details.dates")}
                                 </p>
                                 <p className="text-main/80 text-sm">
