@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CandidatureMapper {
 
-    default CandidatureDto toCandidateDto(JobApplication application) {
+    default CandidatureDto toCandidatureDto(JobApplication application) {
         Student student = application.getStudentCv().getStudent();
         JobOffer offer = application.getJobOffer();
 
@@ -36,7 +36,7 @@ public interface CandidatureMapper {
 
     default List<CandidatureDto> toDtoList(List<JobApplication> applications) {
         return applications.stream()
-                .map(this::toCandidateDto)
+                .map(this::toCandidatureDto)
                 .toList();
     }
 }

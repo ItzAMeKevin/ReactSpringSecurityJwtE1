@@ -48,8 +48,7 @@ public class JobApplication {
     public static final Set<Status> HIRED_STATUSES = EnumSet.of(
             Status.AWAITING_CONTRACT, Status.AWAITING_SIGNATURES, Status.CONTRACT_SIGNED, Status.WORKING, Status.COMPLETED);
 
-    public static final Set<Status> SEAT_HOLDING_STATUSES = EnumSet.of(
-            Status.HIRE_PENDING, Status.AWAITING_CONTRACT, Status.AWAITING_SIGNATURES, Status.CONTRACT_SIGNED, Status.WORKING, Status.COMPLETED);
+    public static final Set<Status> SEAT_HOLDING_STATUSES = withStatus(HIRED_STATUSES, Status.HIRE_PENDING);
 
     private static final Set<Status> OPEN_STATUSES = EnumSet.of(
             Status.PENDING, Status.PENDING_INTERVIEW, Status.INTERVIEW_SCHEDULED, Status.INTERVIEW_COMPLETED);
@@ -68,6 +67,12 @@ public class JobApplication {
 
     public void declineHire() {
         transition(EnumSet.of(Status.HIRE_PENDING), Status.DECLINED, "errors.applicationNotHirePending");
+    }
+
+    private static Set<Status> withStatus(Set<Status> base, Status extra) {
+        EnumSet<Status> result = EnumSet.copyOf(base);
+        result.add(extra);
+        return result;
     }
 
     private void transition(Set<Status> allowedFrom, Status target, String errorKey) {

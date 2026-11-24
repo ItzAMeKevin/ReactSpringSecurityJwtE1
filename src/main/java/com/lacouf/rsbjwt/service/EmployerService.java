@@ -53,9 +53,9 @@ public class EmployerService {
                 .toList();
         if (dtos.isEmpty()) return dtos;
         List<Long> offerIds = dtos.stream().map(JobOfferDetailDTO::getId).toList();
-        Map<Long, Long> hiredCounts = JobApplication.HIRED_STATUSES.stream()
-            .flatMap(status -> jobApplicationRepository.countByOfferIdsAndStatus(offerIds, status).stream())
-            .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1], Long::sum));
+        Map<Long, Long> hiredCounts = jobApplicationRepository.countByOfferIdsAndStatusIn(offerIds, JobApplication.HIRED_STATUSES)
+                .stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
         return dtos.stream()
                 .map(dto -> (JobOfferDetailDTO) dto.toBuilder()
                         .hiredCount(hiredCounts.getOrDefault(dto.getId(), 0L))
@@ -160,10 +160,8 @@ public class EmployerService {
 
     @Transactional(readOnly = true)
     public List<CandidatureDto> getHirePendingCandidates(String employerEmail) {
-        return jobApplicationRepository.findByEmployerEmailAndStatus(employerEmail, Status.HIRE_PENDING)
-                .stream()
-                .map(candidatureMapper::toCandidateDto)
-                .toList();
+        return candidatureMapper.toDtoList(
+                jobApplicationRepository.findByEmployerEmailAndStatus(employerEmail, Status.HIRE_PENDING));
     }
 
     private void requireOpenPosition(JobOffer offer) {

@@ -114,7 +114,7 @@ class EmployerServiceTest {
         when(jobOfferRepository.getJobOffersByEmployerId(employer.getId()))
                 .thenReturn(List.of(jobOffer, jobOffer));
         when(jobOfferMapper.toDto(jobOffer)).thenReturn(jobOfferDetailDTO);
-        when(jobApplicationRepository.countByOfferIdsAndStatus(any(), eq(Status.AWAITING_CONTRACT)))
+        when(jobApplicationRepository.countByOfferIdsAndStatusIn(any(), eq(JobApplication.HIRED_STATUSES)))
                 .thenReturn(List.of());
 
         // Act
@@ -597,7 +597,7 @@ class EmployerServiceTest {
         CandidatureDto dto = new CandidatureDto(1L, null, null, Status.HIRE_PENDING, null, null);
         when(jobApplicationRepository.findByEmployerEmailAndStatus("marie@acme.com", Status.HIRE_PENDING))
                 .thenReturn(List.of(application));
-        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
+        when(candidatureMapper.toDtoList(List.of(application))).thenReturn(List.of(dto));
 
         List<CandidatureDto> result = employerService.getHirePendingCandidates("marie@acme.com");
 

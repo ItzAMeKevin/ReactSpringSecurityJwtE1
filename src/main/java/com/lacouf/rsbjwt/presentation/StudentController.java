@@ -29,8 +29,8 @@ public class StudentController {
     }
 
     @GetMapping("/embauches")
-    public ResponseEntity<List<CandidatureDto>> getHires(Authentication authentication) {
-        return ResponseEntity.ok(studentService.getHires(authentication.getName()));
+    public ResponseEntity<List<CandidatureDto>> getPendingHireOffers(Authentication authentication) {
+        return ResponseEntity.ok(studentService.getPendingHireOffers(authentication.getName()));
     }
 
     @PutMapping("/embauches/{applicationId}/accepter")

@@ -126,9 +126,9 @@ class StudentControllerWebMvcTest {
 
     @Test
     @DisplayName("GET /etudiant/embauches retourne les offres d'embauche en attente de réponse")
-    void getHires_returns200() throws Exception {
+    void getPendingHireOffers_returns200() throws Exception {
         CandidatureDto dto = new CandidatureDto(7L, null, null, Status.HIRE_PENDING, null, null);
-        when(studentService.getHires("student@test.com")).thenReturn(List.of(dto));
+        when(studentService.getPendingHireOffers("student@test.com")).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/etudiant/embauches").with(student()))
                 .andExpect(status().isOk())

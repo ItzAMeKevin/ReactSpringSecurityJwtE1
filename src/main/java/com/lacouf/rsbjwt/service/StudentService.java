@@ -56,11 +56,9 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
-    public List<CandidatureDto> getHires(String studentEmail) {
-        return jobApplicationRepository.findByStudentEmailAndStatus(studentEmail, Status.HIRE_PENDING)
-                .stream()
-                .map(candidatureMapper::toCandidateDto)
-                .toList();
+    public List<CandidatureDto> getPendingHireOffers(String studentEmail) {
+        return candidatureMapper.toDtoList(
+                jobApplicationRepository.findByStudentEmailAndStatus(studentEmail, Status.HIRE_PENDING));
     }
 
     @Transactional
@@ -72,7 +70,7 @@ public class StudentService {
         jobApplicationRepository.save(application);
         fillOfferIfComplete(offer);
         notifyEmployer(application, "notification.types.JOB_OFFER_HIRE_ACCEPTED.message");
-        return candidatureMapper.toCandidateDto(application);
+        return candidatureMapper.toCandidatureDto(application);
     }
 
     @Transactional
@@ -81,7 +79,7 @@ public class StudentService {
         application.declineHire();
         jobApplicationRepository.save(application);
         notifyEmployer(application, "notification.types.JOB_OFFER_HIRE_DECLINED.message");
-        return candidatureMapper.toCandidateDto(application);
+        return candidatureMapper.toCandidatureDto(application);
     }
 
     private JobApplication findOwnHire(Long applicationId, String studentEmail) {

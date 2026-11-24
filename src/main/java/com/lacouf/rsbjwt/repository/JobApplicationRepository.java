@@ -38,10 +38,10 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     @Query("""
         SELECT ja.jobOffer.id, COUNT(ja)
         FROM JobApplication ja
-        WHERE ja.jobOffer.id IN :offerIds AND ja.status = :status
+        WHERE ja.jobOffer.id IN :offerIds AND ja.status IN :statuses
         GROUP BY ja.jobOffer.id
         """)
-    List<Object[]> countByOfferIdsAndStatus(@Param("offerIds") List<Long> offerIds, @Param("status") Status status);
+    List<Object[]> countByOfferIdsAndStatusIn(@Param("offerIds") List<Long> offerIds, @Param("statuses") Collection<Status> statuses);
 
     @Query("""
         SELECT ja FROM JobApplication ja

@@ -199,25 +199,25 @@ public class StudentServiceTest {
     }
 
     @Test
-    @DisplayName("getHires mappe les offres d'embauche en attente de réponse")
-    void getHires_mapsHirePending() {
+    @DisplayName("getPendingHireOffers mappe les offres d'embauche en attente de réponse")
+    void getPendingHireOffers_mapsHirePending() {
         JobApplication application = new JobApplication();
         application.setId(7L);
         CandidatureDto dto = new CandidatureDto(7L, null, null, Status.HIRE_PENDING, null, null);
         when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
                 .thenReturn(List.of(application));
-        when(candidatureMapper.toCandidateDto(application)).thenReturn(dto);
+        when(candidatureMapper.toDtoList(List.of(application))).thenReturn(List.of(dto));
 
-        assertEquals(List.of(dto), studentService.getHires(STUDENT_EMAIL));
+        assertEquals(List.of(dto), studentService.getPendingHireOffers(STUDENT_EMAIL));
     }
 
     @Test
-    @DisplayName("getHires retourne une liste vide")
-    void getHires_returnsEmptyList() {
+    @DisplayName("getPendingHireOffers retourne une liste vide")
+    void getPendingHireOffers_returnsEmptyList() {
         when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
                 .thenReturn(List.of());
 
-        assertTrue(studentService.getHires(STUDENT_EMAIL).isEmpty());
+        assertTrue(studentService.getPendingHireOffers(STUDENT_EMAIL).isEmpty());
     }
 
     private JobApplication hirePendingApplication() {
