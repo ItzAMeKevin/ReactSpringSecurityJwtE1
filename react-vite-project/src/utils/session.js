@@ -2,7 +2,9 @@ const SEASON_ORDER = { H: 0, E: 1, A: 2 };
 const SEASONS = Object.keys(SEASON_ORDER);
 
 export function getSessionCode(dateStr) {
+    if (!dateStr) return null;
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
     const month = d.getUTCMonth() + 1;
     const year = d.getUTCFullYear();
     const prefix = month <= 4 ? "H" : month <= 8 ? "E" : "A";
@@ -11,6 +13,7 @@ export function getSessionCode(dateStr) {
 
 export function getNextSessionCode(date = new Date()) {
     const current = getSessionCode(date);
+    if (!current) return null;
     const year = Number(current.slice(1));
     const nextIndex = SEASON_ORDER[current[0]] + 1;
     return nextIndex < SEASONS.length ? `${SEASONS[nextIndex]}${year}` : `H${year + 1}`;
@@ -22,6 +25,10 @@ export function compareSessionCodesDesc(a, b) {
 }
 
 export function getSessionsFromOffers(offers) {
-    const codes = new Set(offers.map(o => getSessionCode(o.startingDate)));
+    const codes = new Set(
+        offers
+            .map(o => getSessionCode(o.startingDate))
+            .filter(code => code !== null) // Ignorer les dates invalides
+    );
     return [...codes].sort(compareSessionCodesDesc);
 }
