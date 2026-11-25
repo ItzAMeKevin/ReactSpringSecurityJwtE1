@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.OfferAlreadyProcessedException;
 import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.model.*;
@@ -117,6 +118,16 @@ class InterviewServiceTest {
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> interviewService.schedule(validOnlineDto(), "other@test.com"));
+        verify(interviewRepository, never()).save(any());
+    }
+
+    @Test
+    void schedule_duplicateApplication_throws409() {
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
+        when(interviewRepository.existsByJobApplicationId(1L)).thenReturn(true);
+
+        assertThrows(OfferAlreadyProcessedException.class,
+                () -> interviewService.schedule(validOnlineDto(), EMPLOYER_EMAIL));
         verify(interviewRepository, never()).save(any());
     }
 

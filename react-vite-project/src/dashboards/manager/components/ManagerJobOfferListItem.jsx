@@ -2,6 +2,8 @@ import {useState} from "react";
 import { useTranslation } from "react-i18next";
 import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
 import formatSalary from "@/utils/formatSalary.js";
+import formatAddress from "@/utils/formatAddress.js";
+import getProgramName from "@/utils/getProgramName.js";
 import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "@/styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
@@ -14,20 +16,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
     const [feedbackError, setFeedbackError] = useState(null);
 
     const programs = t("inscription.programsList", {returnObjects: true});
-    const programName = (enumName) =>
-        Array.isArray(programs)
-            ? programs.find((p) => p.enumName === enumName)?.name ?? enumName
-            : enumName;
-
-    const loc = offer.adresse;
-    const address = loc
-        ? [
-            [loc.numeroCivic, loc.rue].filter(Boolean).join(" "),
-            loc.ville,
-            loc.codePostal,
-            loc.pays,
-        ].filter(Boolean).join(", ")
-        : null;
+    const address = formatAddress(offer.adresse);
 
 
     const isAccept = pendingAction === "accept";
@@ -93,7 +82,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                             {offer.programe && (
                                 <>
                                     <dt className="font-bold text-main">{t("personalSpaceEmployer.fields.programe")}</dt>
-                                    <dd className="text-main/70">{programName(offer.programe)}</dd>
+                                    <dd className="text-main/70">{getProgramName(programs, offer.programe)}</dd>
                                 </>
                             )}
                             {offer.salary != null && (
