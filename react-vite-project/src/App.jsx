@@ -75,10 +75,10 @@ function App() {
 
   useEffect(() => {
     const shortcuts = {
-      Digit1: ["l@l.com", "bib"],
-      Digit2: ["ll@l.com", "bib"],
-      Digit3: ["lll@l.com", "bib"],
-      Digit0: ["jaime.laguerre@yahoo.com", "Jaime1234"],
+      Digit1: ["marie.leclerc@cegep-demo.ca", "Marie1234"],
+      Digit2: ["sophie.tremblay@etudiant.ca", "Sophie1234"],
+      Digit3: ["jp.bouchard@nexustech.ca", "JeanPhilippe1234"],
+      Digit0: ["jaime.laguerre@etudiant.ca", "Jaime1234"],
       Digit9: ["jaime.paolaguere@cmr.ca", "Paola1234"],
     };
 
