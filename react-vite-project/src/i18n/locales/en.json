@@ -257,7 +257,8 @@
   "dashboard": {
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "comingSoon": "This section will be available soon."
+    "comingSoon": "This section will be available soon.",
+    "newItems": "{{count}} new"
   },
   "gestionnaire": {
     "title": "Manager Space",

@@ -13,7 +13,7 @@ const StudentOfferSection = () => {
     const { t } = useTranslation();
     const { offers, acceptedCvs } = useOutletContext();
     const { sessions, selectedSession, setSelectedSession, filteredOffers } = useSessionFilter(offers.items);
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { isHighlighted, highlightProps } = useHighlightWhenNotified();
     const highlightedOffer = offers.items.find((offer) => isHighlighted("offer", offer.id));
     const highlightedSession = highlightedOffer ? getSessionCode(highlightedOffer.startingDate) : null;
 
@@ -45,8 +45,7 @@ const StudentOfferSection = () => {
                             key={offer.id ?? `fallback-${i}`}
                             offer={offer}
                             acceptedCvs={acceptedCvs}
-                            isHighlighted={isHighlighted("offer", offer.id)}
-                            onClearHighlight={clearHighlight}
+                            {...highlightProps("offer", offer.id)}
                         />
                     ))}
                 </ul>

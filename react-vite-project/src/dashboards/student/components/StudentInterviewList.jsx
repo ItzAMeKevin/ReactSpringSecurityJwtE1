@@ -2,7 +2,7 @@ import StudentInterviewListItem from './StudentInterviewListItem.jsx';
 import useHighlightWhenNotified from '@/hooks/useHighlightWhenNotified.js';
 
 const StudentInterviewList = ({ interviews }) => {
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { highlightProps } = useHighlightWhenNotified();
 
     const handleRespond = (updatedInterview) => {
         interviews.setItems(prev =>
@@ -16,8 +16,7 @@ const StudentInterviewList = ({ interviews }) => {
                 <StudentInterviewListItem
                     key={interview.id}
                     interview={interview}
-                    isHighlighted={isHighlighted('interview', interview.id)}
-                    onClearHighlight={clearHighlight}
+                    {...highlightProps('interview', interview.id)}
                     onRespond={handleRespond}
                 />
             ))}

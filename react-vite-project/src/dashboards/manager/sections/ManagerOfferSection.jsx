@@ -7,7 +7,7 @@ import useHighlightWhenNotified from "@/hooks/useHighlightWhenNotified.js";
 const ManagerOfferSection = () => {
     const { t } = useTranslation();
     const { offers, acceptOffer, refuseOffer } = useOutletContext();
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { highlightProps } = useHighlightWhenNotified();
 
     return (
         <DashboardSection
@@ -22,8 +22,7 @@ const ManagerOfferSection = () => {
                 <ManagerJobOfferListItem
                     key={offer.id}
                     offer={offer}
-                    isHighlighted={isHighlighted("offer", offer.id)}
-                    onClearHighlight={clearHighlight}
+                    {...highlightProps("offer", offer.id)}
                     onAccept={acceptOffer}
                     onRefuse={refuseOffer}
                 />

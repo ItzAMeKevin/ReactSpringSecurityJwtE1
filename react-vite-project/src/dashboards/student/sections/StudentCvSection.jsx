@@ -8,7 +8,7 @@ import useHighlightWhenNotified from "@/hooks/useHighlightWhenNotified.js";
 const StudentCvSection = ({ status, labelKey, emptyKey }) => {
     const { t } = useTranslation();
     const { cvs, visibleCvs, uploadCv } = useOutletContext();
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { highlightProps } = useHighlightWhenNotified();
     const [openCvId, setOpenCvId] = useState(null);
 
     const sectionCvs = visibleCvs.filter((cv) => cv.status === status);
@@ -28,8 +28,7 @@ const StudentCvSection = ({ status, labelKey, emptyKey }) => {
                     cv={cv}
                     isOpen={openCvId === cv.id}
                     onToggle={() => setOpenCvId((current) => (current === cv.id ? null : cv.id))}
-                    isHighlighted={isHighlighted("cv", cv.id)}
-                    onClearHighlight={clearHighlight}
+                    {...highlightProps("cv", cv.id)}
                     onReplace={uploadCv}
                 />
             ))}

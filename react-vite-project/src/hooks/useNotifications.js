@@ -40,7 +40,7 @@ const normalizeNotification = (n) => {
     };
 };
 
-const useNotifications = () => {
+const useNotifications = (enabled = true) => {
     const [notifications, setNotifications] = useState([]);
     const [status, setStatus] = useState("loading");
     const [unreadCount, setUnreadCount] = useState(0);
@@ -67,12 +67,17 @@ const useNotifications = () => {
     }, []);
 
     useEffect(() => {
+        if (!enabled) {
+            setNotifications([]);
+            setUnreadCount(0);
+            return;
+        }
         fetchNotifications();
 
         pollingIntervalRef.current = setInterval(fetchNotifications, POLLING_INTERVAL);
 
         return () => clearInterval(pollingIntervalRef.current);
-    }, [fetchNotifications]);
+    }, [enabled, fetchNotifications]);
 
     const markAsRead = useCallback(async (notificationId) => {
         try {

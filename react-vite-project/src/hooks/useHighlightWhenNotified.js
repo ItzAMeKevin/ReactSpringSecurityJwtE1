@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useSharedNotifications from "@/hooks/useSharedNotifications.js";
 
 const useHighlightWhenNotified = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { notifications, markAsRead } = useSharedNotifications();
     const [highlight, setHighlight] = useState(null);
 
     useEffect(() => {
@@ -13,10 +15,24 @@ const useHighlightWhenNotified = () => {
         navigate(location.pathname, { replace: true, state: null });
     }, [location.state, location.pathname, navigate]);
 
-    const isHighlighted = (kind, id) => highlight?.kind === kind && highlight.id === id;
-    const clearHighlight = () => setHighlight(null);
+    const unreadFor = (kind, id) => notifications.filter(({ target, referenceId }) =>
+        target?.path === location.pathname && target.state.highlight.kind === kind && referenceId === id
+    );
 
-    return { isHighlighted, clearHighlight };
+    const isHighlighted = (kind, id) =>
+        (highlight?.kind === kind && highlight.id === id) || unreadFor(kind, id).length > 0;
+
+    const clearHighlight = (kind, id) => {
+        setHighlight(null);
+        unreadFor(kind, id).forEach((notification) => markAsRead(notification.id));
+    };
+
+    const highlightProps = (kind, id) => ({
+        isHighlighted: isHighlighted(kind, id),
+        onClearHighlight: () => clearHighlight(kind, id),
+    });
+
+    return { isHighlighted, highlightProps };
 };
 
 export default useHighlightWhenNotified;
