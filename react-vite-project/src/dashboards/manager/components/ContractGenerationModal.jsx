@@ -19,8 +19,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    studentId: candidature.student?.id,
-                    employerId: candidature.jobOffer?.employerId,
+                    candidature: candidature,
                     managerId: user?.id,
                 })
             });

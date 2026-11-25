@@ -26,6 +26,9 @@ public abstract class User  {
     @Embedded
     private Credentials credentials;
 
+    @Embedded
+    private Signature signature;
+
     public String getEmail(){
         return credentials.getEmail();
     }
