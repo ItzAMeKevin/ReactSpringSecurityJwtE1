@@ -64,7 +64,7 @@ public class StudentCvController {
 
 
     @PostMapping("/{offerID}/appliquer")
-    public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @RequestBody CvMetaDataDto cvDto) {
+    public ResponseEntity<String> appliquerOffre(@RequestParam long offerID, @Valid @RequestBody CvMetaDataDto cvDto) {
         studentCvService.applyToJobOffer(offerID, cvDto);
         return ResponseEntity.ok("Candidature soumise avec succès.");
     }
