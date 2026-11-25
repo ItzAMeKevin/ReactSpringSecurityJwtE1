@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.CvMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
+import com.lacouf.rsbjwt.mapper.ContractMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
@@ -8,7 +10,10 @@ import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.*;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +37,12 @@ class GestionnaireServiceTest {
     @Mock private JobApplicationRepository jobApplicationRepository;
     @Mock private CvMapper cvMapper;
     @Mock private JobOfferMapper jobOfferMapper;
+    @Mock private CandidatureMapper candidatureMapper;
+    @Mock private ContractRepository contractRepository;
+    @Mock private ContractMapper contractMapper;
+    @Mock private StudentRepository studentRepository;
+    @Mock private EmployerRepository employerRepository;
+    @Mock private ManagerRepository managerRepository;
     @InjectMocks private GestionnaireService service;
 
     @Test
@@ -110,6 +122,91 @@ class GestionnaireServiceTest {
     }
 
     @Test
+    void createsAndPersistsGeneratedContractPdf() throws Exception {
+        JobOffer offer = validOffer();
+        Student student = new Student();
+        student.setFirstName("Alex");
+        student.setLastName("Student");
+        Employer employer = new Employer();
+        employer.setCompanyName("Example Company");
+        Manager manager = new Manager();
+        manager.setFirstName("Morgan");
+        manager.setLastName("Manager");
+
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(offer));
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
+        when(managerRepository.findById(3L)).thenReturn(Optional.of(manager));
+        when(contractRepository.save(any(Contract.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        ContractDto expectedDto = ContractDto.builder().id(10L).build();
+        when(contractMapper.toDto(any(Contract.class))).thenReturn(expectedDto);
+
+        ContractDto result = service.createContract(1L, 2L, 3L, 4L);
+
+        assertSame(expectedDto, result);
+        org.mockito.ArgumentCaptor<Contract> contractCaptor = org.mockito.ArgumentCaptor.forClass(Contract.class);
+        verify(contractRepository).save(contractCaptor.capture());
+        Contract savedContract = contractCaptor.getValue();
+        assertEquals("contrat-stage-1.pdf", savedContract.getFileName());
+        assertEquals("application/pdf", savedContract.getContentType());
+        assertEquals(Status.UNSIGNED, savedContract.getStatus());
+        assertEquals(savedContract.getContent().length, savedContract.getSize());
+        assertSame(student, savedContract.getStudent());
+        assertSame(employer, savedContract.getEmployer());
+        assertSame(manager, savedContract.getManager());
+        assertFalse(savedContract.isSignedByStudent());
+        assertFalse(savedContract.isSignedByEmployer());
+        assertFalse(savedContract.isSignedByManager());
+        assertSame(savedContract, student.getContract());
+        assertSame(savedContract, employer.getContract());
+        assertSame(savedContract, manager.getContract());
+
+        try (var document = Loader.loadPDF(savedContract.getContent())) {
+            String pdfText = new PDFTextStripper().getText(document);
+            assertEquals(3, document.getNumberOfPages());
+            assertTrue(pdfText.contains("Alex Student"));
+            assertTrue(pdfText.contains("Example Company"));
+            assertTrue(pdfText.contains("04/05/2026"));
+        }
+        verify(studentRepository).save(student);
+        verify(employerRepository).save(employer);
+        verify(managerRepository).save(manager);
+    }
+
+    @Test
+    void createContractRejectsMissingOfferOrRequiredParty() {
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.empty());
+        assertThrows(JobOfferNotFoundException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(validOffer()));
+        when(studentRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(UserNotFoundException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+
+        verifyNoInteractions(contractRepository, employerRepository, managerRepository);
+    }
+
+    @Test
+    void createContractDoesNotPersistWhenOfferDataCannotRender() {
+        JobOffer offer = validOffer();
+        offer.setSalary(null);
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(offer));
+        Student student = new Student();
+        student.setFirstName("Alex");
+        student.setLastName("Student");
+        Employer employer = new Employer();
+        employer.setCompanyName("Example Company");
+        Manager manager = new Manager();
+        manager.setFirstName("Morgan");
+        manager.setLastName("Manager");
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
+        when(managerRepository.findById(3L)).thenReturn(Optional.of(manager));
+
+        assertThrows(IllegalArgumentException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+        verifyNoInteractions(contractRepository);
+    }
+
+    @Test
     void returnsAllCandidaturesAndEmptyList() {
         Student student = new Student();
         student.setFirstName("Jane");
@@ -135,10 +232,18 @@ class GestionnaireServiceTest {
         application.setJobOffer(offer);
         application.setStatus(Status.PENDING);
 
+        CandidatureDto dto = new CandidatureDto(
+                1L,
+                new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com"),
+                new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12),
+                Status.PENDING,
+                null,
+                null);
         when(jobApplicationRepository.findAll()).thenReturn(List.of(application));
+        when(candidatureMapper.toDto(application)).thenReturn(dto);
         List<CandidatureDto> result = service.getAllCandidatures();
         assertEquals(1, result.size());
-        CandidatureDto dto = result.get(0);
+        assertSame(dto, result.get(0));
         assertEquals(1L, dto.id());
         assertEquals("Jane", dto.student().firstName());
         assertEquals("jane@test.com", dto.student().email());
@@ -148,5 +253,22 @@ class GestionnaireServiceTest {
 
         when(jobApplicationRepository.findAll()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
+    }
+
+    private JobOffer validOffer() {
+        JobOffer offer = new JobOffer();
+        offer.setTitle("Software Developer Intern");
+        offer.setDescription("Build and test web applications.");
+        offer.setSalary("$22/hour");
+        offer.setStartingDate(LocalDate.of(2026, 5, 4));
+        offer.setDurationInWeeks(12);
+        offer.setAdresse(Adresse.builder()
+                .numeroCivic("123")
+                .rue("Main Street")
+                .ville("Montreal")
+                .codePostal("H1A 1A1")
+                .pays("Canada")
+                .build());
+        return offer;
     }
 }
