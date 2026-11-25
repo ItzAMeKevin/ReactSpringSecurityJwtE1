@@ -7,7 +7,7 @@ import useHighlightWhenNotified from "@/hooks/useHighlightWhenNotified.js";
 const ManagerCvSection = () => {
     const { t } = useTranslation();
     const { cvs, acceptCv, declineCv } = useOutletContext();
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { highlightProps } = useHighlightWhenNotified();
 
     return (
         <DashboardSection
@@ -22,8 +22,7 @@ const ManagerCvSection = () => {
                 <ManagerCvListItem
                     key={cv.id}
                     cv={cv}
-                    isHighlighted={isHighlighted("cv", cv.id)}
-                    onClearHighlight={clearHighlight}
+                    {...highlightProps("cv", cv.id)}
                     onAccept={acceptCv}
                     onDecline={declineCv}
                 />

@@ -11,7 +11,7 @@ import { textMuted } from "@/styles/classes.js";
 const EmployerOfferSection = ({ statuses, labelKey, emptyKey }) => {
     const { t } = useTranslation();
     const { offers, openForm, hireInOffer, onInterviewScheduled } = useOutletContext();
-    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const { highlightProps } = useHighlightWhenNotified();
     const [openCandidatesId, setOpenCandidatesId] = useState(null);
 
     const sectionOffers = useMemo(
@@ -38,8 +38,7 @@ const EmployerOfferSection = ({ statuses, labelKey, emptyKey }) => {
                         <JobOfferCard
                             key={offer.id}
                             offer={offer}
-                            isHighlighted={isHighlighted("offer", offer.id)}
-                            onClearHighlight={clearHighlight}
+                            {...highlightProps("offer", offer.id)}
                             showCandidates={openCandidatesId === offer.id}
                             onToggleCandidates={() => setOpenCandidatesId((current) => (current === offer.id ? null : offer.id))}
                             onEdit={() => openForm(offer)}

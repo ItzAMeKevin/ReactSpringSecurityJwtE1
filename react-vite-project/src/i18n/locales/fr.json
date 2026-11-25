@@ -260,7 +260,8 @@
   "dashboard": {
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
-    "comingSoon": "Cette section sera bientôt disponible."
+    "comingSoon": "Cette section sera bientôt disponible.",
+    "newItems": "{{count}} nouveauté(s)"
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",

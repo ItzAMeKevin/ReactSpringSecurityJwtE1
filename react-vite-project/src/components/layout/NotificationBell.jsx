@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import useNotifications from "@/hooks/useNotifications.js";
+import useSharedNotifications from "@/hooks/useSharedNotifications.js";
 import getLocalizedNotification from "@/utils/getLocalizedNotification.js";
 import { textError } from "@/styles/classes.js";
 
 const NotificationBell = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { notifications, status, unreadCount, markAsRead, refetch } = useNotifications();
+    const { notifications, status, unreadCount, markAsRead, refetch } = useSharedNotifications();
     const [isOpen, setIsOpen] = useState(false);
     const wrapperRef = useRef(null);
 
