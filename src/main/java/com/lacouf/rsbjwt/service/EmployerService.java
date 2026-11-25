@@ -72,6 +72,7 @@ public class EmployerService {
         return jobOfferMapper.toDto(savedOffer);
     }
 
+    @Transactional(readOnly = true)
     public Employer findEmployerByEmail(String email) {
         return employerRepository.findByCredentialsEmail(email)
                 .orElseThrow(() -> new EmployerNotFoundException(email));

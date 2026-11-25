@@ -108,6 +108,7 @@ public class StudentCvService {
         }
     }
 
+    @Transactional(readOnly = true)
     public String getReviewFile(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())

@@ -37,6 +37,7 @@ public class StudentService {
     private final InterviewRepository interviewRepository;
     private final InterviewMapper interviewMapper;
 
+    @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
                 .orElseThrow(UserNotFoundException::new);

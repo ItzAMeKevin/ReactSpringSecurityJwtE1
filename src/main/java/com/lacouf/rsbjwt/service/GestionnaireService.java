@@ -52,6 +52,7 @@ public class GestionnaireService {
     private final ManagerRepository managerRepository;
 
 
+    @Transactional(readOnly = true)
     public List<PendingCvDto> getPendingCvs() {
         return studentCvRepository.findAllByStatusOrderByUploadedAtAsc(Status.PENDING)
                 .stream()
@@ -59,6 +60,7 @@ public class GestionnaireService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public byte[] getCvContent(Long cvId) {
         return studentCvRepository.findById(cvId)
                 .orElseThrow(() -> new CvException("errors.cvNotFound"))
@@ -96,6 +98,7 @@ public class GestionnaireService {
     }
 
 
+    @Transactional(readOnly = true)
     public List<JobOfferDto> getPendingOffers() {
         return jobOfferMapper.toDtoListJobOffers(jobOfferRepository.findAllByStatus(Status.PENDING));
     }
@@ -111,6 +114,7 @@ public class GestionnaireService {
         return changeOfferStatus(id, Status.DECLINED, "notification.types.JOB_OFFER_DECLINED.message", feedbackRequest.getFeedback());
     }
 
+    @Transactional(readOnly = true)
     public List<CandidatureDto> getAllCandidatures() {
         return jobApplicationRepository.findAll().stream().map(candidatureMapper::toDto).collect(Collectors.toList());
     }
