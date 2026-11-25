@@ -76,7 +76,7 @@ const useNotifications = () => {
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
+            const response = await fetcher(`/notifications/${notificationId}/read`, {
                 method: "PUT",
             });
             if (!response.ok) {

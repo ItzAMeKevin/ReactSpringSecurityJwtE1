@@ -177,13 +177,13 @@ describe("useNotifications - target", () => {
 });
 
 describe("useNotifications - markAsRead", () => {
-    it("should call the read endpoint with PATCH", async () => {
+    it("should call the read endpoint with PUT", async () => {
         const { result } = await renderReadyHook([acceptedNotification]);
         fetcher.mockResolvedValueOnce({ ok: true });
 
         await act(() => result.current.markAsRead(1));
 
-        expect(fetcher).toHaveBeenCalledWith("/etudiant/notifications/1/read", { method: "PUT" });
+        expect(fetcher).toHaveBeenCalledWith("/notifications/1/read", { method: "PUT" });
     });
 
     it("should mark the notification as read and decrement the unread count", async () => {
