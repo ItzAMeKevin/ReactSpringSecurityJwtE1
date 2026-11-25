@@ -10,17 +10,12 @@ import FormJobOffer from "@/dashboards/employer/components/FormJobOffer.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 import { btnPrimary, btnOutline, btnModalPrimary, textMuted } from "@/styles/classes.js";
 
-const withNewHire = (offer) => {
-    const hiredCount = (offer.hiredCount ?? 0) + 1;
-    const isFilled = offer.numberOfPositions != null && hiredCount >= offer.numberOfPositions;
-    return { ...offer, hiredCount, status: isFilled ? "FILLED" : offer.status };
-};
-
 const PersonalSpaceEmployer = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const offers = useFetchList("/employer");
     const interviews = useFetchList("/employer/interviews");
+    const hirePending = useFetchList("/employer/candidates/hire-pending");
     const [form, setForm] = useState(null);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const { message, showMessage, clearMessage } = useToast();
@@ -42,8 +37,10 @@ const PersonalSpaceEmployer = () => {
         navigate("offres/en-attente");
     };
 
-    const hireInOffer = (offerId) =>
-        offers.setItems((current) => current.map((offer) => (offer.id === offerId ? withNewHire(offer) : offer)));
+    const hireInOffer = () => {
+        showMessage("personalSpaceEmployer.hireOfferSent");
+        void hirePending.reload();
+    };
 
     const countOffers = (status) =>
         offers.status === "loaded" ? offers.items.filter((offer) => offer.status === status).length : null;
@@ -55,6 +52,7 @@ const PersonalSpaceEmployer = () => {
             count: countOffers(countedStatus),
         })),
         { to: "entrevues", label: t("personalSpaceEmployer.nav.interviews"), count: interviews.count },
+        { to: "embauches-en-attente", label: t("personalSpaceEmployer.nav.hirePending"), count: hirePending.count },
     ];
 
     const actions = (
@@ -70,7 +68,7 @@ const PersonalSpaceEmployer = () => {
                 title={t("personalSpaceEmployer.title")}
                 items={items}
                 actions={actions}
-                context={{ offers, interviews, openForm, hireInOffer, onInterviewScheduled: interviews.reload }}
+                context={{ offers, interviews, hirePending, openForm, hireInOffer, onInterviewScheduled: interviews.reload }}
             />
             {form && (
                 <Modal

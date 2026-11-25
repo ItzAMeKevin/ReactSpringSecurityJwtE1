@@ -39,9 +39,17 @@ const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
-    HIRED: "bg-blue-100 text-blue-800",
     FILLED: "bg-purple-100 text-purple-800",
     EXPIRED: "bg-gray-100 text-gray-600",
+    PENDING_INTERVIEW: "bg-yellow-100 text-yellow-800",
+    INTERVIEW_SCHEDULED: "bg-indigo-100 text-indigo-800",
+    INTERVIEW_COMPLETED: "bg-cyan-100 text-cyan-800",
+    HIRE_PENDING: "bg-orange-100 text-orange-800",
+    AWAITING_CONTRACT: "bg-blue-100 text-blue-800",
+    AWAITING_SIGNATURES: "bg-blue-100 text-blue-800",
+    CONTRACT_SIGNED: "bg-emerald-100 text-emerald-800",
+    WORKING: "bg-teal-100 text-teal-800",
+    COMPLETED: "bg-gray-200 text-gray-800",
 };
 
 export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";
@@ -70,6 +78,8 @@ export const sectionTitle = "text-xl font-bold text-main mb-4 pb-2 border-b bord
 
 /** Secondary / status text */
 export const textMuted = "text-main/70";
+
+export const textBold = "text-red-700 font-semibold";
 
 /** Error feedback text */
 export const textError = "text-red-700";

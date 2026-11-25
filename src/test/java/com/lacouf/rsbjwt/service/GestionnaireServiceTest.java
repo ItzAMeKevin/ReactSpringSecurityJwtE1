@@ -137,14 +137,14 @@ class GestionnaireServiceTest {
         application.setJobOffer(offer);
         application.setStatus(Status.PENDING);
 
-        CandidatureDto expectedDto = new CandidatureDto(
-                1L,
-                new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com"),
-                new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12),
-                Status.PENDING, null, null
-        );
-        when(jobApplicationRepository.findAll()).thenReturn(List.of(application));
-        when(candidatureMapper.toDto(application)).thenReturn(expectedDto);
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of(application));
+        CandidatureDto.StudentInfoDto studentInfo =
+                new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com");
+        CandidatureDto.JobOfferInfoDto offerInfo =
+                new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12);
+        when(candidatureMapper.toDtoList(List.of(application)))
+                .thenReturn(List.of(new CandidatureDto(
+                        1L, studentInfo, offerInfo, Status.PENDING, null, null)));
         List<CandidatureDto> result = service.getAllCandidatures();
         assertEquals(1, result.size());
         CandidatureDto dto = result.get(0);
@@ -155,7 +155,7 @@ class GestionnaireServiceTest {
         assertEquals(12, dto.jobOffer().durationInWeeks());
         assertEquals(Status.PENDING, dto.status());
 
-        when(jobApplicationRepository.findAll()).thenReturn(List.of());
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
     }
 }

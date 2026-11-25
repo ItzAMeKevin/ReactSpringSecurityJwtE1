@@ -116,7 +116,7 @@ public class GestionnaireService {
 
     @Transactional(readOnly = true)
     public List<CandidatureDto> getAllCandidatures() {
-        return jobApplicationRepository.findAll().stream().map(candidatureMapper::toDto).collect(Collectors.toList());
+        return candidatureMapper.toDtoList(jobApplicationRepository.findAllWithStudentAndOffer());
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {

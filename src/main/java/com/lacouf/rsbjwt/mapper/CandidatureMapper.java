@@ -7,17 +7,20 @@ import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface CandidatureMapper {
 
-    @Mapping(target = "createdAt", source = "appliedAt")
-    @Mapping(target = "student",   source = "studentCv.student")
-    @Mapping(target = "jobOffer",  source = "jobOffer")
-    CandidatureDto toDto(JobApplication application);
+    @Mapping(source = "studentCv.student.firstName", target = "student.firstName")
+    @Mapping(source = "studentCv.student.lastName", target = "student.lastName")
+    @Mapping(source = "studentCv.student.matricule", target = "student.matricule")
+    @Mapping(source = "studentCv.student.credentials.email", target = "student.email")
+    @Mapping(source = "jobOffer.title", target = "jobOffer.title")
+    @Mapping(source = "jobOffer.employer.companyName", target = "jobOffer.companyName")
+    @Mapping(source = "jobOffer.durationInWeeks", target = "jobOffer.durationInWeeks")
+    CandidatureDto toCandidatureDto(JobApplication application);
 
-    @Mapping(target = "email", source = "email")   // ⚠️ ou "credentials.email"
-    CandidatureDto.StudentInfoDto toStudentInfo(Student student);
+    List<CandidatureDto> toDtoList(List<JobApplication> applications);
 
-    @Mapping(target = "companyName", source = "employer.companyName") // ⚠️ getter réel
-    CandidatureDto.JobOfferInfoDto toJobOfferInfo(JobOffer jobOffer);
 }

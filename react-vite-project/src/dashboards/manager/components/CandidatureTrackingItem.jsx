@@ -39,7 +39,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                 </td>
                 <td className="px-4 py-3">
                     <span className={`${statusBadge} ${statusBadgeColor(candidature.status)}`}>
-                        {t(`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`)}
+                        {t([`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`, `applicationStatuses.${candidature.status}`])}
                     </span>
                 </td>
                 <td className="px-4 py-3 text-main">

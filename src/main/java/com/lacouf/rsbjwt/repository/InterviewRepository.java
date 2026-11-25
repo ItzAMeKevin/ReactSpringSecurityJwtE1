@@ -10,6 +10,12 @@ import java.util.Optional;
 
 public interface InterviewRepository extends JpaRepository<Interview, Long> {
 
+    List<Interview> findByJobApplication_Student_Credentials_Email(String email);
+
+    Optional<Interview> findByIdAndJobApplication_Student_Credentials_Email(Long id, String email);
+
+    boolean existsByJobApplicationId(Long jobApplicationId);
+
     @Query("""
             SELECT DISTINCT i FROM Interview i
             JOIN FETCH i.jobApplication ja
@@ -46,6 +52,4 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
             WHERE i.id = :id AND cv.student.credentials.email = :email
             """)
     Optional<Interview> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
-
-    boolean existsByJobApplicationId(Long jobApplicationId);
 }

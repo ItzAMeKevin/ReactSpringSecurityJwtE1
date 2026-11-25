@@ -5,7 +5,7 @@ import DashboardSection from "@/components/layout/DashboardSection.jsx";
 import CandidatureTrackingList from "@/dashboards/manager/components/CandidatureTrackingList.jsx";
 import { inputField, textMuted } from "@/styles/classes.js";
 
-const STATUSES = ["ALL", "ACCEPTED", "DECLINED", "PENDING"];
+const STATUSES = ["ALL", "PENDING", "HIRE_PENDING", "DECLINED"];
 
 const matchesSearch = ({ student, jobOffer }, term) => {
     if (!term) return true;

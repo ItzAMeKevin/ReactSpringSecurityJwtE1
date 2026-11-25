@@ -2,14 +2,17 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.ApplicationStateException;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +47,12 @@ public class StudentServiceTest {
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
+
+    @Mock
+    private CandidatureMapper candidatureMapper;
+
+    @Mock
+    private SystemeService systemeService;
 
     @Mock
     private InterviewRepository interviewRepository;
@@ -199,7 +208,7 @@ public class StudentServiceTest {
 
     // ── Interview tests ──────────────────────────────────────────────────────
 
-    private InterviewDto stubInterviewDto(Long id, Status status) {
+    private InterviewDto stubInterviewDto(Long id, InterviewStatus status) {
         return new InterviewDto(id, 10L, "Acme Corp", "Dev Java", InterviewType.ONLINE,
                 "https://zoom.us", null, null, Instant.now(), List.of(), status, null, false);
     }
@@ -208,21 +217,21 @@ public class StudentServiceTest {
     @DisplayName("getInterviews retourne les entrevues de l'étudiant")
     void getInterviews_returnsMappedList() {
         Interview interview = new Interview();
-        InterviewDto dto = stubInterviewDto(1L, Status.PENDING);
-        when(interviewRepository.findAllByStudentEmail(STUDENT_EMAIL)).thenReturn(List.of(interview));
+        InterviewDto dto = stubInterviewDto(1L, InterviewStatus.PENDING);
+        when(interviewRepository.findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL)).thenReturn(List.of(interview));
         when(interviewMapper.toInterviewDto(interview)).thenReturn(dto);
 
         List<InterviewDto> result = studentService.getInterviews(STUDENT_EMAIL);
 
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).id());
-        verify(interviewRepository).findAllByStudentEmail(STUDENT_EMAIL);
+        verify(interviewRepository).findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL);
     }
 
     @Test
     @DisplayName("getInterviews retourne liste vide si aucune entrevue")
     void getInterviews_returnsEmpty() {
-        when(interviewRepository.findAllByStudentEmail(STUDENT_EMAIL)).thenReturn(List.of());
+        when(interviewRepository.findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL)).thenReturn(List.of());
 
         List<InterviewDto> result = studentService.getInterviews(STUDENT_EMAIL);
 
@@ -234,13 +243,13 @@ public class StudentServiceTest {
     @DisplayName("withExpired: expired=true quand PENDING et tous les créneaux dans le passé")
     void withExpired_true_whenAllSlotsPast() {
         Interview interview = new Interview();
-        interview.setStatus(Status.PENDING);
+        interview.setStatus(InterviewStatus.PENDING);
         InterviewSlot past = new InterviewSlot();
         past.setDate(LocalDate.now().minusDays(1));
         interview.setSlots(List.of(past));
 
-        when(interviewRepository.findAllByStudentEmail(STUDENT_EMAIL)).thenReturn(List.of(interview));
-        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, Status.PENDING));
+        when(interviewRepository.findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL)).thenReturn(List.of(interview));
+        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, InterviewStatus.PENDING));
 
         List<InterviewDto> result = studentService.getInterviews(STUDENT_EMAIL);
 
@@ -251,13 +260,13 @@ public class StudentServiceTest {
     @DisplayName("withExpired: expired=false quand ACCEPTED même avec créneaux passés")
     void withExpired_false_whenNotPending() {
         Interview interview = new Interview();
-        interview.setStatus(Status.ACCEPTED);
+        interview.setStatus(InterviewStatus.ACCEPTED);
         InterviewSlot past = new InterviewSlot();
         past.setDate(LocalDate.now().minusDays(1));
         interview.setSlots(List.of(past));
 
-        when(interviewRepository.findAllByStudentEmail(STUDENT_EMAIL)).thenReturn(List.of(interview));
-        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, Status.ACCEPTED));
+        when(interviewRepository.findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL)).thenReturn(List.of(interview));
+        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, InterviewStatus.ACCEPTED));
 
         List<InterviewDto> result = studentService.getInterviews(STUDENT_EMAIL);
 
@@ -268,13 +277,13 @@ public class StudentServiceTest {
     @DisplayName("withExpired: expired=false quand PENDING avec un créneau futur")
     void withExpired_false_whenFutureSlotExists() {
         Interview interview = new Interview();
-        interview.setStatus(Status.PENDING);
+        interview.setStatus(InterviewStatus.PENDING);
         InterviewSlot future = new InterviewSlot();
         future.setDate(LocalDate.now().plusDays(1));
         interview.setSlots(List.of(future));
 
-        when(interviewRepository.findAllByStudentEmail(STUDENT_EMAIL)).thenReturn(List.of(interview));
-        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, Status.PENDING));
+        when(interviewRepository.findByJobApplication_Student_Credentials_Email(STUDENT_EMAIL)).thenReturn(List.of(interview));
+        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(1L, InterviewStatus.PENDING));
 
         List<InterviewDto> result = studentService.getInterviews(STUDENT_EMAIL);
 
@@ -290,17 +299,18 @@ public class StudentServiceTest {
 
         Interview interview = new Interview();
         interview.setId(5L);
-        interview.setStatus(Status.PENDING);
+        interview.setStatus(InterviewStatus.PENDING);
         interview.setSlots(List.of(slot));
 
-        when(interviewRepository.findByIdAndStudentEmail(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
+        when(interviewRepository.findByIdAndJobApplication_Student_Credentials_Email(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(interview)).thenReturn(interview);
-        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, Status.ACCEPTED));
+        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, InterviewStatus.ACCEPTED));
 
         InterviewDto result = studentService.respondToInterview(5L,
-                new InterviewRespondRequest(Status.ACCEPTED, 1L, "Je serai présent"), STUDENT_EMAIL);
+                new InterviewRespondRequest(InterviewStatus.ACCEPTED, 1L, "Je serai présent"), STUDENT_EMAIL);
 
-        assertEquals(Status.ACCEPTED, interview.getStatus());
+        assertEquals(InterviewStatus.ACCEPTED, interview.getStatus());
+        assertTrue(slot.isSelected());
         assertEquals("Je serai présent", interview.getStudentMessage());
         assertEquals(5L, result.id());
         verify(interviewRepository).save(interview);
@@ -311,28 +321,28 @@ public class StudentServiceTest {
     void respondToInterview_declines() {
         Interview interview = new Interview();
         interview.setId(5L);
-        interview.setStatus(Status.PENDING);
+        interview.setStatus(InterviewStatus.PENDING);
         interview.setSlots(List.of());
 
-        when(interviewRepository.findByIdAndStudentEmail(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
+        when(interviewRepository.findByIdAndJobApplication_Student_Credentials_Email(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(interview)).thenReturn(interview);
-        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, Status.DECLINED));
+        when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, InterviewStatus.DECLINED));
 
         studentService.respondToInterview(5L,
-                new InterviewRespondRequest(Status.DECLINED, null, "Pas disponible"), STUDENT_EMAIL);
+                new InterviewRespondRequest(InterviewStatus.DECLINED, null, "Pas disponible"), STUDENT_EMAIL);
 
-        assertEquals(Status.DECLINED, interview.getStatus());
+        assertEquals(InterviewStatus.DECLINED, interview.getStatus());
         assertEquals("Pas disponible", interview.getStudentMessage());
     }
 
     @Test
     @DisplayName("respondToInterview lance 404 si entrevue non trouvée")
     void respondToInterview_throwsNotFound() {
-        when(interviewRepository.findByIdAndStudentEmail(99L, STUDENT_EMAIL)).thenReturn(Optional.empty());
+        when(interviewRepository.findByIdAndJobApplication_Student_Credentials_Email(99L, STUDENT_EMAIL)).thenReturn(Optional.empty());
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> studentService.respondToInterview(99L,
-                        new InterviewRespondRequest(Status.ACCEPTED, null, null), STUDENT_EMAIL));
+                        new InterviewRespondRequest(InterviewStatus.ACCEPTED, 1L, null), STUDENT_EMAIL));
         verify(interviewRepository, never()).save(any());
     }
 
@@ -341,14 +351,124 @@ public class StudentServiceTest {
     void respondToInterview_throwsConflict_whenNotPending() {
         Interview interview = new Interview();
         interview.setId(5L);
-        interview.setStatus(Status.ACCEPTED);
+        interview.setStatus(InterviewStatus.ACCEPTED);
 
-        when(interviewRepository.findByIdAndStudentEmail(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
+        when(interviewRepository.findByIdAndJobApplication_Student_Credentials_Email(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
 
         assertThrows(ApplicationStateException.class,
                 () -> studentService.respondToInterview(5L,
-                        new InterviewRespondRequest(Status.ACCEPTED, null, null), STUDENT_EMAIL));
+                        new InterviewRespondRequest(InterviewStatus.ACCEPTED, 1L, null), STUDENT_EMAIL));
         verify(interviewRepository, never()).save(any());
     }
-}
 
+    @Test
+    @DisplayName("getPendingHireOffers mappe les offres d'embauche en attente de réponse")
+    void getPendingHireOffers_mapsHirePending() {
+        JobApplication application = new JobApplication();
+        application.setId(7L);
+        CandidatureDto dto = new CandidatureDto(7L, null, null, Status.HIRE_PENDING, null, null);
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
+                .thenReturn(List.of(application));
+        when(candidatureMapper.toDtoList(List.of(application))).thenReturn(List.of(dto));
+
+        assertEquals(List.of(dto), studentService.getPendingHireOffers(STUDENT_EMAIL));
+    }
+
+    @Test
+    @DisplayName("getPendingHireOffers retourne une liste vide")
+    void getPendingHireOffers_returnsEmptyList() {
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
+                .thenReturn(List.of());
+
+        assertTrue(studentService.getPendingHireOffers(STUDENT_EMAIL).isEmpty());
+    }
+
+    private JobApplication hirePendingApplication() {
+        Employer employer = new Employer();
+        employer.setId(42L);
+        jobOffer.setEmployer(employer);
+        jobOffer.setStatus(Status.ACCEPTED);
+        jobOffer.setNumberOfPositions(2);
+
+        StudentCv cv = new StudentCv();
+        cv.setStudent(student);
+        JobApplication application = new JobApplication();
+        application.setId(9L);
+        application.setJobOffer(jobOffer);
+        application.setStudentCv(cv);
+        application.setStatus(Status.HIRE_PENDING);
+        when(jobApplicationRepository.findByIdAndStudentEmail(9L, STUDENT_EMAIL)).thenReturn(Optional.of(application));
+        return application;
+    }
+
+    private void givenHiredCount(long hiredCount) {
+        when(jobOfferRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(jobOffer));
+        when(jobApplicationRepository.countByJobOffer_IdAndStatusIn(1L, JobApplication.HIRED_STATUSES)).thenReturn(hiredCount);
+    }
+
+    @Test
+    @DisplayName("acceptHire passe l'offre d'embauche à AWAITING_CONTRACT et notifie l'employeur")
+    void acceptHire_setsAwaitingContractAndNotifiesEmployer() {
+        JobApplication application = hirePendingApplication();
+        givenHiredCount(1L);
+
+        studentService.acceptHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.AWAITING_CONTRACT, application.getStatus());
+        assertEquals(Status.ACCEPTED, jobOffer.getStatus());
+        verify(jobApplicationRepository).save(application);
+        verify(jobOfferRepository, never()).save(any());
+        verify(systemeService).notifyUsers(List.of(jobOffer.getEmployer()), NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_HIRE_ACCEPTED.message");
+    }
+
+    @Test
+    @DisplayName("acceptHire passe l'offre à FILLED quand le dernier poste est comblé")
+    void acceptHire_lastPosition_fillsOffer() {
+        hirePendingApplication();
+        givenHiredCount(2L);
+
+        studentService.acceptHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.FILLED, jobOffer.getStatus());
+        verify(jobOfferRepository).save(jobOffer);
+    }
+
+    @Test
+    @DisplayName("declineHire passe l'offre d'embauche à DECLINED et notifie l'employeur")
+    void declineHire_setsDeclinedAndNotifiesEmployer() {
+        JobApplication application = hirePendingApplication();
+
+        studentService.declineHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.DECLINED, application.getStatus());
+        assertEquals(Status.ACCEPTED, jobOffer.getStatus());
+        verify(jobApplicationRepository).save(application);
+        verify(systemeService).notifyUsers(List.of(jobOffer.getEmployer()), NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_HIRE_DECLINED.message");
+    }
+
+    @Test
+    @DisplayName("acceptHire lève ApplicationNotFoundException pour une candidature qui n'appartient pas à l'étudiant")
+    void acceptHire_notOwnHire_throwsNotFound() {
+        when(jobApplicationRepository.findByIdAndStudentEmail(9L, "other@test.com")).thenReturn(Optional.empty());
+
+        assertThrows(ApplicationNotFoundException.class, () -> studentService.acceptHire(9L, "other@test.com"));
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("declineHire refuse une candidature sans offre d'embauche en attente")
+    void declineHire_notHirePending_throws() {
+        JobApplication application = hirePendingApplication();
+        application.setStatus(Status.INTERVIEW_SCHEDULED);
+
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
+                () -> studentService.declineHire(9L, STUDENT_EMAIL));
+
+        assertEquals("errors.applicationNotHirePending", exception.getMessage());
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+}

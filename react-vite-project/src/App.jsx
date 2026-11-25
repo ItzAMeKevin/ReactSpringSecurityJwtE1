@@ -18,10 +18,12 @@ import ManagerCvSection from "@/dashboards/manager/sections/ManagerCvSection.jsx
 import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSection.jsx";
 import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
 import StudentOfferSection from "@/dashboards/student/sections/StudentOfferSection.jsx";
-import StudentConvocationSection from "@/dashboards/student/sections/StudentConvocationSection.jsx";
+import StudentHireOfferSection from "@/dashboards/student/sections/StudentHireOfferSection.jsx";
+import ConvocationsPage from "@/dashboards/student/components/ConvocationsPage.jsx";
 import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
 import EmployerOfferSection from "@/dashboards/employer/sections/EmployerOfferSection.jsx";
 import EmployerInterviewSection from "@/dashboards/employer/sections/EmployerInterviewSection.jsx";
+import EmployerHirePendingSection from "@/dashboards/employer/sections/EmployerHirePendingSection.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 
 function App() {
@@ -150,7 +152,8 @@ function App() {
               <Route key={section.path} path={section.path} element={<StudentCvSection {...section}/>}/>
             ))}
             <Route path='offres' element={<StudentOfferSection/>}/>
-            <Route path='convocations' element={<StudentConvocationSection/>}/>
+            <Route path='embauches' element={<StudentHireOfferSection/>}/>
+            <Route path='convocations' element={<ConvocationsPage/>}/>
           </Route>
           <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
             <Route index element={<Navigate to="cv" replace />}/>
@@ -164,6 +167,7 @@ function App() {
               <Route key={path} path={path} element={<EmployerOfferSection {...section}/>}/>
             ))}
             <Route path='entrevues' element={<EmployerInterviewSection/>}/>
+            <Route path='embauches-en-attente' element={<EmployerHirePendingSection/>}/>
           </Route>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>

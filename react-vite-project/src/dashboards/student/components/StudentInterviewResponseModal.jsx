@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import fetcher from '../../../utils/fetcher.js';
 import formatAddress from '../../../utils/formatAddress.js';
 import { formatSlotDate } from '../../../utils/dateFormatting.js';
-import { btnAccept, btnOutline, btnRefuse, inputField, textError, textMuted } from '../../../styles/classes.js';
+import { btnAccept, btnOutline, btnRefuse, inputField, textError, textBold } from '../../../styles/classes.js';
 
 const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }) => {
     const { t, i18n } = useTranslation();
@@ -104,6 +104,9 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                             <p className="text-sm font-semibold text-main mb-2">
                                 {t('convocations.modal.slots')}
                                 {!declining && <span className="text-red-500 ml-1">*</span>}
+                                {!declining && !selectedSlotId && (
+                                    <p className={`${textBold} text-xs mt-1`}>{t('convocations.modal.selectSlot')}</p>
+                                )}
                             </p>
                             <ul className="space-y-2">
                                 {interview.slots.map((slot) => {
@@ -114,7 +117,7 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                                                 type="button"
                                                 onClick={() => !declining && setSelectedSlotId(slot.id)}
                                                 disabled={declining}
-                                                className={`w-full text-left px-4 py-2 rounded-lg border text-sm transition-colors
+                                                className={`w-full text-left px-4 py-2 rounded-lg border-2 text-sm transition-colors
                                                     ${selected
                                                         ? 'border-brand bg-brand/10 font-semibold text-main'
                                                         : 'border-brand/20 bg-white text-main/70 hover:bg-brand/5'}
@@ -127,9 +130,6 @@ const StudentInterviewResponseModal = ({ isOpen, onClose, interview, onRespond }
                                     );
                                 })}
                             </ul>
-                            {!declining && !selectedSlotId && (
-                                <p className={`${textMuted} text-xs mt-1`}>{t('convocations.modal.selectSlot')}</p>
-                            )}
                         </div>
                     )}
 

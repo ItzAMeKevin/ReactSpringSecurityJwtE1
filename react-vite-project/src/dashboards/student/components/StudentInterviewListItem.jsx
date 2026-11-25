@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { btnTextLink, cardItem, interviewTypeBadgeColor, statusBadge, statusBadgeColor, textMuted } from '../../../styles/classes.js';
+import { btnTextLink, cardItem, cardHighlighted, interviewTypeBadgeColor, statusBadge, statusBadgeColor, textMuted } from '../../../styles/classes.js';
 import { formatSlotDate } from '../../../utils/dateFormatting.js';
+import scrollIntoViewOnMount from '@/utils/scrollIntoViewOnMount.js';
 import StudentInterviewResponseModal from './StudentInterviewResponseModal.jsx';
 
-const StudentInterviewListItem = ({ interview, onRespond }) => {
+const StudentInterviewListItem = ({ interview, isHighlighted, onClearHighlight, onRespond }) => {
     const { t, i18n } = useTranslation();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -22,7 +23,11 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
 
     return (
         <>
-            <div className={`${cardItem} flex items-center justify-between gap-4`}>
+            <div
+                ref={isHighlighted ? scrollIntoViewOnMount : undefined}
+                onClick={isHighlighted ? onClearHighlight : undefined}
+                className={`${cardItem} ${isHighlighted ? cardHighlighted : ''} flex items-center justify-between gap-4`}
+            >
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${interviewTypeBadgeColor(interview.type)}`}>

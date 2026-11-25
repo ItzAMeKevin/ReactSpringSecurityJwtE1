@@ -13,7 +13,11 @@ const EVENT_TARGETS = {
     CV_DECLINED: { path: "/etudiant/cv/refuses", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
     JOB_OFFER_DECLINED: { path: "/employeur/offres/refusees", kind: "offer" },
+    JOB_OFFER_HIRED: { path: "/etudiant/embauches", kind: "hire" },
+    JOB_OFFER_HIRE_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
+    JOB_OFFER_HIRE_DECLINED: { path: "/employeur/offres/validees", kind: "offer" },
     INTERVIEW_SCHEDULED: { path: "/etudiant/convocations", kind: "interview" },
+    JOB_OFFER_CANDIDATE_REJECTED: { path: "/etudiant/offres", kind: "offer" },
 };
 
 const getTarget = (event, referenceId) => {

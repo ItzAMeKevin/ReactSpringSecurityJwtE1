@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.StudentService;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import com.lacouf.rsbjwt.service.dto.InterviewDto;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/etudiant")
+@PreAuthorize("hasAuthority('STUDENT')")
 @RequiredArgsConstructor
 public class StudentController {
 
@@ -81,6 +83,21 @@ public class StudentController {
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<List<JobOfferDetailDTO>> getAcceptedOffers(Authentication authentication) {
         return ResponseEntity.ok(studentService.getAcceptedJobOffers(authentication.getName()));
+    }
+
+    @GetMapping("/embauches")
+    public ResponseEntity<List<CandidatureDto>> getPendingHireOffers(Authentication authentication) {
+        return ResponseEntity.ok(studentService.getPendingHireOffers(authentication.getName()));
+    }
+
+    @PutMapping("/embauches/{applicationId}/accepter")
+    public ResponseEntity<CandidatureDto> acceptHire(@PathVariable Long applicationId, Authentication authentication) {
+        return ResponseEntity.ok(studentService.acceptHire(applicationId, authentication.getName()));
+    }
+
+    @PutMapping("/embauches/{applicationId}/decliner")
+    public ResponseEntity<CandidatureDto> declineHire(@PathVariable Long applicationId, Authentication authentication) {
+        return ResponseEntity.ok(studentService.declineHire(applicationId, authentication.getName()));
     }
 
     @GetMapping("/interviews")

@@ -46,6 +46,9 @@ class InterviewServiceTest {
     @Mock
     private InterviewMapper interviewMapper;
 
+    @Mock
+    private SystemeService systemeService;
+
     @InjectMocks
     private InterviewService interviewService;
 
@@ -64,6 +67,7 @@ class InterviewServiceTest {
         application = new JobApplication();
         application.setId(1L);
         application.setJobOffer(jobOffer);
+        application.setStudent(Student.builder().id(2L).build());
     }
 
     private ScheduleInterviewRequestDto validOnlineDto() {
@@ -98,6 +102,7 @@ class InterviewServiceTest {
         assertNotNull(result);
         verify(interviewRepository).save(any(Interview.class));
         verify(interviewMapper).toDto(any(Interview.class));
+        verify(jobApplicationRepository).updateStatus(1L, Status.INTERVIEW_SCHEDULED);
     }
 
     @Test
