@@ -1,9 +1,7 @@
 import { useTranslation } from "react-i18next";
-import { cardItem, statusBadge, textMuted } from "@/styles/classes.js";
+import { cardItem, interviewTypeBadgeColor, statusBadge, textMuted } from "@/styles/classes.js";
 import formatAddress from "@/utils/formatAddress.js";
-
-const formatSlotDate = (date, language) =>
-    new Date(`${date}T00:00:00`).toLocaleDateString(language, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 
 const formatTime = (time) => time?.slice(0, 5);
 
@@ -18,7 +16,7 @@ const InterviewCard = ({ interview }) => {
                     <p className="font-bold text-main">{interview.studentFirstName} {interview.studentLastName}</p>
                     <p className={`text-sm ${textMuted} break-all`}>{interview.studentEmail}</p>
                 </div>
-                <span className={`${statusBadge} ${isOnline ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}`}>
+                <span className={`${statusBadge} ${interviewTypeBadgeColor(interview.type)}`}>
                     {t(isOnline ? "scheduleInterview.form.typeOnline" : "scheduleInterview.form.typeInPerson")}
                 </span>
             </div>

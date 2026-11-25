@@ -5,6 +5,7 @@ import CvModal from "@/components/cv/CvModal.jsx";
 import fetcher from "@/utils/fetcher.js";
 import ScheduleInterviewModal from "@/dashboards/employer/components/ScheduleInterviewModal.jsx";
 import { getApiErrorKey } from "@/utils/apiError.js";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 import {
     cardItem,
     statusBadge,
@@ -18,7 +19,7 @@ import {
 } from "@/styles/classes.js";
 
 const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions}) => {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
     const [updating, setUpdating] = useState(false);
@@ -110,7 +111,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                     <p className="font-bold text-main">{candidate.firstName} {candidate.lastName}</p>
                     <p className={`text-sm ${textMuted}`}>{candidate.email}</p>
                     <p className={`text-sm ${textMuted}`}>
-                        {new Date(candidate.appliedAt).toLocaleDateString()}
+                        {formatSlotDate(candidate.appliedAt?.split('T')[0], i18n.language)}
                     </p>
                 </div>
                 <span className={`${statusBadge} ${statusBadgeColor(candidate.status)}`}>
