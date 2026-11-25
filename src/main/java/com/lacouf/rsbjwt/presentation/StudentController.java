@@ -45,7 +45,7 @@ public class StudentController {
     @GetMapping("/interviews")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<List<InterviewDto>> getInterviews(Authentication authentication) {
-        return ResponseEntity.ok(studentService.getInterviews(authentication));
+        return ResponseEntity.ok(studentService.getInterviews(authentication.getName()));
     }
 
     @PutMapping("/interviews/{id}/respond")
@@ -53,7 +53,6 @@ public class StudentController {
     public ResponseEntity<InterviewDto> respondToInterview(@PathVariable Long id,
                                                            @RequestBody InterviewRespondRequest request,
                                                            Authentication authentication) {
-        return ResponseEntity.ok(studentService.respondToInterview(id, request, authentication));
+        return ResponseEntity.ok(studentService.respondToInterview(id, request, authentication.getName()));
     }
-
 }

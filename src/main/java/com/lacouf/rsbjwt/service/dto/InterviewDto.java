@@ -20,6 +20,4 @@ public record InterviewDto(
         InterviewStatus status,
         String studentMessage,
         boolean expired
-) {
-
-}
+) {}

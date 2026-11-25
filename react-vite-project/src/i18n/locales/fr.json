@@ -418,6 +418,10 @@
         "title": "Offre d'embauche refusée",
         "message": "Un étudiant a refusé votre offre d'embauche. Le poste est de nouveau disponible."
       },
+      "JOB_OFFER_CANDIDATE_REJECTED": {
+        "title": "Candidature non retenue",
+        "message": "Un employeur n'a pas retenu votre candidature. Consultez vos offres pour postuler ailleurs."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."

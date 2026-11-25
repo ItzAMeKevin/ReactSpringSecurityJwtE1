@@ -26,6 +26,13 @@ public class Interview {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    private InterviewStatus status = InterviewStatus.PENDING;
+
+    @Column(length = 1000)
+    private String studentMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private InterviewType type;
 
     private String videoLink;
@@ -49,6 +56,4 @@ public class Interview {
 
     @OneToMany(mappedBy = "interview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InterviewSlot> slots = new ArrayList<>();
-
-    InterviewStatus status = InterviewStatus.PENDING;
 }
