@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import fetcher from "@/utils/fetcher.js";
 import { cardItem, statusBadge, statusBadgeColor, textError, textMuted } from "@/styles/classes.js";
+import formatAddress from "@/utils/formatAddress.js";
 
 const OfferCard = ({ offer, acceptedCv }) => {
     const { t } = useTranslation();
@@ -10,8 +11,7 @@ const OfferCard = ({ offer, acceptedCv }) => {
 
     const hasApplied = Boolean(offer.applied) || applyState === "success";
     const hasValidCv = Boolean(acceptedCv);
-    const loc = offer.location;
-    const address = loc ? `${loc.numeroCivic} ${loc.rue}, ${loc.ville}, ${loc.pays}` : null;
+    const address = offer.location ? formatAddress(offer.location) : null;
 
     const programs = t("inscription.programsList", { returnObjects: true });
     const programName = Array.isArray(programs)

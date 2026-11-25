@@ -44,9 +44,7 @@ public class UserAppService {
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "errors.authenticationFailed");
         }
-        final String token = jwtTokenProvider.generateToken(authentication);
-        System.out.println("JWT Token " + token);
-        return token;
+        return jwtTokenProvider.generateToken(authentication);
     }
 
     @Transactional(readOnly = true)
