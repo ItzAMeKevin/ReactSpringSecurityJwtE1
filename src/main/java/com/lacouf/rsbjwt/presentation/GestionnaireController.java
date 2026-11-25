@@ -84,11 +84,7 @@ public class GestionnaireController {
 
     @PutMapping("/contract/create")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ContractDto> createContract(@Valid @RequestBody ContractCreationRequestDto contractCreationRequestDto) {
-        return ResponseEntity.ok(gestionnaireService.createContract(
-                            contractCreationRequestDto.getStudentId(),
-                            contractCreationRequestDto.getEmployerId(),
-                            contractCreationRequestDto.getManagerId(),
-                            contractCreationRequestDto.getJobOfferId()));
+    public ResponseEntity<ContractDto> createContract(@RequestBody CandidatureDto candidatureDto, Long ManagerId) {
+        return ResponseEntity.ok(gestionnaireService.createContract(candidatureDto, ManagerId));
     } 
 }

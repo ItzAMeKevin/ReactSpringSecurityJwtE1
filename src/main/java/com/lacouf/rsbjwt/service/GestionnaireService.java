@@ -142,7 +142,16 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public ContractDto createContract(Long studentId, Long employerId, Long managerId, Long jobOfferId) {
+    public ContractDto createContract(CandidatureDto candidatureDto, Long managerId) {
+        
+        JobApplication jobApplication = jobApplicationRepository.findById(candidatureDto.id())
+                .orElseThrow(() -> new RuntimeException("Candidature not found"));
+
+        Long jobOfferId = jobApplication.getJobOffer().getId();
+        Long studentId = jobApplication.getStudent().getId();        
+        Long employerId = jobApplication.getJobOffer().getEmployer().getId();
+        Long managerId = getManagerIdByUsername(managerId); // Assuming you have a method to get the manager ID by username
+
         JobOffer jobOffer = getJobOfferById(jobOfferId);
         Student student = getStudentById(studentId);
         Employer employer = getEmployerById(employerId);
