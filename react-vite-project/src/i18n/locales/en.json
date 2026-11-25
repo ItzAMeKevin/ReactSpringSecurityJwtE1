@@ -368,7 +368,9 @@
       "phone": "Phone",
       "dates": "Important dates",
       "submitted": "Submission date",
-      "lastModified": "Last modified"
+      "lastModified": "Last modified",
+      "candidatureSummary": "Application Summary",
+      "name": "Name"
     },
     "viewDetails": "View details",
     "hideDetails": "Hide details",
@@ -567,8 +569,8 @@
       "startTime": "Start time",
       "endTime": "End time",
       "type": "Interview type",
-      "typeOnline": "Online",
-      "typeInPerson": "In-person",
+      "typeOnline": "Online interview",
+      "typeInPerson": "In-person interview",
       "videoLink": "Videoconference link",
       "videoLinkHint": "Paste your Zoom, Teams or Google Meet link",
       "address": "Address / Location",

@@ -371,7 +371,9 @@
       "phone": "Téléphone",
       "dates": "Dates importantes",
       "submitted": "Date de soumission",
-      "lastModified": "Dernière modification"
+      "lastModified": "Dernière modification",
+      "candidatureSummary": "Résumé de la candidature",
+      "name": "Nom"
     },
     "viewDetails": "Voir les détails",
     "hideDetails": "Masquer les détails",
@@ -570,8 +572,8 @@
       "startTime": "Heure de début",
       "endTime": "Heure de fin",
       "type": "Type d'entrevue",
-      "typeOnline": "En ligne",
-      "typeInPerson": "Présentiel",
+      "typeOnline": "Entrevue en ligne",
+      "typeInPerson": "Entrevue en présentiel",
       "videoLink": "Lien de visioconférence",
       "videoLinkHint": "Collez le lien de votre réunion Zoom, Teams ou Google Meet",
       "address": "Adresse / Lieu",

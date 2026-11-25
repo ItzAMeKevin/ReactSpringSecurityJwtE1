@@ -39,7 +39,6 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         try {
             await downloadFile(contentUrl, cv.fileName || "cv.pdf");
         } catch {
-            // download failure is silent — no user-visible state to update
         }
     };
 
