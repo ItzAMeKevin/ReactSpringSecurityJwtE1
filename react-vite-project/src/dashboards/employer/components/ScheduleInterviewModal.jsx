@@ -121,7 +121,6 @@ const ScheduleInterviewModal = ({ isOpen, onClose, candidate, candidatureId, onS
             if (onSuccess) onSuccess();
             onClose();
         } catch (error) {
-            console.error('Erreur lors de la planification:', error);
             setApiError(error.message || t('scheduleInterview.errors.generic'));
         } finally {
             setIsLoading(false);

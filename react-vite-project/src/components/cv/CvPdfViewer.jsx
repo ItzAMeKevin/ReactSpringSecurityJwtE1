@@ -72,7 +72,7 @@ const CvPdfViewer = ({ file }) => {
             <Document
                 file={file}
                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                onLoadError={(error) => console.error("Erreur de chargement PDF :", error)}
+                onLoadError={() => {}}
             >
                 {Array.from({ length: numPages }, (_, index) => (
                     <Page

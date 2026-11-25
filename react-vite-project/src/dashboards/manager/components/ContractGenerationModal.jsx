@@ -95,7 +95,6 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
 
             onClose();
         } catch (error) {
-            console.error('Erreur lors de la génération:', error);
             setApiError(error.message || t('contractGeneration.errors.generic'));
         } finally {
             setIsLoading(false);

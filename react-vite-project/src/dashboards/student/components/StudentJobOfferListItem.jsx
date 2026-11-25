@@ -36,8 +36,7 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
             });
             if (!res.ok) throw new Error(await getApiErrorKey(res));
             setApplyState("success");
-        } catch (e) {
-            console.error("Erreur lors de la candidature :", e);
+        } catch {
             setApplyState("error");
         }
     };
