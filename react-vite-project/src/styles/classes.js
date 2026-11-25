@@ -46,6 +46,12 @@ const STATUS_COLORS = {
 
 export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";
 
+/** Badge colors by interview type */
+export const interviewTypeBadgeColor = (type) => ({
+    ONLINE: "bg-blue-100 text-blue-800",
+    IN_PERSON: "bg-purple-100 text-purple-800",
+})[type] ?? "bg-gray-100 text-gray-700";
+
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 /** Full-page wrapper for all dashboard pages */
@@ -79,3 +85,20 @@ export const dangerCard = "border border-red-200 bg-red-50 text-red-800";
 
 /** Standard text input / select / textarea */
 export const inputField = "w-full border border-brand rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand";
+
+// ── Text / link buttons ────────────────────────────────────────────────────────
+
+/** Inline brand link button (e.g. "Respond →", "View details") */
+export const btnTextLink = "text-brand hover:underline font-semibold text-sm transition-colors";
+
+/** Underlined toggle button (e.g. "Read more / Show less") */
+export const btnTextUnderline = "text-sm font-medium text-main underline underline-offset-2 hover:text-main/80 cursor-pointer";
+
+/** Inline edit action button */
+export const btnTextEdit = "text-blue-600 hover:text-blue-800 text-sm font-medium";
+
+/** Inline delete action button */
+export const btnTextDelete = "text-red-600 hover:text-red-800 text-sm font-medium";
+
+/** Inline success/positive action button */
+export const btnTextSuccess = "text-green-600 hover:text-green-800 font-semibold text-sm transition-colors";

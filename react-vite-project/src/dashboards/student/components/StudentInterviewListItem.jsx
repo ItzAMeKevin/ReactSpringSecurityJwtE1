@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cardItem, statusBadge, statusBadgeColor, textMuted } from '../../../styles/classes.js';
+import { btnTextLink, cardItem, interviewTypeBadgeColor, statusBadge, statusBadgeColor, textMuted } from '../../../styles/classes.js';
 import { formatSlotDate } from '../../../utils/dateFormatting.js';
 import StudentInterviewResponseModal from './StudentInterviewResponseModal.jsx';
-
-const TYPE_STYLES = {
-    ONLINE: 'bg-blue-100 text-blue-800',
-    IN_PERSON: 'bg-purple-100 text-purple-800',
-};
 
 const StudentInterviewListItem = ({ interview, onRespond }) => {
     const { t, i18n } = useTranslation();
@@ -30,7 +25,7 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
             <div className={`${cardItem} flex items-center justify-between gap-4`}>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${TYPE_STYLES[interview.type] ?? 'bg-gray-100 text-gray-700'}`}>
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${interviewTypeBadgeColor(interview.type)}`}>
                             {t(`convocations.type.${interview.type}`)}
                         </span>
                         <span className={`${statusBadge} ${statusBadgeColor(displayStatus)}`}>
@@ -53,7 +48,7 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
                 {canRespond && (
                     <button
                         onClick={() => setModalOpen(true)}
-                        className="shrink-0 text-sm font-medium text-brand hover:underline"
+                        className={`shrink-0 ${btnTextLink}`}
                     >
                         {t('convocations.modal.title')} →
                     </button>
