@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.io.UncheckedIOException;
 
 @Service
 @RequiredArgsConstructor
@@ -141,32 +142,63 @@ public class GestionnaireService {
     }
 
     @Transactional
-    public ContractDto createContract(ContractDto contractDto) {
-        Contract contract = contractMapper.toEntity(contractDto);
-        contract.setStatus(Status.UNSIGNED);
-        if (contract.getContent() != null) {
-            contract.setSize(contract.getContent().length);
+    public ContractDto createContract(Long studentId, Long employerId, Long managerId, Long jobOfferId) {
+        JobOffer jobOffer = getJobOfferById(jobOfferId);
+        Student student = getStudentById(studentId);
+        Employer employer = getEmployerById(employerId);
+        Manager manager = getManagerById(managerId);
+
+        byte[] pdf;
+        try {
+            pdf = ContractPdfGenerator.generate(jobOffer, student, employer, manager);
+        } catch (java.io.IOException exception) {
+            throw new UncheckedIOException("Could not generate the internship contract PDF", exception);
         }
 
-        Student student = studentRepository.findById(contractDto.getStudentId())
-                .orElseThrow(UserNotFoundException::new);
-        Employer employer = employerRepository.findById(contractDto.getEmployerId())
-                .orElseThrow(UserNotFoundException::new);
-        Manager manager = managerRepository.findById(contractDto.getManagerId())
-                .orElseThrow(UserNotFoundException::new);
-
-        contract = contractRepository.save(contract);
+        Contract contract = new Contract();
+        contract.setContent(pdf);
+        contract.setFileName("contrat-stage-" + studentId + ".pdf");
+        contract.setContentType("application/pdf");
+        contract.setSize(pdf.length);
+        contract.setStatus(Status.UNSIGNED);
+        contract.setUploadedAt(java.time.Instant.now());
         contract.setStudent(student);
         contract.setEmployer(employer);
         contract.setManager(manager);
+        contract.setSignedByStudent(false);
+        contract.setSignedByEmployer(false);
+        contract.setSignedByManager(false);
 
         student.setContract(contract);
         employer.setContract(contract);
         manager.setContract(contract);
+
+        contract = contractRepository.save(contract);
         studentRepository.save(student);
         employerRepository.save(employer);
         managerRepository.save(manager);
 
         return contractMapper.toDto(contract);
+
+    }
+
+    private Student getStudentById(Long studentId) {
+        return studentRepository.findById(studentId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private Employer getEmployerById(Long employerId) {
+        return employerRepository.findById(employerId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private Manager getManagerById(Long managerId) {
+        return managerRepository.findById(managerId)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    private JobOffer getJobOfferById(Long jobOfferId) {
+        return jobOfferRepository.findById(jobOfferId)
+                .orElseThrow(() -> new JobOfferNotFoundException("errors.jobOfferNotFound"));
     }
 }
