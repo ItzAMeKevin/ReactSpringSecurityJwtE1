@@ -20,6 +20,9 @@ public class Signature {
     @Column(name = "signature_image")
     private byte[] imageData;
 
+    @Column(name = "signature_content_type")
+    private String contentType;
 
-
+    @Column(name = "signature_created_at")
+    private Instant createdAt;
 }
