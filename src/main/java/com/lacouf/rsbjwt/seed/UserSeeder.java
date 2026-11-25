@@ -25,9 +25,9 @@ class UserSeeder {
     static final String ALICE_EMAIL = "alice.bouchard@etudiant.ca";
     static final String BRUNO_EMAIL = "bruno.lacroix@etudiant.ca";
     static final String CLARA_EMAIL = "clara.morin@etudiant.ca";
-    static final String CMRC_EMAIL = "jaime.paolaguere@cmr.ca";
-    static final String NEXUS_EMAIL = "jp.bouchard@nexustech.ca";
-    static final String HOTEL_EMAIL = "nadia.bergeron@hotellumiere.ca";
+    static final String CMRC_EMAIL = "stages@cmr.ca";
+    static final String NEXUS_EMAIL = "stages@nexustech.ca";
+    static final String HOTEL_EMAIL = "stages@hotellumiere.ca";
 
     private final UserAppService userAppService;
     private final PasswordEncoder passwordEncoder;
@@ -44,14 +44,14 @@ class UserSeeder {
         seedStudent(BRUNO_EMAIL, "Bruno", "Lacroix", "2441274", Programe.TECHNIQUE_GENIE_CIVIL, "Bruno1234");
         seedStudent(CLARA_EMAIL, "Clara", "Morin", "2441345", Programe.TECHNIQUE_GENIE_CIVIL, "Clara1234");
 
-        seedEmployer(CMRC_EMAIL, "Jaime", "Paolaguere", "Collège militaire royal du Canada",
-                "613-541-6000", "CMRC-001", "Paola1234",
+        seedEmployer(CMRC_EMAIL, "Collège militaire royal du Canada",
+                "613-541-6000", "CMRC-001", "Cmrc1234",
                 new AdresseDTO("Canada", "Kingston", "General Crerar Crescent", "13", "K7K 7B4"));
-        seedEmployer(NEXUS_EMAIL, "Jean-Philippe", "Bouchard", "Nexus Technologies inc.",
-                "514-555-9234", "NXT-7821", "JeanPhilippe1234",
+        seedEmployer(NEXUS_EMAIL, "Nexus Technologies inc.",
+                "514-555-9234", "NXT-7821", "Nexus1234",
                 new AdresseDTO("Canada", "Montréal", "Boul. Saint-Laurent", "4120", "H2W 1Y7"));
-        seedEmployer(HOTEL_EMAIL, "Nadia", "Bergeron", "Hôtel Lumière du Fleuve",
-                "514-555-0477", "HLF-3150", "Nadia1234",
+        seedEmployer(HOTEL_EMAIL, "Hôtel Lumière du Fleuve",
+                "514-555-0477", "HLF-3150", "Lumiere1234",
                 new AdresseDTO("Canada", "Montréal", "Rue de la Commune Ouest", "150", "H2Y 2C3"));
     }
 
@@ -72,10 +72,10 @@ class UserSeeder {
                 .build());
     }
 
-    private void seedEmployer(String email, String firstName, String lastName, String companyName,
-                              String phoneNumber, String employerWorkId, String password, AdresseDTO adresse) {
+    private void seedEmployer(String email, String companyName, String phoneNumber, String employerWorkId,
+                              String password, AdresseDTO adresse) {
         createIfAbsent(EmployerCreateDto.builder()
-                .email(email).firstName(firstName).lastname(lastName)
+                .email(email)
                 .companyName(companyName).phoneNumber(phoneNumber).employerWorkId(employerWorkId)
                 .adresseDTO(adresse)
                 .role(Role.EMPLOYER).password(password)

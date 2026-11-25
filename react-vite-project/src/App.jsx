@@ -77,9 +77,9 @@ function App() {
     const shortcuts = {
       Digit1: ["marie.leclerc@cegep-demo.ca", "Marie1234"],
       Digit2: ["sophie.tremblay@etudiant.ca", "Sophie1234"],
-      Digit3: ["jp.bouchard@nexustech.ca", "JeanPhilippe1234"],
+      Digit3: ["stages@nexustech.ca", "Nexus1234"],
       Digit0: ["jaime.laguerre@etudiant.ca", "Jaime1234"],
-      Digit9: ["jaime.paolaguere@cmr.ca", "Paola1234"],
+      Digit9: ["stages@cmr.ca", "Cmrc1234"],
     };
 
     const handleShortcut = (event) => {
