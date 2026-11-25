@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useNotifications from "@/hooks/useNotifications.js";
@@ -11,6 +11,18 @@ const NotificationBell = () => {
     const navigate = useNavigate();
     const { notifications, status, unreadCount, markAsRead, refetch } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClickOutside = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isOpen]);
 
     const handleNotificationClick = (notification) => {
         if (!notification.isRead) {
@@ -61,7 +73,10 @@ const NotificationBell = () => {
                             >
                                 <InterviewNotification
                                     notification={notification}
-                                    onClose={() => setIsOpen(false)}
+                                    onClose={() => {
+                                        markAsRead(notification.id);
+                                        setIsOpen(false);
+                                    }}
                                 />
                             </li>
                         );
@@ -98,7 +113,7 @@ const NotificationBell = () => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative" ref={wrapperRef}>
             <button
                 type="button"
                 onClick={toggleDropdown}
