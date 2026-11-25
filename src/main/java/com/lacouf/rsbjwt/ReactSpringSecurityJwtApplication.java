@@ -7,6 +7,7 @@ import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.EmployerCreateDto;
 import com.lacouf.rsbjwt.service.dto.ManagerCreateDto;
 import com.lacouf.rsbjwt.service.dto.StudentCreateDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +33,9 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final ObjectProvider<StudentRepository> studentRepository;
     private final ObjectProvider<JobApplicationRepository> jobApplicationRepository;
 
+    @Value("${app.seed-data:true}")
+    private boolean seedData;
+
     public ReactSpringSecurityJwtApplication(UserAppService UserService, PasswordEncoder passwordEncoder,
                                              ObjectProvider<JobOfferRepository> jobOfferRepository,
                                              ObjectProvider<EmployerRepository> employerRepository,
@@ -53,6 +57,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (!seedData) return;
 
         // --- Seed users (emails/passwords unchanged for team compatibility) ---
 
