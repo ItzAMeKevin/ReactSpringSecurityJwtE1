@@ -63,14 +63,14 @@ describe('CvListItem — general rendering', () => {
 
     it('toggles preview on button click', () => {
         render(<CvListItem {...baseProps} />);
-        fireEvent.click(screen.getByText('televerser.afficher'));
+        fireEvent.click(screen.getByText('cvViewer.show'));
         expect(baseProps.onToggle).toHaveBeenCalledTimes(1);
     });
 
     it('always shows feedback for DECLINED CVs, without a toggle button', async () => {
         render(<CvListItem {...baseProps} cv={{ ...baseCv, status: 'DECLINED' }} />);
         expect(await screen.findByText('Ajoutez vos stages.')).toBeInTheDocument();
-        expect(fetcher).toHaveBeenCalledWith('/student-cv/1/review');
+        expect(fetcher).toHaveBeenCalledWith('/etudiant/cv/1/review');
         expect(screen.queryByText('televerser.voirFeedback')).not.toBeInTheDocument();
         expect(screen.queryByText('televerser.masquerFeedback')).not.toBeInTheDocument();
     });
