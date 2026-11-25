@@ -20,13 +20,13 @@ public class Interview {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "job_application_id", nullable = false, unique = true)
     private JobApplication jobApplication;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Status status = Status.PENDING;
+    private InterviewStatus status = InterviewStatus.PENDING;
 
     @Column(length = 1000)
     private String studentMessage;

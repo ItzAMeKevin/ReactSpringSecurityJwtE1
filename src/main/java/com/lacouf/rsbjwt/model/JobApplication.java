@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.model;
 
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Entity
 @Table(
@@ -31,6 +34,12 @@ public class JobApplication {
     @JoinColumn(name = "student_cv_id", nullable = false)
     private StudentCv studentCv;
 
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Status status = Status.PENDING;
@@ -41,4 +50,41 @@ public class JobApplication {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    public static final Set<Status> HIRED_STATUSES = EnumSet.of(
+            Status.AWAITING_CONTRACT, Status.AWAITING_SIGNATURES, Status.CONTRACT_SIGNED, Status.WORKING, Status.COMPLETED);
+
+    public static final Set<Status> SEAT_HOLDING_STATUSES = withStatus(HIRED_STATUSES, Status.HIRE_PENDING);
+
+    private static final Set<Status> OPEN_STATUSES = EnumSet.of(
+            Status.PENDING, Status.PENDING_INTERVIEW, Status.INTERVIEW_SCHEDULED, Status.INTERVIEW_COMPLETED);
+
+    public void offerHire() {
+        transition(OPEN_STATUSES, Status.HIRE_PENDING, "errors.applicationNotOpen");
+    }
+
+    public void reject() {
+        transition(OPEN_STATUSES, Status.DECLINED, "errors.applicationNotOpen");
+    }
+
+    public void acceptHire() {
+        transition(EnumSet.of(Status.HIRE_PENDING), Status.AWAITING_CONTRACT, "errors.applicationNotHirePending");
+    }
+
+    public void declineHire() {
+        transition(EnumSet.of(Status.HIRE_PENDING), Status.DECLINED, "errors.applicationNotHirePending");
+    }
+
+    private static Set<Status> withStatus(Set<Status> base, Status extra) {
+        EnumSet<Status> result = EnumSet.copyOf(base);
+        result.add(extra);
+        return result;
+    }
+
+    private void transition(Set<Status> allowedFrom, Status target, String errorKey) {
+        if (!allowedFrom.contains(status)) {
+            throw new InvalidStateTransitionException(errorKey);
+        }
+        status = target;
+    }
 }

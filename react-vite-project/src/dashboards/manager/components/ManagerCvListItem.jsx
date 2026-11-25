@@ -30,8 +30,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         try {
             const url = await fetchBlobUrl(contentUrl);
             setPreviewUrl(url);
-        } catch (error) {
-            console.error("Erreur lors du chargement de l'aperçu :", error);
+        } catch {
             setPreviewError(t("gestionnaire.preview.errorLoading"));
         }
     };
@@ -39,8 +38,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
     const handleDownload = async () => {
         try {
             await downloadFile(contentUrl, cv.fileName || "cv.pdf");
-        } catch (error) {
-            console.error("Erreur lors du téléchargement du CV :", error);
+        } catch {
+            // download failure is silent — no user-visible state to update
         }
     };
 
@@ -48,8 +47,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         setActionState("processing");
         try {
             await onAccept(cv.id);
-        } catch (error) {
-            console.error("Erreur lors de l'acceptation du CV :", error);
+        } catch {
             setActionState("acceptError");
         }
     };
@@ -62,8 +60,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         setActionState("processing");
         try {
             await onDecline(cv.id, { feedback: reviewFeedback.trim() });
-        } catch (error) {
-            console.error("Erreur lors du refus du CV :", error);
+        } catch {
             setActionState("declineError");
         }
     };

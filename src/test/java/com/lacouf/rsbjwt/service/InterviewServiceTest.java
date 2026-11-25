@@ -46,6 +46,9 @@ class InterviewServiceTest {
     @Mock
     private InterviewMapper interviewMapper;
 
+    @Mock
+    private SystemeService systemeService;
+
     @InjectMocks
     private InterviewService interviewService;
 
@@ -64,6 +67,7 @@ class InterviewServiceTest {
         application = new JobApplication();
         application.setId(1L);
         application.setJobOffer(jobOffer);
+        application.setStudent(Student.builder().id(2L).build());
     }
 
     private ScheduleInterviewRequestDto validOnlineDto() {
@@ -74,9 +78,11 @@ class InterviewServiceTest {
                 null,
                 "Bring portfolio",
                 List.of(new InterviewSlotDto(
+                        null,
                         LocalDate.of(2026, 11, 20),
                         LocalTime.of(9, 0),
-                        LocalTime.of(10, 0)))
+                        LocalTime.of(10, 0),
+                        null))
         );
     }
 
@@ -96,6 +102,7 @@ class InterviewServiceTest {
         assertNotNull(result);
         verify(interviewRepository).save(any(Interview.class));
         verify(interviewMapper).toDto(any(Interview.class));
+        verify(jobApplicationRepository).updateStatus(1L, Status.INTERVIEW_SCHEDULED);
     }
 
     @Test
@@ -104,7 +111,7 @@ class InterviewServiceTest {
 
         ScheduleInterviewRequestDto dto = new ScheduleInterviewRequestDto(
                 99L, InterviewType.ONLINE, "https://zoom.us/j/123", null, null,
-                List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+                List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null)));
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> interviewService.schedule(dto, EMPLOYER_EMAIL));
@@ -139,7 +146,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.ONLINE, "https://zoom.us", null, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);
@@ -160,7 +167,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.IN_PERSON, "https://zoom.us", adresseDto, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);

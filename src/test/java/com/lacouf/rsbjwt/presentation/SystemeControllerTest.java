@@ -40,10 +40,10 @@ class SystemeControllerTest {
     void updatesNotificationAndHandlesErrors() throws Exception {
         NotificationDto dto = NotificationDto.builder().id(1L).build();
         when(service.updateNotificationStatus(authentication, 1L)).thenReturn(dto);
-        assertEquals(dto, controller.updateNotification(authentication, 1L).getBody());
+        assertEquals(dto, controller.markAsRead(1L, authentication).getBody());
         when(service.updateNotificationStatus(authentication, 2L)).thenThrow(new NotificationNotFound());
-        assertThrows(NotificationNotFound.class, () -> controller.updateNotification(authentication, 2L));
+        assertThrows(NotificationNotFound.class, () -> controller.markAsRead(2L, authentication));
         when(service.updateNotificationStatus(authentication, 3L)).thenThrow(new RuntimeException());
-        assertThrows(RuntimeException.class, () -> controller.updateNotification(authentication, 3L));
+        assertThrows(RuntimeException.class, () -> controller.markAsRead(3L, authentication));
     }
 }

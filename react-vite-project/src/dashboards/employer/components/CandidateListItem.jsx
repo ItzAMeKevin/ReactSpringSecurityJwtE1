@@ -1,10 +1,12 @@
-import {useEffect, useState} from "react";
-import {useTranslation} from "react-i18next";
-import {fetchBlobUrl} from "@/utils/downloadFile.js";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { fetchBlobUrl } from "@/utils/downloadFile.js";
+import sendPut from "@/utils/sendPut.js";
+import { translateErrorKey } from "@/utils/apiError.js";
 import CvModal from "@/components/cv/CvModal.jsx";
-import fetcher from "@/utils/fetcher.js";
+import ConfirmPanel from "@/components/ui/ConfirmPanel.jsx";
 import ScheduleInterviewModal from "@/dashboards/employer/components/ScheduleInterviewModal.jsx";
-import { getApiErrorKey } from "@/utils/apiError.js";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 import {
     cardItem,
     statusBadge,
@@ -14,21 +16,45 @@ import {
     btnSmPrimary,
     textError,
     textMuted,
-    inputField,
+    successCard,
+    dangerCard,
 } from "@/styles/classes.js";
 
-const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions}) => {
-    const {t} = useTranslation();
-    const [statusError, setStatusError] = useState(null);
-    const [cvError, setCvError] = useState(null);
-    const [updating, setUpdating] = useState(false);
-    const [pendingStatus, setPendingStatus] = useState(null);
-    const [message, setMessage] = useState("");
+const OPEN_STATUSES = ["PENDING", "PENDING_INTERVIEW", "INTERVIEW_SCHEDULED", "INTERVIEW_COMPLETED"];
+
+const ACTIONS = {
+    hire: {
+        endpoint: "hire",
+        nextStatus: "HIRE_PENDING",
+        labelKey: "employeurCandidats.embaucher",
+        confirmKey: "employeurCandidats.confirmation.embaucher",
+        button: btnAccept,
+        panel: successCard,
+    },
+    reject: {
+        endpoint: "reject",
+        nextStatus: "DECLINED",
+        labelKey: "employeurCandidats.nePasRetenir",
+        confirmKey: "employeurCandidats.confirmation.nePasRetenir",
+        button: btnRefuse,
+        panel: dangerCard,
+    },
+};
+
+const CandidateListItem = ({ candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions }) => {
+    const { t, i18n } = useTranslation();
+    const [action, setAction] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [errorKey, setErrorKey] = useState(null);
     const [isCvOpen, setIsCvOpen] = useState(false);
     const [cvUrl, setCvUrl] = useState(null);
-    const [hireError, setHireError] = useState(null);
-    const [hiring, setHiring] = useState(false);
+    const [cvError, setCvError] = useState(null);
     const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+
+    const fullName = `${candidate.firstName} ${candidate.lastName}`;
+    const isOpen = OPEN_STATUSES.includes(candidate.status);
+    const hasNoPositionLeft = remainingPositions != null && remainingPositions <= 0;
+    const current = action && ACTIONS[action];
 
     useEffect(() => {
         return () => {
@@ -36,57 +62,30 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
         };
     }, [cvUrl]);
 
-    const openConfirm = (status) => {
-        setStatusError(null);
-        setMessage("");
-        setPendingStatus(status);
-    };
-
-    const cancelConfirm = () => {
-        setPendingStatus(null);
-        setMessage("");
+    const openAction = (kind) => {
+        setErrorKey(null);
+        setAction(kind);
     };
 
     const handleConfirm = async () => {
-        setUpdating(true);
-        setStatusError(null);
+        setIsProcessing(true);
+        setErrorKey(null);
         try {
-            const res = await fetcher(`/employer/${offerId}/candidates/${candidate.cvId}/status`, {
-                method: "PUT",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({status: pendingStatus, message: message.trim() || null}),
-            });
-            if (!res.ok) throw new Error(await getApiErrorKey(res));
-            onStatusChange(candidate.cvId, pendingStatus);
-            cancelConfirm();
+            await sendPut(`/employer/${offerId}/candidates/${candidate.cvId}/${current.endpoint}`);
+            onStatusChange(candidate.cvId, current.nextStatus);
+            if (action === "hire") onHire?.();
+            setAction(null);
         } catch (error) {
-            setStatusError(error.message?.startsWith("errors.")
-                ? t(error.message)
-                : t("employeurCandidats.erreurStatut"));
+            setErrorKey(error.message);
         } finally {
-            setUpdating(false);
+            setIsProcessing(false);
         }
     };
 
-    const handleHire = async () => {
-        setHiring(true);
-        setHireError(null);
-        try {
-            const res = await fetcher(`/employer/${offerId}/candidates/${candidate.cvId}/hire`, {
-                method: "PUT",
-            });
-            if (res.status === 409) {
-                setHireError(t("employeurCandidats.hireConflict"));
-                return;
-            }
-            if (!res.ok) throw new Error();
-            onStatusChange(candidate.cvId, "HIRED");
-            onHire?.();
-        } catch {
-            setHireError(t("employeurCandidats.hireError"));
-        } finally {
-            setHiring(false);
-        }
+    const handleInterviewScheduled = () => {
+        setIsScheduleModalOpen(false);
+        onStatusChange(candidate.cvId, "INTERVIEW_SCHEDULED");
+        onInterviewScheduled?.();
     };
 
     const handleOpenCv = async () => {
@@ -106,15 +105,15 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
         <li className={`${cardItem} p-4 flex flex-col gap-2`}>
             <div className="flex items-start justify-between gap-2">
                 <div>
-                    <p className="font-bold text-main">{candidate.firstName} {candidate.lastName}</p>
+                    <p className="font-bold text-main">{fullName}</p>
                     <p className={`text-sm ${textMuted}`}>{candidate.email}</p>
                     <p className={`text-sm ${textMuted}`}>
-                        {new Date(candidate.appliedAt).toLocaleDateString()}
+                        {formatSlotDate(candidate.appliedAt?.split('T')[0], i18n.language)}
                     </p>
                 </div>
                 <span className={`${statusBadge} ${statusBadgeColor(candidate.status)}`}>
-                      {t(`employeurCandidats.statuts.${candidate.status}`, candidate.status)}
-                  </span>
+                    {t([`employeurCandidats.statuts.${candidate.status}`, `applicationStatuses.${candidate.status}`], candidate.status)}
+                </span>
             </div>
 
             <div className="flex flex-wrap gap-2 mt-1">
@@ -123,45 +122,63 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                     className={btnSmPrimary}
                     onClick={handleOpenCv}
                     aria-haspopup="dialog"
-                    aria-label={`${t("cvViewer.show")} — ${candidate.firstName} ${candidate.lastName}`}
+                    aria-label={`${t("cvViewer.show")} — ${fullName}`}
                 >
                     {t("cvViewer.show")}
                 </button>
-                {candidate.status === "ACCEPTED" && !pendingStatus && (
+                {candidate.status === "PENDING" && candidate.candidatureId && (
                     <button
                         type="button"
                         className={btnSmPrimary}
                         onClick={() => setIsScheduleModalOpen(true)}
-                        aria-label={`${t("employeurCandidats.scheduleInterview")} — ${candidate.firstName} ${candidate.lastName}`}
+                        disabled={action !== null}
+                        aria-label={`${t("employeurCandidats.scheduleInterview")} — ${fullName}`}
                     >
                         {t("employeurCandidats.scheduleInterview")}
                     </button>
                 )}
-                {candidate.status === "PENDING" && !pendingStatus && (
+                {isOpen && (
                     <>
-                        <button type="button" className={btnAccept} onClick={() => openConfirm("ACCEPTED")}>
-                            {t("employeurCandidats.accepter")}
+                        <button
+                            type="button"
+                            className={ACTIONS.hire.button}
+                            onClick={() => openAction("hire")}
+                            disabled={action !== null || hasNoPositionLeft}
+                        >
+                            {t(ACTIONS.hire.labelKey)}
                         </button>
-                        <button type="button" className={btnRefuse} onClick={() => openConfirm("DECLINED")}>
-                            {t("employeurCandidats.refuser")}
+                        <button
+                            type="button"
+                            className={ACTIONS.reject.button}
+                            onClick={() => openAction("reject")}
+                            disabled={action !== null}
+                        >
+                            {t(ACTIONS.reject.labelKey)}
                         </button>
                     </>
                 )}
-                {candidate.status === "ACCEPTED" && (
-                    <button
-                        type="button"
-                        className={btnSmPrimary}
-                        onClick={handleHire}
-                        disabled={hiring || (remainingPositions != null && remainingPositions <= 0)}
-                    >
-                        {hiring ? "…" : t("employeurCandidats.embaucher")}
-                    </button>
-                )}
             </div>
+
+            {current && (
+                <ConfirmPanel
+                    message={t(current.confirmKey, { nom: fullName })}
+                    panelClass={current.panel}
+                    confirmClass={current.button}
+                    isProcessing={isProcessing}
+                    onConfirm={handleConfirm}
+                    onCancel={() => setAction(null)}
+                />
+            )}
+
+            {errorKey && (
+                <p className={`text-sm ${textError}`} role="alert">
+                    {translateErrorKey(errorKey, t, "employeurCandidats.erreurStatut")}
+                </p>
+            )}
 
             {isCvOpen && (
                 <CvModal
-                    title={`${candidate.firstName} ${candidate.lastName}`}
+                    title={fullName}
                     file={cvUrl}
                     error={cvError}
                     loadingMessage={t("cvViewer.loading")}
@@ -169,53 +186,12 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                 />
             )}
 
-            {pendingStatus && (
-                <div className="mt-2 flex flex-col gap-2 border-t pt-3" role="group"
-                     aria-label={t("employeurCandidats.confirmation.titre")}>
-                    <p className="text-sm font-semibold text-main">
-                        {t(pendingStatus === "ACCEPTED"
-                                ? "employeurCandidats.confirmation.accepter"
-                                : "employeurCandidats.confirmation.refuser",
-                            {nom: `${candidate.firstName} ${candidate.lastName}`})}
-                    </p>
-                    <label className={`text-sm ${textMuted}`} htmlFor={`msg-${candidate.cvId}`}>
-                        {t("employeurCandidats.confirmation.motifLabel")}
-                    </label>
-                    <textarea
-                        id={`msg-${candidate.cvId}`}
-                        className={inputField}
-                        rows={3}
-                        maxLength={500}
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        disabled={updating}
-                    />
-                    <div className="flex gap-2">
-                        <button type="button"
-                                className={pendingStatus === "ACCEPTED" ? btnAccept : btnRefuse}
-                                disabled={updating}
-                                onClick={handleConfirm}>
-                            {t("employeurCandidats.confirmation.confirmer")}
-                        </button>
-                        <button type="button" className={btnSmPrimary} disabled={updating} onClick={cancelConfirm}>
-                            {t("employeurCandidats.confirmation.annuler")}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
-            {hireError && <p className={`text-sm ${textError}`}>{hireError}</p>}
-
             <ScheduleInterviewModal
                 isOpen={isScheduleModalOpen}
                 onClose={() => setIsScheduleModalOpen(false)}
                 candidate={candidate}
                 candidatureId={candidate.candidatureId}
-                onSuccess={() => {
-                    setIsScheduleModalOpen(false);
-                    onInterviewScheduled?.();
-                }}
+                onSuccess={handleInterviewScheduled}
             />
         </li>
     );

@@ -61,7 +61,7 @@ const mockApi = ({
         if (url === '/etudiant/offres') {
             return Promise.resolve(jsonRes(offersStatus === 200 ? offers : null, offersStatus));
         }
-        if (url === '/student-cv') {
+        if (url === '/etudiant/cv') {
             return Promise.resolve(jsonRes(cvsStatus === 200 ? cvs : null, cvsStatus));
         }
         if (url.includes('/appliquer')) {
@@ -205,7 +205,7 @@ describe('Postuler à une offre', () => {
 
         expect(await screen.findByText('etudiantOffres.applySuccess')).toBeInTheDocument();
         expect(fetcher).toHaveBeenCalledWith(
-            '/student-cv/1/appliquer?offerID=1',
+            '/etudiant/cv/1/appliquer',
             expect.objectContaining({
                 method: 'POST',
                 body: JSON.stringify(validatedCv)
@@ -338,6 +338,6 @@ describe('Postuler à une offre', () => {
         fireEvent.click(screen.getByRole('button', { name: 'etudiantOffres.apply' }));
         await screen.findByText('etudiantOffres.applySuccess');
 
-        expect(applyCalls()[0][0]).toBe('/student-cv/2/appliquer?offerID=2');
+        expect(applyCalls()[0][0]).toBe('/etudiant/cv/2/appliquer');
     });
 });

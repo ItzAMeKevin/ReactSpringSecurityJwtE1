@@ -1,6 +1,7 @@
 import {useEffect} from "react";
 import {useTranslation} from "react-i18next";
 import formatSalary from "@/utils/formatSalary.js";
+import formatAddress from "@/utils/formatAddress.js";
 import {btnModalPrimary, btnOutline} from "@/styles/classes.js";
 
 const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onRefuse, onClose}) => {
@@ -13,8 +14,6 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
         document.addEventListener("keydown", handleEscape);
         return () => document.removeEventListener("keydown", handleEscape);
     }, [deciding, onClose]);
-
-    const address = offer.location;
 
     return (
         <div
@@ -59,11 +58,7 @@ const OfferDetailModal = ({offer, programName, deciding, hasError, onAccept, onR
                         </div>
                         <div>
                             <dt className="font-semibold text-main">{t("personalSpaceEmployer.fields.address")}</dt>
-                            <dd>
-                                {address
-                                    ? `${address.numeroCivic} ${address.rue}, ${address.ville}, ${address.pays}`
-                                    : "-"}
-                            </dd>
+                            <dd>{formatAddress(offer.location) ?? "-"}</dd>
                         </div>
                     </dl>
 

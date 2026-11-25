@@ -2,27 +2,31 @@ package com.lacouf.rsbjwt.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.exception.AuthenticationException;
+import com.lacouf.rsbjwt.model.Role;
+import com.lacouf.rsbjwt.repository.UserAppRepository;
+import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
+import com.lacouf.rsbjwt.security.JwtTokenProvider;
+import com.lacouf.rsbjwt.security.SecurityConfiguration;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.LoginDTO;
 import com.lacouf.rsbjwt.service.dto.UserCreateDTO;
-import com.lacouf.rsbjwt.model.Role;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.lacouf.rsbjwt.exception.AuthenticationException;
-import org.springframework.http.HttpStatus;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -30,7 +34,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@WebMvcTest(UserController.class)
+@Import(SecurityConfiguration.class)
 @ActiveProfiles("test")
 class UserControllerWebMvcTest {
 
@@ -43,25 +48,23 @@ class UserControllerWebMvcTest {
     private UserAppService userService;
 
     @MockitoBean
-    private StudentRepository emprunteurRepository;
-
-    @MockitoBean
-    private EmployerRepository preposeRepository;
-
-    @MockitoBean
-    private ManagerRepository managerRepository;
-
-    @MockitoBean
     private UserAppRepository userAppRepository;
 
     @MockitoBean
     private PasswordEncoder passwordEncoder;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
         objectMapper = new ObjectMapper();
         objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
@@ -144,7 +147,7 @@ class UserControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.field").value("email"));
+                .andExpect(jsonPath("$.error").value("errors.emailTaken"));
     }
 
     @Test
@@ -163,7 +166,7 @@ class UserControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.field").value("matricule"));
+                .andExpect(jsonPath("$.error").value("errors.matriculeTaken"));
     }
 
     @Test
@@ -285,6 +288,6 @@ class UserControllerWebMvcTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.field").value("identifiant"));
+                .andExpect(jsonPath("$.error").value("errors.identifiantTaken"));
     }
 }

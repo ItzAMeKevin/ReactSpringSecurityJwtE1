@@ -89,8 +89,10 @@
     "jobOfferUpdateFailed": "Seules les offres refusées peuvent être modifiées.",
     "employerNotFound": "Employeur introuvable.",
     "notificationNotFound": "Notification introuvable.",
-    "invalidApplicationStatus": "Statut de candidature invalide.",
-    "applicationNotPending": "Seules les candidatures en attente peuvent être mises à jour.",
+    "applicationNotOpen": "Cette candidature n'est plus ouverte : une offre d'embauche a déjà été envoyée ou le candidat n'a pas été retenu.",
+    "applicationNotHirePending": "Cette offre d'embauche n'attend plus de réponse.",
+    "noPositionsLeft": "Tous les postes de cette offre sont déjà réservés par des offres d'embauche envoyées ou acceptées.",
+    "offerNotAccepted": "L'offre de stage doit être validée et encore ouverte pour embaucher.",
     "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
   },
   "header": {
@@ -100,6 +102,8 @@
     "about": "À propos",
     "logout": "Déconnexion",
     "login": "Connexion",
+    "candidatureTracking": "Suivi des candidatures",
+    "convocations": "Mes convocations",
     "greeting": "Bonjour",
     "userMenu": "Menu utilisateur",
     "roles": {
@@ -173,7 +177,8 @@
       "accepted": "Offres validées",
       "pending": "Offres en attente de validation",
       "declined": "Offres refusées",
-      "interviews": "Étudiants convoqués en entrevue"
+      "interviews": "Étudiants convoqués en entrevue",
+      "hirePending": "Étudiants en attente d'embauche"
     },
     "empty": {
       "accepted": "Aucune offre validée.",
@@ -192,6 +197,7 @@
     },
     "offerCreated": "L'offre de stage a été publiée avec succès.",
     "offerUpdated": "L'offre a été resoumise pour approbation.",
+    "hireOfferSent": "Offre d'embauche envoyée. L'étudiant doit maintenant y répondre.",
     "editJobOffer": "Modifier l'offre",
     "resubmit": "Resoumettre l'offre",
     "feedbackTitre": "Commentaire du gestionnaire :",
@@ -245,11 +251,16 @@
       "A": "Automne {{year}}",
       "H": "Hiver {{year}}",
       "E": "Été {{year}}"
-    }
+    },
+    "sessionFilter": {
+      "label": "Filtrer par session"
+    },
+    "noOffersForSession": "Vous n'avez publié aucune offre de stage pour cette session."
   },
   "dashboard": {
     "openMenu": "Ouvrir le menu",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "comingSoon": "Cette section sera bientôt disponible."
   },
   "gestionnaire": {
     "title": "Espace gestionnaire",
@@ -318,7 +329,7 @@
     "resultCount": "{{count}} candidature(s) sur {{total}}",
     "filters": {
       "all": "Tous les statuts",
-      "accepted": "Acceptés",
+      "hire_pending": "Offre d'embauche envoyée",
       "declined": "Refusés",
       "pending": "En attente",
       "filterByStatus": "Filtrer par statut",
@@ -405,12 +416,28 @@
         "message": "Votre offre de stage a été validée par un gestionnaire."
       },
       "JOB_OFFER_HIRED": {
-        "title": "Félicitations, vous avez été embauché !",
-        "message": "Un employeur vous a sélectionné pour un stage. Consultez vos offres pour plus de détails."
+        "title": "Vous avez reçu une offre d'embauche !",
+        "message": "Un employeur souhaite vous embaucher. Acceptez ou refusez son offre dans Offres d'embauche."
+      },
+      "JOB_OFFER_HIRE_ACCEPTED": {
+        "title": "Offre d'embauche acceptée",
+        "message": "Un étudiant a accepté votre offre d'embauche."
+      },
+      "JOB_OFFER_HIRE_DECLINED": {
+        "title": "Offre d'embauche refusée",
+        "message": "Un étudiant a refusé votre offre d'embauche. Le poste est de nouveau disponible."
+      },
+      "JOB_OFFER_CANDIDATE_REJECTED": {
+        "title": "Candidature non retenue",
+        "message": "Un employeur n'a pas retenu votre candidature. Consultez vos offres pour postuler ailleurs."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "Vous êtes convoqué à une entrevue",
+        "message": "Un employeur vous a proposé des plages horaires. Choisissez-en une dans Mes convocations."
       }
     }
   },
@@ -426,13 +453,43 @@
       "cvPending": "CV en attente",
       "cvAccepted": "CV validés",
       "cvDeclined": "CV refusés",
-      "offres": "Offres de stage"
+      "offres": "Offres de stage",
+      "hireOffers": "Offres d'embauche",
+      "convocations": "Mes convocations"
     },
     "cv": {
       "emptyPending": "Aucun CV en attente de validation.",
       "emptyAccepted": "Aucun CV validé.",
       "emptyDeclined": "Aucun CV refusé."
     }
+  },
+  "etudiantEmbauches": {
+    "loading": "Chargement des offres d'embauche...",
+    "empty": "Aucune offre d'embauche pour le moment.",
+    "weeks": "{{count}} semaines",
+    "accept": "Accepter l'offre",
+    "decline": "Refuser l'offre",
+    "confirmAccept": "Accepter l'offre « {{title}} » chez {{company}} ?",
+    "confirmDecline": "Refuser l'offre « {{title}} » chez {{company}} ? Cette décision est définitive.",
+    "acceptSuccess": "Vous avez accepté l'offre « {{title}} ».",
+    "declineSuccess": "Vous avez refusé l'offre « {{title}} ».",
+    "error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "confirmPanel": {
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "processing": "Envoi en cours..."
+  },
+  "applicationStatuses": {
+    "PENDING_INTERVIEW": "En attente d'entrevue",
+    "INTERVIEW_SCHEDULED": "Entrevue planifiée",
+    "INTERVIEW_COMPLETED": "Entrevue terminée",
+    "HIRE_PENDING": "Offre d'embauche envoyée",
+    "AWAITING_CONTRACT": "En attente du contrat",
+    "AWAITING_SIGNATURES": "En attente des signatures",
+    "CONTRACT_SIGNED": "Contrat signé",
+    "WORKING": "Stage en cours",
+    "COMPLETED": "Stage terminé"
   },
   "etudiantOffres": {
     "title": "Offres de stage disponibles",
@@ -453,9 +510,8 @@
     "noValidatedCv": "Vous pourrez postuler lorsque votre CV sera accepté par le gestionnaire.",
     "applicationStatuts": {
       "PENDING": "Candidature envoyée",
-      "ACCEPTED": "Candidature acceptée",
       "DECLINED": "Candidature refusée",
-      "HIRED": "Embauché(e)"
+      "HIRE_PENDING": "Offre d'embauche reçue"
     }
   },
 
@@ -479,26 +535,22 @@
     "erreurCv": "Impossible de charger le CV.",
     "statuts": {
       "PENDING": "En attente d'évaluation",
-      "ACCEPTED": "Candidat retenu",
-      "DECLINED": "Candidat non retenu",
-      "HIRED": "Embauché"
+      "DECLINED": "Candidat non retenu"
     },
-    "accepter": "Accepter",
-    "refuser": "Refuser",
     "scheduleInterview": "Planifier une entrevue",
     "embaucher": "Embaucher",
-    "hireError": "Une erreur est survenue lors de l'embauche.",
-    "hireConflict": "Impossible d'embaucher : l'offre est déjà pourvue ou le candidat n'est plus retenu.",
-    "erreurStatut": "Impossible de mettre à jour le statut.",
-
+    "nePasRetenir": "Ne pas retenir",
+    "erreurStatut": "Impossible de mettre à jour la candidature.",
     "confirmation": {
-      "titre": "Confirmation de la décision",
-      "accepter": "Accepter la candidature de {{nom}} ?",
-      "refuser": "Refuser la candidature de {{nom}} ?",
-      "motifLabel": "Message ou motif (optionnel)",
-      "confirmer": "Confirmer",
-      "annuler": "Annuler"
+      "embaucher": "Envoyer une offre d'embauche à {{nom}} ? L'étudiant devra l'accepter ou la refuser.",
+      "nePasRetenir": "Ne pas retenir la candidature de {{nom}} ? Cette décision est définitive."
     }
+  },
+  "employerHirePending": {
+    "loading": "Chargement des étudiants en attente d'embauche...",
+    "empty": "Aucun étudiant en attente de réponse à une offre d'embauche.",
+    "awaitingAnswer": "En attente de la réponse de l'étudiant",
+    "sentOn": "Offre d'embauche envoyée le {{date}}"
   },
   "employerInterviews": {
     "loading": "Chargement des entrevues...",
@@ -550,6 +602,118 @@
       "addressRequired": "L'adresse est obligatoire",
       "fillAllFields": "Veuillez remplir tous les champs et ajouter au moins un créneau",
       "retry": "Réessayer"
+    }
+  },
+  "interview": {
+    "date": "Date",
+    "time": "Heure",
+    "type": "Modalité",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "joinLink": "Rejoindre la réunion"
+  },
+  "common": {
+    "online": "En ligne",
+    "inPerson": "Présentiel"
+  },
+  "contractGeneration": {
+    "title": "Génération de contrat",
+    "generateButton": "Générer le contrat",
+    "contractModal": {
+      "title": "Générer un contrat de stage",
+      "subtitle": "Vérifiez et complétez les informations avant de générer le contrat",
+      "submit": "Générer le PDF",
+      "submitting": "Génération en cours...",
+      "cancel": "Annuler",
+      "close": "Fermer"
+    },
+    "form": {
+      "studentInfo": "Informations de l'étudiant",
+      "employerInfo": "Informations de l'employeur",
+      "positionInfo": "Informations du poste",
+      "contractTerms": "Conditions du contrat",
+      "additionalInfo": "Informations supplémentaires",
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "Courriel",
+      "matricule": "Matricule",
+      "programme": "Programme d'étude",
+      "companyName": "Nom de l'entreprise",
+      "companyEmail": "Courriel de l'entreprise",
+      "companyPhone": "Téléphone",
+      "companyAddress": "Adresse",
+      "companyCity": "Ville",
+      "companyPostalCode": "Code postal",
+      "companyCountry": "Pays",
+      "jobTitle": "Titre du poste",
+      "jobDescription": "Description du poste",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "durationWeeks": "Durée (semaines)",
+      "hourlyRate": "Taux horaire ($)",
+      "supervisor": "Superviseur sur place",
+      "supervisorEmail": "Courriel du superviseur",
+      "supervisorPhone": "Téléphone du superviseur",
+      "endDateAuto": "Calculée automatiquement",
+      "supervisorPlaceholder": "Nom du superviseur",
+      "workSchedule": "Horaire de travail",
+      "workSchedulePlaceholder": "Ex: Lundi à vendredi, 9h-17h",
+      "objectives": "Objectifs d'apprentissage",
+      "objectivesPlaceholder": "Décrivez les objectifs et compétences à développer...",
+      "additionalTerms": "Conditions additionnelles",
+      "additionalTermsPlaceholder": "Toute autre information importante pour le contrat...",
+      "notes": "Notes"
+    },
+    "errors": {
+      "title": "Erreur",
+      "missingFields": "Champs manquants",
+      "pleaseComplete": "Veuillez compléter les champs obligatoires marqués avec *",
+      "generic": "Une erreur est survenue lors de la génération du contrat. Veuillez réessayer.",
+      "retry": "Réessayer"
+    },
+    "success": {
+      "title": "Contrat généré",
+      "message": "Le contrat PDF a été généré et téléchargé avec succès.",
+      "close": "Fermer"
+    }
+  },
+  "convocations": {
+    "title": "Mes convocations",
+    "loading": "Chargement des convocations...",
+    "empty": "Aucune convocation pour le moment.",
+    "error": "Impossible de charger les convocations.",
+    "status": {
+      "PENDING": "En attente",
+      "ACCEPTED": "Confirmée",
+      "DECLINED": "Refusée",
+      "EXPIRED": "Expirée"
+    },
+    "type": {
+      "ONLINE": "En ligne",
+      "IN_PERSON": "Présentiel"
+    },
+    "modal": {
+      "title": "Détails de la convocation",
+      "company": "Entreprise",
+      "offer": "Offre",
+      "type": "Type",
+      "link": "Lien",
+      "address": "Adresse",
+      "notes": "Notes",
+      "slots": "Créneaux proposés",
+      "selectSlot": "Sélectionnez un créneau pour accepter"
+    },
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "declineMessage": "Message (optionnel)",
+    "declineMessagePlaceholder": "Expliquez pourquoi vous refusez...",
+    "expired": "Cette convocation a expiré.",
+    "errors": {
+      "expired": "Tous les créneaux sont expirés.",
+      "alreadyResponded": "Vous avez déjà répondu à cette convocation.",
+      "generic": "Une erreur est survenue, veuillez réessayer."
     }
   }
 }

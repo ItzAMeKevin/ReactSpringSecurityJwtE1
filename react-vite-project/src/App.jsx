@@ -18,9 +18,12 @@ import ManagerCvSection from "@/dashboards/manager/sections/ManagerCvSection.jsx
 import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSection.jsx";
 import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
 import StudentOfferSection from "@/dashboards/student/sections/StudentOfferSection.jsx";
+import StudentHireOfferSection from "@/dashboards/student/sections/StudentHireOfferSection.jsx";
+import ConvocationsPage from "@/dashboards/student/components/ConvocationsPage.jsx";
 import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
 import EmployerOfferSection from "@/dashboards/employer/sections/EmployerOfferSection.jsx";
 import EmployerInterviewSection from "@/dashboards/employer/sections/EmployerInterviewSection.jsx";
+import EmployerHirePendingSection from "@/dashboards/employer/sections/EmployerHirePendingSection.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 
 function App() {
@@ -73,11 +76,11 @@ function App() {
 
   useEffect(() => {
     const shortcuts = {
-      Digit1: ["l@l.com", "bib"],
-      Digit2: ["ll@l.com", "bib"],
-      Digit3: ["lll@l.com", "bib"],
-      Digit0: ["jaime.laguerre@yahoo.com", "Jaime1234"],
-      Digit9: ["jaime.paolaguere@cmr.ca", "Paola1234"],
+      Digit1: ["marie.leclerc@cegep-demo.ca", "Marie1234"],
+      Digit2: ["sophie.tremblay@etudiant.ca", "Sophie1234"],
+      Digit3: ["stages@nexustech.ca", "Nexus1234"],
+      Digit0: ["jaime.laguerre@etudiant.ca", "Jaime1234"],
+      Digit9: ["stages@cmr.ca", "Cmrc1234"],
     };
 
     const handleShortcut = (event) => {
@@ -149,6 +152,8 @@ function App() {
               <Route key={section.path} path={section.path} element={<StudentCvSection {...section}/>}/>
             ))}
             <Route path='offres' element={<StudentOfferSection/>}/>
+            <Route path='embauches' element={<StudentHireOfferSection/>}/>
+            <Route path='convocations' element={<ConvocationsPage/>}/>
           </Route>
           <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
             <Route index element={<Navigate to="cv" replace />}/>
@@ -162,6 +167,7 @@ function App() {
               <Route key={path} path={path} element={<EmployerOfferSection {...section}/>}/>
             ))}
             <Route path='entrevues' element={<EmployerInterviewSection/>}/>
+            <Route path='embauches-en-attente' element={<EmployerHirePendingSection/>}/>
           </Route>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>

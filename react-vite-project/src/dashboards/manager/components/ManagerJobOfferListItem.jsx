@@ -4,7 +4,7 @@ import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
 import formatSalary from "@/utils/formatSalary.js";
 import formatAddress from "@/utils/formatAddress.js";
 import getProgramName from "@/utils/getProgramName.js";
-import { cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "@/styles/classes.js";
+import { btnTextUnderline, cardItem, cardHighlighted, btnAccept, btnRefuse, btnSmPrimary, textError } from "@/styles/classes.js";
 
 const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAccept, onRefuse }) => {
     const {t} = useTranslation();
@@ -108,7 +108,7 @@ const ManagerJobOfferListItem = ({ offer, isHighlighted, onClearHighlight, onAcc
                         type="button"
                         onClick={() => setExpanded((prev) => !prev)}
                         aria-expanded={expanded}
-                        className="text-sm font-medium text-main underline underline-offset-2 hover:text-main/80 mt-2 cursor-pointer"
+                        className={`${btnTextUnderline} mt-2`}
                     >
                         {expanded ? t("gestionnaire.offres.showLess") : t("gestionnaire.offres.readMore")}
                     </button>

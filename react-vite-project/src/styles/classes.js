@@ -39,11 +39,26 @@ const STATUS_COLORS = {
     PENDING: "bg-yellow-100 text-yellow-800",
     ACCEPTED: "bg-green-100 text-green-800",
     DECLINED: "bg-red-100 text-red-800",
-    HIRED: "bg-blue-100 text-blue-800",
     FILLED: "bg-purple-100 text-purple-800",
+    EXPIRED: "bg-gray-100 text-gray-600",
+    PENDING_INTERVIEW: "bg-yellow-100 text-yellow-800",
+    INTERVIEW_SCHEDULED: "bg-indigo-100 text-indigo-800",
+    INTERVIEW_COMPLETED: "bg-cyan-100 text-cyan-800",
+    HIRE_PENDING: "bg-orange-100 text-orange-800",
+    AWAITING_CONTRACT: "bg-blue-100 text-blue-800",
+    AWAITING_SIGNATURES: "bg-blue-100 text-blue-800",
+    CONTRACT_SIGNED: "bg-emerald-100 text-emerald-800",
+    WORKING: "bg-teal-100 text-teal-800",
+    COMPLETED: "bg-gray-200 text-gray-800",
 };
 
 export const statusBadgeColor = (status) => STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700";
+
+/** Badge colors by interview type */
+export const interviewTypeBadgeColor = (type) => ({
+    ONLINE: "bg-blue-100 text-blue-800",
+    IN_PERSON: "bg-purple-100 text-purple-800",
+})[type] ?? "bg-gray-100 text-gray-700";
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 
@@ -64,6 +79,8 @@ export const sectionTitle = "text-xl font-bold text-main mb-4 pb-2 border-b bord
 /** Secondary / status text */
 export const textMuted = "text-main/70";
 
+export const textBold = "text-red-700 font-semibold";
+
 /** Error feedback text */
 export const textError = "text-red-700";
 
@@ -78,3 +95,20 @@ export const dangerCard = "border border-red-200 bg-red-50 text-red-800";
 
 /** Standard text input / select / textarea */
 export const inputField = "w-full border border-brand rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-brand";
+
+// ── Text / link buttons ────────────────────────────────────────────────────────
+
+/** Inline brand link button (e.g. "Respond →", "View details") */
+export const btnTextLink = "text-brand hover:underline font-semibold text-sm transition-colors";
+
+/** Underlined toggle button (e.g. "Read more / Show less") */
+export const btnTextUnderline = "text-sm font-medium text-main underline underline-offset-2 hover:text-main/80 cursor-pointer";
+
+/** Inline edit action button */
+export const btnTextEdit = "text-blue-600 hover:text-blue-800 text-sm font-medium";
+
+/** Inline delete action button */
+export const btnTextDelete = "text-red-600 hover:text-red-800 text-sm font-medium";
+
+/** Inline success/positive action button */
+export const btnTextSuccess = "text-green-600 hover:text-green-800 font-semibold text-sm transition-colors";

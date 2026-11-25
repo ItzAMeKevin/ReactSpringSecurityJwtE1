@@ -1,23 +1,24 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statusBadge, statusBadgeColor } from "@/styles/classes.js";
+import { btnTextLink, btnTextSuccess, statusBadge, statusBadgeColor } from "@/styles/classes.js";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
+import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
 const formatDate = (dateString, locale) => {
     if (!dateString) return "N/A";
     try {
-        return new Date(dateString).toLocaleDateString(locale, {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-        });
+        return formatSlotDate(dateString.split('T')[0], locale);
     } catch {
         return "N/A";
     }
 };
 
-const CandidatureTrackingItem = ({ candidature }) => {
+const CandidatureTrackingItem = ({ candidature, user }) => {
     const { t, i18n } = useTranslation();
     const [showDetails, setShowDetails] = useState(false);
+    const [showContractModal, setShowContractModal] = useState(false);
+
+    const isAccepted = candidature.status === "ACCEPTED";
 
     return (
         <>
@@ -38,20 +39,31 @@ const CandidatureTrackingItem = ({ candidature }) => {
                 </td>
                 <td className="px-4 py-3">
                     <span className={`${statusBadge} ${statusBadgeColor(candidature.status)}`}>
-                        {t(`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`)}
+                        {t([`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`, `applicationStatuses.${candidature.status}`])}
                     </span>
                 </td>
                 <td className="px-4 py-3 text-main">
                     {formatDate(candidature.updatedAt || candidature.createdAt, i18n.language)}
                 </td>
                 <td className="px-4 py-3 text-center">
-                    <button
-                        type="button"
-                        onClick={() => setShowDetails(!showDetails)}
-                        className="text-brand hover:underline font-semibold text-sm transition-colors"
-                    >
-                        {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
-                    </button>
+                    <div className="flex gap-2 justify-center">
+                        <button
+                            type="button"
+                            onClick={() => setShowDetails(!showDetails)}
+                            className={btnTextLink}
+                        >
+                            {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
+                        </button>
+                        {isAccepted && (
+                            <button
+                                type="button"
+                                onClick={() => setShowContractModal(true)}
+                                className={btnTextSuccess}
+                            >
+                                {t("contractGeneration.generateButton")}
+                            </button>
+                        )}
+                    </div>
                 </td>
             </tr>
             {showDetails && (
@@ -149,6 +161,12 @@ const CandidatureTrackingItem = ({ candidature }) => {
                     </td>
                 </tr>
             )}
+            <ContractGenerationModal
+                isOpen={showContractModal}
+                onClose={() => setShowContractModal(false)}
+                candidature={candidature}
+                user={user}
+            />
         </>
     );
 };

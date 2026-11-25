@@ -44,11 +44,10 @@ public class UserAppService {
                     org.springframework.http.HttpStatus.UNAUTHORIZED,
                     "errors.authenticationFailed");
         }
-        final String token = jwtTokenProvider.generateToken(authentication);
-        System.out.println("JWT Token " + token);
-        return token;
+        return jwtTokenProvider.generateToken(authentication);
     }
 
+    @Transactional(readOnly = true)
     public UserCreateDTO getMe(String token) {
         token = token.startsWith("Bearer") ? token.substring(7) : token;
         String email = jwtTokenProvider.getEmailFromJWT(token).trim().toLowerCase();
@@ -64,15 +63,18 @@ public class UserAppService {
         return userMapper.toDto(savedUser);
     }
 
+    @Transactional(readOnly = true)
     public boolean matriculeExists(String matricule) {
         return studentRepository.findByMatricule(matricule).isPresent()
                 || managerRepository.findByMatricule(matricule).isPresent();
     }
 
+    @Transactional(readOnly = true)
     public boolean employerIdExists(String employerId) {
         return employerRepository.findByEmployerWorkId(employerId).isPresent();
     }
 
+    @Transactional(readOnly = true)
     public UserCreateDTO getUserByEmail(String email) {
         final Optional<User> userOptional = userAppRepository.findUserAppByEmail(email);
         return userOptional.map(userMapper::toDto).orElse(null);

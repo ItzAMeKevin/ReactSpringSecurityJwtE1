@@ -90,8 +90,10 @@
     "jobOfferUpdateFailed": "Only declined offers can be modified.",
     "employerNotFound": "Employer not found.",
     "notificationNotFound": "Notification not found.",
-    "invalidApplicationStatus": "Invalid application status.",
-    "applicationNotPending": "Only pending applications can be updated.",
+    "applicationNotOpen": "This application is no longer open: a hire offer was already sent or the candidate was not selected.",
+    "applicationNotHirePending": "This hire offer is no longer awaiting a response.",
+    "noPositionsLeft": "All positions for this offer are already held by sent or accepted hire offers.",
+    "offerNotAccepted": "The internship offer must be approved and still open to hire.",
     "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
@@ -101,6 +103,8 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
+    "candidatureTracking": "Application Tracking",
+    "convocations": "My Invitations",
     "greeting": "Hello",
     "userMenu": "User menu",
     "roles": {
@@ -174,7 +178,8 @@
       "accepted": "Approved offers",
       "pending": "Offers pending approval",
       "declined": "Declined offers",
-      "interviews": "Students invited to interview"
+      "interviews": "Students invited to interview",
+      "hirePending": "Students pending hire"
     },
     "empty": {
       "accepted": "No approved offer.",
@@ -193,6 +198,7 @@
     },
     "offerCreated": "Internship offer published successfully.",
     "offerUpdated": "The offer has been resubmitted for approval.",
+    "hireOfferSent": "Hire offer sent. The student must now respond.",
     "editJobOffer": "Edit offer",
     "resubmit": "Resubmit offer",
     "feedbackTitre": "Manager's comment:",
@@ -250,7 +256,8 @@
   },
   "dashboard": {
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "comingSoon": "This section will be available soon."
   },
   "gestionnaire": {
     "title": "Manager Space",
@@ -319,7 +326,7 @@
     "resultCount": "{{count}} application(s) out of {{total}}",
     "filters": {
       "all": "All statuses",
-      "accepted": "Accepted",
+      "hire_pending": "Hire offer sent",
       "declined": "Declined",
       "pending": "Pending",
       "filterByStatus": "Filter by status",
@@ -327,7 +334,6 @@
       "searchHint": "Search a student by their name, first name, matricule, or job offer title"
     },
     "statuses": {
-      "accepted": "Accepted",
       "declined": "Declined",
       "pending": "Pending"
     },
@@ -406,12 +412,28 @@
         "message": "Your internship offer has been validated by a manager."
       },
       "JOB_OFFER_HIRED": {
-        "title": "Congratulations, you've been hired!",
-        "message": "An employer has selected you for an internship. Check your offers for more details."
+        "title": "You received a hire offer!",
+        "message": "An employer wants to hire you. Accept or decline their offer in Hiring offers."
+      },
+      "JOB_OFFER_HIRE_ACCEPTED": {
+        "title": "Hire offer accepted",
+        "message": "A student accepted your hire offer."
+      },
+      "JOB_OFFER_HIRE_DECLINED": {
+        "title": "Hire offer declined",
+        "message": "A student declined your hire offer. The position is available again."
+      },
+      "JOB_OFFER_CANDIDATE_REJECTED": {
+        "title": "Application not selected",
+        "message": "An employer did not select your application. Check your offers to apply elsewhere."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "You have been invited to an interview",
+        "message": "An employer has proposed time slots. Pick one in My Invitations."
       }
     }
   },
@@ -427,13 +449,43 @@
       "cvPending": "Pending CVs",
       "cvAccepted": "Approved CVs",
       "cvDeclined": "Declined CVs",
-      "offres": "Internship offers"
+      "offres": "Internship offers",
+      "hireOffers": "Hiring offers",
+      "convocations": "My invitations"
     },
     "cv": {
       "emptyPending": "No CV pending validation.",
       "emptyAccepted": "No approved CV.",
       "emptyDeclined": "No declined CV."
     }
+  },
+  "etudiantEmbauches": {
+    "loading": "Loading hire offers...",
+    "empty": "No hire offers yet.",
+    "weeks": "{{count}} weeks",
+    "accept": "Accept offer",
+    "decline": "Decline offer",
+    "confirmAccept": "Accept the offer \"{{title}}\" at {{company}}?",
+    "confirmDecline": "Decline the offer \"{{title}}\" at {{company}}? This decision is final.",
+    "acceptSuccess": "You accepted the offer \"{{title}}\".",
+    "declineSuccess": "You declined the offer \"{{title}}\".",
+    "error": "An error occurred. Please try again."
+  },
+  "confirmPanel": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "processing": "Sending..."
+  },
+  "applicationStatuses": {
+    "PENDING_INTERVIEW": "Awaiting interview",
+    "INTERVIEW_SCHEDULED": "Interview scheduled",
+    "INTERVIEW_COMPLETED": "Interview completed",
+    "HIRE_PENDING": "Hire offer sent",
+    "AWAITING_CONTRACT": "Awaiting contract",
+    "AWAITING_SIGNATURES": "Awaiting signatures",
+    "CONTRACT_SIGNED": "Contract signed",
+    "WORKING": "Internship in progress",
+    "COMPLETED": "Internship completed"
   },
   "etudiantOffres": {
     "title": "Available internship offers",
@@ -454,9 +506,8 @@
     "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
-      "ACCEPTED": "Application accepted",
       "DECLINED": "Application declined",
-      "HIRED": "Hired"
+      "HIRE_PENDING": "Hire offer received"
     }
   },
 
@@ -480,26 +531,22 @@
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
-      "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected",
-      "HIRED": "Hired"
+      "DECLINED": "Candidate not selected"
     },
-    "accepter": "Accept",
-    "refuser": "Decline",
     "scheduleInterview": "Schedule an interview",
     "embaucher": "Hire",
-    "hireError": "An error occurred while hiring the candidate.",
-    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
-    "erreurStatut": "Unable to update status.",
-
+    "nePasRetenir": "Don't select",
+    "erreurStatut": "Unable to update the application.",
     "confirmation": {
-      "titre": "Decision confirmation",
-      "accepter": "Accept {{nom}}'s application?",
-      "refuser": "Decline {{nom}}'s application?",
-      "motifLabel": "Message or reason (optional)",
-      "confirmer": "Confirm",
-      "annuler": "Cancel"
+      "embaucher": "Send a hire offer to {{nom}}? The student will have to accept or decline it.",
+      "nePasRetenir": "Don't select {{nom}}'s application? This decision is final."
     }
+  },
+  "employerHirePending": {
+    "loading": "Loading students awaiting hire...",
+    "empty": "No students awaiting a response to a hire offer.",
+    "awaitingAnswer": "Awaiting the student's response",
+    "sentOn": "Hire offer sent on {{date}}"
   },
   "employerInterviews": {
     "loading": "Loading interviews...",
@@ -551,6 +598,118 @@
       "addressRequired": "Address is required",
       "fillAllFields": "Please fill in all fields and add at least one slot",
       "retry": "Retry"
+    }
+  },
+  "interview": {
+    "date": "Date",
+    "time": "Time",
+    "type": "Modality",
+    "accept": "Accept",
+    "decline": "Decline",
+    "joinLink": "Join meeting"
+  },
+  "common": {
+    "online": "Online",
+    "inPerson": "In-person"
+  },
+  "contractGeneration": {
+    "title": "Contract Generation",
+    "generateButton": "Generate Contract",
+    "contractModal": {
+      "title": "Generate Internship Contract",
+      "subtitle": "Review and complete the information before generating the contract",
+      "submit": "Generate PDF",
+      "submitting": "Generating...",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "form": {
+      "studentInfo": "Student Information",
+      "employerInfo": "Employer Information",
+      "positionInfo": "Position Information",
+      "contractTerms": "Contract Terms",
+      "additionalInfo": "Additional Information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "matricule": "Matricule",
+      "programme": "Program of study",
+      "companyName": "Company name",
+      "companyEmail": "Company email",
+      "companyPhone": "Phone",
+      "companyAddress": "Address",
+      "companyCity": "City",
+      "companyPostalCode": "Postal code",
+      "companyCountry": "Country",
+      "jobTitle": "Job title",
+      "jobDescription": "Job description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "durationWeeks": "Duration (weeks)",
+      "hourlyRate": "Hourly rate ($)",
+      "supervisor": "On-site supervisor",
+      "supervisorEmail": "Supervisor email",
+      "supervisorPhone": "Supervisor phone",
+      "endDateAuto": "Automatically calculated",
+      "supervisorPlaceholder": "Supervisor name",
+      "workSchedule": "Work schedule",
+      "workSchedulePlaceholder": "Ex: Monday to Friday, 9am-5pm",
+      "objectives": "Learning objectives",
+      "objectivesPlaceholder": "Describe the objectives and skills to be developed...",
+      "additionalTerms": "Additional terms",
+      "additionalTermsPlaceholder": "Any other important information for the contract...",
+      "notes": "Notes"
+    },
+    "errors": {
+      "title": "Error",
+      "missingFields": "Missing Fields",
+      "pleaseComplete": "Please complete the required fields marked with *",
+      "generic": "An error occurred while generating the contract. Please try again.",
+      "retry": "Retry"
+    },
+    "success": {
+      "title": "Contract Generated",
+      "message": "The PDF contract has been successfully generated and downloaded.",
+      "close": "Close"
+    }
+  },
+  "convocations": {
+    "title": "My Interview Invitations",
+    "loading": "Loading invitations...",
+    "empty": "No invitations yet.",
+    "error": "Could not load invitations.",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Confirmed",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "type": {
+      "ONLINE": "Online",
+      "IN_PERSON": "In-person"
+    },
+    "modal": {
+      "title": "Invitation Details",
+      "company": "Company",
+      "offer": "Offer",
+      "type": "Type",
+      "link": "Link",
+      "address": "Address",
+      "notes": "Notes",
+      "slots": "Proposed slots",
+      "selectSlot": "Select a slot to accept"
+    },
+    "accept": "Accept",
+    "decline": "Decline",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "declineMessage": "Message (optional)",
+    "declineMessagePlaceholder": "Explain why you are declining...",
+    "expired": "This invitation has expired.",
+    "errors": {
+      "expired": "All slots have expired.",
+      "alreadyResponded": "You have already responded to this invitation.",
+      "generic": "An error occurred, please try again."
     }
   }
 }

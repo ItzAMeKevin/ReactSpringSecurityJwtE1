@@ -3,9 +3,11 @@ package com.lacouf.rsbjwt.repository;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,15 +33,15 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     boolean existsByStudentCv_IdAndJobOffer_Employer_Credentials_Email(Long cvId, String email);
     boolean existsByStudentCv_IdAndJobOffer_Id(Long cvId, Long offerId);
 
-    long countByJobOffer_IdAndStatus(Long jobOfferId, Status status);
+    long countByJobOffer_IdAndStatusIn(Long jobOfferId, Collection<Status> statuses);
 
     @Query("""
         SELECT ja.jobOffer.id, COUNT(ja)
         FROM JobApplication ja
-        WHERE ja.jobOffer.id IN :offerIds AND ja.status = :status
+        WHERE ja.jobOffer.id IN :offerIds AND ja.status IN :statuses
         GROUP BY ja.jobOffer.id
         """)
-    List<Object[]> countByOfferIdsAndStatus(@Param("offerIds") List<Long> offerIds, @Param("status") Status status);
+    List<Object[]> countByOfferIdsAndStatusIn(@Param("offerIds") List<Long> offerIds, @Param("statuses") Collection<Status> statuses);
 
     @Query("""
         SELECT ja FROM JobApplication ja
@@ -66,4 +68,40 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         ORDER BY ja.appliedAt DESC
         """)
     List<JobApplication> findAllWithStudentAndOffer();
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer e
+        WHERE e.credentials.email = :email AND ja.status = :status
+        ORDER BY ja.appliedAt DESC
+        """)
+    List<JobApplication> findByEmployerEmailAndStatus(@Param("email") String email, @Param("status") Status status);
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE s.credentials.email = :email AND ja.status = :status
+        ORDER BY ja.appliedAt DESC
+        """)
+    List<JobApplication> findByStudentEmailAndStatus(@Param("email") String email, @Param("status") Status status);
+
+    @Query("""
+        SELECT ja FROM JobApplication ja
+        JOIN FETCH ja.studentCv cv
+        JOIN FETCH cv.student s
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE ja.id = :id AND s.credentials.email = :email
+        """)
+    Optional<JobApplication> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
+
+    @Modifying
+    @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")
+    int updateStatus(@Param("applicationId") Long applicationId, @Param("status") Status status);
 }

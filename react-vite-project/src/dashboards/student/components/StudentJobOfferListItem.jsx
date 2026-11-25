@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "@/styles/classes.js";
+import {cardItem, cardHighlighted, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "@/styles/classes.js";
 import { labelClass } from "@/components/ui/Field.jsx";
 import fetcher from "@/utils/fetcher.js";
 import formatSalary from "@/utils/formatSalary.js";
@@ -8,11 +8,12 @@ import formatAddress from "@/utils/formatAddress.js";
 import getProgramName from "@/utils/getProgramName.js";
 import { getApiErrorKey } from "@/utils/apiError.js";
 import { getNextSessionCode, getSessionCode } from "@/utils/session.js";
+import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
 
 const dtClass = "text-sm font-bold text-main";
 const ddClass = "text-sm leading-relaxed text-main/70";
 
-const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
+const StudentJobOfferListItem = ({ offer, acceptedCvs, isHighlighted, onClearHighlight }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
     const [applyState, setApplyState] = useState("idle");
@@ -29,15 +30,14 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
         if (!canApply) return;
         setApplyState("sending");
         try {
-            const res = await fetcher(`/student-cv/${selectedCv.id}/appliquer?offerID=${offer.id}`, {
+            const res = await fetcher(`/etudiant/cv/${offer.id}/appliquer`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(selectedCv),
             });
             if (!res.ok) throw new Error(await getApiErrorKey(res));
             setApplyState("success");
-        } catch (e) {
-            console.error("Erreur lors de la candidature :", e);
+        } catch {
             setApplyState("error");
         }
     };
@@ -47,13 +47,17 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
     const address = formatAddress(offer.location);
 
     return (
-        <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
+        <li
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""} ${isHighlighted ? cardHighlighted : ""}`}
+        >
             <div className="flex items-start justify-between gap-3">
                 <h3 className="text-lg font-bold text-main">{offer.title}</h3>
                 <div className="flex flex-col items-end gap-1">
                     {hasApplied && (
                         <span className={`${statusBadge} ${statusBadgeColor(applicationStatus)} text-center`}>
-            {t(`etudiantOffres.applicationStatuts.${applicationStatus}`)}
+            {t([`etudiantOffres.applicationStatuts.${applicationStatus}`, `applicationStatuses.${applicationStatus}`])}
         </span>
                     )}
                 </div>

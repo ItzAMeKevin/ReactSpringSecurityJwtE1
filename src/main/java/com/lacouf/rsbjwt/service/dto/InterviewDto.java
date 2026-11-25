@@ -1,7 +1,7 @@
 package com.lacouf.rsbjwt.service.dto;
 
+import com.lacouf.rsbjwt.model.InterviewStatus;
 import com.lacouf.rsbjwt.model.InterviewType;
-import com.lacouf.rsbjwt.model.Status;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,7 +17,7 @@ public record InterviewDto(
         String notes,
         Instant scheduledAt,
         List<InterviewSlotDto> slots,
-        Status status,
+        InterviewStatus status,
         String studentMessage,
         boolean expired
 ) {}

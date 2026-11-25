@@ -29,7 +29,7 @@ public class StudentCv {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 16_777_216)
     private byte[] content;
 
     @Column(nullable = false, length = 255)
