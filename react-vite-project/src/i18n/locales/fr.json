@@ -580,7 +580,8 @@
       "message": "Êtes-vous sûr de vouloir générer le contrat pour ce stage?",
       "student": "Étudiant",
       "employer": "Employeur",
-      "position": "Poste"
+      "position": "Poste",
+      "jobOfferId": "ID de l'offre d'emploi"
     },
     "form": {
       "studentInfo": "Informations de l'étudiant",
