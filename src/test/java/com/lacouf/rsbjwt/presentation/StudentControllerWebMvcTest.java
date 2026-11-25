@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.SecurityConfiguration;
+import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -52,6 +53,9 @@ public class StudentControllerWebMvcTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    @MockitoBean
+    private StudentCvService studentCvService;
 
     @MockitoBean
     private StudentService studentService;
