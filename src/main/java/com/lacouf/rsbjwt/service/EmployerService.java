@@ -38,10 +38,10 @@ public class EmployerService {
     private final JobOfferRepository jobOfferRepository;
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
+    private final CandidateMapper candidateMapper;
     private final SystemeService systemeService;
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
-    private final CandidateMapper candidateMapper;
 
     @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getJobOffres(String employerEmail) {
@@ -72,6 +72,7 @@ public class EmployerService {
         return jobOfferMapper.toDto(savedOffer);
     }
 
+    @Transactional(readOnly = true)
     public Employer findEmployerByEmail(String email) {
         return employerRepository.findByCredentialsEmail(email)
                 .orElseThrow(() -> new EmployerNotFoundException(email));
@@ -113,13 +114,13 @@ public class EmployerService {
         for (StudentCv cv : offer.getAppliedCvs()) {
             JobApplication application = applicationsByCvId.remove(cv.getId());
             if (application != null) {
-                candidates.add(candidateMapper.toCandidateDto(application));
+                candidates.add(candidateMapper.toDto(application));
             } else {
-                candidates.add(candidateMapper.toCandidateDto(cv, cv.getUploadedAt(), Status.PENDING));
+                candidates.add(candidateMapper.toDto(cv, null, cv.getUploadedAt(), Status.PENDING));
             }
         }
         applicationsByCvId.values().stream()
-                .map(candidateMapper::toCandidateDto)
+                .map(candidateMapper::toDto)
                 .forEach(candidates::add);
         return candidates;
     }
@@ -136,7 +137,7 @@ public class EmployerService {
             throw new ApplicationStateException();
         }
         application.setStatus(newStatus);
-        return candidateMapper.toCandidateDto(jobApplicationRepository.save(application));
+        return candidateMapper.toDto(jobApplicationRepository.save(application));
     }
 
     @Transactional(readOnly = true)
@@ -176,7 +177,7 @@ public class EmployerService {
             jobOfferRepository.save(offer);
         }
 
-        return candidateMapper.toCandidateDto(saved);
+        return candidateMapper.toDto(saved);
     }
 
     private JobOffer findOwnedOffer(Long offerId, String employerEmail) {

@@ -284,17 +284,21 @@ public class StudentServiceTest {
     @Test
     @DisplayName("respondToInterview accepte l'entrevue et met à jour le statut")
     void respondToInterview_accepts() {
+        InterviewSlot slot = new InterviewSlot();
+        slot.setId(1L);
+        slot.setDate(LocalDate.now().plusDays(1));
+
         Interview interview = new Interview();
         interview.setId(5L);
         interview.setStatus(Status.PENDING);
-        interview.setSlots(List.of());
+        interview.setSlots(List.of(slot));
 
         when(interviewRepository.findByIdAndStudentEmail(5L, STUDENT_EMAIL)).thenReturn(Optional.of(interview));
         when(interviewRepository.save(interview)).thenReturn(interview);
         when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, Status.ACCEPTED));
 
         InterviewDto result = studentService.respondToInterview(5L,
-                new StudentInterviewResponseDto(true, "Je serai présent"), STUDENT_EMAIL);
+                new InterviewRespondRequest(Status.ACCEPTED, 1L, "Je serai présent"), STUDENT_EMAIL);
 
         assertEquals(Status.ACCEPTED, interview.getStatus());
         assertEquals("Je serai présent", interview.getStudentMessage());
@@ -315,7 +319,7 @@ public class StudentServiceTest {
         when(interviewMapper.toInterviewDto(interview)).thenReturn(stubInterviewDto(5L, Status.DECLINED));
 
         studentService.respondToInterview(5L,
-                new StudentInterviewResponseDto(false, "Pas disponible"), STUDENT_EMAIL);
+                new InterviewRespondRequest(Status.DECLINED, null, "Pas disponible"), STUDENT_EMAIL);
 
         assertEquals(Status.DECLINED, interview.getStatus());
         assertEquals("Pas disponible", interview.getStudentMessage());
@@ -328,7 +332,7 @@ public class StudentServiceTest {
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> studentService.respondToInterview(99L,
-                        new StudentInterviewResponseDto(true, null), STUDENT_EMAIL));
+                        new InterviewRespondRequest(Status.ACCEPTED, null, null), STUDENT_EMAIL));
         verify(interviewRepository, never()).save(any());
     }
 
@@ -343,7 +347,7 @@ public class StudentServiceTest {
 
         assertThrows(ApplicationStateException.class,
                 () -> studentService.respondToInterview(5L,
-                        new StudentInterviewResponseDto(true, null), STUDENT_EMAIL));
+                        new InterviewRespondRequest(Status.ACCEPTED, null, null), STUDENT_EMAIL));
         verify(interviewRepository, never()).save(any());
     }
 }

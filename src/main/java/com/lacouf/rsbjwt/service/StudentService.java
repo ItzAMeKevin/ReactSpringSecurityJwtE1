@@ -5,6 +5,7 @@ import com.lacouf.rsbjwt.exception.ApplicationStateException;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.Interview;
+import com.lacouf.rsbjwt.model.InterviewSlot;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.Student;
@@ -14,8 +15,8 @@ import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.InterviewDto;
+import com.lacouf.rsbjwt.service.dto.InterviewRespondRequest;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
-import com.lacouf.rsbjwt.service.dto.StudentInterviewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,10 @@ public class StudentService {
     private final InterviewRepository interviewRepository;
     private final InterviewMapper interviewMapper;
 
+    @Transactional(readOnly = true)
     public List<JobOfferDetailDTO> getAcceptedJobOffers(String studentEmail) throws UserNotFoundException {
         Student student = studentRepository.findByCredentialsEmail(studentEmail)
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
 
         Map<Long, Status> applicationStatuses = jobApplicationRepository
                 .findByStudentIdWithOffer(student.getId())
@@ -66,7 +68,7 @@ public class StudentService {
     }
 
     @Transactional
-    public InterviewDto respondToInterview(Long interviewId, StudentInterviewResponseDto response, String studentEmail) {
+    public InterviewDto respondToInterview(Long interviewId, InterviewRespondRequest request, String studentEmail) {
         Interview interview = interviewRepository.findByIdAndStudentEmail(interviewId, studentEmail)
                 .orElseThrow(ApplicationNotFoundException::new);
 
@@ -74,8 +76,16 @@ public class StudentService {
             throw new ApplicationStateException();
         }
 
-        interview.setStatus(response.accepted() ? Status.ACCEPTED : Status.DECLINED);
-        interview.setStudentMessage(response.message());
+        if (request.status() == Status.ACCEPTED) {
+            InterviewSlot chosen = interview.getSlots().stream()
+                    .filter(s -> s.getId().equals(request.selectedSlotId()))
+                    .findFirst()
+                    .orElseThrow(ApplicationNotFoundException::new);
+            chosen.setSelected(true);
+        }
+
+        interview.setStatus(request.status());
+        interview.setStudentMessage(request.message());
         return withExpired(interviewRepository.save(interview));
     }
 

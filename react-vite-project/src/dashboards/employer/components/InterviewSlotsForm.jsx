@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { btnAccept, btnOutline, btnPrimary, inputField, textError } from '@/styles/classes.js';
-import { getTodayDateString } from '@/utils/dateFormatting.js';
-
-const DATE_FORMAT_OPTIONS = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+import { btnAccept, btnOutline, btnPrimary, btnTextDelete, btnTextEdit, inputField, textError } from '@/styles/classes.js';
+import { getTodayDateString, formatSlotDate } from '@/utils/dateFormatting.js';
 
 const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, interviewType, videoLink, address, notes, onFieldChange, submissionAttempted }) => {
     const { t, i18n } = useTranslation();
@@ -21,16 +19,16 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
     const validateSlot = (slot) => {
         const newErrors = {};
         
-        if (!slot.date) newErrors.date = t('scheduleInterview.errors.dateRequired') || 'Date requise';
-        if (!slot.startTime) newErrors.startTime = t('scheduleInterview.errors.timeRequired') || 'Heure requise';
-        if (!slot.endTime) newErrors.endTime = t('scheduleInterview.errors.timeRequired') || 'Heure requise';
-        
+        if (!slot.date) newErrors.date = t('scheduleInterview.errors.dateRequired');
+        if (!slot.startTime) newErrors.startTime = t('scheduleInterview.errors.timeRequired');
+        if (!slot.endTime) newErrors.endTime = t('scheduleInterview.errors.timeRequired');
+
         if (slot.date && slot.date < today) {
-            newErrors.date = t('scheduleInterview.errors.dateInPast') || 'La date ne peut pas être antérieure à aujourd\'hui';
+            newErrors.date = t('scheduleInterview.errors.dateInPast');
         }
-        
+
         if (slot.startTime && slot.endTime && slot.startTime >= slot.endTime) {
-            newErrors.endTime = t('scheduleInterview.errors.endTimeAfterStart') || 'L\'heure de fin doit être après l\'heure de début';
+            newErrors.endTime = t('scheduleInterview.errors.endTimeAfterStart');
         }
         
         return newErrors;
@@ -318,23 +316,21 @@ const InterviewSlotsForm = ({ slots, onAddSlot, onRemoveSlot, onModifySlot, inte
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
                                             <p className="font-medium text-main">
-                                                {new Date(slot.date + 'T00:00:00').toLocaleDateString(
-                                                i18n.language, DATE_FORMAT_OPTIONS
-                                            )} • {slot.startTime} - {slot.endTime}
+                                                {formatSlotDate(slot.date, i18n.language)} • {slot.startTime} - {slot.endTime}
                                             </p>
                                         </div>
                                         <div className="flex gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => handleStartEdit(slot)}
-                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                className={btnTextEdit}
                                             >
                                                 {t('scheduleInterview.slots.edit')}
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => onRemoveSlot(slot.id)}
-                                                className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                                className={btnTextDelete}
                                             >
                                                 {t('scheduleInterview.slots.delete')}
                                             </button>

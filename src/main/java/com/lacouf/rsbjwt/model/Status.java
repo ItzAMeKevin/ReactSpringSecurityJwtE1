@@ -7,5 +7,7 @@ public enum Status {
     HIRED,
     FILLED,
     READ,
-    UNREAD
+    UNREAD,
+    SIGNED,
+    UNSIGNED
 }

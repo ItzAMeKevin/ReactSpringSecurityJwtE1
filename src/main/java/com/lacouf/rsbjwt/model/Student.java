@@ -2,17 +2,14 @@ package com.lacouf.rsbjwt.model;
 
 import com.lacouf.rsbjwt.model.auth.Credentials;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -29,7 +26,15 @@ public class Student extends User {
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_manager_id", nullable = true)
     private Manager assignedManager;
-    
+
+    @OneToOne(optional = true)
+    @JoinColumn(name = "contract_id", unique = true)
+    private Contract contract;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobApplication> jobApplications = new ArrayList<>();
+
+
     @Builder
     public Student(
             Long id, String firstName, String lastName, String email, String password,

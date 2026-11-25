@@ -23,8 +23,9 @@ const isUniqueFileName = (cv, index, all) => all.findIndex((other) => other.file
 const PersonalSpaceStudent = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const cvs = useFetchList("/student-cv");
+    const cvs = useFetchList("/etudiant/cv");
     const offers = useFetchList("/etudiant/offres");
+    const interviews = useFetchList("/etudiant/interviews");
     const [isUploadOpen, setIsUploadOpen] = useState(false);
 
     const visibleCvs = cvs.items.filter(isUniqueFileName);
@@ -35,7 +36,7 @@ const PersonalSpaceStudent = () => {
     const countCvs = (status) => (cvs.status === "loaded" ? visibleCvs.filter((cv) => cv.status === status).length : null);
 
     const uploadCv = async (file) => {
-        const response = await fetcher("/student-cv", {
+        const response = await fetcher("/etudiant/cv", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fileName: file.name, contentType: file.type, content: await fileToBase64(file) }),
@@ -54,6 +55,7 @@ const PersonalSpaceStudent = () => {
     const items = [
         ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
         { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
+        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.status === "loaded" ? interviews.items.filter((i) => i.status === "PENDING").length : null },
     ];
 
     const actions = (
@@ -68,7 +70,7 @@ const PersonalSpaceStudent = () => {
                 title={t("etudiant.title")}
                 items={items}
                 actions={actions}
-                context={{ cvs, visibleCvs, acceptedCvs, offers, uploadCv }}
+                context={{ cvs, visibleCvs, acceptedCvs, offers, interviews, uploadCv }}
             />
             {isUploadOpen && (
                 <CvUploadModal onUpload={uploadCv} onUploaded={handleUploaded} onClose={() => setIsUploadOpen(false)} />

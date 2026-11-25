@@ -17,13 +17,6 @@ public interface InterviewMapper {
     InterviewResponseDto toDto(Interview interview);
 
     @Mapping(source = "jobApplication.id", target = "candidatureId")
-    @Mapping(source = "jobApplication.jobOffer.employer.companyName", target = "companyName")
-    @Mapping(source = "jobApplication.jobOffer.title", target = "offerTitle")
-    @Mapping(source = "adresse", target = "address")
-    @Mapping(target = "expired", constant = "false")
-    InterviewDto toInterviewDto(Interview interview);
-
-    @Mapping(source = "jobApplication.id", target = "candidatureId")
     @Mapping(source = "jobApplication.jobOffer.id", target = "offerId")
     @Mapping(source = "jobApplication.jobOffer.title", target = "offerTitle")
     @Mapping(source = "jobApplication.studentCv.student.firstName", target = "studentFirstName")
@@ -31,6 +24,13 @@ public interface InterviewMapper {
     @Mapping(source = "jobApplication.studentCv.student.email", target = "studentEmail")
     @Mapping(source = "adresse", target = "address")
     EmployerInterviewDto toEmployerDto(Interview interview);
+
+    @Mapping(source = "jobApplication.id", target = "candidatureId")
+    @Mapping(source = "adresse", target = "address")
+    @Mapping(source = "jobApplication.jobOffer.employer.companyName", target = "companyName")
+    @Mapping(source = "jobApplication.jobOffer.title", target = "offerTitle")
+    @Mapping(target = "expired", ignore = true)
+    InterviewDto toInterviewDto(Interview interview);
 
     InterviewSlotDto toSlotDto(InterviewSlot slot);
 }

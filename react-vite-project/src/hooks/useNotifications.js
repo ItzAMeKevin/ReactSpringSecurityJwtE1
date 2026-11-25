@@ -13,6 +13,7 @@ const EVENT_TARGETS = {
     CV_DECLINED: { path: "/etudiant/cv/refuses", kind: "cv" },
     JOB_OFFER_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
     JOB_OFFER_DECLINED: { path: "/employeur/offres/refusees", kind: "offer" },
+    INTERVIEW_SCHEDULED: { path: "/etudiant/convocations", kind: "interview" },
 };
 
 const getTarget = (event, referenceId) => {
@@ -71,8 +72,8 @@ const useNotifications = () => {
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/notifications?notificationId=${notificationId}`, {
-                method: "PATCH",
+            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
+                method: "PUT",
             });
             if (!response.ok) {
                 console.error("Erreur lors du marquage de la notification comme lue");

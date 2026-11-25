@@ -1,10 +1,11 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
 import {fetchBlobUrl} from "@/utils/downloadFile.js";
 import CvModal from "@/components/cv/CvModal.jsx";
 import fetcher from "@/utils/fetcher.js";
 import ScheduleInterviewModal from "@/dashboards/employer/components/ScheduleInterviewModal.jsx";
 import { getApiErrorKey } from "@/utils/apiError.js";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 import {
     cardItem,
     statusBadge,
@@ -18,7 +19,7 @@ import {
 } from "@/styles/classes.js";
 
 const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions}) => {
-    const {t} = useTranslation();
+    const {t, i18n} = useTranslation();
     const [statusError, setStatusError] = useState(null);
     const [cvError, setCvError] = useState(null);
     const [updating, setUpdating] = useState(false);
@@ -26,9 +27,10 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
     const [message, setMessage] = useState("");
     const [isCvOpen, setIsCvOpen] = useState(false);
     const [cvUrl, setCvUrl] = useState(null);
+    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+    const blobUrlRef = useRef(null);
     const [hireError, setHireError] = useState(null);
     const [hiring, setHiring] = useState(false);
-    const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -109,7 +111,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                     <p className="font-bold text-main">{candidate.firstName} {candidate.lastName}</p>
                     <p className={`text-sm ${textMuted}`}>{candidate.email}</p>
                     <p className={`text-sm ${textMuted}`}>
-                        {new Date(candidate.appliedAt).toLocaleDateString()}
+                        {formatSlotDate(candidate.appliedAt?.split('T')[0], i18n.language)}
                     </p>
                 </div>
                 <span className={`${statusBadge} ${statusBadgeColor(candidate.status)}`}>
@@ -205,7 +207,6 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
             )}
 
             {statusError && <p className={`text-sm ${textError}`}>{statusError}</p>}
-            {hireError && <p className={`text-sm ${textError}`}>{hireError}</p>}
 
             <ScheduleInterviewModal
                 isOpen={isScheduleModalOpen}
@@ -217,6 +218,7 @@ const CandidateListItem = ({candidate, offerId, onStatusChange, onHire, onInterv
                     onInterviewScheduled?.();
                 }}
             />
+            {hireError && <p className={`text-sm ${textError}`}>{hireError}</p>}
         </li>
     );
 };

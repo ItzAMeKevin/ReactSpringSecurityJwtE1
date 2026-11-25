@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InterviewRepository extends JpaRepository<Interview, Long> {
 
@@ -35,7 +36,7 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
     List<Interview> findAllByStudentEmail(@Param("email") String email);
 
     @Query("""
-            SELECT i FROM Interview i
+            SELECT DISTINCT i FROM Interview i
             JOIN FETCH i.jobApplication ja
             JOIN FETCH ja.jobOffer jo
             JOIN FETCH jo.employer
@@ -44,7 +45,7 @@ public interface InterviewRepository extends JpaRepository<Interview, Long> {
             LEFT JOIN FETCH i.slots
             WHERE i.id = :id AND cv.student.credentials.email = :email
             """)
-    java.util.Optional<Interview> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
+    Optional<Interview> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
 
     boolean existsByJobApplicationId(Long jobApplicationId);
 }

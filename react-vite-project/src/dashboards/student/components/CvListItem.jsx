@@ -38,14 +38,13 @@ const CvListItem = ({
         if (!isDeclined) return;
         let cancelled = false;
         setFeedbackError(false);
-        fetcher(`/student-cv/${cv.id}/review`)
+        fetcher(`/etudiant/cv/${cv.id}/review`)
             .then(async (response) => {
                 if (!response.ok) throw new Error(await getApiErrorKey(response));
                 const text = await response.text();
                 if (!cancelled) setFeedback(text);
             })
-            .catch((error) => {
-                console.error("Erreur lors du chargement du feedback :", error);
+            .catch(() => {
                 if (!cancelled) setFeedbackError(true);
             });
         return () => {
@@ -57,7 +56,7 @@ const CvListItem = ({
         if (!isOpen || cv.file || previewUrl) return;
         let cancelled = false;
         setPreviewError(false);
-        fetchBlobUrl(`/student-cv/${cv.id}/content`)
+        fetchBlobUrl(`/etudiant/cv/${cv.id}/content`)
             .then((url) => {
                 if (cancelled) {
                     URL.revokeObjectURL(url);
@@ -65,8 +64,7 @@ const CvListItem = ({
                     setPreviewUrl(url);
                 }
             })
-            .catch((error) => {
-                console.error("Erreur lors du chargement de l'aperçu :", error);
+            .catch(() => {
                 if (!cancelled) setPreviewError(true);
             });
         return () => {
@@ -102,8 +100,7 @@ const CvListItem = ({
         setIsReplacing(true);
         try {
             if (!(await onReplace(file))) setReplaceError("televerser.envoieErreur");
-        } catch (error) {
-            console.error("Erreur lors du remplacement du CV :", error);
+        } catch {
             setReplaceError("televerser.envoieErreur");
         } finally {
             setIsReplacing(false);

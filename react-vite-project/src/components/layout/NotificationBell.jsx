@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import useNotifications from "@/hooks/useNotifications.js";
 import getLocalizedNotification from "@/utils/getLocalizedNotification.js";
+import InterviewNotification from "@/components/InterviewNotification.jsx";
 import { textError } from "@/styles/classes.js";
 
 const NotificationBell = () => {
@@ -10,12 +11,24 @@ const NotificationBell = () => {
     const navigate = useNavigate();
     const { notifications, status, unreadCount, markAsRead, refetch } = useNotifications();
     const [isOpen, setIsOpen] = useState(false);
+    const wrapperRef = useRef(null);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClickOutside = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isOpen]);
 
     const handleNotificationClick = (notification) => {
         if (!notification.isRead) {
             markAsRead(notification.id);
         }
-        if (notification.target) {
+        if (notification.target && notification.event !== "INTERVIEW_SCHEDULED") {
             setIsOpen(false);
             navigate(notification.target.path, { state: notification.target.state });
         }
@@ -46,14 +59,36 @@ const NotificationBell = () => {
         }
 
         return (
-            <ul className="max-h-96 overflow-y-auto">
+            <ul className="max-h-96 overflow-y-auto space-y-1 p-2">
                 {notifications.map((notification) => {
+                    if (notification.event === "INTERVIEW_SCHEDULED") {
+                        return (
+                            <li
+                                key={notification.id}
+                                className={`rounded-lg transition-colors ${
+                                    notification.isRead
+                                        ? "bg-white/40"
+                                        : "bg-blue-50 ring-1 ring-blue-200"
+                                }`}
+                            >
+                                <InterviewNotification
+                                    notification={notification}
+                                    onClose={() => {
+                                        markAsRead(notification.id);
+                                        setIsOpen(false);
+                                    }}
+                                />
+                            </li>
+                        );
+                    }
+
+                    // Default notification rendering
                     const localizedNotif = getLocalizedNotification(notification, t);
                     return (
                         <li
                             key={notification.id}
                             onClick={() => handleNotificationClick(notification)}
-                            className={`px-3 py-2 text-sm cursor-pointer transition-colors ${
+                            className={`px-3 py-2 text-sm cursor-pointer transition-colors rounded-lg ${
                                 notification.isRead
                                     ? "bg-white/40 text-brand/70 hover:bg-white/60"
                                     : "bg-blue-50 text-main hover:bg-blue-100 font-medium"
@@ -78,7 +113,7 @@ const NotificationBell = () => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative" ref={wrapperRef}>
             <button
                 type="button"
                 onClick={toggleDropdown}
@@ -109,7 +144,7 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
+                <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-brand/20 z-50">
                     <div className="p-3 border-b border-brand/10">
                         <h3 className="text-main font-bold">{t("notifications.title")}</h3>
                     </div>

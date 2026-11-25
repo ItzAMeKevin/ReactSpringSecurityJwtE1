@@ -60,6 +60,9 @@ public class JobOffer {
     @Column(length = 2000)
     private String refusalFeedback;
 
+    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobApplication> jobApplications = new ArrayList<>();
+
     @Column(nullable = false)
     private int numberOfPositions;
 

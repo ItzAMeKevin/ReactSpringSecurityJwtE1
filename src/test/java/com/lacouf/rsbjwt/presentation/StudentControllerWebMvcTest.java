@@ -10,6 +10,7 @@ import com.lacouf.rsbjwt.repository.UserAppRepository;
 import com.lacouf.rsbjwt.security.JwtAuthenticationEntryPoint;
 import com.lacouf.rsbjwt.security.JwtTokenProvider;
 import com.lacouf.rsbjwt.security.SecurityConfiguration;
+import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.UserAppService;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
@@ -52,6 +53,9 @@ public class StudentControllerWebMvcTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    @MockitoBean
+    private StudentCvService studentCvService;
 
     @MockitoBean
     private StudentService studentService;
@@ -131,14 +135,14 @@ public class StudentControllerWebMvcTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ── GET /etudiant/entrevues ───────────────────────────────────────────────
+    // ── GET /etudiant/interviews ───────────────────────────────────────────────
 
     @Test
-    @DisplayName("GET /etudiant/entrevues retourne 200 avec la liste des entrevues")
+    @DisplayName("GET /etudiant/interviews retourne 200 avec la liste des entrevues")
     void getInterviews_returns200() throws Exception {
         when(studentService.getInterviews(anyString())).thenReturn(List.of(testInterview));
 
-        mockMvc.perform(get("/etudiant/entrevues")
+        mockMvc.perform(get("/etudiant/interviews")
                         .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].offerTitle").value("Dev Java"))
@@ -146,60 +150,60 @@ public class StudentControllerWebMvcTest {
     }
 
     @Test
-    @DisplayName("GET /etudiant/entrevues retourne 403 si mauvais rôle")
+    @DisplayName("GET /etudiant/interviews retourne 403 si mauvais rôle")
     void getInterviews_returns403_wrongRole() throws Exception {
-        mockMvc.perform(get("/etudiant/entrevues")
+        mockMvc.perform(get("/etudiant/interviews")
                         .with(user("employer@test.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
                 .andExpect(status().isForbidden());
     }
 
-    // ── PUT /etudiant/entrevues/{id}/repondre ─────────────────────────────────
+    // ── PUT /etudiant/interviews/{id}/respond ─────────────────────────────────
 
     @Test
-    @DisplayName("PUT /etudiant/entrevues/{id}/repondre retourne 200 sur réponse valide")
+    @DisplayName("PUT /etudiant/interviews/{id}/respond retourne 200 sur réponse valide")
     void respondToInterview_returns200() throws Exception {
         when(studentService.respondToInterview(eq(1L), any(), anyString())).thenReturn(testInterview);
 
-        mockMvc.perform(put("/etudiant/entrevues/1/repondre")
+        mockMvc.perform(put("/etudiant/interviews/1/respond")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"accepted\":true,\"message\":\"Je serai là\"}")
+                        .content("{\"status\":\"ACCEPTED\",\"selectedSlotId\":null,\"message\":\"Je serai là\"}")
                         .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.offerTitle").value("Dev Java"));
     }
 
     @Test
-    @DisplayName("PUT /etudiant/entrevues/{id}/repondre retourne 404 si entrevue non trouvée")
+    @DisplayName("PUT /etudiant/interviews/{id}/respond retourne 404 si entrevue non trouvée")
     void respondToInterview_returns404() throws Exception {
         when(studentService.respondToInterview(eq(99L), any(), anyString()))
                 .thenThrow(new ApplicationNotFoundException());
 
-        mockMvc.perform(put("/etudiant/entrevues/99/repondre")
+        mockMvc.perform(put("/etudiant/interviews/99/respond")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"accepted\":true,\"message\":\"ok\"}")
+                        .content("{\"status\":\"ACCEPTED\",\"selectedSlotId\":null,\"message\":\"ok\"}")
                         .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @DisplayName("PUT /etudiant/entrevues/{id}/repondre retourne 409 si déjà répondu")
+    @DisplayName("PUT /etudiant/interviews/{id}/respond retourne 409 si déjà répondu")
     void respondToInterview_returns409_alreadyResponded() throws Exception {
         when(studentService.respondToInterview(eq(1L), any(), anyString()))
                 .thenThrow(new ApplicationStateException());
 
-        mockMvc.perform(put("/etudiant/entrevues/1/repondre")
+        mockMvc.perform(put("/etudiant/interviews/1/respond")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"accepted\":false,\"message\":\"Pas disponible\"}")
+                        .content("{\"status\":\"DECLINED\",\"selectedSlotId\":null,\"message\":\"Pas disponible\"}")
                         .with(user("student@test.com").authorities(new SimpleGrantedAuthority("STUDENT"))))
                 .andExpect(status().isConflict());
     }
 
     @Test
-    @DisplayName("PUT /etudiant/entrevues/{id}/repondre retourne 403 si mauvais rôle")
+    @DisplayName("PUT /etudiant/interviews/{id}/respond retourne 403 si mauvais rôle")
     void respondToInterview_returns403_wrongRole() throws Exception {
-        mockMvc.perform(put("/etudiant/entrevues/1/repondre")
+        mockMvc.perform(put("/etudiant/interviews/1/respond")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"accepted\":true,\"message\":null}")
+                        .content("{\"status\":\"ACCEPTED\",\"selectedSlotId\":null,\"message\":null}")
                         .with(user("employer@test.com").authorities(new SimpleGrantedAuthority("EMPLOYER"))))
                 .andExpect(status().isForbidden());
     }
