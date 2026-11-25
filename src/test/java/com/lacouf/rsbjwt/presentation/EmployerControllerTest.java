@@ -14,7 +14,6 @@ import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferUpdateException;
 import com.lacouf.rsbjwt.model.InterviewType;
-import com.lacouf.rsbjwt.service.dto.UpdateCandidateStatusDto;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.InterviewService;
 import com.lacouf.rsbjwt.service.UserAppService;
@@ -500,7 +499,7 @@ class EmployerControllerTest {
                 10L, 1L, 3L, "Développeur Java", "Jean", "Dupont", "jean@test.com",
                 InterviewType.ONLINE, "https://zoom.us/j/123", null, "Bring portfolio",
                 Instant.parse("2026-11-01T12:00:00Z"),
-                List.of(new InterviewSlotDto(LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+                List.of(new InterviewSlotDto(null, LocalDate.of(2026, 11, 20), LocalTime.of(9, 0), LocalTime.of(10, 0), null)));
         when(interviewService.getEmployerInterviews("marie@acme.com")).thenReturn(List.of(interview));
 
         mockMvc.perform(get("/employer/interviews").with(employer()))
@@ -527,8 +526,5 @@ class EmployerControllerTest {
 
     private static RequestPostProcessor employer() {
         return user("marie@acme.com").authorities(new SimpleGrantedAuthority("EMPLOYER"));
-    }
-    private String statusBody() throws Exception {
-        return jsonMapper.writeValueAsString(new UpdateCandidateStatusDto(Status.ACCEPTED));
     }
 }
