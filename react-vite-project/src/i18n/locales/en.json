@@ -90,8 +90,10 @@
     "jobOfferUpdateFailed": "Only declined offers can be modified.",
     "employerNotFound": "Employer not found.",
     "notificationNotFound": "Notification not found.",
-    "invalidApplicationStatus": "Invalid application status.",
-    "applicationNotPending": "Only pending applications can be updated.",
+    "applicationNotOpen": "This application is no longer open: a hire offer was already sent or the candidate was not selected.",
+    "applicationNotHirePending": "This hire offer is no longer awaiting a response.",
+    "noPositionsLeft": "All positions for this offer are already held by sent or accepted hire offers.",
+    "offerNotAccepted": "The internship offer must be approved and still open to hire.",
     "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
@@ -104,6 +106,7 @@
     "candidatureTracking": "Application Tracking",
     "convocations": "My Invitations",
     "greeting": "Hello",
+    "userMenu": "User menu",
     "roles": {
       "STUDENT": "Student",
       "MANAGER": "Manager",
@@ -112,13 +115,13 @@
   },
   "televerser": {
     "choisirFichier": "Upload your CV",
+    "selectionnerFichier": "Choose a PDF file",
+    "changerFichier": "Change file",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
     "envoyerCv": "Send CV",
-    "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
@@ -127,7 +130,6 @@
     "chargementFeedback": "Loading feedback...",
     "erreurFeedback": "Unable to load the feedback.",
     "chargement": "Loading your CVs...",
-    "aucunCv": "No CV uploaded yet.",
     "erreurChargement": "Unable to load your CVs. Please try again later.",
     "statuts": {
       "PENDING": "Pending validation",
@@ -172,12 +174,22 @@
   },
   "personalSpaceEmployer": {
     "title": "Employer space",
+    "nav": {
+      "accepted": "Approved offers",
+      "pending": "Offers pending approval",
+      "declined": "Declined offers",
+      "interviews": "Students invited to interview",
+      "hirePending": "Students pending hire"
+    },
+    "empty": {
+      "accepted": "No approved offer.",
+      "pending": "No offer pending approval.",
+      "declined": "No declined offer."
+    },
     "createJobOffer": "Create internship offer",
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
-    "jobOffers": "My internship offers",
     "loading": "Loading offers...",
-    "noJobOffers": "You have no internship offers yet.",
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
@@ -186,6 +198,7 @@
     },
     "offerCreated": "Internship offer published successfully.",
     "offerUpdated": "The offer has been resubmitted for approval.",
+    "hireOfferSent": "Hire offer sent. The student must now respond.",
     "editJobOffer": "Edit offer",
     "resubmit": "Resubmit offer",
     "feedbackTitre": "Manager's comment:",
@@ -241,8 +254,18 @@
       "E": "Summer {{year}}"
     }
   },
+  "dashboard": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "comingSoon": "This section will be available soon."
+  },
   "gestionnaire": {
     "title": "Manager Space",
+    "nav": {
+      "cvs": "CVs to review",
+      "offres": "Offers to review",
+      "suivi": "Application tracking"
+    },
     "cvSection": "CVs pending validation",
     "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
@@ -271,17 +294,26 @@
       "feedbackTitle": "Write your feedback before confirming the refusal.",
       "feedbackPlaceholder": "Explain why the offer was declined...",
       "feedbackRequired": "You must write feedback before confirming the refusal.",
-      "errorProcessing": "An error occurred while processing this offer. Please try again."
+      "errorProcessing": "An error occurred while processing this offer. Please try again.",
+      "acceptSuccess": "The offer \"{{title}}\" has been approved.",
+      "refuseSuccess": "The offer \"{{title}}\" has been declined."
     },
     "accept": {
+      "question": "Accept {{name}}'s CV?",
+      "success": "{{name}}'s CV has been accepted.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "processing": "Accepting...",
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
       "title": "Write your feedback before confirming the rejection.",
       "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
+      "cancel": "Cancel",
       "processing": "Sending...",
       "errorNoFeedback": "You must write feedback before confirming the rejection.",
+      "success": "{{name}}'s CV has been rejected.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },
@@ -294,7 +326,7 @@
     "resultCount": "{{count}} application(s) out of {{total}}",
     "filters": {
       "all": "All statuses",
-      "accepted": "Accepted",
+      "hire_pending": "Hire offer sent",
       "declined": "Declined",
       "pending": "Pending",
       "filterByStatus": "Filter by status",
@@ -302,7 +334,6 @@
       "searchHint": "Search a student by their name, first name, matricule, or job offer title"
     },
     "statuses": {
-      "accepted": "Accepted",
       "declined": "Declined",
       "pending": "Pending"
     },
@@ -372,8 +403,16 @@
         "message": "Your internship offer has been validated by a manager."
       },
       "JOB_OFFER_HIRED": {
-        "title": "Congratulations, you've been hired!",
-        "message": "An employer has selected you for an internship. Check your offers for more details."
+        "title": "You received a hire offer!",
+        "message": "An employer wants to hire you. Accept or decline their offer in Hiring offers."
+      },
+      "JOB_OFFER_HIRE_ACCEPTED": {
+        "title": "Hire offer accepted",
+        "message": "A student accepted your hire offer."
+      },
+      "JOB_OFFER_HIRE_DECLINED": {
+        "title": "Hire offer declined",
+        "message": "A student declined your hire offer. The position is available again."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
@@ -387,12 +426,55 @@
     "EMPLOYER": "Employer"
   },
 
+  "etudiant": {
+    "title": "Student Space",
+    "nav": {
+      "cvPending": "Pending CVs",
+      "cvAccepted": "Approved CVs",
+      "cvDeclined": "Declined CVs",
+      "offres": "Internship offers",
+      "hireOffers": "Hiring offers"
+    },
+    "cv": {
+      "emptyPending": "No CV pending validation.",
+      "emptyAccepted": "No approved CV.",
+      "emptyDeclined": "No declined CV."
+    }
+  },
+  "etudiantEmbauches": {
+    "loading": "Loading hire offers...",
+    "empty": "No hire offers yet.",
+    "weeks": "{{count}} weeks",
+    "accept": "Accept offer",
+    "decline": "Decline offer",
+    "confirmAccept": "Accept the offer \"{{title}}\" at {{company}}?",
+    "confirmDecline": "Decline the offer \"{{title}}\" at {{company}}? This decision is final.",
+    "acceptSuccess": "You accepted the offer \"{{title}}\".",
+    "declineSuccess": "You declined the offer \"{{title}}\".",
+    "error": "An error occurred. Please try again."
+  },
+  "confirmPanel": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "processing": "Sending..."
+  },
+  "applicationStatuses": {
+    "PENDING_INTERVIEW": "Awaiting interview",
+    "INTERVIEW_SCHEDULED": "Interview scheduled",
+    "INTERVIEW_COMPLETED": "Interview completed",
+    "HIRE_PENDING": "Hire offer sent",
+    "AWAITING_CONTRACT": "Awaiting contract",
+    "AWAITING_SIGNATURES": "Awaiting signatures",
+    "CONTRACT_SIGNED": "Contract signed",
+    "WORKING": "Internship in progress",
+    "COMPLETED": "Internship completed"
+  },
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
     "noOffers": "No internship offers available for your program.",
     "noOffersForSession": "No internship offers for this semester.",
-    "notCurrentSession": "Applications are only open for internships in the current semester.",
+    "notApplicationSession": "Applications are only open for internships in the upcoming semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",
@@ -406,9 +488,8 @@
     "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
-      "ACCEPTED": "Application accepted",
       "DECLINED": "Application declined",
-      "HIRED": "Hired"
+      "HIRE_PENDING": "Hire offer received"
     }
   },
 
@@ -432,26 +513,27 @@
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
-      "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected",
-      "HIRED": "Hired"
+      "DECLINED": "Candidate not selected"
     },
-    "accepter": "Accept",
-    "refuser": "Decline",
     "scheduleInterview": "Schedule an interview",
     "embaucher": "Hire",
-    "hireError": "An error occurred while hiring the candidate.",
-    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
-    "erreurStatut": "Unable to update status.",
-
+    "nePasRetenir": "Don't select",
+    "erreurStatut": "Unable to update the application.",
     "confirmation": {
-      "titre": "Decision confirmation",
-      "accepter": "Accept {{nom}}'s application?",
-      "refuser": "Decline {{nom}}'s application?",
-      "motifLabel": "Message or reason (optional)",
-      "confirmer": "Confirm",
-      "annuler": "Cancel"
+      "embaucher": "Send a hire offer to {{nom}}? The student will have to accept or decline it.",
+      "nePasRetenir": "Don't select {{nom}}'s application? This decision is final."
     }
+  },
+  "employerHirePending": {
+    "loading": "Loading students awaiting hire...",
+    "empty": "No students awaiting a response to a hire offer.",
+    "awaitingAnswer": "Awaiting the student's response",
+    "sentOn": "Hire offer sent on {{date}}"
+  },
+  "employerInterviews": {
+    "loading": "Loading interviews...",
+    "empty": "No student invited to interview.",
+    "offer": "Offer"
   },
   "scheduleInterview": {
     "title": "Schedule an interview",

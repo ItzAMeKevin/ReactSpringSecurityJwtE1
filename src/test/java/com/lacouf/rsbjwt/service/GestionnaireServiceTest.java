@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;
@@ -31,6 +32,7 @@ class GestionnaireServiceTest {
     @Mock private JobApplicationRepository jobApplicationRepository;
     @Mock private CvMapper cvMapper;
     @Mock private JobOfferMapper jobOfferMapper;
+    @Mock private CandidatureMapper candidatureMapper;
     @InjectMocks private GestionnaireService service;
 
     @Test
@@ -135,7 +137,14 @@ class GestionnaireServiceTest {
         application.setJobOffer(offer);
         application.setStatus(Status.PENDING);
 
-        when(jobApplicationRepository.findAll()).thenReturn(List.of(application));
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of(application));
+        CandidatureDto.StudentInfoDto studentInfo =
+                new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com");
+        CandidatureDto.JobOfferInfoDto offerInfo =
+                new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12);
+        when(candidatureMapper.toDtoList(List.of(application)))
+                .thenReturn(List.of(new CandidatureDto(
+                        1L, studentInfo, offerInfo, Status.PENDING, null, null)));
         List<CandidatureDto> result = service.getAllCandidatures();
         assertEquals(1, result.size());
         CandidatureDto dto = result.get(0);
@@ -146,7 +155,7 @@ class GestionnaireServiceTest {
         assertEquals(12, dto.jobOffer().durationInWeeks());
         assertEquals(Status.PENDING, dto.status());
 
-        when(jobApplicationRepository.findAll()).thenReturn(List.of());
+        when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
     }
 }

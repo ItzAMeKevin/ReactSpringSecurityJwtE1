@@ -12,26 +12,19 @@ import java.time.Instant;
 @Mapper(componentModel = "spring")
 public interface CandidateMapper {
 
-
-    @Mapping(target = "cvId",          source = "studentCv.id")
-    @Mapping(target = "candidatureId", source = "id")
-    @Mapping(target = "firstName",     source = "studentCv.student.firstName")
-    @Mapping(target = "lastName",      source = "studentCv.student.lastName")
-    @Mapping(target = "email",         source = "studentCv.student.email")
-    @Mapping(target = "status",        source = "status")
-    @Mapping(target = "appliedAt",     source = "appliedAt")
-    CandidateDto toDto(JobApplication application);
+    @Mapping(source = "studentCv.id", target = "cvId")
+    @Mapping(source = "id", target = "candidatureId")
+    @Mapping(source = "studentCv.student.firstName", target = "firstName")
+    @Mapping(source = "studentCv.student.lastName", target = "lastName")
+    @Mapping(source = "studentCv.student.email", target = "email")
+    CandidateDto toCandidateDto(JobApplication application);
 
 
-    @Mapping(target = "cvId",          source = "cv.id")
-    @Mapping(target = "candidatureId", source = "candidatureId")
-    @Mapping(target = "firstName",     source = "cv.student.firstName")
-    @Mapping(target = "lastName",      source = "cv.student.lastName")
-    @Mapping(target = "email",         source = "cv.student.email")
-    @Mapping(target = "status",        source = "status")
-    @Mapping(target = "appliedAt",     source = "appliedAt")
-    CandidateDto toDto(StudentCv cv, Long candidatureId, Instant appliedAt, Status status);
-
-
-
+    @Mapping(source = "cv.id",                target = "cvId")
+    @Mapping(target = "candidatureId",        ignore = true)
+    @Mapping(source = "cv.student.firstName", target = "firstName")
+    @Mapping(source = "cv.student.lastName",  target = "lastName")
+    @Mapping(source = "cv.student.email",     target = "email")
+    CandidateDto toCandidateDto(StudentCv cv, Instant appliedAt, Status status);
 }
+

@@ -9,7 +9,7 @@ public record CandidatureDto(
         StudentInfoDto student,
         JobOfferInfoDto jobOffer,
         Status status,
-        Instant createdAt,
+        Instant appliedAt,
         Instant updatedAt
 ) {
     public record StudentInfoDto(

@@ -33,6 +33,10 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
         """)
     Optional<JobOffer> findOwnedOfferForUpdate(@Param("id") Long id, @Param("email") String email);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT jo FROM JobOffer jo WHERE jo.id = :id")
+    Optional<JobOffer> findByIdForUpdate(@Param("id") Long id);
+
     boolean existsByEmployer_Credentials_EmailAndAppliedCvs_Id(String email, Long cvId);
 
     @Query("""

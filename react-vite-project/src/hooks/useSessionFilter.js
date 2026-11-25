@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import { compareSessionCodesDesc, getCurrentSessionCode, getSessionCode, getSessionsFromOffers } from "../utils/session.js";
+import { compareSessionCodesDesc, getNextSessionCode, getSessionCode, getSessionsFromOffers } from "@/utils/session.js";
 
 const useSessionFilter = (offers) => {
-    const [selectedSession, setSelectedSession] = useState(getCurrentSessionCode);
+    const [selectedSession, setSelectedSession] = useState(() => getNextSessionCode());
 
     const sessions = useMemo(() => {
-        const current = getCurrentSessionCode();
+        const next = getNextSessionCode();
         const derived = getSessionsFromOffers(offers);
-        if (!derived.includes(current)) derived.push(current);
+        if (!derived.includes(next)) derived.push(next);
         return derived.sort(compareSessionCodesDesc);
     }, [offers]);
 

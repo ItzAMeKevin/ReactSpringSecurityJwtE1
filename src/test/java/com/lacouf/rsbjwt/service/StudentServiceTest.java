@@ -1,13 +1,18 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.model.*;
+import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.repository.JobOfferRepository;
 import com.lacouf.rsbjwt.repository.StudentRepository;
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.AdresseDTO;
 import com.lacouf.rsbjwt.service.dto.JobOfferDetailDTO;
+import com.lacouf.rsbjwt.service.dto.CandidatureDto;
+import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,6 +45,12 @@ public class StudentServiceTest {
 
     @Mock
     private JobApplicationRepository jobApplicationRepository;
+
+    @Mock
+    private CandidatureMapper candidatureMapper;
+
+    @Mock
+    private SystemeService systemeService;
 
     @InjectMocks
     private StudentService studentService;
@@ -186,5 +197,115 @@ public class StudentServiceTest {
         assertEquals(1, result.size());
         assertEquals(Status.DECLINED, result.get(0).getApplicationStatus());
     }
-}
 
+    @Test
+    @DisplayName("getPendingHireOffers mappe les offres d'embauche en attente de réponse")
+    void getPendingHireOffers_mapsHirePending() {
+        JobApplication application = new JobApplication();
+        application.setId(7L);
+        CandidatureDto dto = new CandidatureDto(7L, null, null, Status.HIRE_PENDING, null, null);
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
+                .thenReturn(List.of(application));
+        when(candidatureMapper.toDtoList(List.of(application))).thenReturn(List.of(dto));
+
+        assertEquals(List.of(dto), studentService.getPendingHireOffers(STUDENT_EMAIL));
+    }
+
+    @Test
+    @DisplayName("getPendingHireOffers retourne une liste vide")
+    void getPendingHireOffers_returnsEmptyList() {
+        when(jobApplicationRepository.findByStudentEmailAndStatus(STUDENT_EMAIL, Status.HIRE_PENDING))
+                .thenReturn(List.of());
+
+        assertTrue(studentService.getPendingHireOffers(STUDENT_EMAIL).isEmpty());
+    }
+
+    private JobApplication hirePendingApplication() {
+        Employer employer = new Employer();
+        employer.setId(42L);
+        jobOffer.setEmployer(employer);
+        jobOffer.setStatus(Status.ACCEPTED);
+        jobOffer.setNumberOfPositions(2);
+
+        StudentCv cv = new StudentCv();
+        cv.setStudent(student);
+        JobApplication application = new JobApplication();
+        application.setId(9L);
+        application.setJobOffer(jobOffer);
+        application.setStudentCv(cv);
+        application.setStatus(Status.HIRE_PENDING);
+        when(jobApplicationRepository.findByIdAndStudentEmail(9L, STUDENT_EMAIL)).thenReturn(Optional.of(application));
+        return application;
+    }
+
+    private void givenHiredCount(long hiredCount) {
+        when(jobOfferRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(jobOffer));
+        when(jobApplicationRepository.countByJobOffer_IdAndStatusIn(1L, JobApplication.HIRED_STATUSES)).thenReturn(hiredCount);
+    }
+
+    @Test
+    @DisplayName("acceptHire passe l'offre d'embauche à AWAITING_CONTRACT et notifie l'employeur")
+    void acceptHire_setsAwaitingContractAndNotifiesEmployer() {
+        JobApplication application = hirePendingApplication();
+        givenHiredCount(1L);
+
+        studentService.acceptHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.AWAITING_CONTRACT, application.getStatus());
+        assertEquals(Status.ACCEPTED, jobOffer.getStatus());
+        verify(jobApplicationRepository).save(application);
+        verify(jobOfferRepository, never()).save(any());
+        verify(systemeService).notifyUsers(List.of(jobOffer.getEmployer()), NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_HIRE_ACCEPTED.message");
+    }
+
+    @Test
+    @DisplayName("acceptHire passe l'offre à FILLED quand le dernier poste est comblé")
+    void acceptHire_lastPosition_fillsOffer() {
+        hirePendingApplication();
+        givenHiredCount(2L);
+
+        studentService.acceptHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.FILLED, jobOffer.getStatus());
+        verify(jobOfferRepository).save(jobOffer);
+    }
+
+    @Test
+    @DisplayName("declineHire passe l'offre d'embauche à DECLINED et notifie l'employeur")
+    void declineHire_setsDeclinedAndNotifiesEmployer() {
+        JobApplication application = hirePendingApplication();
+
+        studentService.declineHire(9L, STUDENT_EMAIL);
+
+        assertEquals(Status.DECLINED, application.getStatus());
+        assertEquals(Status.ACCEPTED, jobOffer.getStatus());
+        verify(jobApplicationRepository).save(application);
+        verify(systemeService).notifyUsers(List.of(jobOffer.getEmployer()), NotificationType.JOB_OFFER, 1L,
+                "notification.types.JOB_OFFER_HIRE_DECLINED.message");
+    }
+
+    @Test
+    @DisplayName("acceptHire lève ApplicationNotFoundException pour une candidature qui n'appartient pas à l'étudiant")
+    void acceptHire_notOwnHire_throwsNotFound() {
+        when(jobApplicationRepository.findByIdAndStudentEmail(9L, "other@test.com")).thenReturn(Optional.empty());
+
+        assertThrows(ApplicationNotFoundException.class, () -> studentService.acceptHire(9L, "other@test.com"));
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+
+    @Test
+    @DisplayName("declineHire refuse une candidature sans offre d'embauche en attente")
+    void declineHire_notHirePending_throws() {
+        JobApplication application = hirePendingApplication();
+        application.setStatus(Status.INTERVIEW_SCHEDULED);
+
+        InvalidStateTransitionException exception = assertThrows(InvalidStateTransitionException.class,
+                () -> studentService.declineHire(9L, STUDENT_EMAIL));
+
+        assertEquals("errors.applicationNotHirePending", exception.getMessage());
+        verify(jobApplicationRepository, never()).save(any());
+        verifyNoInteractions(systemeService);
+    }
+}

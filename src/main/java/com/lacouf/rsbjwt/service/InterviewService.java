@@ -7,8 +7,10 @@ import com.lacouf.rsbjwt.model.Interview;
 import com.lacouf.rsbjwt.model.InterviewSlot;
 import com.lacouf.rsbjwt.model.InterviewType;
 import com.lacouf.rsbjwt.model.JobApplication;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
+import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
 import com.lacouf.rsbjwt.service.dto.InterviewResponseDto;
 import com.lacouf.rsbjwt.service.dto.ScheduleInterviewRequestDto;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +61,15 @@ public class InterviewService {
         interview.setSlots(slots);
 
         Interview saved = interviewRepository.save(interview);
+        jobApplicationRepository.updateStatus(application.getId(), Status.INTERVIEW_SCHEDULED);
         return interviewMapper.toDto(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmployerInterviewDto> getEmployerInterviews(String employerEmail) {
+        return interviewRepository.findAllByEmployerEmail(employerEmail).stream()
+                .map(interviewMapper::toEmployerDto)
+                .toList();
     }
 }
 
