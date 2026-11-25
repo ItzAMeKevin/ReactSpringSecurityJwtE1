@@ -85,11 +85,6 @@ public class GestionnaireController {
     @PutMapping("/contract/create")
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ContractDto> createContract(@Valid @RequestBody ContractDto contractDto) {
-        try {
-            ContractDto createdContract = gestionnaireService.createContract(contractDto);
-            return ResponseEntity.ok(createdContract);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ContractDto.builder().erreur("errors.contractCreationFailed").build());
-        }
-    } 
+        return ResponseEntity.ok(gestionnaireService.createContract(contractDto));
+    }
 }
