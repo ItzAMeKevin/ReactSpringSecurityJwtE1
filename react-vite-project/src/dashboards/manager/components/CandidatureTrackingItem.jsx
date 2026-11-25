@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { btnTextLink, btnTextSuccess, statusBadge, statusBadgeColor } from "@/styles/classes.js";
 import { formatSlotDate } from "@/utils/dateFormatting.js";
+import getProgramName from "@/utils/getProgramName.js";
+import formatSalary from "@/utils/formatSalary.js";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
 const formatDate = (dateString, locale) => {
@@ -19,6 +21,8 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
     const [showContractModal, setShowContractModal] = useState(false);
 
     const isAccepted = candidature.status === "ACCEPTED";
+    const programs = t("inscription.programsList", { returnObjects: true });
+    const salary = candidature.jobOffer?.salary;
 
     return (
         <>
@@ -43,7 +47,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                     </span>
                 </td>
                 <td className="px-4 py-3 text-main">
-                    {formatDate(candidature.updatedAt || candidature.createdAt, i18n.language)}
+                    {formatDate(candidature.updatedAt || candidature.appliedAt, i18n.language)}
                 </td>
                 <td className="px-4 py-3 text-center">
                     <div className="flex gap-2 justify-center">
@@ -82,7 +86,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                         {t("candidatureTracking.details.email")}: {candidature.student?.email || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.programme")}: {candidature.student?.programme || "N/A"}
+                                        {t("candidatureTracking.details.programme")}: {candidature.student?.programe ? getProgramName(programs, candidature.student.programe) : "N/A"}
                                     </p>
                                 </div>
                                 <div>
@@ -96,7 +100,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                         {t("candidatureTracking.details.company")}: {candidature.jobOffer?.companyName || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.salary")}: {candidature.jobOffer?.salary || "N/A"}
+                                        {t("candidatureTracking.details.salary")}: {salary != null ? formatSalary(salary, t) : "N/A"}
                                     </p>
                                 </div>
                             </div>
@@ -137,10 +141,10 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                         {t("candidatureTracking.details.employerContact")}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.email")}: {candidature.jobOffer?.employer?.email || "N/A"}
+                                        {t("candidatureTracking.details.email")}: {candidature.employer?.email || "N/A"}
                                     </p>
                                     <p className="text-main/80 text-sm">
-                                        {t("candidatureTracking.details.phone")}: {candidature.jobOffer?.employer?.phoneNumber || "N/A"}
+                                        {t("candidatureTracking.details.phone")}: {candidature.employer?.phoneNumber || "N/A"}
                                     </p>
                                 </div>
                             </div>
@@ -151,7 +155,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                     {t("candidatureTracking.details.dates")}
                                 </p>
                                 <p className="text-main/80 text-sm">
-                                    {t("candidatureTracking.details.submitted")}: {formatDate(candidature.createdAt, i18n.language)}
+                                    {t("candidatureTracking.details.submitted")}: {formatDate(candidature.appliedAt, i18n.language)}
                                 </p>
                                 <p className="text-main/80 text-sm">
                                     {t("candidatureTracking.details.lastModified")}: {formatDate(candidature.updatedAt, i18n.language)}

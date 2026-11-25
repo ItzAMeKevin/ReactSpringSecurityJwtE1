@@ -2,20 +2,12 @@ package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.mapper.CandidateMapper;
-import com.lacouf.rsbjwt.mapper.CandidatureMapper;
-import com.lacouf.rsbjwt.mapper.CvMapper;
-import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import com.lacouf.rsbjwt.mapper.*;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
-import com.lacouf.rsbjwt.mapper.ContractMapper;
-import com.lacouf.rsbjwt.service.dto.CandidatureDto;
-import com.lacouf.rsbjwt.service.dto.ContractDto;
-import com.lacouf.rsbjwt.service.dto.FeedbackDto;
-import com.lacouf.rsbjwt.service.dto.JobOfferDto;
-import com.lacouf.rsbjwt.service.dto.PendingCvDto;
+import com.lacouf.rsbjwt.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +32,8 @@ public class GestionnaireService {
     private final JobOfferMapper jobOfferMapper;
 
     private final CandidatureMapper candidatureMapper;
+
+    private final JobApplicationSuiviMapper jobApplicationSuiviMapper;
 
     private final ContractRepository contractRepository;
 
@@ -115,8 +109,8 @@ public class GestionnaireService {
     }
 
     @Transactional(readOnly = true)
-    public List<CandidatureDto> getAllCandidatures() {
-        return candidatureMapper.toDtoList(jobApplicationRepository.findAllWithStudentAndOffer());
+    public List<JobApplicationSuiviDto> getAllCandidatures() {
+        return jobApplicationSuiviMapper.toDtoList(jobApplicationRepository.findAllWithStudentAndOffer());
     }
 
     private JobOfferDto changeOfferStatus(Long id, Status newStatus, String messageKey, String feedback) throws JobOfferNotFoundException, InvalidStateTransitionException {

@@ -3,6 +3,7 @@ package com.lacouf.rsbjwt.presentation;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
@@ -86,9 +87,9 @@ class GestionnaireControllerWebMvcTest {
 
     @Test
     void getsAllCandidatures() {
-        CandidatureDto.StudentInfoDto studentInfo = new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com");
-        CandidatureDto.JobOfferInfoDto offerInfo = new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12);
-        CandidatureDto dto = new CandidatureDto(1L, studentInfo, offerInfo, Status.PENDING, null, null);
+        StudentDetailsDto student = new StudentDetailsDto(2L, "Jane", "Doe", "1234567", "jane@test.com", Programe.TECHNIQUES_INFORMATIQUE);
+        JobOfferDetailDTO offer = JobOfferDetailDTO.builder().id(3L).title("Developer").companyName("Acme").durationInWeeks(12).build();
+        JobApplicationSuiviDto dto = new JobApplicationSuiviDto(1L, Status.PENDING, null, null, student, offer, null);
 
         when(service.getAllCandidatures()).thenReturn(List.of(dto));
         assertEquals(List.of(dto), controller.getAllCandidatures().getBody());

@@ -58,7 +58,7 @@ public class GestionnaireController {
 
     @GetMapping("/candidatures")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<List<CandidatureDto>> getAllCandidatures() {
+    public ResponseEntity<List<JobApplicationSuiviDto>> getAllCandidatures() {
         return ResponseEntity.ok(gestionnaireService.getAllCandidatures());
     }
 
