@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
@@ -30,6 +31,12 @@ public class JobApplication {
     @JoinColumn(name = "student_cv_id", nullable = false)
     private StudentCv studentCv;
 
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "student_id")
+    private Student student;
+
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Status status = Status.PENDING;
@@ -37,4 +44,7 @@ public class JobApplication {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private Instant appliedAt;
+
+    @UpdateTimestamp
+    private Instant updatedAt;
 }

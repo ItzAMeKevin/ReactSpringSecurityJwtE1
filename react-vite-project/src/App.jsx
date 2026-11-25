@@ -1,19 +1,28 @@
-import "./App.css";
-import PageLayout from "./components/PageLayout.jsx";
+import "@/App.css";
+import PageLayout from "@/components/layout/PageLayout.jsx";
 import React, {useEffect, useState} from "react";
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
-import About from "./components/About.jsx";
-import LoginForm from "./components/auth/LoginForm.jsx";
-import fetcher from "./utils/fetcher.js";
-import ErrorPage from "./components/ErrorPage.jsx";
-import Logout from "./components/auth/Logout.jsx";
-import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
-import PersonalSpaceManager from "./components/page/personal-space-manager/PersonalSpaceManager.jsx";
-import PersonalSpaceEmployer from "./components/page/personal-space-employer/PersonalSpaceEmployer.jsx";
-import Inscription from "./components/page/inscription/Inscription.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import CandidatureSuiviPage from "./components/page/personal-space-manager/CandidatureSuiviPage.jsx";
+import About from "@/pages/About.jsx";
+import LoginForm from "@/pages/auth/LoginForm.jsx";
+import fetcher from "@/utils/fetcher.js";
+import ErrorPage from "@/pages/ErrorPage.jsx";
+import Logout from "@/pages/auth/Logout.jsx";
+import PersonalSpaceStudent from "@/dashboards/student/PersonalSpaceStudent.jsx";
+import PersonalSpaceManager from "@/dashboards/manager/PersonalSpaceManager.jsx";
+import PersonalSpaceEmployer from "@/dashboards/employer/PersonalSpaceEmployer.jsx";
+import Inscription from "@/pages/inscription/Inscription.jsx";
+import ProtectedRoute from "@/components/routing/ProtectedRoute.jsx";
+import { getApiErrorKey } from "@/utils/apiError.js";
+import CandidatureTracking from "@/dashboards/manager/sections/CandidatureTracking.jsx";
+import ManagerCvSection from "@/dashboards/manager/sections/ManagerCvSection.jsx";
+import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSection.jsx";
+import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
+import StudentOfferSection from "@/dashboards/student/sections/StudentOfferSection.jsx";
+import StudentConvocationSection from "@/dashboards/student/sections/StudentConvocationSection.jsx";
+import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
+import EmployerOfferSection from "@/dashboards/employer/sections/EmployerOfferSection.jsx";
+import EmployerInterviewSection from "@/dashboards/employer/sections/EmployerInterviewSection.jsx";
+import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
 
 function App() {
   const [user, setUser] = useState({})
@@ -43,15 +52,16 @@ function App() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Login failed");
+        throw new Error(await getApiErrorKey(response, "errors.authenticationFailed"));
       }
 
       const data = await response.json();
       sessionStorage.setItem("token", data.accessToken);
 
       const userResponse = await fetcher("user/me", {});
-      if (!userResponse.ok) throw new Error("Failed to fetch user info");
+      if (!userResponse.ok) {
+        throw new Error(await getApiErrorKey(userResponse));
+      }
 
       const userData = await userResponse.json();
       setUser({...userData, isLoggedIn: true});
@@ -95,10 +105,13 @@ function App() {
                     case 401:
                       sessionStorage.clear();
                       setUser(null);
+                      throw new Error(await getApiErrorKey(res, "errors.authenticationFailed"));
                     case 403:
-                      throw new Error("Forbidden")
+                      throw new Error(await getApiErrorKey(res, "errors.accessDenied"));
                     case 404:
-                      throw new Error("Nothing here 404");
+                      throw new Error(await getApiErrorKey(res));
+                    default:
+                      throw new Error(await getApiErrorKey(res));
                   }
                 }
                 const data = await res.json();
@@ -131,11 +144,27 @@ function App() {
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
-          <Route path='emprunteur' element={<EmprunteurHome/>}/>
-          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
-          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
-          <Route path='gestionnaire/suivi' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><CandidatureSuiviPage user={user}/></ProtectedRoute>}/>
-          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
+          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}>
+            <Route index element={<Navigate to="cv/en-attente" replace />}/>
+            {STUDENT_CV_SECTIONS.map((section) => (
+              <Route key={section.path} path={section.path} element={<StudentCvSection {...section}/>}/>
+            ))}
+            <Route path='offres' element={<StudentOfferSection/>}/>
+            <Route path='convocations' element={<StudentConvocationSection/>}/>
+          </Route>
+          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
+            <Route index element={<Navigate to="cv" replace />}/>
+            <Route path='cv' element={<ManagerCvSection/>}/>
+            <Route path='offres' element={<ManagerOfferSection/>}/>
+            <Route path='suivi' element={<CandidatureTracking/>}/>
+          </Route>
+          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}>
+            <Route index element={<Navigate to="offres/validees" replace />}/>
+            {EMPLOYER_OFFER_SECTIONS.map(({ path, ...section }) => (
+              <Route key={path} path={path} element={<EmployerOfferSection {...section}/>}/>
+            ))}
+            <Route path='entrevues' element={<EmployerInterviewSection/>}/>
+          </Route>
           <Route path='inscription' element={<Inscription/>}/>
           <Route path='error' element={<ErrorPage error={error}/>}/>
         </Route>

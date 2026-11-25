@@ -54,6 +54,7 @@
     "positiveNumber": "Enter a whole number greater than 0.",
     "identifiantTaken": "This identifier is already assigned.",
     "authenticationFailed": "Invalid email or password.",
+    "invalidToken": "The authentication token is invalid.",
     "fileNameRequired": "The file name is required.",
     "fileNameTooLong": "The file name is too long.",
     "fileTypeRequired": "The file type is required.",
@@ -84,8 +85,14 @@
     "cvAlreadyApplied": "This CV has already been used to apply for this offer.",
     "jobOfferNotFound": "Job offer not found.",
     "userNotFound": "User not found.",
+    "applicationNotFound": "Application not found.",
     "noValidatedCv": "You must have a validated CV to apply.",
-    "jobOfferUpdateFailed": "Only declined offers can be modified."
+    "jobOfferUpdateFailed": "Only declined offers can be modified.",
+    "employerNotFound": "Employer not found.",
+    "notificationNotFound": "Notification not found.",
+    "invalidApplicationStatus": "Invalid application status.",
+    "applicationNotPending": "Only pending applications can be updated.",
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
   },
   "header": {
     "title": "ZeROSE",
@@ -94,8 +101,8 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
-    "candidatureTracking": "Application Tracking",
     "greeting": "Hello",
+    "userMenu": "User menu",
     "roles": {
       "STUDENT": "Student",
       "MANAGER": "Manager",
@@ -104,15 +111,13 @@
   },
   "televerser": {
     "choisirFichier": "Upload your CV",
+    "selectionnerFichier": "Choose a PDF file",
+    "changerFichier": "Change file",
     "fichierChoisi": "Selected file",
     "erreurTypeFichier": "Only pdf files are accepted.",
     "envoieEnCours": "Uploading...",
     "envoyerCv": "Send CV",
-    "envoieSuccess": "CV sent successfully !",
     "envoieErreur": "An error occurred, try again.",
-    "mesCvs": "My uploaded CVs",
-    "masquer": "Hide CV",
-    "afficher": "Show CV",
     "remplacerCv": "Replace CV",
     "remplacementEnCours": "Replacing...",
     "apercuIndisponible": "Preview not available",
@@ -121,7 +126,6 @@
     "chargementFeedback": "Loading feedback...",
     "erreurFeedback": "Unable to load the feedback.",
     "chargement": "Loading your CVs...",
-    "aucunCv": "No CV uploaded yet.",
     "erreurChargement": "Unable to load your CVs. Please try again later.",
     "statuts": {
       "PENDING": "Pending validation",
@@ -166,18 +170,35 @@
   },
   "personalSpaceEmployer": {
     "title": "Employer space",
+    "nav": {
+      "accepted": "Approved offers",
+      "pending": "Offers pending approval",
+      "declined": "Declined offers",
+      "interviews": "Students invited to interview"
+    },
+    "empty": {
+      "accepted": "No approved offer.",
+      "pending": "No offer pending approval.",
+      "declined": "No declined offer."
+    },
     "createJobOffer": "Create internship offer",
     "createJobOfferDescription": "Fill in the details of your internship offer.",
     "close": "Close",
-    "jobOffers": "My internship offers",
     "loading": "Loading offers...",
-    "noJobOffers": "You have no internship offers yet.",
     "statuts": {
       "PENDING": "Pending validation",
       "ACCEPTED": "Accepted",
-      "DECLINED": "Declined"
+      "DECLINED": "Declined",
+      "FILLED": "Filled"
     },
     "offerCreated": "Internship offer published successfully.",
+    "offerUpdated": "The offer has been resubmitted for approval.",
+    "editJobOffer": "Edit offer",
+    "resubmit": "Resubmit offer",
+    "feedbackTitre": "Manager's comment:",
+    "noFeedback": "No refusal comment available.",
+    "salaryPerHour": "${{salary}}/hour",
+    "salaryToDiscuss": "To be discussed",
     "submit": "Publish offer",
     "fields": {
       "title": "Title",
@@ -192,7 +213,9 @@
       "civicNumber": "Civic number",
       "street": "Street",
       "durationInWeeks": "Duration (weeks)",
-      "programe": "Program of study"
+      "programe": "Program of study",
+      "positions": "Positions",
+      "positionsFilled": "filled"
     },
     "placeholders": {
       "title": "e.g. Web developer intern",
@@ -201,6 +224,7 @@
       "salary": "e.g. 20 dollars per hour",
       "startingDate": "Select a starting date",
       "durationInWeeks": "e.g. 12",
+      "positions": "e.g. 3",
       "programe": "Select a program",
       "city": "e.g. Montreal",
       "country": "e.g. Canada",
@@ -213,16 +237,32 @@
       "message": "Unsaved data will be lost.",
       "cancel": "Cancel",
       "confirm": "Confirm"
+    },
+    "noOffersForSession": "You have no internship offers for this semester."
+  },
+  "sessionFilter": {
+    "label": "Filter by semester",
+    "sessions": {
+      "A": "Fall {{year}}",
+      "H": "Winter {{year}}",
+      "E": "Summer {{year}}"
     }
+  },
+  "dashboard": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "gestionnaire": {
     "title": "Manager Space",
+    "nav": {
+      "cvs": "CVs to review",
+      "offres": "Offers to review",
+      "suivi": "Application tracking"
+    },
     "cvSection": "CVs pending validation",
     "loadingCvs": "Loading CVs pending validation...",
     "errorLoadingCvs": "An error occurred while loading CVs.",
     "noCvsPending": "No CVs pending for validation.",
-    "consulter": "View",
-    "masquer": "Hide",
     "accepter": "Accept",
     "refuser": "Decline",
     "preview": {
@@ -243,23 +283,36 @@
         "refuser": "Decline the offer \u201c{{title}}\u201d?",
         "confirmer": "Confirm",
         "annuler": "Cancel"
-      }
+      },
+      "feedbackTitle": "Write your feedback before confirming the refusal.",
+      "feedbackPlaceholder": "Explain why the offer was declined...",
+      "feedbackRequired": "You must write feedback before confirming the refusal.",
+      "errorProcessing": "An error occurred while processing this offer. Please try again.",
+      "acceptSuccess": "The offer \"{{title}}\" has been approved.",
+      "refuseSuccess": "The offer \"{{title}}\" has been declined."
     },
     "accept": {
+      "question": "Accept {{name}}'s CV?",
+      "success": "{{name}}'s CV has been accepted.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "processing": "Accepting...",
       "errorProcessing": "An error occurred while accepting this CV. Please try again."
     },
     "decline": {
       "title": "Write your feedback before confirming the rejection.",
       "placeholder": "Explain why the CV was rejected...",
       "confirmDecline": "Confirm rejection",
+      "cancel": "Cancel",
       "processing": "Sending...",
       "errorNoFeedback": "You must write feedback before confirming the rejection.",
+      "success": "{{name}}'s CV has been rejected.",
       "errorProcessing": "An error occurred while processing this CV. Please try again."
     }
   },
   "candidatureTracking": {
     "title": "Application Tracking",
-    "subtitle": "Monitor the status of student applications for all job offers",
+    "subtitle": "Monitor the status of student applications for all internship offers",
     "loading": "Loading applications...",
     "noCandidatures": "No applications found.",
     "noResults": "No results match your search.",
@@ -335,9 +388,17 @@
         "title": "New internship offer to validate",
         "message": "An employer submitted a new internship offer. Please review and validate it."
       },
+      "JOB_OFFER_RESUBMITTED": {
+        "title": "Revised internship offer to validate",
+        "message": "An employer revised a declined offer. Please review it again."
+      },
       "JOB_OFFER_ACCEPTED": {
         "title": "Your internship offer has been accepted",
         "message": "Your internship offer has been validated by a manager."
+      },
+      "JOB_OFFER_HIRED": {
+        "title": "Congratulations, you've been hired!",
+        "message": "An employer has selected you for an internship. Check your offers for more details."
       },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
@@ -355,11 +416,27 @@
     "EMPLOYER": "Employer"
   },
 
+  "etudiant": {
+    "title": "Student Space",
+    "nav": {
+      "cvPending": "Pending CVs",
+      "cvAccepted": "Approved CVs",
+      "cvDeclined": "Declined CVs",
+      "offres": "Internship offers",
+      "convocations": "My Invitations"
+    },
+    "cv": {
+      "emptyPending": "No CV pending validation.",
+      "emptyAccepted": "No approved CV.",
+      "emptyDeclined": "No declined CV."
+    }
+  },
   "etudiantOffres": {
     "title": "Available internship offers",
     "loading": "Loading offers...",
-    "noAcceptedCv": "Your CV must be accepted to view internship offers.",
     "noOffers": "No internship offers available for your program.",
+    "noOffersForSession": "No internship offers for this semester.",
+    "notApplicationSession": "Applications are only open for internships in the upcoming semester.",
     "company": "Company",
     "weeks": "wks",
     "readMore": "Read more",
@@ -369,14 +446,26 @@
     "applied": "Application sent",
     "applySuccess": "Your application was sent successfully.",
     "applyError": "An error occurred while sending your application.",
-    "noValidatedCv": "You need a validated CV to apply.",
+    "choisirCv": "Choose a CV to apply with",
+    "noValidatedCv": "You will be able to apply once your CV is accepted by the manager.",
     "applicationStatuts": {
       "PENDING": "Application sent",
       "ACCEPTED": "Application accepted",
-      "DECLINED": "Application declined"
+      "DECLINED": "Application declined",
+      "HIRED": "Hired"
     }
   },
 
+  "modal": {
+    "close": "Close"
+  },
+  "cvViewer": {
+    "show": "Show CV",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "loading": "Loading CV..."
+  },
   "employeurCandidats": {
     "titreCandidats": "Candidates",
     "voirCandidats": "View candidates",
@@ -384,17 +473,19 @@
     "loading": "Loading candidates...",
     "aucunCandidats": "No applications received yet.",
     "erreurChargement": "An error occurred while loading candidates, please try again later.",
-    "voirCv": "View CV",
-    "popupBloque": "The CV could not open. Please allow pop-ups in your browser.",
     "erreurCv": "Unable to load the CV.",
     "statuts": {
       "PENDING": "Under review",
       "ACCEPTED": "Candidate selected",
-      "DECLINED": "Candidate not selected"
+      "DECLINED": "Candidate not selected",
+      "HIRED": "Hired"
     },
     "accepter": "Accept",
     "refuser": "Decline",
     "scheduleInterview": "Schedule an interview",
+    "embaucher": "Hire",
+    "hireError": "An error occurred while hiring the candidate.",
+    "hireConflict": "Unable to hire: the offer is already filled or the candidate is no longer selected.",
     "erreurStatut": "Unable to update status.",
 
     "confirmation": {
@@ -405,6 +496,11 @@
       "confirmer": "Confirm",
       "annuler": "Cancel"
     }
+  },
+  "employerInterviews": {
+    "loading": "Loading interviews...",
+    "empty": "No student invited to interview.",
+    "offer": "Offer"
   },
   "scheduleInterview": {
     "title": "Schedule an interview",
@@ -522,6 +618,45 @@
       "title": "Contract Generated",
       "message": "The PDF contract has been successfully generated and downloaded.",
       "close": "Close"
+    }
+  },
+  "convocations": {
+    "title": "My Interview Invitations",
+    "loading": "Loading invitations...",
+    "empty": "No invitations yet.",
+    "error": "Could not load invitations.",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Confirmed",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "type": {
+      "ONLINE": "Online",
+      "IN_PERSON": "In-person"
+    },
+    "modal": {
+      "title": "Invitation Details",
+      "company": "Company",
+      "offer": "Offer",
+      "type": "Type",
+      "link": "Link",
+      "address": "Address",
+      "notes": "Notes",
+      "slots": "Proposed slots",
+      "selectSlot": "Select a slot to accept"
+    },
+    "accept": "Accept",
+    "decline": "Decline",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "declineMessage": "Message (optional)",
+    "declineMessagePlaceholder": "Explain why you are declining...",
+    "expired": "This invitation has expired.",
+    "errors": {
+      "expired": "All slots have expired.",
+      "alreadyResponded": "You have already responded to this invitation.",
+      "generic": "An error occurred, please try again."
     }
   }
 }

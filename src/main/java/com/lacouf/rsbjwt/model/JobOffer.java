@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -56,15 +57,25 @@ public class JobOffer {
     @Column(nullable = false)
     private Programe programe;
 
+    @Column(length = 2000)
+    private String refusalFeedback;
+
+    @OneToMany(mappedBy = "jobOffer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<JobApplication> jobApplications = new ArrayList<>();
+
+    @Column(nullable = false)
+    private int numberOfPositions;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "job_offer_student_cv", joinColumns = @JoinColumn(name = "job_offer_id"),
             inverseJoinColumns = @JoinColumn(name = "student_cv_id"))
-    private List<StudentCv> appliedCvs = new java.util.ArrayList<>();
+    private List<StudentCv> appliedCvs = new ArrayList<>();
     
     @Builder
     public JobOffer(String title, String description, String prerequisites,
                     Adresse adresse, String salary,
-                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer) {
+                    LocalDate startingDate, int durationInWeeks, Programe programe, Employer employer,
+                    int numberOfPositions) {
         this.title = title;
         this.description = description;
         this.prerequisites = prerequisites;
@@ -74,6 +85,7 @@ public class JobOffer {
         this.durationInWeeks = durationInWeeks;
         this.programe = programe;
         this.employer = employer;
+        this.numberOfPositions = numberOfPositions > 0 ? numberOfPositions : 1;
     }
 
     @PrePersist

@@ -1,16 +1,18 @@
 package com.lacouf.rsbjwt.exception;
 
-public class EmployerNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class EmployerNotFoundException extends APIException {
 
     private final Long employerId;
 
     public EmployerNotFoundException(Long employerId) {
-        super("Employer not found with id: " + employerId);
+        super(HttpStatus.NOT_FOUND, "errors.employerNotFound");
         this.employerId = employerId;
     }
 
     public EmployerNotFoundException(String email) {
-        super("Employer not found with email: " + email);
+        super(HttpStatus.NOT_FOUND, "errors.employerNotFound");
         this.employerId = null;
     }
 

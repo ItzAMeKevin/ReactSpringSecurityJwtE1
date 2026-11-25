@@ -1,0 +1,166 @@
+import { useId, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "@/styles/classes.js";
+import { labelClass } from "@/components/ui/Field.jsx";
+import fetcher from "@/utils/fetcher.js";
+import formatSalary from "@/utils/formatSalary.js";
+import formatAddress from "@/utils/formatAddress.js";
+import getProgramName from "@/utils/getProgramName.js";
+import { getApiErrorKey } from "@/utils/apiError.js";
+import { getNextSessionCode, getSessionCode } from "@/utils/session.js";
+
+const dtClass = "text-sm font-bold text-main";
+const ddClass = "text-sm leading-relaxed text-main/70";
+
+const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
+    const { t } = useTranslation();
+    const [expanded, setExpanded] = useState(false);
+    const [applyState, setApplyState] = useState("idle");
+    const [selectedCvId, setSelectedCvId] = useState(() => acceptedCvs?.[0]?.id ?? null);
+    const detailsId = useId();
+
+    const selectedCv = (acceptedCvs ?? []).find((cv) => cv.id === selectedCvId) ?? null;
+    const hasApplied = Boolean(offer.applied) || applyState === "success";
+    const applicationStatus = offer.applicationStatus ?? "PENDING";
+    const isApplicationSession = Boolean(offer.startingDate) && getSessionCode(offer.startingDate) === getNextSessionCode();
+    const canApply = offer.status === "ACCEPTED" && isApplicationSession && Boolean(selectedCv) && !hasApplied && applyState !== "sending";
+
+    const handleApply = async () => {
+        if (!canApply) return;
+        setApplyState("sending");
+        try {
+            const res = await fetcher(`/student-cv/${selectedCv.id}/appliquer?offerID=${offer.id}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(selectedCv),
+            });
+            if (!res.ok) throw new Error(await getApiErrorKey(res));
+            setApplyState("success");
+        } catch (e) {
+            console.error("Erreur lors de la candidature :", e);
+            setApplyState("error");
+        }
+    };
+
+
+    const programs = t("inscription.programsList", { returnObjects: true });
+    const address = formatAddress(offer.location);
+
+    return (
+        <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
+            <div className="flex items-start justify-between gap-3">
+                <h3 className="text-lg font-bold text-main">{offer.title}</h3>
+                <div className="flex flex-col items-end gap-1">
+                    {hasApplied && (
+                        <span className={`${statusBadge} ${statusBadgeColor(applicationStatus)} text-center`}>
+            {t(`etudiantOffres.applicationStatuts.${applicationStatus}`)}
+        </span>
+                    )}
+                </div>
+            </div>
+
+            <p className="mt-1 text-sm text-main/70">{getProgramName(programs, offer.programe)}</p>
+            {offer.companyName && (
+                <p className="mt-1 text-sm text-main/70">
+                    {t("etudiantOffres.company")}: <span className="font-medium">{offer.companyName}</span>
+                </p>
+            )}
+            <p className="mt-1 text-sm text-main/70">
+                {offer.startingDate} · {offer.durationInWeeks} {t("etudiantOffres.weeks")}
+            </p>
+
+            {offer.description && (
+                <p className={`mt-3 whitespace-pre-line leading-relaxed ${expanded ? "" : "line-clamp-2"}`}>
+                    {offer.description}
+                </p>
+            )}
+
+            {expanded && (
+                <dl id={detailsId} className="mt-4 space-y-4 border-t border-gray-200 pt-4">
+                    {offer.prerequisites && (
+                        <div>
+                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.requirements")}</dt>
+                            <dd className={`${ddClass} mt-1 whitespace-pre-line`}>{offer.prerequisites}</dd>
+                        </div>
+                    )}
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+                        {offer.salary != null && (
+                            <div>
+                                <dt className={dtClass}>{t("personalSpaceEmployer.fields.salary")}</dt>
+                                <dd className={ddClass}>{formatSalary(offer.salary, t)}</dd>
+                            </div>
+                        )}
+                        <div>
+                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.startingDate")}</dt>
+                            <dd className={ddClass}>{offer.startingDate}</dd>
+                        </div>
+                        <div>
+                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.durationInWeeks")}</dt>
+                            <dd className={ddClass}>{offer.durationInWeeks} {t("etudiantOffres.weeks")}</dd>
+                        </div>
+                        <div>
+                            <dt className={dtClass}>{t("personalSpaceEmployer.fields.address")}</dt>
+                            <dd className={ddClass}>{address ?? "—"}</dd>
+                        </div>
+                    </div>
+                    <div className="border-t border-gray-200 pt-4">
+                        {(acceptedCvs?.length ?? 0) > 1 && !hasApplied && (
+                            <div className="mb-3">
+                                <label className={labelClass}>
+                                    {t("etudiantOffres.choisirCv")}
+                                </label>
+                                <select
+                                    value={selectedCvId ?? ""}
+                                    onChange={(e) => setSelectedCvId(Number(e.target.value))}
+                                    className={inputField}
+                                >
+                                    {acceptedCvs.map((cv) => (
+                                        <option key={cv.id} value={cv.id}>{cv.fileName}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            onClick={handleApply}
+                            disabled={!canApply}
+                            className={`${btnSmPrimary} disabled:cursor-not-allowed disabled:opacity-50`}
+                        >
+                            {hasApplied
+                                ? t("etudiantOffres.applied")
+                                : applyState === "sending"
+                                    ? t("etudiantOffres.applying")
+                                    : t("etudiantOffres.apply")}
+                        </button>
+
+                        {!isApplicationSession && !hasApplied && (
+                            <p className="mt-2 text-sm text-main/70">{t("etudiantOffres.notApplicationSession")}</p>
+                        )}
+                        {applyState === "success" && (
+                            <p className={`mt-2 text-sm font-medium ${textSuccess}`} role="status">
+                                {t("etudiantOffres.applySuccess")}
+                            </p>
+                        )}
+                        {applyState === "error" && (
+                            <p className={`mt-2 text-sm font-medium ${textError}`} role="alert">
+                                {t("etudiantOffres.applyError")}
+                            </p>
+                        )}
+                    </div>
+                </dl>
+            )}
+
+            <button
+                type="button"
+                onClick={() => setExpanded((prev) => !prev)}
+                aria-expanded={expanded}
+                aria-controls={expanded ? detailsId : undefined}
+                className="mt-3 cursor-pointer text-sm font-medium text-main underline"
+            >
+                {expanded ? t("etudiantOffres.showLess") : t("etudiantOffres.readMore")}
+            </button>
+        </li>
+    );
+};
+
+export default StudentJobOfferListItem;

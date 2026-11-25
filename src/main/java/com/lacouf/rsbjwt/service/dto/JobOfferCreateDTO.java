@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @SuperBuilder
-public class JobOfferCreateDTO extends GenericDto {
+public class JobOfferCreateDTO {
 
     @NotBlank(message = "errors.titleRequired")
     private String title;
@@ -41,4 +41,8 @@ public class JobOfferCreateDTO extends GenericDto {
 
     @NotNull
     private Programe programe;
+
+    @NotNull(message = "errors.numberOfPositionsRequired")
+    @Positive
+    private Integer numberOfPositions;
 }

@@ -1,30 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import fetcher from "../utils/fetcher.js";
+import fetcher from "@/utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
 const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
 
 const EVENT_TARGETS = {
-    CV_UPLOADED: { path: "/gestionnaire", kind: "cv" },
-    JOB_OFFER_CREATED: { path: "/gestionnaire", kind: "offer" },
-    CV_ACCEPTED: { path: "/etudiant", kind: "cv" },
-    CV_DECLINED: { path: "/etudiant", kind: "cv" },
-    JOB_OFFER_ACCEPTED: { path: "/employeur", kind: "offer" },
-    JOB_OFFER_DECLINED: { path: "/employeur", kind: "offer" },
-    INTERVIEW_SCHEDULED: { path: "/etudiant", kind: "interview" },
+    CV_UPLOADED: { path: "/gestionnaire/cv", kind: "cv" },
+    JOB_OFFER_CREATED: { path: "/gestionnaire/offres", kind: "offer" },
+    JOB_OFFER_RESUBMITTED: { path: "/gestionnaire/offres", kind: "offer" },
+    CV_ACCEPTED: { path: "/etudiant/cv/valides", kind: "cv" },
+    CV_DECLINED: { path: "/etudiant/cv/refuses", kind: "cv" },
+    JOB_OFFER_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
+    JOB_OFFER_DECLINED: { path: "/employeur/offres/refusees", kind: "offer" },
+    INTERVIEW_SCHEDULED: { path: "/etudiant/convocations", kind: "interview" },
 };
 
 const getTarget = (event, referenceId) => {
     const target = EVENT_TARGETS[event];
-    return target
-        ? { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } }
-        : null;
+    if (!target) return null;
+    return { path: target.path, state: { highlight: { kind: target.kind, id: referenceId } } };
 };
 
-const normalizeNotification = async (n) => {
+const normalizeNotification = (n) => {
     const event = n.message?.match(EVENT_KEY_PATTERN)?.[1] ?? null;
-    const normalized = {
+    return {
         id: n.id,
         category: n.notificationType,
         event,
@@ -33,22 +33,7 @@ const normalizeNotification = async (n) => {
         isRead: n.status === "READ",
         date: n.creationDate,
         target: getTarget(event, n.referenceId),
-        details: null,
     };
-
-    // Fetch interview details if this is an interview notification
-    if (event === "INTERVIEW_SCHEDULED" && n.referenceId) {
-        try {
-            const response = await fetcher(`/interview/${n.referenceId}`);
-            if (response.ok) {
-                normalized.details = await response.json();
-            }
-        } catch (err) {
-            console.error("Error fetching interview details:", err);
-        }
-    }
-
-    return normalized;
 };
 
 const useNotifications = () => {
@@ -64,12 +49,13 @@ const useNotifications = () => {
                 setStatus("error");
                 return;
             }
-            const rawData = await response.json();
-            const data = await Promise.all(rawData.map(normalizeNotification));
-            const sorted = data.sort((a, b) => new Date(b.date) - new Date(a.date));
-            setNotifications(sorted);
-            setUnreadCount(sorted.filter((n) => !n.isRead).length);
-            setStatus(sorted.length === 0 ? "empty" : "ready");
+            const data = (await response.json())
+                .map(normalizeNotification)
+                .filter((n) => !n.isRead)
+                .sort((a, b) => new Date(b.date) - new Date(a.date));
+            setNotifications(data);
+            setUnreadCount(data.length);
+            setStatus(data.length === 0 ? "empty" : "ready");
         } catch (error) {
             console.error("Erreur lors du chargement des notifications :", error);
             setStatus("error");
@@ -79,31 +65,21 @@ const useNotifications = () => {
     useEffect(() => {
         fetchNotifications();
 
-        pollingIntervalRef.current = setInterval(() => {
-            fetchNotifications();
-        }, POLLING_INTERVAL);
+        pollingIntervalRef.current = setInterval(fetchNotifications, POLLING_INTERVAL);
 
-        return () => {
-            if (pollingIntervalRef.current) {
-                clearInterval(pollingIntervalRef.current);
-            }
-        };
+        return () => clearInterval(pollingIntervalRef.current);
     }, [fetchNotifications]);
 
     const markAsRead = useCallback(async (notificationId) => {
         try {
-            const response = await fetcher(`/notifications?notificationId=${notificationId}`, {
-                method: "PATCH",
+            const response = await fetcher(`/etudiant/notifications/${notificationId}/read`, {
+                method: "PUT",
             });
             if (!response.ok) {
                 console.error("Erreur lors du marquage de la notification comme lue");
                 return;
             }
-            setNotifications((current) =>
-                current.map((n) =>
-                    n.id === notificationId ? { ...n, isRead: true } : n
-                )
-            );
+            setNotifications((current) => current.filter((n) => n.id !== notificationId));
             setUnreadCount((current) => Math.max(0, current - 1));
         } catch (error) {
             console.error("Erreur lors du marquage de la notification :", error);
@@ -112,7 +88,7 @@ const useNotifications = () => {
 
     return {
         notifications,
-        status,
+        status: status === "ready" && notifications.length === 0 ? "empty" : status,
         unreadCount,
         markAsRead,
         refetch: fetchNotifications,
