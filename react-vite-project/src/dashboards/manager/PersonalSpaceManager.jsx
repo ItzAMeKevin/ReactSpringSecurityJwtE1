@@ -13,6 +13,7 @@ const PersonalSpaceManager = () => {
     const cvs = useFetchList("/gestionnaire/cv/pending");
     const offers = useFetchList("/gestionnaire/offres/pending");
     const candidatures = useFetchList("/gestionnaire/candidatures");
+    const milieux = useFetchList("/gestionnaire/milieux/evaluation");
     const { message, showMessage, clearMessage } = useToast();
 
     const reviewAndRemove = (list, buildUrl, messageKey, toParams, variant) => async (id, payload) => {
@@ -26,6 +27,7 @@ const PersonalSpaceManager = () => {
         cvs,
         offers,
         candidatures,
+        milieux,
         acceptCv: reviewAndRemove(cvs, (id) => `/gestionnaire/cv/${id}/accept`, "gestionnaire.accept.success", cvParams),
         declineCv: reviewAndRemove(cvs, (id) => `/gestionnaire/cv/${id}/decline`, "gestionnaire.decline.success", cvParams, "danger"),
         acceptOffer: reviewAndRemove(offers, (id) => `/gestionnaire/offres/${id}/accept`, "gestionnaire.offres.acceptSuccess", offerParams),
@@ -36,6 +38,7 @@ const PersonalSpaceManager = () => {
         { to: "cv", label: t("gestionnaire.nav.cvs"), count: cvs.count },
         { to: "offres", label: t("gestionnaire.nav.offres"), count: offers.count },
         { to: "suivi", label: t("gestionnaire.nav.suivi"), count: candidatures.count },
+        { to: "milieux", label: t("evaluationMilieu.nav"), count: milieux.count },
     ];
 
     return (

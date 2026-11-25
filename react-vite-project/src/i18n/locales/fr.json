@@ -720,5 +720,97 @@
       "alreadyResponded": "Vous avez déjà répondu à cette convocation.",
       "generic": "Une erreur est survenue, veuillez réessayer."
     }
+  },
+  "evaluationMilieu": {
+    "nav": "Milieux à évaluer",
+    "title": "Évaluation des milieux de stage",
+    "loading": "Chargement des milieux...",
+    "error": "Erreur lors du chargement des milieux.",
+    "empty": "Aucun milieu de stage à évaluer pour le moment.",
+    "evaluer": "Évaluer",
+    "form": {
+      "title": "Évaluation du milieu de stage",
+      "entreprise": {
+        "section": "Identification de l'entreprise",
+        "nom": "Nom de l'entreprise",
+        "contact": "Personne contact",
+        "adresse": "Adresse",
+        "telephone": "Téléphone",
+        "ville": "Ville",
+        "telecopieur": "Télécopieur",
+        "codePostal": "Code postal"
+      },
+      "stagiaire": {
+        "section": "Identification du stagiaire",
+        "nom": "Nom du stagiaire",
+        "date": "Date du stage",
+        "numero": "Stage (encercler)",
+        "stageLabel": "Stage {{n}}"
+      },
+      "evaluation": {
+        "section": "Évaluation",
+        "TA": "TA",
+        "PA": "PA",
+        "PD": "PD",
+        "TD": "TD",
+        "NA": "N/A",
+        "TAFull": "Totalement en accord",
+        "PAFull": "Plutôt en accord",
+        "PDFull": "Plutôt en désaccord",
+        "TDFull": "Totalement en désaccord",
+        "NAFull": "Impossible de se prononcer",
+        "criteria": {
+          "taches": "Les tâches confiées au stagiaire sont conformes aux tâches annoncées dans l'entente de stage.",
+          "accueil": "Des mesures d'accueil facilitent l'intégration du nouveau stagiaire.",
+          "encadrement": "Le temps réel consacré à l'encadrement du stagiaire est suffisant.",
+          "heuresSemaine": "Préciser le nombre d'heures/semaine",
+          "mois1": "Premier mois",
+          "mois2": "Deuxième mois",
+          "mois3": "Troisième mois",
+          "salaire": "Le salaire offert est intéressant pour le stagiaire.",
+          "salaireParHeure": "Préciser",
+          "communication": "La communication avec le superviseur de stage facilite le déroulement du stage.",
+          "equipement": "L'équipement fourni est adéquat pour réaliser les tâches confiées.",
+          "volume": "Le volume de travail est acceptable.",
+          "hygiene": "L'environnement de travail respecte les normes d'hygiène et de sécurité au travail.",
+          "climat": "Le climat de travail est agréable.",
+          "transport": "Le milieu de stage est accessible par transport en commun.",
+          "note": "* Les critères marqués d'un * doivent être expliqués dans la section commentaires."
+        }
+      },
+      "commentaires": {
+        "section": "Commentaires",
+        "placeholder": "Vos observations et commentaires..."
+      },
+      "observations": {
+        "section": "Observations générales",
+        "aPrivilegier": "Ce milieu est à privilégier pour le :",
+        "premier": "Premier stage",
+        "deuxieme": "Deuxième stage",
+        "ouvertA": "Ce milieu est ouvert à accueillir :",
+        "unStagiaire": "Un stagiaire",
+        "deuxStagiaires": "Deux stagiaires",
+        "troisStagiaires": "Trois stagiaires",
+        "plusDeTrois": "Plus de trois",
+        "memeStagiaire": "Ce milieu désire accueillir le même stagiaire pour un prochain stage",
+        "quartsVariables": "Ce milieu offre des quarts de travail variables",
+        "oui": "Oui",
+        "non": "Non",
+        "de": "De",
+        "a": "à"
+      },
+      "signature": {
+        "section": "Signature",
+        "label": "Signature de l'enseignant responsable du stagiaire",
+        "date": "Date"
+      },
+      "soumettre": "Soumettre l'évaluation",
+      "annuler": "Annuler",
+      "submitting": "Envoi en cours...",
+      "errors": {
+        "incomplete": "Veuillez compléter tous les critères d'évaluation, le numéro de stage et la signature.",
+        "generic": "Une erreur est survenue. Veuillez réessayer."
+      }
+    }
   }
 }
