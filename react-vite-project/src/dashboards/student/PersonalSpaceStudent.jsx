@@ -23,7 +23,7 @@ const isUniqueFileName = (cv, index, all) => all.findIndex((other) => other.file
 const PersonalSpaceStudent = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const cvs = useFetchList("/student-cv");
+    const cvs = useFetchList("/etudiant/cv");
     const offers = useFetchList("/etudiant/offres");
     const interviews = useFetchList("/etudiant/interviews");
     const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -36,7 +36,7 @@ const PersonalSpaceStudent = () => {
     const countCvs = (status) => (cvs.status === "loaded" ? visibleCvs.filter((cv) => cv.status === status).length : null);
 
     const uploadCv = async (file) => {
-        const response = await fetcher("/student-cv", {
+        const response = await fetcher("/etudiant/cv", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fileName: file.name, contentType: file.type, content: await fileToBase64(file) }),

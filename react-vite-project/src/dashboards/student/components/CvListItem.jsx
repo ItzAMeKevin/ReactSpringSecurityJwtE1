@@ -38,7 +38,7 @@ const CvListItem = ({
         if (!isDeclined) return;
         let cancelled = false;
         setFeedbackError(false);
-        fetcher(`/student-cv/${cv.id}/review`)
+        fetcher(`/etudiant/cv/${cv.id}/review`)
             .then(async (response) => {
                 if (!response.ok) throw new Error(await getApiErrorKey(response));
                 const text = await response.text();
@@ -56,7 +56,7 @@ const CvListItem = ({
         if (!isOpen || cv.file || previewUrl) return;
         let cancelled = false;
         setPreviewError(false);
-        fetchBlobUrl(`/student-cv/${cv.id}/content`)
+        fetchBlobUrl(`/etudiant/cv/${cv.id}/content`)
             .then((url) => {
                 if (cancelled) {
                     URL.revokeObjectURL(url);
