@@ -4,8 +4,10 @@ import com.lacouf.rsbjwt.service.GestionnaireService;
 import com.lacouf.rsbjwt.service.StudentCvService;
 import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.*;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,16 +15,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+
 @RestController
 @RequestMapping("/gestionnaire")
 @RequiredArgsConstructor
 public class GestionnaireController {
 
     private final GestionnaireService gestionnaireService;
-    private final SystemeService systemeService;
-    private final StudentCvService studentCvService;
-
-    // ── CV Management ─────────────────────────────────────────────────────────
 
     @GetMapping("/cv/pending")
     @PreAuthorize("hasAuthority('MANAGER')")
@@ -84,12 +84,11 @@ public class GestionnaireController {
 
     @PutMapping("/contract/create")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ContractDto> createContract(@Valid @RequestBody ContractDto contractDto) {
-        try {
-            ContractDto createdContract = gestionnaireService.createContract(contractDto);
-            return ResponseEntity.ok(createdContract);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(ContractDto.builder().erreur("errors.contractCreationFailed").build());
-        }
+    public ResponseEntity<ContractDto> createContract(@Valid @RequestBody ContractCreationRequestDto contractCreationRequestDto) {
+        return ResponseEntity.ok(gestionnaireService.createContract(
+                            contractCreationRequestDto.getStudentId(),
+                            contractCreationRequestDto.getEmployerId(),
+                            contractCreationRequestDto.getManagerId(),
+                            contractCreationRequestDto.getJobOfferId()));
     } 
 }

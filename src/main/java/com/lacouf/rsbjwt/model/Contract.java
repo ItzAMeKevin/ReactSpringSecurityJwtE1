@@ -55,6 +55,16 @@ public class Contract {
     @OneToOne(mappedBy = "contract")
     private Manager manager;
 
+    private boolean isSignedByStudent;
+
+    private boolean isSignedByEmployer;
+
+    private boolean isSignedByManager;
+
+    public boolean isFullySigned() {
+        return isSignedByStudent && isSignedByEmployer && isSignedByManager;
+    }
+
     @PrePersist
     void onCreate() {
         this.uploadedAt = Instant.now();

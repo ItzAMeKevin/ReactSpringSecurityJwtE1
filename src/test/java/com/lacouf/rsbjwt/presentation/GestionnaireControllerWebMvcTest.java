@@ -5,8 +5,6 @@ import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.StudentCvService;
-import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +27,7 @@ class GestionnaireControllerWebMvcTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GestionnaireController(service, mock(SystemeService.class), mock(StudentCvService.class));
+        controller = new GestionnaireController(service);
     }
 
     @Test
