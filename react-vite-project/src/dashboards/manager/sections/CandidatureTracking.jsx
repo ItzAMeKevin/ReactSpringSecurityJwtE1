@@ -3,9 +3,9 @@ import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DashboardSection from "@/components/layout/DashboardSection.jsx";
 import CandidatureTrackingList from "@/dashboards/manager/components/CandidatureTrackingList.jsx";
+import CandidaturePhaseFilter from "@/dashboards/manager/components/CandidaturePhaseFilter.jsx";
+import { countByPhase, matchesPhaseFilter } from "@/dashboards/manager/candidaturePhases.js";
 import { inputField, textMuted } from "@/styles/classes.js";
-
-const STATUSES = ["ALL", "PENDING", "HIRE_PENDING", "DECLINED"];
 
 const matchesSearch = ({ student, jobOffer }, term) => {
     if (!term) return true;
@@ -21,14 +21,17 @@ const matchesSearch = ({ student, jobOffer }, term) => {
 const CandidatureTracking = () => {
     const { t } = useTranslation();
     const { candidatures } = useOutletContext();
-    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [phaseFilter, setPhaseFilter] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
 
+    const searched = useMemo(
+        () => candidatures.items.filter((candidature) => matchesSearch(candidature, searchTerm)),
+        [candidatures.items, searchTerm]
+    );
+    const counts = useMemo(() => countByPhase(searched), [searched]);
     const filtered = useMemo(
-        () => candidatures.items.filter((candidature) =>
-            (statusFilter === "ALL" || candidature.status === statusFilter) && matchesSearch(candidature, searchTerm)
-        ),
-        [candidatures.items, statusFilter, searchTerm]
+        () => searched.filter((candidature) => matchesPhaseFilter(candidature.status, phaseFilter)),
+        [searched, phaseFilter]
     );
 
     return (
@@ -40,16 +43,6 @@ const CandidatureTracking = () => {
             errorText={t("candidatureTracking.errors.loadingFailed")}
             emptyText={t("candidatureTracking.noCandidatures")}
         >
-            <div className="flex flex-col gap-2">
-                <label htmlFor="status-filter" className="font-semibold text-main">
-                    {t("candidatureTracking.filters.filterByStatus")}
-                </label>
-                <select id="status-filter" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={inputField}>
-                    {STATUSES.map((status) => (
-                        <option key={status} value={status}>{t(`candidatureTracking.filters.${status.toLowerCase()}`)}</option>
-                    ))}
-                </select>
-            </div>
             <div className="flex flex-col gap-2">
                 <label htmlFor="search-input" className="font-semibold text-main">
                     {t("candidatureTracking.filters.searchHint")}
@@ -63,6 +56,7 @@ const CandidatureTracking = () => {
                     className={inputField}
                 />
             </div>
+            <CandidaturePhaseFilter counts={counts} value={phaseFilter} onChange={setPhaseFilter} />
             {filtered.length === 0 ? (
                 <p className={`${textMuted} py-8 text-center`}>{t("candidatureTracking.noResults")}</p>
             ) : (

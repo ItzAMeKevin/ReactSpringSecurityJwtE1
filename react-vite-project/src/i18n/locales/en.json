@@ -325,23 +325,26 @@
     "noResults": "No results match your search.",
     "resultCount": "{{count}} application(s) out of {{total}}",
     "filters": {
-      "all": "All statuses",
-      "hire_pending": "Hire offer sent",
-      "declined": "Declined",
-      "pending": "Pending",
-      "filterByStatus": "Filter by status",
       "searchPlaceholder": "Search by name, first name, matricule or offer",
       "searchHint": "Search a student by their name, first name, matricule, or job offer title"
     },
+    "phases": {
+      "filterLabel": "Filter by stage",
+      "application": "Application",
+      "interview": "Interview",
+      "offer": "Hire offer",
+      "contract": "Contract",
+      "declined": "Declined ({{count}})"
+    },
     "statuses": {
+      "accepted": "Accepted",
       "declined": "Declined",
       "pending": "Pending"
     },
     "table": {
       "student": "Student",
-      "company": "Company",
-      "position": "Job Title",
-      "status": "Status",
+      "offer": "Company / Position",
+      "progress": "Progress",
       "lastModified": "Last Modified",
       "actions": "Actions",
       "matricule": "Matricule"

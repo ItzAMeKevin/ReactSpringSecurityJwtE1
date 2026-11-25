@@ -328,13 +328,16 @@
     "noResults": "Aucun résultat ne correspond à votre recherche.",
     "resultCount": "{{count}} candidature(s) sur {{total}}",
     "filters": {
-      "all": "Tous les statuts",
-      "hire_pending": "Offre d'embauche envoyée",
-      "declined": "Refusés",
-      "pending": "En attente",
-      "filterByStatus": "Filtrer par statut",
       "searchPlaceholder": "Rechercher par nom, prénom, matricule ou offre",
       "searchHint": "Recherchez un étudiant par son nom, prénom, matricule ou le titre de l'offre d'emploi"
+    },
+    "phases": {
+      "filterLabel": "Filtrer par étape",
+      "application": "Candidature",
+      "interview": "Entrevue",
+      "offer": "Offre d'embauche",
+      "contract": "Contrat",
+      "declined": "Refusées ({{count}})"
     },
     "statuses": {
       "accepted": "Acceptée",
@@ -343,9 +346,8 @@
     },
     "table": {
       "student": "Étudiant",
-      "company": "Entreprise",
-      "position": "Titre du poste",
-      "status": "Statut",
+      "offer": "Entreprise / Poste",
+      "progress": "Progression",
       "lastModified": "Dernière modification",
       "actions": "Actions",
       "matricule": "Matricule"

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { btnTextLink, btnTextSuccess, statusBadge, statusBadgeColor } from "@/styles/classes.js";
+import { btnTextLink, btnTextSuccess, textMuted } from "@/styles/classes.js";
 import { formatSlotDate } from "@/utils/dateFormatting.js";
 import getProgramName from "@/utils/getProgramName.js";
 import formatSalary from "@/utils/formatSalary.js";
+import { getPhaseKey } from "@/dashboards/manager/candidaturePhases.js";
+import CandidatureProgress from "./CandidatureProgress.jsx";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
 const formatDate = (dateString, locale) => {
@@ -20,7 +22,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showContractModal, setShowContractModal] = useState(false);
 
-    const isAccepted = candidature.status === "ACCEPTED";
+    const canGenerateContract = getPhaseKey(candidature.status) === "contract";
     const programs = t("inscription.programsList", { returnObjects: true });
     const salary = candidature.jobOffer?.salary;
 
@@ -35,22 +37,22 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                         {t("candidatureTracking.table.matricule")}: {candidature.student?.matricule || "N/A"}
                     </div>
                 </td>
-                <td className="px-4 py-3 text-main">
-                    {candidature.jobOffer?.companyName || "N/A"}
-                </td>
-                <td className="px-4 py-3 text-main">
-                    {candidature.jobOffer?.title || "N/A"}
+                <td className="px-4 py-3">
+                    <div className="font-semibold text-main">
+                        {candidature.jobOffer?.companyName || "N/A"}
+                    </div>
+                    <div className="text-sm text-main/70">
+                        {candidature.jobOffer?.title || "N/A"}
+                    </div>
                 </td>
                 <td className="px-4 py-3">
-                    <span className={`${statusBadge} ${statusBadgeColor(candidature.status)}`}>
-                        {t([`candidatureTracking.statuses.${candidature.status?.toLowerCase()}`, `applicationStatuses.${candidature.status}`])}
-                    </span>
-                </td>
-                <td className="px-4 py-3 text-main">
-                    {formatDate(candidature.updatedAt || candidature.appliedAt, i18n.language)}
+                    <CandidatureProgress status={candidature.status} />
+                    <div className={`${textMuted} mt-1 text-xs`}>
+                        {t("candidatureTracking.table.lastModified")}: {formatDate(candidature.updatedAt || candidature.appliedAt, i18n.language)}
+                    </div>
                 </td>
                 <td className="px-4 py-3 text-center">
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-col items-center gap-1">
                         <button
                             type="button"
                             onClick={() => setShowDetails(!showDetails)}
@@ -58,7 +60,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                         >
                             {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
                         </button>
-                        {isAccepted && (
+                        {canGenerateContract && (
                             <button
                                 type="button"
                                 onClick={() => setShowContractModal(true)}
@@ -72,7 +74,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
             </tr>
             {showDetails && (
                 <tr className="bg-brand/5 border-b border-brand/20">
-                    <td colSpan="6" className="px-4 py-4">
+                    <td colSpan="4" className="px-4 py-4">
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>

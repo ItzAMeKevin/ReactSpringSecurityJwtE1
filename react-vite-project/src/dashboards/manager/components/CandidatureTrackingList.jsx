@@ -13,16 +13,10 @@ const CandidatureTrackingList = ({ candidatures, user }) => {
                             {t("candidatureTracking.table.student")}
                         </th>
                         <th className="px-4 py-3 text-left font-semibold text-main">
-                            {t("candidatureTracking.table.company")}
+                            {t("candidatureTracking.table.offer")}
                         </th>
                         <th className="px-4 py-3 text-left font-semibold text-main">
-                            {t("candidatureTracking.table.position")}
-                        </th>
-                        <th className="px-4 py-3 text-left font-semibold text-main">
-                            {t("candidatureTracking.table.status")}
-                        </th>
-                        <th className="px-4 py-3 text-left font-semibold text-main">
-                            {t("candidatureTracking.table.lastModified")}
+                            {t("candidatureTracking.table.progress")}
                         </th>
                         <th className="px-4 py-3 text-center font-semibold text-main">
                             {t("candidatureTracking.table.actions")}
