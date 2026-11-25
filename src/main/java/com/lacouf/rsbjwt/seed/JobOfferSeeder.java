@@ -90,7 +90,7 @@ class JobOfferSeeder {
                 .prerequisites("Être inscrit en Technologie du génie civil (221.B0). Compétences : AutoCAD, essais de " +
                         "laboratoire, lecture de plans et devis. Atout : bilinguisme français-anglais.")
                 .salary("21")
-                .startingDate(LocalDate.of(2027, 5, 3))
+                .startingDate(LocalDate.of(2027, 1, 11))
                 .durationInWeeks(16)
                 .numberOfPositions(2)
                 .programe(Programe.TECHNIQUE_GENIE_CIVIL));
