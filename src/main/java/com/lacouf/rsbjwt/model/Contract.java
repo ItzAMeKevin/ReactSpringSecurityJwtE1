@@ -2,15 +2,7 @@ package com.lacouf.rsbjwt.model;
 
 import java.time.Instant;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,6 +46,9 @@ public class Contract {
 
     @OneToOne(mappedBy = "contract")
     private Manager manager;
+
+    @Embedded
+    private Signature signature;
 
     private boolean isSignedByStudent;
 
