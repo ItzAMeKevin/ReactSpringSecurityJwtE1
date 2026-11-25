@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.exception.EmployerNotFoundException;
 import com.lacouf.rsbjwt.mapper.CandidateMapper;
 import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
+import org.mapstruct.factory.Mappers;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.EmployerRepository;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -334,6 +334,8 @@ class EmployerServiceTest {
 
         assertEquals(Status.DECLINED, result.status());
         assertEquals(Status.DECLINED, application.getStatus());
+        verify(systemeService).notifyUsers(List.of(application.getStudentCv().getStudent()),
+                NotificationType.JOB_OFFER, jobOffer.getId(), "notification.types.JOB_OFFER_CANDIDATE_REJECTED.message");
     }
 
     @Test

@@ -19,7 +19,7 @@ public interface JobOfferRepository extends JpaRepository<JobOffer, Long> {
     List<JobOffer> findAllByStatusAndPrograme(Status status, Programe programe);
     List<JobOffer> findAllByStatusInAndPrograme(List<Status> statuses, Programe programe);
     @Query("""
-        SELECT jo FROM JobOffer jo
+        SELECT DISTINCT jo FROM JobOffer jo
         LEFT JOIN FETCH jo.appliedCvs cv
         LEFT JOIN FETCH cv.student
         WHERE jo.id = :id AND jo.employer.credentials.email = :email

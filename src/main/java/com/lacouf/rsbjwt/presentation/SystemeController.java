@@ -9,7 +9,8 @@ import org.springframework.security.core.Authentication;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,9 +27,9 @@ public class SystemeController {
         return ResponseEntity.ok(notificationService.getNotifications(authentication));
     }
 
-    @PatchMapping
-    public ResponseEntity<NotificationDto> updateNotification(Authentication authentication, Long notificationId) {
-       return ResponseEntity.ok(notificationService.updateNotificationStatus(authentication, notificationId));
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<NotificationDto> markAsRead(@PathVariable Long notificationId, Authentication authentication) {
+        return ResponseEntity.ok(notificationService.updateNotificationStatus(authentication, notificationId));
     }
 
 }

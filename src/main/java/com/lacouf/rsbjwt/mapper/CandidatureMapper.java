@@ -1,6 +1,8 @@
 package com.lacouf.rsbjwt.mapper;
 
 import com.lacouf.rsbjwt.model.JobApplication;
+import com.lacouf.rsbjwt.model.JobOffer;
+import com.lacouf.rsbjwt.model.Student;
 import com.lacouf.rsbjwt.service.dto.CandidatureDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -30,4 +30,7 @@ public class InterviewSlot {
 
     @Column(nullable = false)
     private LocalTime endTime;
+
+    @Column(nullable = false)
+    private boolean selected = false;
 }

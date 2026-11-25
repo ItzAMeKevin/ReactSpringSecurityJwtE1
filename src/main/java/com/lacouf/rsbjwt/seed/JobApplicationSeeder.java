@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.seed;
 
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.JobOffer;
+import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.model.StudentCv;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,8 @@ class JobApplicationSeeder {
         JobApplication application = new JobApplication();
         application.setJobOffer(offer);
         application.setStudentCv(cv);
+        application.setStudent(cv.getStudent());
+        application.setStatus(Status.ACCEPTED);
         jobApplicationRepository.save(application);
     }
 }

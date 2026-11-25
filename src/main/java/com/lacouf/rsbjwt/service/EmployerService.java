@@ -38,10 +38,10 @@ public class EmployerService {
     private final JobOfferRepository jobOfferRepository;
     private final EmployerRepository employerRepository;
     private final JobOfferMapper jobOfferMapper;
+    private final CandidateMapper candidateMapper;
     private final SystemeService systemeService;
     private final JobApplicationRepository jobApplicationRepository;
     private final StudentCvRepository studentCvRepository;
-    private final CandidateMapper candidateMapper;
     private final CandidatureMapper candidatureMapper;
 
     @Transactional(readOnly = true)
@@ -73,6 +73,7 @@ public class EmployerService {
         return jobOfferMapper.toDto(savedOffer);
     }
 
+    @Transactional(readOnly = true)
     public Employer findEmployerByEmail(String email) {
         return employerRepository.findByCredentialsEmail(email)
                 .orElseThrow(() -> new EmployerNotFoundException(email));
@@ -130,7 +131,9 @@ public class EmployerService {
         JobOffer offer = findOwnedOffer(offerId, employerEmail);
         JobApplication application = findOrCreateApplication(offer, cvId);
         application.reject();
-        return candidateMapper.toCandidateDto(jobApplicationRepository.save(application));
+        JobApplication saved = jobApplicationRepository.save(application);
+        notifyStudent(saved, offer.getId(), "notification.types.JOB_OFFER_CANDIDATE_REJECTED.message");
+        return candidateMapper.toCandidateDto(saved);
     }
 
     @Transactional(readOnly = true)
@@ -153,8 +156,7 @@ public class EmployerService {
         JobApplication application = findOrCreateApplication(offer, cvId);
         application.offerHire();
         JobApplication saved = jobApplicationRepository.save(application);
-        systemeService.notifyUsers(List.of(saved.getStudentCv().getStudent()), NotificationType.JOB_OFFER, saved.getId(),
-                "notification.types.JOB_OFFER_HIRED.message");
+        notifyStudent(saved, saved.getId(), "notification.types.JOB_OFFER_HIRED.message");
         return candidateMapper.toCandidateDto(saved);
     }
 
@@ -162,6 +164,11 @@ public class EmployerService {
     public List<CandidatureDto> getHirePendingCandidates(String employerEmail) {
         return candidatureMapper.toDtoList(
                 jobApplicationRepository.findByEmployerEmailAndStatus(employerEmail, Status.HIRE_PENDING));
+    }
+
+    private void notifyStudent(JobApplication application, Long referenceId, String messageKey) {
+        systemeService.notifyUsers(List.of(application.getStudentCv().getStudent()),
+                NotificationType.JOB_OFFER, referenceId, messageKey);
     }
 
     private void requireOpenPosition(JobOffer offer) {

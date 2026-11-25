@@ -108,6 +108,7 @@ public class StudentCvService {
         }
     }
 
+    @Transactional(readOnly = true)
     public String getReviewFile(Long cvId, String authenticatedEmail) {
         Student student = findStudentByEmail(authenticatedEmail);
         return studentCvRepository.findByIdAndStudent_Id(cvId, student.getId())
@@ -161,6 +162,8 @@ public class StudentCvService {
         JobApplication application = new JobApplication();
         application.setJobOffer(jobOffer);
         application.setStudentCv(studentCv);
+        application.setStudent(studentCv.getStudent());
         jobApplicationRepository.save(application);
+
     }
 }

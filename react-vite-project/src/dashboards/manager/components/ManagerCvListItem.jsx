@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CvModal from "@/components/cv/CvModal.jsx";
 import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
@@ -8,15 +8,11 @@ import { cardItem, cardHighlighted, btnSmPrimary, btnAccept, btnRefuse, textErro
 const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDecline }) => {
     const { t } = useTranslation();
     const contentUrl = `/gestionnaire/cv/${cv.id}/content`;
-    const reviewInputRef = useRef(null);
-
     const [isOpen, setIsOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [previewError, setPreviewError] = useState(null);
 
     const [actionState, setActionState] = useState("idle");
-    const [isDeclining, setIsDeclining] = useState(false);
-    const [isConfirmingAccept, setIsConfirmingAccept] = useState(false);
     const [reviewFeedback, setReviewFeedback] = useState("");
     const [reviewError, setReviewError] = useState(null);
 
@@ -34,8 +30,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         try {
             const url = await fetchBlobUrl(contentUrl);
             setPreviewUrl(url);
-        } catch (error) {
-            console.error("Erreur lors du chargement de l'aperçu :", error);
+        } catch {
             setPreviewError(t("gestionnaire.preview.errorLoading"));
         }
     };
@@ -43,8 +38,8 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
     const handleDownload = async () => {
         try {
             await downloadFile(contentUrl, cv.fileName || "cv.pdf");
-        } catch (error) {
-            console.error("Erreur lors du téléchargement du CV :", error);
+        } catch {
+            // download failure is silent — no user-visible state to update
         }
     };
 
@@ -52,9 +47,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         setActionState("processing");
         try {
             await onAccept(cv.id);
-            setIsConfirmingAccept(false);
-        } catch (error) {
-            console.error("Erreur lors de l'acceptation du CV :", error);
+        } catch {
             setActionState("acceptError");
         }
     };
@@ -67,14 +60,13 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
         setActionState("processing");
         try {
             await onDecline(cv.id, { feedback: reviewFeedback.trim() });
-        } catch (error) {
-            console.error("Erreur lors du refus du CV :", error);
+        } catch {
             setActionState("declineError");
         }
     };
 
     const cancelDecline = () => {
-        setIsDeclining(false);
+        setActionState("idle");
         setReviewFeedback("");
         setReviewError(null);
     };
@@ -125,16 +117,16 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                     </button>
                     <button
                         type="button"
-                        onClick={() => setIsConfirmingAccept(true)}
-                        disabled={actionState === "processing" || isDeclining || isConfirmingAccept}
+                        onClick={() => setActionState("confirmingAccept")}
+                        disabled={actionState !== "idle"}
                         className={btnAccept}
                     >
                         {t("gestionnaire.accepter")}
                     </button>
                     <button
                         type="button"
-                        onClick={() => setIsDeclining(true)}
-                        disabled={actionState === "processing" || isConfirmingAccept || isDeclining}
+                        onClick={() => setActionState("decliningMode")}
+                        disabled={actionState !== "idle"}
                         className={btnRefuse}
                     >
                         {t("gestionnaire.refuser")}
@@ -152,7 +144,7 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                 />
             )}
 
-            {isConfirmingAccept && (
+            {actionState === "confirmingAccept" && (
                 <div className="mt-3 flex flex-col gap-2 rounded-md border border-green-200 bg-green-50 p-3" role="group">
                     <p className="text-sm font-semibold text-main">
                         {t("gestionnaire.accept.question", { name: `${cv.studentFirstName} ${cv.studentLastName}` })}
@@ -161,14 +153,14 @@ const ManagerCvListItem = ({ cv, isHighlighted, onClearHighlight, onAccept, onDe
                         <button type="button" onClick={handleAccept} disabled={actionState === "processing"} className={btnAccept}>
                             {actionState === "processing" ? t("gestionnaire.accept.processing") : t("gestionnaire.accept.confirm")}
                         </button>
-                        <button type="button" onClick={() => setIsConfirmingAccept(false)} disabled={actionState === "processing"} className={btnSmPrimary}>
+                        <button type="button" onClick={() => setActionState("idle")} disabled={actionState === "processing"} className={btnSmPrimary}>
                             {t("gestionnaire.accept.cancel")}
                         </button>
                     </div>
                 </div>
             )}
 
-            {isDeclining && (
+            {actionState === "decliningMode" && (
                 <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
                     <p className="text-sm text-main mb-2">
                         {t("gestionnaire.decline.title")}

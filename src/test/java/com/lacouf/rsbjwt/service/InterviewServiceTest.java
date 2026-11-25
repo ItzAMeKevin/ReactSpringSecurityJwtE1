@@ -1,6 +1,7 @@
 package com.lacouf.rsbjwt.service;
 
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
+import com.lacouf.rsbjwt.exception.OfferAlreadyProcessedException;
 import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
 import com.lacouf.rsbjwt.model.*;
@@ -45,6 +46,9 @@ class InterviewServiceTest {
     @Mock
     private InterviewMapper interviewMapper;
 
+    @Mock
+    private SystemeService systemeService;
+
     @InjectMocks
     private InterviewService interviewService;
 
@@ -63,6 +67,7 @@ class InterviewServiceTest {
         application = new JobApplication();
         application.setId(1L);
         application.setJobOffer(jobOffer);
+        application.setStudent(Student.builder().id(2L).build());
     }
 
     private ScheduleInterviewRequestDto validOnlineDto() {
@@ -73,9 +78,11 @@ class InterviewServiceTest {
                 null,
                 "Bring portfolio",
                 List.of(new InterviewSlotDto(
+                        null,
                         LocalDate.of(2026, 11, 20),
                         LocalTime.of(9, 0),
-                        LocalTime.of(10, 0)))
+                        LocalTime.of(10, 0),
+                        null))
         );
     }
 
@@ -104,7 +111,7 @@ class InterviewServiceTest {
 
         ScheduleInterviewRequestDto dto = new ScheduleInterviewRequestDto(
                 99L, InterviewType.ONLINE, "https://zoom.us/j/123", null, null,
-                List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0))));
+                List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null)));
 
         assertThrows(ApplicationNotFoundException.class,
                 () -> interviewService.schedule(dto, EMPLOYER_EMAIL));
@@ -121,6 +128,16 @@ class InterviewServiceTest {
     }
 
     @Test
+    void schedule_duplicateApplication_throws409() {
+        when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
+        when(interviewRepository.existsByJobApplicationId(1L)).thenReturn(true);
+
+        assertThrows(OfferAlreadyProcessedException.class,
+                () -> interviewService.schedule(validOnlineDto(), EMPLOYER_EMAIL));
+        verify(interviewRepository, never()).save(any());
+    }
+
+    @Test
     void schedule_onlineNullsAddress() {
         when(jobApplicationRepository.findByIdWithEmployer(1L)).thenReturn(Optional.of(application));
         when(interviewRepository.save(any(Interview.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -129,7 +146,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.ONLINE, "https://zoom.us", null, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);
@@ -150,7 +167,7 @@ class InterviewServiceTest {
 
         interviewService.schedule(new ScheduleInterviewRequestDto(
                         1L, InterviewType.IN_PERSON, "https://zoom.us", adresseDto, null,
-                        List.of(new InterviewSlotDto(LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0)))),
+                        List.of(new InterviewSlotDto(null, LocalDate.now(), LocalTime.of(9, 0), LocalTime.of(10, 0), null))),
                 EMPLOYER_EMAIL);
 
         ArgumentCaptor<Interview> captor = ArgumentCaptor.forClass(Interview.class);

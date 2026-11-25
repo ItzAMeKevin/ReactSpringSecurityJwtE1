@@ -26,9 +26,10 @@ const isUniqueFileName = (cv, index, all) => all.findIndex((other) => other.file
 const PersonalSpaceStudent = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const cvs = useFetchList("/student-cv");
+    const cvs = useFetchList("/etudiant/cv");
     const offers = useFetchList("/etudiant/offres");
     const hires = useFetchList("/etudiant/embauches");
+    const interviews = useFetchList("/etudiant/interviews");
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const { message, showMessage, clearMessage } = useToast();
 
@@ -40,7 +41,7 @@ const PersonalSpaceStudent = () => {
     const countCvs = (status) => (cvs.status === "loaded" ? visibleCvs.filter((cv) => cv.status === status).length : null);
 
     const uploadCv = async (file) => {
-        const response = await fetcher("/student-cv", {
+        const response = await fetcher("/etudiant/cv", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fileName: file.name, contentType: file.type, content: await fileToBase64(file) }),
@@ -67,6 +68,7 @@ const PersonalSpaceStudent = () => {
         ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
         { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
         { to: "embauches", label: t("etudiant.nav.hireOffers"), count: hires.count },
+        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.count },
     ];
 
     const actions = (
@@ -83,7 +85,7 @@ const PersonalSpaceStudent = () => {
                 items={items}
                 actions={actions}
                 context={{
-                    cvs, visibleCvs, acceptedCvs, offers, uploadCv, hires,
+                    cvs, visibleCvs, acceptedCvs, offers, uploadCv, hires, interviews,
                     acceptHire: respondToHire("accepter", "etudiantEmbauches.acceptSuccess"),
                     declineHire: respondToHire("decliner", "etudiantEmbauches.declineSuccess", "danger"),
                 }}

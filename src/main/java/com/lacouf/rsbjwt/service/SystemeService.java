@@ -28,6 +28,7 @@ public class SystemeService{
     private final JobOfferRepository jobOfferRepository;
 
 
+
     private Notification buildNotification(
             User user, NotificationType type, Long referenceId, String messageKey) {
         return Notification.builder()
@@ -51,6 +52,9 @@ public class SystemeService{
         saveNotifications(notifications);
     }
 
+    public void notifyStudent(List<Student> students, NotificationType type, Long referenceId, String messageKey) {
+       notifyUsers(students, type, referenceId, messageKey);
+    }
 
     private void saveNotifications(List<Notification> notifications) {
         if (notifications.isEmpty()) return;

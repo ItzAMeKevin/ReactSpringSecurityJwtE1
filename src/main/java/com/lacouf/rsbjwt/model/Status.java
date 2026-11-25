@@ -7,6 +7,8 @@ public enum Status {
     FILLED,
     READ,
     UNREAD,
+    SIGNED,
+    UNSIGNED,
     PENDING_INTERVIEW,
     INTERVIEW_SCHEDULED,
     INTERVIEW_COMPLETED,

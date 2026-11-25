@@ -1,15 +1,25 @@
+import { useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import DashboardSection from "@/components/layout/DashboardSection.jsx";
 import SessionFilter from "@/components/ui/SessionFilter.jsx";
 import StudentJobOfferListItem from "@/dashboards/student/components/StudentJobOfferListItem.jsx";
 import useSessionFilter from "@/hooks/useSessionFilter.js";
+import useHighlightWhenNotified from "@/hooks/useHighlightWhenNotified.js";
+import { getSessionCode } from "@/utils/session.js";
 import { textMuted } from "@/styles/classes.js";
 
 const StudentOfferSection = () => {
     const { t } = useTranslation();
     const { offers, acceptedCvs } = useOutletContext();
     const { sessions, selectedSession, setSelectedSession, filteredOffers } = useSessionFilter(offers.items);
+    const { isHighlighted, clearHighlight } = useHighlightWhenNotified();
+    const highlightedOffer = offers.items.find((offer) => isHighlighted("offer", offer.id));
+    const highlightedSession = highlightedOffer ? getSessionCode(highlightedOffer.startingDate) : null;
+
+    useEffect(() => {
+        if (highlightedSession) setSelectedSession(highlightedSession);
+    }, [highlightedSession, setSelectedSession]);
 
     return (
         <DashboardSection
@@ -31,7 +41,13 @@ const StudentOfferSection = () => {
             ) : (
                 <ul className="grid w-full grid-cols-1 items-start gap-4 lg:grid-cols-2">
                     {filteredOffers.map((offer, i) => (
-                        <StudentJobOfferListItem key={offer.id ?? `fallback-${i}`} offer={offer} acceptedCvs={acceptedCvs} />
+                        <StudentJobOfferListItem
+                            key={offer.id ?? `fallback-${i}`}
+                            offer={offer}
+                            acceptedCvs={acceptedCvs}
+                            isHighlighted={isHighlighted("offer", offer.id)}
+                            onClearHighlight={clearHighlight}
+                        />
                     ))}
                 </ul>
             )}

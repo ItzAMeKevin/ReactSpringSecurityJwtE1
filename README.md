@@ -154,3 +154,114 @@ du sprint précédent dans la story "Correction sprint précédent", avec une pe
 afin de suivre 100 % des correctifs plutôt que de les regrouper dans un seul subtask "Correctif". »
 
 ---
+
+---
+
+## Clean Code Rules
+
+Follow these principles on every change. After implementing, always run `/simplify` before committing.
+
+### Core Acronyms
+- **DRY** – No duplicated knowledge; one authoritative representation.
+- **KISS** – Simplest solution that works.
+- **YAGNI** – Don't build speculative features.
+- **SOLID** — S: Single Responsibility · O: Open/Closed · L: Liskov · I: Interface Segregation · D: Dependency Inversion
+
+### Structural
+- Separation of Concerns – Different responsibilities in different places.
+- Law of Demeter – Only talk to direct dependencies.
+- Composition over Inheritance – Prefer composing objects.
+- Tell, Don't Ask – Ask objects to act, not to expose state.
+- Single Level of Abstraction – Each function operates at one level.
+- Prefer Polymorphism over if/else – Let the type decide behavior.
+- Use Dependency Injection – Inject, don't hard-code.
+
+### Coding Practices
+- Meaningful naming – Reveal intent; no abbreviations or magic numbers.
+- Small functions – Do one thing; fit on one screen.
+- Boy Scout Rule – Leave code cleaner than you found it.
+- Consistency – Do similar things the same way.
+- Fail fast – Validate early, return errors immediately.
+- Guard clauses – Early returns over deep nesting.
+- Avoid negative conditionals – Prefer `if (valid)` over `if (!invalid)`.
+- Encapsulate boundary conditions – Handle edge cases in one place.
+- Prefer value objects over primitives – Use domain types.
+- Code smell awareness – Fix long functions, god classes, shotgun surgery, etc.
+- Root cause analysis – Find the root cause, don't patch symptoms.
+
+### Testing
+- TDD – Write a failing test before the code.
+- One scenario per test – Each test covers exactly one behavior.
+- Descriptive test names – The name should describe the scenario and expected outcome.
+
+### Structure & Formatting
+- Declare variables close to usage.
+- Keep lines short (~80–120 chars).
+- Use white space to group related things.
+- Place functions in downward direction (called before defined).
+- Separate concepts vertically.
+
+---
+
+## Post-Implementation Workflow
+
+After every feature, fix, or refactor:
+
+1. Run tests.
+2. Run `/simplify` (or `/simplify focus on [area]` for targeted cleanup).
+3. Review the diff.
+4. Suggest commit message + files to commit.
+
+---
+
+## Pre-Review Checklist
+
+Run these checks before marking a story as ready for review.
+
+### Tests
+- [ ] All tests pass. Pre-existing failures are documented and unchanged.
+- [ ] Tests use the actual current DTOs — not stale ones left over from a merge.
+
+### Dead Code
+- [ ] No unused DTOs, classes, or methods left behind.
+- [ ] No stale imports.
+- [ ] No commented-out code blocks.
+
+### Frontend ↔ Backend Contract
+- [ ] URL in `fetcher(...)` matches the `@GetMapping`/`@PutMapping` exactly.
+- [ ] Request body shape matches the `@RequestBody` DTO fields.
+- [ ] Response field names match what the frontend reads (e.g. `offer.adresse` not `offer.location`).
+- [ ] MapStruct `@Mapping` annotations are complete — no silent null fields in the DTO.
+
+### i18n
+- [ ] Every user-visible string uses a translation key (no hardcoded French/English strings).
+- [ ] All new keys exist in both `fr.json` and `en.json`.
+
+### Error Handling
+- [ ] HTTP errors use `getApiErrorKey` (project pattern) — not raw `response.statusText`.
+- [ ] 409 / 404 / 403 cases are handled on the frontend with user-visible feedback.
+- [ ] Backend exceptions map to the right HTTP status (`@ResponseStatus` or `GlobalExceptionHandler`).
+
+### Design System
+- [ ] Status badges use `statusBadge + statusBadgeColor(status)` from `classes.js` — no inline color maps.
+- [ ] Buttons use the shared classes (`btnPrimary`, `btnAccept`, `btnRefuse`, etc.).
+- [ ] Address formatting uses `formatAddress` from `utils/formatAddress.js`.
+- [ ] Date formatting uses `formatSlotDate` / `formatDateFrench` from `utils/dateFormatting.js`.
+
+### Backend
+- [ ] Write operations have `@Transactional`, reads have `@Transactional(readOnly = true)`.
+- [ ] Queries that `JOIN FETCH` a collection use `DISTINCT` to avoid duplicate rows.
+- [ ] Method references preferred over lambdas: `Foo::new` not `() -> new Foo()`.
+
+---
+
+## Sprint 6 : Luis Carlos Quezada valle
+
+## Point d'action 1
+À partir de ce sprint et jusqu'a la mort,
+l'équipe s'engage à compléter 100% des user stories planifiées
+et à finaliser la présentation, avec un point d'avancement 
+quotidien pour évaluer la progression
+et adapter les efforts si nécessaire.
+On the brighest day...
+**Every ai used was for good!---

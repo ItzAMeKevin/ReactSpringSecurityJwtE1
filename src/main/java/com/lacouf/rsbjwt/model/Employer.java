@@ -29,5 +29,9 @@ public class Employer extends User {
     @OneToMany(mappedBy = "employer")
     private List<JobOffer> jobOffers = new ArrayList<>();
 
+    @OneToOne(optional = true)
+    @JoinColumn(name = "contract_id", unique = true)
+    private Contract contract;
+
 
 }

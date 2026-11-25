@@ -19,6 +19,7 @@ import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSecti
 import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
 import StudentOfferSection from "@/dashboards/student/sections/StudentOfferSection.jsx";
 import StudentHireOfferSection from "@/dashboards/student/sections/StudentHireOfferSection.jsx";
+import ConvocationsPage from "@/dashboards/student/components/ConvocationsPage.jsx";
 import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
 import EmployerOfferSection from "@/dashboards/employer/sections/EmployerOfferSection.jsx";
 import EmployerInterviewSection from "@/dashboards/employer/sections/EmployerInterviewSection.jsx";
@@ -152,6 +153,7 @@ function App() {
             ))}
             <Route path='offres' element={<StudentOfferSection/>}/>
             <Route path='embauches' element={<StudentHireOfferSection/>}/>
+            <Route path='convocations' element={<ConvocationsPage/>}/>
           </Route>
           <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
             <Route index element={<Navigate to="cv" replace />}/>

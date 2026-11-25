@@ -6,6 +6,7 @@ import { translateErrorKey } from "@/utils/apiError.js";
 import CvModal from "@/components/cv/CvModal.jsx";
 import ConfirmPanel from "@/components/ui/ConfirmPanel.jsx";
 import ScheduleInterviewModal from "@/dashboards/employer/components/ScheduleInterviewModal.jsx";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 import {
     cardItem,
     statusBadge,
@@ -41,7 +42,7 @@ const ACTIONS = {
 };
 
 const CandidateListItem = ({ candidate, offerId, onStatusChange, onHire, onInterviewScheduled, remainingPositions }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [action, setAction] = useState(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [errorKey, setErrorKey] = useState(null);
@@ -107,7 +108,7 @@ const CandidateListItem = ({ candidate, offerId, onStatusChange, onHire, onInter
                     <p className="font-bold text-main">{fullName}</p>
                     <p className={`text-sm ${textMuted}`}>{candidate.email}</p>
                     <p className={`text-sm ${textMuted}`}>
-                        {new Date(candidate.appliedAt).toLocaleDateString()}
+                        {formatSlotDate(candidate.appliedAt?.split('T')[0], i18n.language)}
                     </p>
                 </div>
                 <span className={`${statusBadge} ${statusBadgeColor(candidate.status)}`}>

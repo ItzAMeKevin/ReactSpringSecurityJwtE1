@@ -1,8 +1,8 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.mapper.CvMapper;
 import com.lacouf.rsbjwt.mapper.JobOfferMapper;
-import com.lacouf.rsbjwt.mapper.CandidatureMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;

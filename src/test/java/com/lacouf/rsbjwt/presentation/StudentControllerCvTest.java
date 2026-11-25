@@ -4,6 +4,7 @@ import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
+import com.lacouf.rsbjwt.service.StudentService;
 import com.lacouf.rsbjwt.service.dto.CvMetaDataDto;
 import com.lacouf.rsbjwt.service.dto.CvUploadDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,15 +21,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StudentCvControllerTest {
+class StudentControllerCvTest {
 
-    @Mock private StudentCvService service;
+    @Mock private StudentCvService cvService;
+    @Mock private StudentService studentService;
     @Mock private Authentication authentication;
-    private StudentCvController controller;
+    private StudentController controller;
 
     @BeforeEach
     void setUp() {
-        controller = new StudentCvController(service);
+        controller = new StudentController(cvService, studentService);
     }
 
     @Test
@@ -36,9 +38,9 @@ class StudentCvControllerTest {
         when(authentication.getName()).thenReturn("student@test.com");
         CvUploadDto upload = new CvUploadDto("cv.pdf", "application/pdf", "content");
         CvMetaDataDto metadata = CvMetaDataDto.builder().id(1L).build();
-        when(service.upload("student@test.com", upload)).thenReturn(metadata);
-        when(service.listCvs("student@test.com")).thenReturn(List.of(metadata));
-        when(service.getCvContent(1L, "student@test.com")).thenReturn(new byte[]{1});
+        when(cvService.upload("student@test.com", upload)).thenReturn(metadata);
+        when(cvService.listCvs("student@test.com")).thenReturn(List.of(metadata));
+        when(cvService.getCvContent(1L, "student@test.com")).thenReturn(new byte[]{1});
 
         assertEquals(HttpStatus.CREATED, controller.upload(authentication, upload).getStatusCode());
         assertEquals(List.of(metadata), controller.listCvs(authentication).getBody());
@@ -49,23 +51,21 @@ class StudentCvControllerTest {
     void propagatesServiceExceptions() {
         when(authentication.getName()).thenReturn("student@test.com");
         CvUploadDto upload = new CvUploadDto("cv.pdf", "application/pdf", "content");
-        doThrow(new InvalidCvException("errors.invalidPdf")).when(service).upload("student@test.com", upload);
+        doThrow(new InvalidCvException("errors.invalidPdf")).when(cvService).upload("student@test.com", upload);
         assertThrows(InvalidCvException.class, () -> controller.upload(authentication, upload));
 
-        when(service.listCvs(anyString())).thenThrow(new UserNotFoundException());
+        when(cvService.listCvs(anyString())).thenThrow(new UserNotFoundException());
         assertThrows(UserNotFoundException.class, () -> controller.listCvs(authentication));
 
-        when(service.getCvContent(anyLong(), anyString())).thenThrow(new CvException("errors.cvNotFound"));
+        when(cvService.getCvContent(anyLong(), anyString())).thenThrow(new CvException("errors.cvNotFound"));
         assertThrows(CvException.class, () -> controller.getCvContent(1L, authentication));
     }
-
-
 
     @Test
     void appliesOfferAndHandlesFailure() throws Exception {
         CvMetaDataDto cv = CvMetaDataDto.builder().id(1L).build();
         assertEquals(HttpStatus.OK, controller.appliquerOffre(2L, cv).getStatusCode());
-        doThrow(new RuntimeException()).when(service).applyToJobOffer(3L, cv);
+        doThrow(new RuntimeException()).when(cvService).applyToJobOffer(3L, cv);
         assertThrows(RuntimeException.class, () -> controller.appliquerOffre(3L, cv));
     }
 }

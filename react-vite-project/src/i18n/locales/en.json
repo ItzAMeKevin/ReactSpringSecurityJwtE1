@@ -103,6 +103,8 @@
     "about": "About",
     "logout": "Logout",
     "login": "Login",
+    "candidatureTracking": "Application Tracking",
+    "convocations": "My Invitations",
     "greeting": "Hello",
     "userMenu": "User menu",
     "roles": {
@@ -412,9 +414,17 @@
         "title": "Hire offer declined",
         "message": "A student declined your hire offer. The position is available again."
       },
+      "JOB_OFFER_CANDIDATE_REJECTED": {
+        "title": "Application not selected",
+        "message": "An employer did not select your application. Check your offers to apply elsewhere."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "You have been invited to an interview",
+        "message": "An employer has proposed time slots. Pick one in My Invitations."
       }
     }
   },
@@ -431,7 +441,8 @@
       "cvAccepted": "Approved CVs",
       "cvDeclined": "Declined CVs",
       "offres": "Internship offers",
-      "hireOffers": "Hiring offers"
+      "hireOffers": "Hiring offers",
+      "convocations": "My invitations"
     },
     "cv": {
       "emptyPending": "No CV pending validation.",
@@ -578,6 +589,118 @@
       "addressRequired": "Address is required",
       "fillAllFields": "Please fill in all fields and add at least one slot",
       "retry": "Retry"
+    }
+  },
+  "interview": {
+    "date": "Date",
+    "time": "Time",
+    "type": "Modality",
+    "accept": "Accept",
+    "decline": "Decline",
+    "joinLink": "Join meeting"
+  },
+  "common": {
+    "online": "Online",
+    "inPerson": "In-person"
+  },
+  "contractGeneration": {
+    "title": "Contract Generation",
+    "generateButton": "Generate Contract",
+    "contractModal": {
+      "title": "Generate Internship Contract",
+      "subtitle": "Review and complete the information before generating the contract",
+      "submit": "Generate PDF",
+      "submitting": "Generating...",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "form": {
+      "studentInfo": "Student Information",
+      "employerInfo": "Employer Information",
+      "positionInfo": "Position Information",
+      "contractTerms": "Contract Terms",
+      "additionalInfo": "Additional Information",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "matricule": "Matricule",
+      "programme": "Program of study",
+      "companyName": "Company name",
+      "companyEmail": "Company email",
+      "companyPhone": "Phone",
+      "companyAddress": "Address",
+      "companyCity": "City",
+      "companyPostalCode": "Postal code",
+      "companyCountry": "Country",
+      "jobTitle": "Job title",
+      "jobDescription": "Job description",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "durationWeeks": "Duration (weeks)",
+      "hourlyRate": "Hourly rate ($)",
+      "supervisor": "On-site supervisor",
+      "supervisorEmail": "Supervisor email",
+      "supervisorPhone": "Supervisor phone",
+      "endDateAuto": "Automatically calculated",
+      "supervisorPlaceholder": "Supervisor name",
+      "workSchedule": "Work schedule",
+      "workSchedulePlaceholder": "Ex: Monday to Friday, 9am-5pm",
+      "objectives": "Learning objectives",
+      "objectivesPlaceholder": "Describe the objectives and skills to be developed...",
+      "additionalTerms": "Additional terms",
+      "additionalTermsPlaceholder": "Any other important information for the contract...",
+      "notes": "Notes"
+    },
+    "errors": {
+      "title": "Error",
+      "missingFields": "Missing Fields",
+      "pleaseComplete": "Please complete the required fields marked with *",
+      "generic": "An error occurred while generating the contract. Please try again.",
+      "retry": "Retry"
+    },
+    "success": {
+      "title": "Contract Generated",
+      "message": "The PDF contract has been successfully generated and downloaded.",
+      "close": "Close"
+    }
+  },
+  "convocations": {
+    "title": "My Interview Invitations",
+    "loading": "Loading invitations...",
+    "empty": "No invitations yet.",
+    "error": "Could not load invitations.",
+    "status": {
+      "PENDING": "Pending",
+      "ACCEPTED": "Confirmed",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "type": {
+      "ONLINE": "Online",
+      "IN_PERSON": "In-person"
+    },
+    "modal": {
+      "title": "Invitation Details",
+      "company": "Company",
+      "offer": "Offer",
+      "type": "Type",
+      "link": "Link",
+      "address": "Address",
+      "notes": "Notes",
+      "slots": "Proposed slots",
+      "selectSlot": "Select a slot to accept"
+    },
+    "accept": "Accept",
+    "decline": "Decline",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "declineMessage": "Message (optional)",
+    "declineMessagePlaceholder": "Explain why you are declining...",
+    "expired": "This invitation has expired.",
+    "errors": {
+      "expired": "All slots have expired.",
+      "alreadyResponded": "You have already responded to this invitation.",
+      "generic": "An error occurred, please try again."
     }
   }
 }

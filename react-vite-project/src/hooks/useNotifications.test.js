@@ -75,7 +75,7 @@ describe("useNotifications - chargement", () => {
         const { result } = await renderReadyHook([acceptedNotification, rejectedNotification, readNotification]);
 
         expect(result.current.status).toBe("ready");
-        expect(result.current.notifications).toHaveLength(3);
+        expect(result.current.notifications).toHaveLength(2);
         expect(result.current.unreadCount).toBe(2);
     });
 
@@ -119,9 +119,8 @@ describe("useNotifications - normalisation", () => {
             message: null,
             isRead: false,
             date: "2026-10-15T14:30:00Z",
-            target: { path: "/etudiant", state: { highlight: { kind: "cv", id: 10 } } },
+            target: { path: "/etudiant/cv/valides", state: { highlight: { kind: "cv", id: 10 } } },
         });
-        expect(result.current.notifications[1].isRead).toBe(true);
     });
 
     it("should keep a plain message that is not an event key", async () => {
@@ -141,12 +140,12 @@ describe("useNotifications - normalisation", () => {
 
 describe("useNotifications - target", () => {
     it.each([
-        ["CV_UPLOADED", "CV", "/gestionnaire", "cv"],
-        ["JOB_OFFER_CREATED", "JOB_OFFER", "/gestionnaire", "offer"],
-        ["CV_ACCEPTED", "CV", "/etudiant", "cv"],
-        ["CV_DECLINED", "CV", "/etudiant", "cv"],
-        ["JOB_OFFER_ACCEPTED", "JOB_OFFER", "/employeur", "offer"],
-        ["JOB_OFFER_DECLINED", "JOB_OFFER", "/employeur", "offer"],
+        ["CV_UPLOADED", "CV", "/gestionnaire/cv", "cv"],
+        ["JOB_OFFER_CREATED", "JOB_OFFER", "/gestionnaire/offres", "offer"],
+        ["CV_ACCEPTED", "CV", "/etudiant/cv/valides", "cv"],
+        ["CV_DECLINED", "CV", "/etudiant/cv/refuses", "cv"],
+        ["JOB_OFFER_ACCEPTED", "JOB_OFFER", "/employeur/offres/validees", "offer"],
+        ["JOB_OFFER_DECLINED", "JOB_OFFER", "/employeur/offres/refusees", "offer"],
     ])("should lead %s to the highlighted item on %s's page", async (event, category, path, kind) => {
         const { result } = await renderReadyHook([{
             ...acceptedNotification,
@@ -178,13 +177,13 @@ describe("useNotifications - target", () => {
 });
 
 describe("useNotifications - markAsRead", () => {
-    it("should call the read endpoint with PATCH", async () => {
+    it("should call the read endpoint with PUT", async () => {
         const { result } = await renderReadyHook([acceptedNotification]);
         fetcher.mockResolvedValueOnce({ ok: true });
 
         await act(() => result.current.markAsRead(1));
 
-        expect(fetcher).toHaveBeenCalledWith("/notifications?notificationId=1", { method: "PATCH" });
+        expect(fetcher).toHaveBeenCalledWith("/notifications/1/read", { method: "PUT" });
     });
 
     it("should mark the notification as read and decrement the unread count", async () => {
@@ -193,8 +192,7 @@ describe("useNotifications - markAsRead", () => {
 
         await act(() => result.current.markAsRead(2));
 
-        expect(result.current.notifications.find((n) => n.id === 2).isRead).toBe(true);
-        expect(result.current.notifications.find((n) => n.id === 1).isRead).toBe(false);
+        expect(result.current.notifications.find((n) => n.id === 2)).toBeUndefined();
         expect(result.current.unreadCount).toBe(1);
     });
 

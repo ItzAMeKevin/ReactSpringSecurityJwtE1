@@ -28,8 +28,7 @@ const CvUploadModal = ({ onUpload, onUploaded, onClose }) => {
         setErrorKey(null);
         try {
             onUploaded(await onUpload(file));
-        } catch (error) {
-            console.error("Erreur lors de l'envoi du fichier :", error);
+        } catch {
             setErrorKey("televerser.envoieErreur");
             setIsUploading(false);
         }
