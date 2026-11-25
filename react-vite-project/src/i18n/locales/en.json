@@ -599,6 +599,8 @@
       "supervisor": "On-site supervisor",
       "supervisorEmail": "Supervisor email",
       "supervisorPhone": "Supervisor phone",
+      "endDateAuto": "Automatically calculated",
+      "supervisorPlaceholder": "Supervisor name",
       "workSchedule": "Work schedule",
       "workSchedulePlaceholder": "Ex: Monday to Friday, 9am-5pm",
       "objectives": "Learning objectives",

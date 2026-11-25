@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { statusBadge, statusBadgeColor } from "@/styles/classes.js";
+import { formatSlotDate } from "@/utils/dateFormatting.js";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
 const formatDate = (dateString, locale) => {
     if (!dateString) return "N/A";
     try {
-        return new Date(dateString).toLocaleDateString(locale, {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-        });
+        return formatSlotDate(dateString.split('T')[0], locale);
     } catch {
         return "N/A";
     }

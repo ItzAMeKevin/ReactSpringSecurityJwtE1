@@ -602,6 +602,8 @@
       "supervisor": "Superviseur sur place",
       "supervisorEmail": "Courriel du superviseur",
       "supervisorPhone": "Téléphone du superviseur",
+      "endDateAuto": "Calculée automatiquement",
+      "supervisorPlaceholder": "Nom du superviseur",
       "workSchedule": "Horaire de travail",
       "workSchedulePlaceholder": "Ex: Lundi à vendredi, 9h-17h",
       "objectives": "Objectifs d'apprentissage",

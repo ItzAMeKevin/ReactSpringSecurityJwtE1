@@ -3,43 +3,38 @@ import { useTranslation } from 'react-i18next';
 import fetcher from '../../../utils/fetcher.js';
 import { btnOutline, btnPrimary, inputField, textError } from '../../../styles/classes.js';
 
+const getInitialFormData = (candidature) => ({
+    studentFirstName: candidature?.student?.firstName || '',
+    studentLastName: candidature?.student?.lastName || '',
+    studentEmail: candidature?.student?.email || '',
+    studentMatricule: candidature?.student?.matricule || '',
+    studentProgramme: candidature?.student?.programme?.name || '',
+    companyName: candidature?.jobOffer?.company?.name || '',
+    companyEmail: candidature?.jobOffer?.company?.email || '',
+    companyPhone: candidature?.jobOffer?.company?.telephone || '',
+    companyAddress: candidature?.jobOffer?.company?.adresse || '',
+    companyCity: candidature?.jobOffer?.company?.ville || '',
+    companyPostalCode: candidature?.jobOffer?.company?.codePostal || '',
+    companyCountry: candidature?.jobOffer?.company?.pays || 'Canada',
+    jobTitle: candidature?.jobOffer?.title || '',
+    jobDescription: candidature?.jobOffer?.description || '',
+    startDate: candidature?.jobOffer?.startingDate || '',
+    durationWeeks: candidature?.jobOffer?.durationInWeeks || '',
+    hourlyRate: candidature?.jobOffer?.salary || '',
+    supervisor: '',
+    supervisorEmail: '',
+    supervisorPhone: '',
+    workSchedule: '',
+    objectives: '',
+    additionalTerms: '',
+    notes: ''
+});
+
 const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
     const { t } = useTranslation();
     const modalRef = useRef(null);
 
-    const [formData, setFormData] = useState({
-        // Student info (pre-filled)
-        studentFirstName: candidature?.student?.firstName || '',
-        studentLastName: candidature?.student?.lastName || '',
-        studentEmail: candidature?.student?.email || '',
-        studentMatricule: candidature?.student?.matricule || '',
-        studentProgramme: candidature?.student?.programme?.name || '',
-
-        // Employer info (pre-filled)
-        companyName: candidature?.jobOffer?.company?.name || '',
-        companyEmail: candidature?.jobOffer?.company?.email || '',
-        companyPhone: candidature?.jobOffer?.company?.telephone || '',
-        companyAddress: candidature?.jobOffer?.company?.adresse || '',
-        companyCity: candidature?.jobOffer?.company?.ville || '',
-        companyPostalCode: candidature?.jobOffer?.company?.codePostal || '',
-        companyCountry: candidature?.jobOffer?.company?.pays || 'Canada',
-
-        // Position info (pre-filled)
-        jobTitle: candidature?.jobOffer?.title || '',
-        jobDescription: candidature?.jobOffer?.description || '',
-        startDate: candidature?.jobOffer?.startingDate || '',
-        durationWeeks: candidature?.jobOffer?.durationInWeeks || '',
-        hourlyRate: candidature?.jobOffer?.salary || '',
-
-        supervisor: '',
-        supervisorEmail: '',
-        supervisorPhone: '',
-        workSchedule: '',
-        objectives: '',
-        additionalTerms: '',
-        notes: ''
-    });
-
+    const [formData, setFormData] = useState(() => getInitialFormData(candidature));
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState(null);
     const [submissionAttempted, setSubmissionAttempted] = useState(false);
@@ -53,10 +48,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
     }, [formData.startDate, formData.durationWeeks]);
 
     const handleFieldChange = (field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [field]: value
-        }));
+        setFormData(prev => ({ ...prev, [field]: value }));
         setApiError(null);
     };
 
@@ -67,9 +59,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
             'startDate', 'durationWeeks', 'hourlyRate',
             'supervisor', 'supervisorEmail', 'workSchedule', 'objectives'
         ];
-
-        const missingFields = requiredFields.filter(field => !formData[field]);
-        return missingFields.length === 0;
+        return requiredFields.every(field => formData[field]);
     };
 
     const handleSubmit = async () => {
@@ -78,9 +68,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
 
         if (!validateForm()) {
             setApiError(t('contractGeneration.errors.pleaseComplete'));
-            if (modalRef.current) {
-                modalRef.current.scrollTop = 0;
-            }
+            if (modalRef.current) modalRef.current.scrollTop = 0;
             return;
         }
 
@@ -90,9 +78,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
             const endDate = calculateEndDate();
             const response = await fetcher('/gestionnaire/contract/create', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     studentId: candidature.student?.id,
                     employerId: candidature.jobOffer?.employer?.id,
@@ -107,8 +93,6 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
                 throw new Error(errorData.message || t('contractGeneration.errors.generic'));
             }
 
-            const data = await response.json();
-            setApiError(null);
             onClose();
         } catch (error) {
             console.error('Erreur lors de la génération:', error);
@@ -122,32 +106,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
         if (isLoading) return;
         setApiError(null);
         setSubmissionAttempted(false);
-        setFormData({
-            studentFirstName: candidature?.student?.firstName || '',
-            studentLastName: candidature?.student?.lastName || '',
-            studentEmail: candidature?.student?.email || '',
-            studentMatricule: candidature?.student?.matricule || '',
-            studentProgramme: candidature?.student?.programme?.name || '',
-            companyName: candidature?.jobOffer?.company?.name || '',
-            companyEmail: candidature?.jobOffer?.company?.email || '',
-            companyPhone: candidature?.jobOffer?.company?.telephone || '',
-            companyAddress: candidature?.jobOffer?.company?.adresse || '',
-            companyCity: candidature?.jobOffer?.company?.ville || '',
-            companyPostalCode: candidature?.jobOffer?.company?.codePostal || '',
-            companyCountry: candidature?.jobOffer?.company?.pays || 'Canada',
-            jobTitle: candidature?.jobOffer?.title || '',
-            jobDescription: candidature?.jobOffer?.description || '',
-            startDate: candidature?.jobOffer?.startingDate || '',
-            durationWeeks: candidature?.jobOffer?.durationInWeeks || '',
-            hourlyRate: candidature?.jobOffer?.salary || '',
-            supervisor: '',
-            supervisorEmail: '',
-            supervisorPhone: '',
-            workSchedule: '',
-            objectives: '',
-            additionalTerms: '',
-            notes: ''
-        });
+        setFormData(getInitialFormData(candidature));
         onClose();
     };
 
@@ -404,7 +363,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
                                     className={inputField + ' bg-gray-100 cursor-not-allowed'}
                                 />
                                 <p className="text-xs text-main/70 mt-1">
-                                    Calculée automatiquement
+                                    {t('contractGeneration.form.endDateAuto')}
                                 </p>
                             </div>
                             <div>
@@ -448,7 +407,7 @@ const ContractGenerationModal = ({ isOpen, onClose, candidature, user }) => {
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="Nom du superviseur"
+                                    placeholder={t('contractGeneration.form.supervisorPlaceholder')}
                                     value={formData.supervisor}
                                     onChange={(e) => handleFieldChange('supervisor', e.target.value)}
                                     className={inputField + (submissionAttempted && !formData.supervisor ? ' border-red-600' : '')}
