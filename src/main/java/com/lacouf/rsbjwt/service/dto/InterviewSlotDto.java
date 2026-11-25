@@ -5,7 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record InterviewSlotDto(@NotNull LocalDate date,
+public record InterviewSlotDto(Long id,
+                               @NotNull LocalDate date,
                                @NotNull LocalTime startTime,
-                               @NotNull LocalTime endTime
+                               @NotNull LocalTime endTime,
+                               Boolean selected
 ) {}

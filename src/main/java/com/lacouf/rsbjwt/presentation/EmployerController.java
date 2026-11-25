@@ -1,7 +1,5 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
-import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.service.EmployerService;
 import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.service.InterviewService;
@@ -40,25 +38,16 @@ public class EmployerController {
             @PathVariable Long id,
             @Valid @RequestBody JobOfferCreateDTO jobOfferCreateDTO,
             Authentication authentication) {
-        try {
-            return employerService.updateRefusedJobOffer(id, jobOfferCreateDTO, authentication.getName())
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(JobOfferDetailDTO.builder().erreur("errors.jobOfferUpdateFailed").build());
-        }
+        return employerService.updateRefusedJobOffer(id, jobOfferCreateDTO, authentication.getName())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{offerId}/candidates")
     public ResponseEntity<List<CandidateDto>> getCandidates(
             @PathVariable Long offerId,
             Authentication authentication) {
-        try {
-            return ResponseEntity.ok(employerService.getCandidates(offerId, authentication.getName()));
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(employerService.getCandidates(offerId, authentication.getName()));
     }
 
     @PutMapping("/{offerId}/candidates/{cvId}/status")
@@ -67,41 +56,38 @@ public class EmployerController {
             @PathVariable Long cvId,
             @Valid @RequestBody UpdateCandidateStatusDto request,
             Authentication authentication) {
-        try {
-            return ResponseEntity.ok(
-                    employerService.updateCandidateStatus(offerId, cvId, request.status(), authentication.getName()));
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+        return ResponseEntity.ok(
+                employerService.updateCandidateStatus(offerId, cvId, request.status(), authentication.getName()));
+    }
+
+    @PutMapping("/{offerId}/candidates/{cvId}/hire")
+    public ResponseEntity<CandidateDto> hireStudent(
+            @PathVariable Long offerId,
+            @PathVariable Long cvId,
+            Authentication authentication) {
+        return ResponseEntity.ok(employerService.hireStudent(offerId, cvId, authentication.getName()));
     }
 
     @GetMapping("/candidates/{cvId}/cv")
     public ResponseEntity<byte[]> getCandidateCv(
             @PathVariable Long cvId,
             Authentication authentication) {
-        try {
-            byte[] content = employerService.getCandidateCv(cvId, authentication.getName());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(content);
-        } catch (ApplicationNotFoundException | InvalidCvException e) {
-            return ResponseEntity.notFound().build();
-        }
+        byte[] content = employerService.getCandidateCv(cvId, authentication.getName());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(content);
     }
 
     @PostMapping("/interview/schedule")
     public ResponseEntity<InterviewResponseDto> scheduleInterview(
             @Valid @RequestBody ScheduleInterviewRequestDto request,
             Authentication authentication) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(interviewService.schedule(request, authentication.getName()));
-        } catch (ApplicationNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(interviewService.schedule(request, authentication.getName()));
+    }
+
+    @GetMapping("/interviews")
+    public ResponseEntity<List<EmployerInterviewDto>> getInterviews(Authentication authentication) {
+        return ResponseEntity.ok(interviewService.getEmployerInterviews(authentication.getName()));
     }
 }

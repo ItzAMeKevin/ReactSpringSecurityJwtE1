@@ -21,9 +21,13 @@ public interface JobOfferMapper {
 
     @Mapping(target = "companyName", source = "employer.companyName")
     @Mapping(target = "location", source = "adresse")
+    @Mapping(target = "refusalFeedback", source = "refusalFeedback")
+    @Mapping(target = "numberOfPositions", source = "numberOfPositions")
+    @Mapping(target = "hiredCount", ignore = true)
     JobOfferDetailDTO toDto(JobOffer entity);
 
 
+    @Mapping(target = "companyName", source = "employer.companyName")
     JobOfferDto toDtoSimple(JobOffer entity);
 
     List<JobOfferDetailDTO> toDtoList(List<JobOffer> entities);

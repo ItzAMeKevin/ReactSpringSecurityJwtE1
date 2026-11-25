@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDate;
 
 @SpringBootApplication
@@ -29,18 +30,21 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
     private final ObjectProvider<EmployerRepository> employerRepository;
     private final ObjectProvider<StudentCvRepository> studentCvRepository;
     private final ObjectProvider<StudentRepository> studentRepository;
+    private final ObjectProvider<JobApplicationRepository> jobApplicationRepository;
 
     public ReactSpringSecurityJwtApplication(UserAppService UserService, PasswordEncoder passwordEncoder,
                                              ObjectProvider<JobOfferRepository> jobOfferRepository,
                                              ObjectProvider<EmployerRepository> employerRepository,
                                              ObjectProvider<StudentCvRepository> studentCvRepository,
-                                             ObjectProvider<StudentRepository> studentRepository) {
+                                             ObjectProvider<StudentRepository> studentRepository,
+                                             ObjectProvider<JobApplicationRepository> jobApplicationRepository) {
         this.userAppService = UserService;
         this.passwordEncoder = passwordEncoder;
         this.jobOfferRepository = jobOfferRepository;
         this.employerRepository = employerRepository;
         this.studentCvRepository = studentCvRepository;
         this.studentRepository = studentRepository;
+        this.jobApplicationRepository = jobApplicationRepository;
     }
 
     public static void main(String[] args) {
@@ -114,11 +118,45 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
             jaime.setLastname("Laguerre");
             jaime.setMatricule("1847293");
             jaime.setEmail("jaime.laguerre@yahoo.com");
-
             jaime.setPassword(passwordEncoder.encode("Jaime1234"));
             jaime.setRole(Role.STUDENT);
             jaime.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
             userAppService.inscription(jaime);
+        }
+
+        // --- Demo students for "employer hires" sprint ---
+        if (userAppService.getUserByEmail("alice.bouchard@etudiant.ca") == null) {
+            StudentCreateDto alice = new StudentCreateDto();
+            alice.setFirstName("Alice");
+            alice.setLastname("Bouchard");
+            alice.setMatricule("1234567");
+            alice.setEmail("alice.bouchard@etudiant.ca");
+            alice.setPassword(passwordEncoder.encode("bib"));
+            alice.setRole(Role.STUDENT);
+            alice.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            userAppService.inscription(alice);
+        }
+        if (userAppService.getUserByEmail("bruno.lacroix@etudiant.ca") == null) {
+            StudentCreateDto bruno = new StudentCreateDto();
+            bruno.setFirstName("Bruno");
+            bruno.setLastname("Lacroix");
+            bruno.setMatricule("2345678");
+            bruno.setEmail("bruno.lacroix@etudiant.ca");
+            bruno.setPassword(passwordEncoder.encode("bib"));
+            bruno.setRole(Role.STUDENT);
+            bruno.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            userAppService.inscription(bruno);
+        }
+        if (userAppService.getUserByEmail("clara.morin@etudiant.ca") == null) {
+            StudentCreateDto clara = new StudentCreateDto();
+            clara.setFirstName("Clara");
+            clara.setLastname("Morin");
+            clara.setMatricule("3456789");
+            clara.setEmail("clara.morin@etudiant.ca");
+            clara.setPassword(passwordEncoder.encode("bib"));
+            clara.setRole(Role.STUDENT);
+            clara.setPrograme(Programe.TECHNIQUE_GENIE_CIVIL);
+            userAppService.inscription(clara);
         }
 
         if (userAppService.getUserByEmail("jaime.paolaguere@cmr.ca") == null) {
@@ -169,7 +207,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         StudentRepository students = studentRepository.getIfAvailable();
         JobOfferRepository jobOffers = jobOfferRepository.getIfAvailable();
         StudentCvRepository studentCvs = studentCvRepository.getIfAvailable();
-        if (employers == null || students == null || jobOffers == null || studentCvs == null) {
+        JobApplicationRepository jobApps = jobApplicationRepository.getIfAvailable();
+        if (employers == null || students == null || jobOffers == null || studentCvs == null || jobApps == null) {
             return;
         }
 
@@ -227,7 +266,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Java, Spring Boot, React, Git. Bases de donnees relationnelles (SQL). " +
                 "Atout: connaissance de Docker et des tests unitaires.",
                 "22",
-                LocalDate.of(2026, 5, 4), 15, Status.PENDING,
+                LocalDate.of(2027, 5, 4), 15, 1, Status.PENDING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         // PENDING: the manager reviews and accepts this one during the demo
@@ -239,7 +278,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 "Spring Boot, REST, JWT, PostgreSQL, Maven. " +
                 "Connaissance des tests d'integration (JUnit, Testcontainers) un atout.",
                 "20",
-                LocalDate.of(2026, 9, 1), 15, Status.PENDING,
+                LocalDate.of(2027, 1, 1), 15, 1, Status.PENDING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         seedJobOffer(jobOffers, employer,
@@ -248,7 +287,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         "Vous collaborerez avec les designers UX et participerez aux revues de code.",
                 "React, TypeScript, HTML/CSS, Git. Atout: Vitest ou Jest.",
                 "21",
-                LocalDate.of(2026, 9, 1), 15, Status.PENDING,
+                LocalDate.of(2027, 1, 2), 15, 1, Status.PENDING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         seedJobOffer(jobOffers, employer,
@@ -257,7 +296,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                         "au deploiement de postes de travail.",
                 "Notions de reseaux, Windows/Linux, bon sens du service a la clientele.",
                 "19",
-                LocalDate.of(2026, 9, 1), 12, Status.PENDING,
+                LocalDate.of(2027, 1, 11), 12, 1, Status.PENDING,
                 Programe.TECHNIQUES_INFORMATIQUE);
 
         Employer cmrcEmployer = employers.findByCredentialsEmail("jaime.paolaguere@cmr.ca").orElse(null);
@@ -274,8 +313,55 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                     "Competences: AutoCAD, calcul de structures, materiaux de construction. " +
                     "Atout: notions de genie geotechnique ou hydrogéologie.",
                     "Selon grille salariale FAC",
-                    LocalDate.of(2026, 5, 4), 16, Status.ACCEPTED,
+                    LocalDate.of(2026, 5, 4), 16, 2, Status.ACCEPTED,
                     Programe.TECHNIQUE_GENIE_CIVIL);
+
+            // Seed demo CVs + applications for the "hire a student" sprint demo
+            JobOffer cmrcOffer = jobOffers.getJobOffersByEmployerId(cmrcEmployer.getId())
+                    .stream()
+                    .filter(o -> o.getTitle().equals("Stage - Officier du genie civil, FAC"))
+                    .findFirst().orElse(null);
+
+            if (cmrcOffer != null) {
+                seedDemoApplicant(students, studentCvs, jobApps, cmrcOffer,
+                        "alice.bouchard@etudiant.ca", "cv-alice.pdf",
+                        "Alice Bouchard",
+                        "alice.bouchard@etudiant.ca  |  514-555-0101  |  Montreal, QC",
+                        new String[]{"Technique de genie civil (221.B0) - College de Rosemont  |  2022-2025 (en cours)"},
+                        new String[]{"AutoCAD Civil 3D, Total Station Leica, GPS RTK",
+                                "Essais de beton (ASTM C143, C39), analyse granulometrique",
+                                "Microsoft Office, lecture de plans et devis"},
+                        new String[]{"Aide-technicienne - Construction Belanger Inc.  (ete 2024)",
+                                "  Releves topographiques, controle qualite du beton, suivi des as-built",
+                                "Assistante technique - Arrondissement Rosemont  (ete 2023)",
+                                "  Inspection de trottoirs, bordures et regards, saisie dans Excel"});
+
+                seedDemoApplicant(students, studentCvs, jobApps, cmrcOffer,
+                        "bruno.lacroix@etudiant.ca", "cv-bruno.pdf",
+                        "Bruno Lacroix",
+                        "bruno.lacroix@etudiant.ca  |  438-555-0202  |  Laval, QC",
+                        new String[]{"Technique de genie civil (221.B0) - College Montmorency  |  2022-2025 (en cours)"},
+                        new String[]{"AutoCAD 2D/3D, MicroStation, Civil 3D (notions)",
+                                "Essais Proctor, granulometrie, limites d'Atterberg",
+                                "Trimble Access, Microsoft Project, devis CCDG"},
+                        new String[]{"Technicien junior - Routek Infrastructures Inc.  (ete 2024)",
+                                "  Inspection ouvrages routiers, collecte de donnees avec tablette Trimble",
+                                "Manoeuvre specialise - Ville de Laval  (ete 2023)",
+                                "  Rehabilitation de conduites d'aqueduc, pose de bordures en beton"});
+
+                seedDemoApplicant(students, studentCvs, jobApps, cmrcOffer,
+                        "clara.morin@etudiant.ca", "cv-clara.pdf",
+                        "Clara Morin",
+                        "clara.morin@etudiant.ca  |  450-555-0303  |  Brossard, QC",
+                        new String[]{"Technique de genie civil (221.B0) - College Edouard-Montpetit  |  2022-2025 (en cours)"},
+                        new String[]{"AutoCAD Civil 3D, Revit (BIM niveau 2), Robot Structural Analysis",
+                                "Codes: CNBC 2020, NQ 3660-500, CSA A23.3 (beton), CSA S16 (acier)",
+                                "Essais NDT (sclerometre, pachometre), Bluebeam Revu"},
+                        new String[]{"Assistante en bureau d'etudes - Groupe SNC-Lavalin  (2023)",
+                                "  Mise a jour de plans sous AutoCAD, calcul de charges (neige, vent, sismique)",
+                                "Stagiaire en verification - Bureau CBCQ  (ete 2023)",
+                                "  Inspection de batiments residentiels, rapports avec photos annotees"});
+            }
         }
 
         // --- Seed CVs ---
@@ -338,8 +424,8 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
 
     private void seedJobOffer(JobOfferRepository repo, Employer employer, String title,
                               String description, String prerequisites, String salary,
-                              LocalDate startingDate, int durationInWeeks, Status status,
-                              Programe programe) {
+                              LocalDate startingDate, int durationInWeeks, int numberOfPositions,
+                              Status status, Programe programe) {
         boolean alreadyExists = repo.getJobOffersByEmployerId(employer.getId())
                 .stream()
                 .anyMatch(offer -> offer.getTitle().equals(title));
@@ -356,6 +442,7 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
                 .salary(salary)
                 .startingDate(startingDate)
                 .durationInWeeks(durationInWeeks)
+                .numberOfPositions(numberOfPositions)
                 .programe(programe)
                 .employer(employer)
                 .adresse(adresse)
@@ -364,22 +451,45 @@ public class ReactSpringSecurityJwtApplication implements CommandLineRunner {
         repo.save(offer);
     }
 
-    private void seedCv(StudentCvRepository repo, Student student, String fileName,
-                        Status status, String streamContent) {
-        boolean alreadyExists = repo.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
+    private StudentCv seedCv(StudentCvRepository repo, Student student, String fileName,
+                             Status status, String streamContent) {
+        return repo.findAllByStudent_IdOrderByUploadedAtDesc(student.getId())
                 .stream()
-                .anyMatch(cv -> cv.getFileName().equals(fileName));
-        if (alreadyExists) return;
+                .filter(cv -> cv.getFileName().equals(fileName))
+                .findFirst()
+                .orElseGet(() -> {
+                    byte[] content = wrapPdfStream(streamContent);
+                    StudentCv cv = new StudentCv();
+                    cv.setFileName(fileName);
+                    cv.setContentType("application/pdf");
+                    cv.setContent(content);
+                    cv.setSize(content.length);
+                    cv.setStatus(status);
+                    cv.setStudent(student);
+                    return repo.save(cv);
+                });
+    }
 
-        byte[] content = wrapPdfStream(streamContent);
-        StudentCv cv = new StudentCv();
-        cv.setFileName(fileName);
-        cv.setContentType("application/pdf");
-        cv.setContent(content);
-        cv.setSize(content.length);
-        cv.setStatus(status);
-        cv.setStudent(student);
-        repo.save(cv);
+    private void seedDemoApplicant(StudentRepository students, StudentCvRepository studentCvs,
+                                   JobApplicationRepository jobApps, JobOffer offer,
+                                   String email, String fileName,
+                                   String name, String contact,
+                                   String[] education, String[] skills, String[] experience) {
+        Student student = students.findByCredentialsEmail(email).orElse(null);
+        if (student == null) return;
+
+        StudentCv cv = seedCv(studentCvs, student, fileName, Status.ACCEPTED,
+                buildCvStream(name, contact, education, skills, experience));
+
+        if (jobApps.existsByStudentCv_IdAndJobOffer_Id(cv.getId(), offer.getId())) return;
+
+        JobApplication app = new JobApplication();
+        app.setJobOffer(offer);
+        app.setStudentCv(cv);
+        app.setStudent(student);
+        app.setStatus(Status.ACCEPTED);
+        app.setAppliedAt(Instant.now());
+        jobApps.save(app);
     }
 
     // ---- PDF builders ----

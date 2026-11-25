@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidCvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.StudentCvService;
@@ -45,19 +46,17 @@ class StudentCvControllerTest {
     }
 
     @Test
-    void handlesUploadListAndContentErrors() {
+    void propagatesServiceExceptions() {
         when(authentication.getName()).thenReturn("student@test.com");
         CvUploadDto upload = new CvUploadDto("cv.pdf", "application/pdf", "content");
-        doThrow(new InvalidCvException("invalid")).when(service).upload("student@test.com", upload);
-        assertEquals(HttpStatus.BAD_REQUEST, controller.upload(authentication, upload).getStatusCode());
-        CvUploadDto missing = new CvUploadDto("missing.pdf", "application/pdf", "content");
-        doThrow(new UserNotFoundException()).when(service).upload("student@test.com", missing);
-        assertEquals(HttpStatus.NOT_FOUND, controller.upload(authentication, missing).getStatusCode());
+        doThrow(new InvalidCvException("errors.invalidPdf")).when(service).upload("student@test.com", upload);
+        assertThrows(InvalidCvException.class, () -> controller.upload(authentication, upload));
 
         when(service.listCvs(anyString())).thenThrow(new UserNotFoundException());
-        assertEquals(HttpStatus.NOT_FOUND, controller.listCvs(authentication).getStatusCode());
-        when(service.getCvContent(anyLong(), anyString())).thenThrow(new InvalidCvException("missing"));
-        assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(1L, authentication).getStatusCode());
+        assertThrows(UserNotFoundException.class, () -> controller.listCvs(authentication));
+
+        when(service.getCvContent(anyLong(), anyString())).thenThrow(new CvException("errors.cvNotFound"));
+        assertThrows(CvException.class, () -> controller.getCvContent(1L, authentication));
     }
 
 
@@ -67,6 +66,6 @@ class StudentCvControllerTest {
         CvMetaDataDto cv = CvMetaDataDto.builder().id(1L).build();
         assertEquals(HttpStatus.OK, controller.appliquerOffre(2L, cv).getStatusCode());
         doThrow(new RuntimeException()).when(service).applyToJobOffer(3L, cv);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, controller.appliquerOffre(3L, cv).getStatusCode());
+        assertThrows(RuntimeException.class, () -> controller.appliquerOffre(3L, cv));
     }
 }

@@ -1,7 +1,9 @@
 package com.lacouf.rsbjwt.exception;
 
-public class OffrerException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class OffrerException extends APIException {
     public OffrerException(String message) {
-        super(message);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }

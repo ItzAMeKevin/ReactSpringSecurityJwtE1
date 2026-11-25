@@ -1,11 +1,13 @@
 package com.lacouf.rsbjwt.presentation;
 
+import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
-import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.dto.*;
 import com.lacouf.rsbjwt.model.Status;
+import com.lacouf.rsbjwt.service.GestionnaireService;
+import com.lacouf.rsbjwt.service.StudentCvService;
+import com.lacouf.rsbjwt.service.SystemeService;
+import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,8 +29,7 @@ class GestionnaireControllerWebMvcTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GestionnaireController(service, mock(com.lacouf.rsbjwt.service.SystemeService.class),
-                mock(com.lacouf.rsbjwt.service.StudentCvService.class));
+        controller = new GestionnaireController(service, mock(SystemeService.class), mock(StudentCvService.class));
     }
 
     @Test
@@ -47,8 +48,8 @@ class GestionnaireControllerWebMvcTest {
         when(service.getCvContent(1L)).thenReturn(new byte[]{1});
         assertEquals(HttpStatus.OK, controller.getCvContent(1L).getStatusCode());
 
-        when(service.getCvContent(2L)).thenThrow(new UserNotFoundException());
-        assertEquals(HttpStatus.NOT_FOUND, controller.getCvContent(2L).getStatusCode());
+        when(service.getCvContent(2L)).thenThrow(new CvException("errors.cvNotFound"));
+        assertThrows(CvException.class, () -> controller.getCvContent(2L));
     }
 
     @Test
@@ -57,28 +58,43 @@ class GestionnaireControllerWebMvcTest {
         when(service.acceptCv(1L)).thenReturn(accepted);
         assertEquals(accepted, controller.acceptCv(1L).getBody());
 
-        when(service.acceptCv(2L)).thenThrow(new UserNotFoundException());
-        assertEquals(HttpStatus.BAD_REQUEST, controller.acceptCv(2L).getStatusCode());
+        when(service.acceptCv(2L)).thenThrow(new CvException("errors.cvNotFound"));
+        assertThrows(CvException.class, () -> controller.acceptCv(2L));
 
-        CvDeclineFeedbackDto feedback = new CvDeclineFeedbackDto("feedback");
+        FeedbackDto feedback = new FeedbackDto("feedback");
         doNothing().when(service).declineCv(1L, feedback);
         assertEquals(feedback, controller.declineCv(1L, feedback).getBody());
 
-        doThrow(new UserNotFoundException()).when(service).declineCv(2L, feedback);
-        assertEquals(HttpStatus.BAD_REQUEST, controller.declineCv(2L, feedback).getStatusCode());
+        doThrow(new CvException("errors.cvNotFound")).when(service).declineCv(2L, feedback);
+        assertThrows(CvException.class, () -> controller.declineCv(2L, feedback));
     }
 
     @Test
     void acceptsAndRefusesOffers() throws Throwable {
         JobOfferDto offer = JobOfferDto.builder().id(1L).build();
+        FeedbackDto feedback = new FeedbackDto("feedback");
         when(service.acceptOffer(1L)).thenReturn(offer);
-        when(service.refuseOffer(1L)).thenReturn(offer);
+        when(service.refuseOffer(1L, feedback)).thenReturn(offer);
         assertEquals(offer, controller.acceptOffer(1L).getBody());
-        assertEquals(offer, controller.refuseOffer(1L).getBody());
+        assertEquals(offer, controller.refuseOffer(1L, feedback).getBody());
 
         when(service.acceptOffer(2L)).thenThrow(new JobOfferNotFoundException("missing"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.acceptOffer(2L).getStatusCode());
-        when(service.refuseOffer(2L)).thenThrow(new InvalidStateTransitionException("invalid"));
-        assertEquals(HttpStatus.BAD_REQUEST, controller.refuseOffer(2L).getStatusCode());
+        assertThrows(JobOfferNotFoundException.class, () -> controller.acceptOffer(2L));
+        when(service.refuseOffer(2L, feedback)).thenThrow(new InvalidStateTransitionException("invalid"));
+        assertThrows(InvalidStateTransitionException.class, () -> controller.refuseOffer(2L, feedback));
+    }
+
+    @Test
+    void getsAllCandidatures() {
+        CandidatureDto.StudentInfoDto studentInfo = new CandidatureDto.StudentInfoDto("Jane", "Doe", "1234567", "jane@test.com");
+        CandidatureDto.JobOfferInfoDto offerInfo = new CandidatureDto.JobOfferInfoDto("Developer", "Acme", 12);
+        CandidatureDto dto = new CandidatureDto(1L, studentInfo, offerInfo, Status.PENDING, null, null);
+
+        when(service.getAllCandidatures()).thenReturn(List.of(dto));
+        assertEquals(List.of(dto), controller.getAllCandidatures().getBody());
+        assertEquals(HttpStatus.OK, controller.getAllCandidatures().getStatusCode());
+
+        when(service.getAllCandidatures()).thenReturn(List.of());
+        assertEquals(List.of(), controller.getAllCandidatures().getBody());
     }
 }
