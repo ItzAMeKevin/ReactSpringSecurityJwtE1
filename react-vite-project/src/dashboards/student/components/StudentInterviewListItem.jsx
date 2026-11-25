@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { cardItem, textMuted } from '../../../styles/classes.js';
+import { cardItem, cardHighlighted, textMuted } from '../../../styles/classes.js';
+import scrollIntoViewOnMount from '@/utils/scrollIntoViewOnMount.js';
 import StudentInterviewResponseModal from './StudentInterviewResponseModal.jsx';
 
 const STATUS_STYLES = {
@@ -15,7 +16,7 @@ const TYPE_STYLES = {
     IN_PERSON: 'bg-purple-100 text-purple-800',
 };
 
-const StudentInterviewListItem = ({ interview, onRespond }) => {
+const StudentInterviewListItem = ({ interview, isHighlighted, onClearHighlight, onRespond }) => {
     const { t, i18n } = useTranslation();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -37,7 +38,11 @@ const StudentInterviewListItem = ({ interview, onRespond }) => {
 
     return (
         <>
-            <div className={`${cardItem} flex items-center justify-between gap-4`}>
+            <div
+                ref={isHighlighted ? scrollIntoViewOnMount : undefined}
+                onClick={isHighlighted ? onClearHighlight : undefined}
+                className={`${cardItem} ${isHighlighted ? cardHighlighted : ''} flex items-center justify-between gap-4`}
+            >
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${TYPE_STYLES[interview.type] ?? 'bg-gray-100 text-gray-700'}`}>

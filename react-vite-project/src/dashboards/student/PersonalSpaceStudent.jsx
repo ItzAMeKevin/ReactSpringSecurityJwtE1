@@ -29,6 +29,7 @@ const PersonalSpaceStudent = () => {
     const cvs = useFetchList("/student-cv");
     const offers = useFetchList("/etudiant/offres");
     const hires = useFetchList("/etudiant/embauches");
+    const interviews = useFetchList("/etudiant/interviews");
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const { message, showMessage, clearMessage } = useToast();
 
@@ -67,7 +68,7 @@ const PersonalSpaceStudent = () => {
         ...STUDENT_CV_SECTIONS.map(({ status, path, labelKey }) => ({ to: path, label: t(labelKey), count: countCvs(status) })),
         { to: "offres", label: t("etudiant.nav.offres"), count: offers.status === "loaded" ? applicableOffers.length : null },
         { to: "embauches", label: t("etudiant.nav.hireOffers"), count: hires.count },
-        { to: "convocations", label: t("etudiant.nav.convocations"), count: null },
+        { to: "convocations", label: t("etudiant.nav.convocations"), count: interviews.count },
     ];
 
     const actions = (
@@ -84,7 +85,7 @@ const PersonalSpaceStudent = () => {
                 items={items}
                 actions={actions}
                 context={{
-                    cvs, visibleCvs, acceptedCvs, offers, uploadCv, hires,
+                    cvs, visibleCvs, acceptedCvs, offers, uploadCv, hires, interviews,
                     acceptHire: respondToHire("accepter", "etudiantEmbauches.acceptSuccess"),
                     declineHire: respondToHire("decliner", "etudiantEmbauches.declineSuccess", "danger"),
                 }}

@@ -72,6 +72,8 @@ export const sectionTitle = "text-xl font-bold text-main mb-4 pb-2 border-b bord
 /** Secondary / status text */
 export const textMuted = "text-main/70";
 
+export const textBold = "text-red-700 font-semibold";
+
 /** Error feedback text */
 export const textError = "text-red-700";
 

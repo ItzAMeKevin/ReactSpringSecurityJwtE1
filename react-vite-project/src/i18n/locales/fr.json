@@ -421,6 +421,10 @@
       "JOB_OFFER_DECLINED": {
         "title": "Votre offre de stage a été refusée",
         "message": "Veuillez consulter le commentaire et soumettre une nouvelle offre."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "Vous êtes convoqué à une entrevue",
+        "message": "Un employeur vous a proposé des plages horaires. Choisissez-en une dans Mes convocations."
       }
     }
   },

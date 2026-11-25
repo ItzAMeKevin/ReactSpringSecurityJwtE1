@@ -417,6 +417,10 @@
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
+      },
+      "INTERVIEW_SCHEDULED": {
+        "title": "You have been invited to an interview",
+        "message": "An employer has proposed time slots. Pick one in My Invitations."
       }
     }
   },
