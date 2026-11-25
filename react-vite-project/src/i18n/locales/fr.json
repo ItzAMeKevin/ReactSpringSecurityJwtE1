@@ -437,7 +437,8 @@
       "cvAccepted": "CV validés",
       "cvDeclined": "CV refusés",
       "offres": "Offres de stage",
-      "hireOffers": "Offres d'embauche"
+      "hireOffers": "Offres d'embauche",
+      "convocations": "Mes convocations"
     },
     "cv": {
       "emptyPending": "Aucun CV en attente de validation.",

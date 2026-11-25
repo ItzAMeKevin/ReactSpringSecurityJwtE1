@@ -433,7 +433,8 @@
       "cvAccepted": "Approved CVs",
       "cvDeclined": "Declined CVs",
       "offres": "Internship offers",
-      "hireOffers": "Hiring offers"
+      "hireOffers": "Hiring offers",
+      "convocations": "My invitations"
     },
     "cv": {
       "emptyPending": "No CV pending validation.",

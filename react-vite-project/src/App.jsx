@@ -1,5 +1,5 @@
-import "./App.css";
-import PageLayout from "./components/PageLayout.jsx";
+import "@/App.css";
+import PageLayout from "@/components/layout/PageLayout.jsx";
 import React, {useEffect, useState} from "react";
 import {Navigate, Route, Routes, useNavigate} from "react-router-dom";
 import About from "@/pages/About.jsx";
@@ -19,14 +19,12 @@ import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSecti
 import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
 import StudentOfferSection from "@/dashboards/student/sections/StudentOfferSection.jsx";
 import StudentHireOfferSection from "@/dashboards/student/sections/StudentHireOfferSection.jsx";
+import ConvocationsPage from "@/dashboards/student/components/ConvocationsPage.jsx";
 import { STUDENT_CV_SECTIONS } from "@/dashboards/student/studentCvSections.js";
 import EmployerOfferSection from "@/dashboards/employer/sections/EmployerOfferSection.jsx";
 import EmployerInterviewSection from "@/dashboards/employer/sections/EmployerInterviewSection.jsx";
 import EmployerHirePendingSection from "@/dashboards/employer/sections/EmployerHirePendingSection.jsx";
 import { EMPLOYER_OFFER_SECTIONS } from "@/dashboards/employer/employerOfferSections.js";
-import EmprunteurHome from "./components/page/EmprunteurHome.jsx";
-import PersonalSpaceStudent from "./components/page/personal-space-student/PersonalSpaceStudent.jsx";
-import ConvocationsPage from "./components/page/personal-space-student/ConvocationsPage.jsx";
 
 function App() {
   const [user, setUser] = useState({})
@@ -148,12 +146,6 @@ function App() {
           <Route path='about' element={<About/>}/>
           <Route path='login' element={<LoginForm user={user} setUser={setUser} setError={setError}/>}/>
           <Route path='logout' element={<Logout setUser={setUser}/>}/>
-          <Route path='emprunteur' element={<EmprunteurHome/>}/>
-          <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}/>
-          <Route path='etudiant/convocations' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><ConvocationsPage/></ProtectedRoute>}/>
-          <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}/>
-          <Route path='gestionnaire/suivi' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><CandidatureTracking/></ProtectedRoute>}/>
-          <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}/>
           <Route path='etudiant' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_STUDENT"]}><PersonalSpaceStudent/></ProtectedRoute>}>
             <Route index element={<Navigate to="cv/en-attente" replace />}/>
             {STUDENT_CV_SECTIONS.map((section) => (
@@ -161,6 +153,7 @@ function App() {
             ))}
             <Route path='offres' element={<StudentOfferSection/>}/>
             <Route path='embauches' element={<StudentHireOfferSection/>}/>
+            <Route path='convocations' element={<ConvocationsPage/>}/>
           </Route>
           <Route path='gestionnaire' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_MANAGER"]}><PersonalSpaceManager/></ProtectedRoute>}>
             <Route index element={<Navigate to="cv" replace />}/>
