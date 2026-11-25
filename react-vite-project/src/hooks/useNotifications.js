@@ -16,6 +16,7 @@ const EVENT_TARGETS = {
     JOB_OFFER_HIRED: { path: "/etudiant/embauches", kind: "hire" },
     JOB_OFFER_HIRE_ACCEPTED: { path: "/employeur/offres/validees", kind: "offer" },
     JOB_OFFER_HIRE_DECLINED: { path: "/employeur/offres/validees", kind: "offer" },
+    JOB_OFFER_CANDIDATE_REJECTED: { path: "/etudiant/offres", kind: "offer" },
 };
 
 const getTarget = (event, referenceId) => {

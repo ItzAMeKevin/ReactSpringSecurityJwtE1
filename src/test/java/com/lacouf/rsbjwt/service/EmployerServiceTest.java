@@ -334,6 +334,8 @@ class EmployerServiceTest {
 
         assertEquals(Status.DECLINED, result.status());
         assertEquals(Status.DECLINED, application.getStatus());
+        verify(systemeService).notifyUsers(List.of(application.getStudentCv().getStudent()),
+                NotificationType.JOB_OFFER, jobOffer.getId(), "notification.types.JOB_OFFER_CANDIDATE_REJECTED.message");
     }
 
     @Test

@@ -1,16 +1,17 @@
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {cardItem, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "@/styles/classes.js";
+import {cardItem, cardHighlighted, statusBadge, statusBadgeColor, btnSmPrimary, inputField, textSuccess, textError} from "@/styles/classes.js";
 import { labelClass } from "@/components/ui/Field.jsx";
 import fetcher from "@/utils/fetcher.js";
 import formatSalary from "@/utils/formatSalary.js";
 import { getApiErrorKey } from "@/utils/apiError.js";
 import { getNextSessionCode, getSessionCode } from "@/utils/session.js";
+import scrollIntoViewOnMount from "@/utils/scrollIntoViewOnMount.js";
 
 const dtClass = "text-sm font-bold text-main";
 const ddClass = "text-sm leading-relaxed text-main/70";
 
-const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
+const StudentJobOfferListItem = ({ offer, acceptedCvs, isHighlighted, onClearHighlight }) => {
     const { t } = useTranslation();
     const [expanded, setExpanded] = useState(false);
     const [applyState, setApplyState] = useState("idle");
@@ -58,7 +59,11 @@ const StudentJobOfferListItem = ({ offer, acceptedCvs }) => {
         : null;
 
     return (
-        <li className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""}`}>
+        <li
+            ref={isHighlighted ? scrollIntoViewOnMount : undefined}
+            onClick={isHighlighted ? onClearHighlight : undefined}
+            className={`${cardItem} p-5 ${expanded ? "md:col-span-2" : ""} ${isHighlighted ? cardHighlighted : ""}`}
+        >
             <div className="flex items-start justify-between gap-3">
                 <h3 className="text-lg font-bold text-main">{offer.title}</h3>
                 <div className="flex flex-col items-end gap-1">

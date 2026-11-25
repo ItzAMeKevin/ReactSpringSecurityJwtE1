@@ -412,6 +412,10 @@
         "title": "Hire offer declined",
         "message": "A student declined your hire offer. The position is available again."
       },
+      "JOB_OFFER_CANDIDATE_REJECTED": {
+        "title": "Application not selected",
+        "message": "An employer did not select your application. Check your offers to apply elsewhere."
+      },
       "JOB_OFFER_DECLINED": {
         "title": "Your internship offer has been rejected",
         "message": "Please review the feedback and resubmit your offer."
