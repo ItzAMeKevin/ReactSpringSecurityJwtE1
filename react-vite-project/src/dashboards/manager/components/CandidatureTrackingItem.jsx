@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { statusBadge, statusBadgeColor } from "@/styles/classes.js";
+import { btnTextLink, btnTextSuccess, statusBadge, statusBadgeColor } from "@/styles/classes.js";
 import { formatSlotDate } from "@/utils/dateFormatting.js";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
@@ -50,7 +50,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                         <button
                             type="button"
                             onClick={() => setShowDetails(!showDetails)}
-                            className="text-brand hover:underline font-semibold text-sm transition-colors"
+                            className={btnTextLink}
                         >
                             {showDetails ? t("candidatureTracking.hideDetails") : t("candidatureTracking.viewDetails")}
                         </button>
@@ -58,7 +58,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                             <button
                                 type="button"
                                 onClick={() => setShowContractModal(true)}
-                                className="text-green-600 hover:text-green-800 font-semibold text-sm transition-colors"
+                                className={btnTextSuccess}
                             >
                                 {t("contractGeneration.generateButton")}
                             </button>
