@@ -30,7 +30,7 @@ public class Manager extends User {
     public Manager(
             Long id, String firstName, String lastName, String email, String password,
             String matricule){
-        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.MANAGER).build());
+        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.MANAGER).build(), null);
         this.matricule = matricule;
     }
 }

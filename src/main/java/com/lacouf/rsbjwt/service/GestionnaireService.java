@@ -150,7 +150,6 @@ public class GestionnaireService {
         Long jobOfferId = jobApplication.getJobOffer().getId();
         Long studentId = jobApplication.getStudent().getId();        
         Long employerId = jobApplication.getJobOffer().getEmployer().getId();
-        Long managerId = getManagerIdByUsername(managerId); // Assuming you have a method to get the manager ID by username
 
         JobOffer jobOffer = getJobOfferById(jobOfferId);
         Student student = getStudentById(studentId);
