@@ -95,4 +95,16 @@ class GestionnaireControllerWebMvcTest {
         when(service.getAllCandidatures()).thenReturn(List.of());
         assertEquals(List.of(), controller.getAllCandidatures().getBody());
     }
+
+    @Test
+    void createsContractWithRequestIds() {
+        ContractCreationRequestDto request = new ContractCreationRequestDto(1L, 2L, 3L, 4L);
+        ContractDto contract = ContractDto.builder().id(10L).build();
+        when(service.createContract(1L, 2L, 3L, 4L)).thenReturn(contract);
+
+        var response = controller.createContract(request);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(contract, response.getBody());
+        verify(service).createContract(1L, 2L, 3L, 4L);
+    }
 }
