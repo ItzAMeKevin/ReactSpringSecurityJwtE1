@@ -3,11 +3,7 @@ package com.lacouf.rsbjwt.service;
 import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.mapper.AdresseMapper;
 import com.lacouf.rsbjwt.mapper.InterviewMapper;
-import com.lacouf.rsbjwt.model.Interview;
-import com.lacouf.rsbjwt.model.InterviewSlot;
-import com.lacouf.rsbjwt.model.InterviewType;
-import com.lacouf.rsbjwt.model.JobApplication;
-import com.lacouf.rsbjwt.model.Status;
+import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.InterviewRepository;
 import com.lacouf.rsbjwt.repository.JobApplicationRepository;
 import com.lacouf.rsbjwt.service.dto.EmployerInterviewDto;
@@ -27,6 +23,7 @@ public class InterviewService {
     private final JobApplicationRepository jobApplicationRepository;
     private final AdresseMapper adresseMapper;
     private final InterviewMapper interviewMapper;
+    private final SystemeService systemeService;
 
     @Transactional
     public InterviewResponseDto schedule(ScheduleInterviewRequestDto dto, String employerEmail) {
@@ -62,7 +59,14 @@ public class InterviewService {
 
         Interview saved = interviewRepository.save(interview);
         jobApplicationRepository.updateStatus(application.getId(), Status.INTERVIEW_SCHEDULED);
+        systemeService.notifyStudent(getStudentsFromJobApplication(application), NotificationType.INTERVIEW, saved.getId(), "notification.types.INTERVIEW_SCHEDULED.message");
         return interviewMapper.toDto(saved);
+    }
+
+
+    public List<Student> getStudentsFromJobApplication(JobApplication jobApplicationId) {
+        Student student = jobApplicationId.getStudent();
+        return List.of(student);
     }
 
     @Transactional(readOnly = true)
