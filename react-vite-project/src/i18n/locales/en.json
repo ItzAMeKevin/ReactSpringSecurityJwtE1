@@ -94,7 +94,9 @@
     "applicationNotHirePending": "This hire offer is no longer awaiting a response.",
     "noPositionsLeft": "All positions for this offer are already held by sent or accepted hire offers.",
     "offerNotAccepted": "The internship offer must be approved and still open to hire.",
-    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state.",
+    "applicationNotWorking": "This application is not currently in an active internship.",
+    "evaluationAlreadySubmitted": "An evaluation has already been submitted for this internship."
   },
   "header": {
     "title": "ZeROSE",

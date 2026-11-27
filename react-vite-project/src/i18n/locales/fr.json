@@ -93,7 +93,9 @@
     "applicationNotHirePending": "Cette offre d'embauche n'attend plus de réponse.",
     "noPositionsLeft": "Tous les postes de cette offre sont déjà réservés par des offres d'embauche envoyées ou acceptées.",
     "offerNotAccepted": "L'offre de stage doit être validée et encore ouverte pour embaucher.",
-    "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel."
+    "jobOfferInvalidState": "Cette offre d'emploi ne peut pas être traitée dans son état actuel.",
+    "applicationNotWorking": "Cette candidature n'est pas en cours de stage.",
+    "evaluationAlreadySubmitted": "Une évaluation a déjà été soumise pour ce stage."
   },
   "header": {
     "title": "ZeROSE",
