@@ -94,7 +94,9 @@
     "applicationNotHirePending": "This hire offer is no longer awaiting a response.",
     "noPositionsLeft": "All positions for this offer are already held by sent or accepted hire offers.",
     "offerNotAccepted": "The internship offer must be approved and still open to hire.",
-    "jobOfferInvalidState": "This job offer cannot be processed in its current state."
+    "jobOfferInvalidState": "This job offer cannot be processed in its current state.",
+    "applicationNotWorking": "This application is not currently in an active internship.",
+    "evaluationAlreadySubmitted": "An evaluation has already been submitted for this internship."
   },
   "header": {
     "title": "ZeROSE",
@@ -390,7 +392,8 @@
       "CV": "CV",
       "JOB_OFFER": "Internship offer",
       "INTERVIEW": "Interview",
-      "CONTRACT": "Contract"
+      "CONTRACT": "Contract",
+      "EVALUATION": "Evaluation"
     },
     "types": {
       "CV_UPLOADED": {
@@ -440,6 +443,10 @@
       "INTERVIEW_SCHEDULED": {
         "title": "You have been invited to an interview",
         "message": "An employer has proposed time slots. Pick one in My Invitations."
+      },
+      "EVAL_REQUIRED": {
+        "title": "Intern evaluation required",
+        "message": "{{name}}'s internship ends on {{date}}. Please complete the evaluation."
       }
     }
   },
@@ -616,7 +623,9 @@
   },
   "common": {
     "online": "Online",
-    "inPerson": "In-person"
+    "inPerson": "In-person",
+    "na": "N/A",
+    "empty": "—"
   },
   "contractGeneration": {
     "title": "Contract Generation",
@@ -716,6 +725,98 @@
       "expired": "All slots have expired.",
       "alreadyResponded": "You have already responded to this invitation.",
       "generic": "An error occurred, please try again."
+    }
+  },
+  "evaluationMilieu": {
+    "nav": "Sites to evaluate",
+    "title": "Internship Site Evaluation",
+    "loading": "Loading sites...",
+    "error": "Error loading internship sites.",
+    "empty": "No internship sites to evaluate at the moment.",
+    "evaluer": "Evaluate",
+    "form": {
+      "title": "Internship Site Evaluation",
+      "entreprise": {
+        "section": "Company Information",
+        "nom": "Company name",
+        "contact": "Contact person",
+        "adresse": "Address",
+        "telephone": "Phone",
+        "ville": "City",
+        "telecopieur": "Fax",
+        "codePostal": "Postal code"
+      },
+      "stagiaire": {
+        "section": "Intern Information",
+        "nom": "Intern name",
+        "date": "Internship date",
+        "numero": "Internship (circle)",
+        "stageLabel": "Internship {{n}}"
+      },
+      "evaluation": {
+        "section": "Evaluation",
+        "TA": "SA",
+        "PA": "MA",
+        "PD": "MD",
+        "TD": "SD",
+        "NA": "N/A",
+        "TAFull": "Strongly agree",
+        "PAFull": "Mostly agree",
+        "PDFull": "Mostly disagree",
+        "TDFull": "Strongly disagree",
+        "NAFull": "Unable to assess",
+        "criteria": {
+          "taches": "The tasks assigned to the intern match those announced in the internship agreement.",
+          "accueil": "Welcoming measures facilitate the integration of the new intern.",
+          "encadrement": "The actual time dedicated to supervising the intern is sufficient.",
+          "heuresSemaine": "Specify hours/week",
+          "mois1": "First month",
+          "mois2": "Second month",
+          "mois3": "Third month",
+          "salaire": "The salary offered is competitive for the intern.",
+          "salaireParHeure": "Specify",
+          "communication": "Communication with the internship supervisor facilitates the internship process.",
+          "equipement": "The equipment provided is adequate for the tasks assigned.",
+          "volume": "The workload is acceptable.",
+          "hygiene": "The work environment meets health and safety standards.",
+          "climat": "The work atmosphere is pleasant.",
+          "transport": "The internship site is accessible by public transit.",
+          "note": "* Criteria marked with * must be explained in the comments section."
+        }
+      },
+      "commentaires": {
+        "section": "Comments",
+        "placeholder": "Your observations and comments..."
+      },
+      "observations": {
+        "section": "General Observations",
+        "aPrivilegier": "This site is preferred for:",
+        "premier": "First internship",
+        "deuxieme": "Second internship",
+        "ouvertA": "This site is open to hosting:",
+        "unStagiaire": "One intern",
+        "deuxStagiaires": "Two interns",
+        "troisStagiaires": "Three interns",
+        "plusDeTrois": "More than three",
+        "memeStagiaire": "This site wishes to host the same intern for a future internship",
+        "quartsVariables": "This site offers variable work shifts",
+        "oui": "Yes",
+        "non": "No",
+        "de": "From",
+        "a": "to"
+      },
+      "signature": {
+        "section": "Signature",
+        "label": "Signature of the teacher responsible for the intern",
+        "date": "Date"
+      },
+      "soumettre": "Submit evaluation",
+      "annuler": "Cancel",
+      "submitting": "Submitting...",
+      "errors": {
+        "incomplete": "Please complete all evaluation criteria, the internship number and the signature.",
+        "generic": "An error occurred. Please try again."
+      }
     }
   }
 }

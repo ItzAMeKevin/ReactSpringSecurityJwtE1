@@ -1,12 +1,9 @@
 package com.lacouf.rsbjwt.service;
 
-import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
-import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.exception.*;
 import com.lacouf.rsbjwt.mapper.*;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.exception.CvException;
-import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.service.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +41,8 @@ public class GestionnaireService {
     private final EmployerRepository employerRepository;
 
     private final ManagerRepository managerRepository;
+
+    private final InternshipSiteEvaluationRepository evaluationRepository;
 
 
     @Transactional(readOnly = true)
@@ -166,5 +165,88 @@ public class GestionnaireService {
         managerRepository.save(manager);
 
         return contractMapper.toDto(contract);
+    }
+
+    // ── Internship Site Evaluation ────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public List<PendingInternshipSiteDto> getPendingInternshipSites() {
+        return jobApplicationRepository.findByStatusWithoutEvaluation(Status.WORKING).stream()
+                .map(this::toPendingInternshipSiteDto)
+                .toList();
+    }
+
+    @Transactional
+    public void submitInternshipSiteEvaluation(Long applicationId, InternshipSiteEvaluationDto dto) {
+        JobApplication application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(ApplicationNotFoundException::new);
+        if (application.getStatus() != Status.WORKING) {
+            throw new InvalidStateTransitionException("errors.applicationNotWorking");
+        }
+        if (evaluationRepository.existsByJobApplicationId(applicationId)) {
+            throw new OfferAlreadyProcessedException("errors.evaluationAlreadySubmitted");
+        }
+        evaluationRepository.save(buildEvaluation(dto, application));
+    }
+
+    private PendingInternshipSiteDto toPendingInternshipSiteDto(JobApplication application) {
+        Student student = application.getStudent();
+        JobOffer offer = application.getJobOffer();
+        String startDate = offer.getStartingDate() != null ? offer.getStartingDate().toString() : null;
+        return new PendingInternshipSiteDto(
+                application.getId(),
+                student.getFirstName(),
+                student.getLastName(),
+                offer.getEmployer().getCompanyName(),
+                startDate
+        );
+    }
+
+    private InternshipSiteEvaluation buildEvaluation(InternshipSiteEvaluationDto dto, JobApplication application) {
+        InternshipSiteEvaluation evaluation = new InternshipSiteEvaluation();
+        evaluation.setJobApplication(application);
+        evaluation.setCompanyName(dto.nomEntreprise());
+        evaluation.setContactPerson(dto.personneContact());
+        evaluation.setAddress(dto.adresse());
+        evaluation.setPhone(dto.telephone());
+        evaluation.setCity(dto.ville());
+        evaluation.setFax(dto.telecopieur());
+        evaluation.setPostalCode(dto.codePostal());
+        evaluation.setInternName(dto.nomStagiaire());
+        evaluation.setInternshipDate(dto.dateStage());
+        evaluation.setInternshipNumber(parseIntSafe(dto.stageNumero()));
+        evaluation.setTasks(dto.taches());
+        evaluation.setOnboarding(dto.accueil());
+        evaluation.setSupervision(dto.encadrement());
+        evaluation.setSupervisionHoursMonth1(parseIntSafe(dto.heuresMois1()));
+        evaluation.setSupervisionHoursMonth2(parseIntSafe(dto.heuresMois2()));
+        evaluation.setSupervisionHoursMonth3(parseIntSafe(dto.heuresMois3()));
+        evaluation.setSalary(dto.salaire());
+        evaluation.setHourlyRate(dto.salaireParHeure());
+        evaluation.setCommunication(dto.communication());
+        evaluation.setEquipment(dto.equipement());
+        evaluation.setWorkload(dto.volume());
+        evaluation.setHealthSafety(dto.hygiene());
+        evaluation.setWorkAtmosphere(dto.climat());
+        evaluation.setPublicTransit(dto.transport());
+        evaluation.setComments(dto.commentaires());
+        evaluation.setPreferredInternshipNumber(parseIntSafe(dto.stagePrivilegie()));
+        evaluation.setMaxInterns(dto.nbStagiaires());
+        evaluation.setWelcomeSameIntern("oui".equalsIgnoreCase(dto.memeStagiaire()));
+        evaluation.setHasVariableShifts("oui".equalsIgnoreCase(dto.quartsVariables()));
+        evaluation.setShift1Start(dto.quart1De());
+        evaluation.setShift1End(dto.quart1A());
+        evaluation.setShift2Start(dto.quart2De());
+        evaluation.setShift2End(dto.quart2A());
+        evaluation.setShift3Start(dto.quart3De());
+        evaluation.setShift3End(dto.quart3A());
+        evaluation.setTeacherSignature(dto.signature());
+        evaluation.setSignatureDate(dto.dateSignature());
+        return evaluation;
+    }
+
+    private static Integer parseIntSafe(String value) {
+        if (value == null || value.isBlank()) return null;
+        try { return Integer.parseInt(value); } catch (NumberFormatException e) { return null; }
     }
 }

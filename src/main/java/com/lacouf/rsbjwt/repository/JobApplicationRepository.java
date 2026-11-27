@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.repository;
 
+import com.lacouf.rsbjwt.model.InternshipSiteEvaluation;
 import com.lacouf.rsbjwt.model.JobApplication;
 import com.lacouf.rsbjwt.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -100,6 +101,27 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         WHERE ja.id = :id AND s.credentials.email = :email
         """)
     Optional<JobApplication> findByIdAndStudentEmail(@Param("id") Long id, @Param("email") String email);
+
+    @Query("""
+        SELECT DISTINCT ja FROM JobApplication ja
+        JOIN FETCH ja.student s
+        JOIN FETCH s.credentials
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE ja.status = :status
+        AND NOT EXISTS (SELECT e FROM InternshipSiteEvaluation e WHERE e.jobApplication = ja)
+        ORDER BY ja.appliedAt DESC
+        """)
+    List<JobApplication> findByStatusWithoutEvaluation(@Param("status") Status status);
+
+    @Query("""
+        SELECT DISTINCT ja FROM JobApplication ja
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        JOIN FETCH ja.student s
+        WHERE ja.status = :status
+        """)
+    List<JobApplication> findByStatusWithEmployer(@Param("status") Status status);
 
     @Modifying
     @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")

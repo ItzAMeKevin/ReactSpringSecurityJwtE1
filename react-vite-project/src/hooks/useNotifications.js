@@ -3,7 +3,7 @@ import fetcher from "@/utils/fetcher.js";
 
 const POLLING_INTERVAL = 30000;
 
-const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message$/;
+const EVENT_KEY_PATTERN = /\.types\.([A-Z_]+)\.message(?:\|(.*))?$/;
 
 const EVENT_TARGETS = {
     CV_UPLOADED: { path: "/gestionnaire/cv", kind: "cv" },
@@ -18,6 +18,7 @@ const EVENT_TARGETS = {
     JOB_OFFER_HIRE_DECLINED: { path: "/employeur/offres/validees", kind: "offer" },
     INTERVIEW_SCHEDULED: { path: "/etudiant/convocations", kind: "interview" },
     JOB_OFFER_CANDIDATE_REJECTED: { path: "/etudiant/offres", kind: "offer" },
+    EVAL_REQUIRED: { path: "/employeur", kind: "evaluation" },
 };
 
 const getTarget = (event, referenceId) => {
@@ -27,11 +28,14 @@ const getTarget = (event, referenceId) => {
 };
 
 const normalizeNotification = (n) => {
-    const event = n.message?.match(EVENT_KEY_PATTERN)?.[1] ?? null;
+    const match = n.message?.match(EVENT_KEY_PATTERN);
+    const event = match?.[1] ?? null;
+    const params = match?.[2] ? match[2].split("|") : [];
     return {
         id: n.id,
         category: n.notificationType,
         event,
+        params,
         referenceId: n.referenceId,
         message: event ? null : n.message,
         isRead: n.status === "READ",

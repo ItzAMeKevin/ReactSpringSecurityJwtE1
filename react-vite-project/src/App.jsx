@@ -14,6 +14,7 @@ import Inscription from "@/pages/inscription/Inscription.jsx";
 import ProtectedRoute from "@/components/routing/ProtectedRoute.jsx";
 import { getApiErrorKey } from "@/utils/apiError.js";
 import CandidatureTracking from "@/dashboards/manager/sections/CandidatureTracking.jsx";
+import EvaluationMilieuStageSection from "@/dashboards/manager/sections/EvaluationMilieuStageSection.jsx";
 import ManagerCvSection from "@/dashboards/manager/sections/ManagerCvSection.jsx";
 import ManagerOfferSection from "@/dashboards/manager/sections/ManagerOfferSection.jsx";
 import StudentCvSection from "@/dashboards/student/sections/StudentCvSection.jsx";
@@ -160,6 +161,7 @@ function App() {
             <Route path='cv' element={<ManagerCvSection/>}/>
             <Route path='offres' element={<ManagerOfferSection/>}/>
             <Route path='suivi' element={<CandidatureTracking/>}/>
+            <Route path='milieux' element={<EvaluationMilieuStageSection/>}/>
           </Route>
           <Route path='employeur' element={<ProtectedRoute user={user} authLoading={authLoading} allowedRoles={["ROLE_EMPLOYER"]}><PersonalSpaceEmployer/></ProtectedRoute>}>
             <Route index element={<Navigate to="offres/validees" replace />}/>
