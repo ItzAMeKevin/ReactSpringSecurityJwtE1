@@ -8,17 +8,17 @@ import { getPhaseKey } from "@/dashboards/manager/candidaturePhases.js";
 import CandidatureProgress from "./CandidatureProgress.jsx";
 import ContractGenerationModal from "./ContractGenerationModal.jsx";
 
-const formatDate = (dateString, locale) => {
-    if (!dateString) return "N/A";
+const formatDate = (dateString, locale, fallback) => {
+    if (!dateString) return fallback;
     try {
         return formatSlotDate(dateString.split('T')[0], locale);
     } catch {
-        return "N/A";
+        return fallback;
     }
 };
 
-const DetailSection = ({ title, children }) => (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
+const DetailSection = ({ title, children, className = "" }) => (
+    <div className={`bg-white rounded-lg border border-gray-200 p-4 ${className}`}>
         <h3 className="font-semibold text-gray-900 mb-3">{title}</h3>
         {children}
     </div>
@@ -41,6 +41,8 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
     const canGenerateContract = getPhaseKey(candidature.status) === "contract";
     const programs = t("inscription.programsList", { returnObjects: true });
     const salary = candidature.jobOffer?.salary;
+    const na = t("common.na");
+    const empty = t("common.empty");
 
     return (
         <>
@@ -50,21 +52,21 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                         {candidature.student?.firstName} {candidature.student?.lastName}
                     </div>
                     <div className="text-sm text-main/70">
-                        {t("candidatureTracking.table.matricule")}: {candidature.student?.matricule || "N/A"}
+                        {t("candidatureTracking.table.matricule")}: {candidature.student?.matricule || na}
                     </div>
                 </td>
                 <td className="px-4 py-3">
                     <div className="font-semibold text-main">
-                        {candidature.jobOffer?.companyName || "N/A"}
+                        {candidature.jobOffer?.companyName || na}
                     </div>
                     <div className="text-sm text-main/70">
-                        {candidature.jobOffer?.title || "N/A"}
+                        {candidature.jobOffer?.title || na}
                     </div>
                 </td>
                 <td className="px-4 py-3">
                     <CandidatureProgress status={candidature.status} />
                     <div className={`${textMuted} mt-1 text-xs`}>
-                        {t("candidatureTracking.table.lastModified")}: {formatDate(candidature.updatedAt || candidature.appliedAt, i18n.language)}
+                        {t("candidatureTracking.table.lastModified")}: {formatDate(candidature.updatedAt || candidature.appliedAt, i18n.language, na)}
                     </div>
                 </td>
                 <td className="px-4 py-3 text-center">
@@ -113,11 +115,11 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.email")}
-                                        value={candidature.student?.email || "N/A"}
+                                        value={candidature.student?.email || na}
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.programme")}
-                                        value={candidature.student?.programe ? getProgramName(programs, candidature.student.programe) : "N/A"}
+                                        value={candidature.student?.programe ? getProgramName(programs, candidature.student.programe) : na}
                                     />
                                 </DetailSection>
 
@@ -125,16 +127,16 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                 <DetailSection title={t("candidatureTracking.details.offer")}>
                                     <DetailRow
                                         label={t("candidatureTracking.details.position")}
-                                        value={candidature.jobOffer?.title || "N/A"}
+                                        value={candidature.jobOffer?.title || na}
                                         highlighted
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.company")}
-                                        value={candidature.jobOffer?.companyName || "N/A"}
+                                        value={candidature.jobOffer?.companyName || na}
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.salary")}
-                                        value={salary != null ? formatSalary(salary, t) : "N/A"}
+                                        value={salary != null ? formatSalary(salary, t) : na}
                                     />
                                 </DetailSection>
                             </div>
@@ -147,7 +149,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                             {t("candidatureTracking.details.description")}
                                         </p>
                                         <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-3 rounded border border-gray-200">
-                                            {candidature.jobOffer?.description || "—"}
+                                            {candidature.jobOffer?.description || empty}
                                         </p>
                                     </div>
                                     <div>
@@ -155,7 +157,7 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                             {t("candidatureTracking.details.prerequisites")}
                                         </p>
                                         <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-3 rounded border border-gray-200">
-                                            {candidature.jobOffer?.prerequisites || "—"}
+                                            {candidature.jobOffer?.prerequisites || empty}
                                         </p>
                                     </div>
                                 </div>
@@ -167,11 +169,11 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                 <DetailSection title={t("candidatureTracking.details.timeline")}>
                                     <DetailRow
                                         label={t("candidatureTracking.details.startDate")}
-                                        value={formatDate(candidature.jobOffer?.startingDate, i18n.language)}
+                                        value={formatDate(candidature.jobOffer?.startingDate, i18n.language, na)}
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.duration")}
-                                        value={`${candidature.jobOffer?.durationInWeeks || "N/A"} ${t("candidatureTracking.details.weeks")}`}
+                                        value={`${candidature.jobOffer?.durationInWeeks || na} ${t("candidatureTracking.details.weeks")}`}
                                     />
                                 </DetailSection>
 
@@ -179,11 +181,11 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                                 <DetailSection title={t("candidatureTracking.details.employerContact")}>
                                     <DetailRow
                                         label={t("candidatureTracking.details.email")}
-                                        value={candidature.employer?.email || "N/A"}
+                                        value={candidature.employer?.email || na}
                                     />
                                     <DetailRow
                                         label={t("candidatureTracking.details.phone")}
-                                        value={candidature.employer?.phoneNumber || "N/A"}
+                                        value={candidature.employer?.phoneNumber || na}
                                     />
                                 </DetailSection>
                             </div>
@@ -192,11 +194,11 @@ const CandidatureTrackingItem = ({ candidature, user }) => {
                             <DetailSection title={t("candidatureTracking.details.dates")} className="mt-4">
                                 <DetailRow
                                     label={t("candidatureTracking.details.submitted")}
-                                    value={formatDate(candidature.appliedAt, i18n.language)}
+                                    value={formatDate(candidature.appliedAt, i18n.language, na)}
                                 />
                                 <DetailRow
                                     label={t("candidatureTracking.details.lastModified")}
-                                    value={formatDate(candidature.updatedAt, i18n.language)}
+                                    value={formatDate(candidature.updatedAt, i18n.language, na)}
                                 />
                             </DetailSection>
                         </div>

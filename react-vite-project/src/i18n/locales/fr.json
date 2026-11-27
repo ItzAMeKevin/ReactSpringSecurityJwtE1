@@ -626,7 +626,9 @@
   },
   "common": {
     "online": "En ligne",
-    "inPerson": "Présentiel"
+    "inPerson": "Présentiel",
+    "na": "N/A",
+    "empty": "—"
   },
   "contractGeneration": {
     "title": "Génération de contrat",

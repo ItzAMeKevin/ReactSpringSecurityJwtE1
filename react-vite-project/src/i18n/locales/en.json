@@ -623,7 +623,9 @@
   },
   "common": {
     "online": "Online",
-    "inPerson": "In-person"
+    "inPerson": "In-person",
+    "na": "N/A",
+    "empty": "—"
   },
   "contractGeneration": {
     "title": "Contract Generation",
