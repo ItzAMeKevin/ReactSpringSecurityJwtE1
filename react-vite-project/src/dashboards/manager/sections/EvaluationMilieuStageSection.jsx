@@ -34,8 +34,6 @@ const EvaluationMilieuStageSection = () => {
                             </p>
                             <p className={`${textMuted} text-sm`}>{item.companyName}</p>
                             <p className={`${textMuted} text-xs`}>
-                                {t('evaluationMilieu.form.stagiaire.stageLabel', { n: item.stageNumero })}
-                                {' · '}
                                 {formatDateFrench(item.startDate)}
                             </p>
                         </div>

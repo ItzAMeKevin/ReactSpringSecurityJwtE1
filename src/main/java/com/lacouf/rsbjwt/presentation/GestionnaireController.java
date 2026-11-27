@@ -87,4 +87,21 @@ public class GestionnaireController {
     public ResponseEntity<ContractDto> createContract(@Valid @RequestBody ContractDto contractDto) {
         return ResponseEntity.ok(gestionnaireService.createContract(contractDto));
     }
+
+    // ── Internship Site Evaluation ────────────────────────────────────────────
+
+    @GetMapping("/milieux/evaluation")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<List<PendingInternshipSiteDto>> getPendingInternshipSites() {
+        return ResponseEntity.ok(gestionnaireService.getPendingInternshipSites());
+    }
+
+    @PostMapping("/milieux/{id}/evaluation")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<Void> submitInternshipSiteEvaluation(
+            @PathVariable Long id,
+            @RequestBody InternshipSiteEvaluationDto dto) {
+        gestionnaireService.submitInternshipSiteEvaluation(id, dto);
+        return ResponseEntity.ok().build();
+    }
 }
