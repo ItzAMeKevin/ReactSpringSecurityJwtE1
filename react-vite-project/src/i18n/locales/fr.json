@@ -639,7 +639,15 @@
       "submit": "Générer le PDF",
       "submitting": "Génération en cours...",
       "cancel": "Annuler",
-      "close": "Fermer"
+      "close": "Fermer",
+      "generate": "Générer le contrat"
+    },
+    "confirmation": {
+      "message": "Êtes-vous sûr de vouloir générer le contrat pour ce stage?",
+      "student": "Étudiant",
+      "employer": "Employeur",
+      "position": "Poste",
+      "jobOfferId": "ID de l'offre d'emploi"
     },
     "form": {
       "studentInfo": "Informations de l'étudiant",

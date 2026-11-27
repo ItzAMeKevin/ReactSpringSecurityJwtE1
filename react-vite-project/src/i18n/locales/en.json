@@ -636,7 +636,15 @@
       "submit": "Generate PDF",
       "submitting": "Generating...",
       "cancel": "Cancel",
-      "close": "Close"
+      "close": "Close",
+      "generate": "Generate Contract"
+    },
+    "confirmation": {
+      "message": "Are you sure you want to generate the contract for this internship?",
+      "student": "Student",
+      "employer": "Employer",
+      "position": "Position",
+      "jobOfferId": "Job Offer ID"
     },
     "form": {
       "studentInfo": "Student Information",

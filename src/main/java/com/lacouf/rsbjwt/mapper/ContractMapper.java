@@ -25,5 +25,9 @@ public interface ContractMapper {
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "employer", ignore = true)
     @Mapping(target = "manager", ignore = true)
+    @Mapping(target = "signedByStudent", ignore = true)
+    @Mapping(target = "signedByEmployer", ignore = true)
+    @Mapping(target = "signedByManager", ignore = true)
+    @Mapping(target = "signature", ignore = true)
     Contract toEntity(ContractDto contractDto);
 }

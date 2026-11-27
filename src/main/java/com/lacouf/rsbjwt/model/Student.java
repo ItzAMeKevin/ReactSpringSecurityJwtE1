@@ -39,7 +39,7 @@ public class Student extends User {
     public Student(
             Long id, String firstName, String lastName, String email, String password,
             String matricule, Programe programe){
-        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.STUDENT).build());
+        super(id, firstName, lastName, Credentials.builder().email(email).password(password).role(Role.STUDENT).build(), null);
         this.matricule = matricule;
         this.programe = programe;
     }

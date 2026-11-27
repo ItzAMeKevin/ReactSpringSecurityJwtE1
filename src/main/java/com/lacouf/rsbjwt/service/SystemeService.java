@@ -2,6 +2,7 @@ package com.lacouf.rsbjwt.service;
 
 
 import com.lacouf.rsbjwt.exception.NotificationNotFound;
+import com.lacouf.rsbjwt.exception.UserNotFoundException;
 import com.lacouf.rsbjwt.mapper.NotificationMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 
@@ -26,6 +28,7 @@ public class SystemeService{
     private final StudentRepository studentRepository;
     private final StudentCvRepository cvRepository;
     private final JobOfferRepository jobOfferRepository;
+    private final UserAppRepository userAppRepository;
 
 
 
@@ -98,6 +101,28 @@ public class SystemeService{
                     return notificationMapper.toDto(notificationRepository.save(notification));
                 })
                 .orElseThrow(NotificationNotFound::new);
+    }
+
+
+    public void saveSignature(Authentication authentication, byte[] imageBytes, String contentType) {
+        String email = authentication.getName();
+        User user = userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+        Signature signature = new Signature(
+                imageBytes,
+                contentType,
+                Instant.now()
+        );
+        user.setSignature(signature);
+        userAppRepository.save(user);
+    }
+
+    public byte[] getSignatureImage(Authentication authentication) {
+        String email = authentication.getName();
+        User user = userAppRepository.findUserAppByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        return user.getSignature() != null ? user.getSignature().getImageData() : null;
     }
 }
 

@@ -5,8 +5,6 @@ import com.lacouf.rsbjwt.exception.*;
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.service.GestionnaireService;
-import com.lacouf.rsbjwt.service.StudentCvService;
-import com.lacouf.rsbjwt.service.SystemeService;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +27,7 @@ class GestionnaireControllerWebMvcTest {
 
     @BeforeEach
     void setUp() {
-        controller = new GestionnaireController(service, mock(SystemeService.class), mock(StudentCvService.class));
+        controller = new GestionnaireController(service);
     }
 
     @Test
@@ -96,6 +94,18 @@ class GestionnaireControllerWebMvcTest {
 
         when(service.getAllCandidatures()).thenReturn(List.of());
         assertEquals(List.of(), controller.getAllCandidatures().getBody());
+    }
+
+    @Test
+    void createsContractWithCandidatureDtoAndManagerId() {
+        CandidatureDto candidatureDto = new CandidatureDto(5L, null, null, null, null, null);
+        ContractDto contract = ContractDto.builder().id(10L).build();
+        when(service.createContract(candidatureDto, 3L)).thenReturn(contract);
+
+        var response = controller.createContract(candidatureDto, 3L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(contract, response.getBody());
+        verify(service).createContract(candidatureDto, 3L);
     }
 
     @Test
