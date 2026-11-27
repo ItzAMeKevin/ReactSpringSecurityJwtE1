@@ -1,8 +1,7 @@
 package com.lacouf.rsbjwt.presentation;
 
-import com.lacouf.rsbjwt.exception.CvException;
-import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
-import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
+import com.lacouf.rsbjwt.exception.*;
+
 import com.lacouf.rsbjwt.model.Programe;
 import com.lacouf.rsbjwt.model.Status;
 import com.lacouf.rsbjwt.service.GestionnaireService;
@@ -97,5 +96,46 @@ class GestionnaireControllerWebMvcTest {
 
         when(service.getAllCandidatures()).thenReturn(List.of());
         assertEquals(List.of(), controller.getAllCandidatures().getBody());
+    }
+
+    @Test
+    void getPendingInternshipSitesReturnsOkWithList() {
+        PendingInternshipSiteDto site = new PendingInternshipSiteDto(1L, "Alice", "Smith", "TechCorp", "2025-01-15");
+        when(service.getPendingInternshipSites()).thenReturn(List.of(site));
+
+        var response = controller.getPendingInternshipSites();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(site), response.getBody());
+    }
+
+    @Test
+    void submitEvaluationReturnsOk() {
+        InternshipSiteEvaluationDto dto = emptyDto();
+        doNothing().when(service).submitInternshipSiteEvaluation(1L, dto);
+
+        assertEquals(HttpStatus.OK, controller.submitInternshipSiteEvaluation(1L, dto).getStatusCode());
+    }
+
+    @Test
+    void submitEvaluationPropagatesServiceExceptions() {
+        InternshipSiteEvaluationDto dto = emptyDto();
+        doThrow(new ApplicationNotFoundException()).when(service).submitInternshipSiteEvaluation(1L, dto);
+        assertThrows(ApplicationNotFoundException.class, () -> controller.submitInternshipSiteEvaluation(1L, dto));
+
+        doThrow(new OfferAlreadyProcessedException("errors.evaluationAlreadySubmitted"))
+                .when(service).submitInternshipSiteEvaluation(2L, dto);
+        assertThrows(OfferAlreadyProcessedException.class, () -> controller.submitInternshipSiteEvaluation(2L, dto));
+    }
+
+    private static InternshipSiteEvaluationDto emptyDto() {
+        return new InternshipSiteEvaluationDto(
+                null, null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null
+        );
     }
 }

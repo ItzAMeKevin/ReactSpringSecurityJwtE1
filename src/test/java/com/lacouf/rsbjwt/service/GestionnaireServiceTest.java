@@ -6,9 +6,9 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;
-import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
-import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
-import com.lacouf.rsbjwt.exception.CvException;
+import com.lacouf.rsbjwt.exception.*;
+import com.lacouf.rsbjwt.model.InternshipSiteEvaluation;
+import com.lacouf.rsbjwt.repository.InternshipSiteEvaluationRepository;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ class GestionnaireServiceTest {
     @Mock private CvMapper cvMapper;
     @Mock private JobOfferMapper jobOfferMapper;
     @Mock private JobApplicationSuiviMapper jobApplicationSuiviMapper;
+    @Mock private InternshipSiteEvaluationRepository evaluationRepository;
     @InjectMocks private GestionnaireService service;
 
     @Test
@@ -157,5 +159,121 @@ class GestionnaireServiceTest {
 
         when(jobApplicationRepository.findAllWithStudentAndOffer()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
+    }
+
+    // ── Internship Site Evaluation ────────────────────────────────────────────
+
+    @Test
+    void returnsPendingInternshipSitesWithCorrectData() {
+        Student student = new Student();
+        student.setFirstName("Alice");
+        student.setLastName("Smith");
+        student.setCredentials(Credentials.builder().email("alice@test.com").password("x").role(Role.STUDENT).build());
+
+        Employer employer = new Employer();
+        employer.setCompanyName("TechCorp");
+
+        JobOffer offer = new JobOffer();
+        offer.setEmployer(employer);
+        offer.setStartingDate(LocalDate.of(2025, 1, 15));
+
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setStudent(student);
+        application.setJobOffer(offer);
+
+        when(jobApplicationRepository.findByStatusWithoutEvaluation(Status.WORKING)).thenReturn(List.of(application));
+
+        List<PendingInternshipSiteDto> result = service.getPendingInternshipSites();
+
+        assertEquals(1, result.size());
+        PendingInternshipSiteDto dto = result.get(0);
+        assertEquals(1L, dto.id());
+        assertEquals("Alice", dto.studentFirstName());
+        assertEquals("Smith", dto.studentLastName());
+        assertEquals("TechCorp", dto.companyName());
+        assertEquals("2025-01-15", dto.startDate());
+    }
+
+    @Test
+    void returnsNullStartDateWhenOfferHasNoStartDate() {
+        Student student = new Student();
+        student.setFirstName("Bob");
+        student.setLastName("Jones");
+        student.setCredentials(Credentials.builder().email("bob@test.com").password("x").role(Role.STUDENT).build());
+
+        Employer employer = new Employer();
+        employer.setCompanyName("Acme");
+
+        JobOffer offer = new JobOffer();
+        offer.setEmployer(employer);
+
+        JobApplication application = new JobApplication();
+        application.setId(2L);
+        application.setStudent(student);
+        application.setJobOffer(offer);
+
+        when(jobApplicationRepository.findByStatusWithoutEvaluation(Status.WORKING)).thenReturn(List.of(application));
+
+        assertNull(service.getPendingInternshipSites().get(0).startDate());
+    }
+
+    @Test
+    void submitsEvaluationForWorkingApplication() {
+        JobApplication application = new JobApplication();
+        application.setId(1L);
+        application.setStatus(Status.WORKING);
+
+        when(jobApplicationRepository.findById(1L)).thenReturn(Optional.of(application));
+        when(evaluationRepository.existsByJobApplicationId(1L)).thenReturn(false);
+
+        assertDoesNotThrow(() -> service.submitInternshipSiteEvaluation(1L, emptyDto()));
+        verify(evaluationRepository).save(any(InternshipSiteEvaluation.class));
+    }
+
+    @Test
+    void rejectsEvaluationWhenApplicationNotFound() {
+        when(jobApplicationRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ApplicationNotFoundException.class,
+                () -> service.submitInternshipSiteEvaluation(99L, emptyDto()));
+    }
+
+    @Test
+    void rejectsEvaluationWhenApplicationNotWorking() {
+        JobApplication application = new JobApplication();
+        application.setId(2L);
+        application.setStatus(Status.PENDING);
+
+        when(jobApplicationRepository.findById(2L)).thenReturn(Optional.of(application));
+
+        assertThrows(InvalidStateTransitionException.class,
+                () -> service.submitInternshipSiteEvaluation(2L, emptyDto()));
+        verify(evaluationRepository, never()).save(any());
+    }
+
+    @Test
+    void rejectsEvaluationWhenAlreadySubmitted() {
+        JobApplication application = new JobApplication();
+        application.setId(3L);
+        application.setStatus(Status.WORKING);
+
+        when(jobApplicationRepository.findById(3L)).thenReturn(Optional.of(application));
+        when(evaluationRepository.existsByJobApplicationId(3L)).thenReturn(true);
+
+        assertThrows(OfferAlreadyProcessedException.class,
+                () -> service.submitInternshipSiteEvaluation(3L, emptyDto()));
+        verify(evaluationRepository, never()).save(any());
+    }
+
+    private static InternshipSiteEvaluationDto emptyDto() {
+        return new InternshipSiteEvaluationDto(
+                null, null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null,
+                null, null, null, null, null, null
+        );
     }
 }

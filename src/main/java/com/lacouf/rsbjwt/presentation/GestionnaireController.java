@@ -100,7 +100,7 @@ public class GestionnaireController {
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<Void> submitInternshipSiteEvaluation(
             @PathVariable Long id,
-            @RequestBody InternshipSiteEvaluationDto dto) {
+            @Valid @RequestBody InternshipSiteEvaluationDto dto) {
         gestionnaireService.submitInternshipSiteEvaluation(id, dto);
         return ResponseEntity.ok().build();
     }
