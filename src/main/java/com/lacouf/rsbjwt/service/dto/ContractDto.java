@@ -28,4 +28,6 @@ public class ContractDto {
     private Long employerId;
     @NotNull(message = "errors.managerIdRequired")
     private Long managerId;
+
+    private SignatureDto signature;
 }

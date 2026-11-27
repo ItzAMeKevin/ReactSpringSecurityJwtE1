@@ -105,9 +105,7 @@ public class SystemeService{
         User user = userAppRepository.findUserAppByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
         Signature signature = new Signature(
-                imageBytes,
-                contentType,
-                Instant.now()
+                imageBytes
         );
         user.setSignature(signature);
         userAppRepository.save(user);
