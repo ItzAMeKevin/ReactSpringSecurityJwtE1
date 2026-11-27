@@ -35,9 +35,14 @@ class InternEvalReminderSchedulerTest {
         offer.setDurationInWeeks(durationInWeeks);
         offer.setEmployer(employer);
 
+        Student student = new Student();
+        student.setFirstName("Alice");
+        student.setLastName("Smith");
+
         JobApplication app = new JobApplication();
         app.setId(1L);
         app.setJobOffer(offer);
+        app.setStudent(student);
 
         return app;
     }

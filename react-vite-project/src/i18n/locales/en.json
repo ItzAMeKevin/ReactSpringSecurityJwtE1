@@ -446,7 +446,7 @@
       },
       "EVAL_REQUIRED": {
         "title": "Intern evaluation required",
-        "message": "Your intern's internship is ending soon. Please complete the evaluation."
+        "message": "{{name}}'s internship ends on {{date}}. Please complete the evaluation."
       }
     }
   },

@@ -449,7 +449,7 @@
       },
       "EVAL_REQUIRED": {
         "title": "Évaluation du stagiaire requise",
-        "message": "Votre stagiaire arrive bientôt à la fin de son stage. Veuillez compléter l'évaluation."
+        "message": "Le stage de {{name}} se termine le {{date}}. Veuillez compléter l'évaluation."
       }
     }
   },

@@ -42,11 +42,17 @@ public class InternEvalReminderScheduler {
     }
 
     private void sendReminder(JobApplication app) {
+        Student intern = app.getStudent();
+        LocalDate endDate = app.getJobOffer().getStartingDate()
+                .plusWeeks(app.getJobOffer().getDurationInWeeks());
+        String message = "notification.types.EVAL_REQUIRED.message"
+                + "|" + intern.getFirstName() + " " + intern.getLastName()
+                + "|" + endDate;
         notificationRepository.save(Notification.builder()
                 .user(app.getJobOffer().getEmployer())
                 .notificationType(NotificationType.EVALUATION)
                 .referenceId(app.getId())
-                .message("notification.types.EVAL_REQUIRED.message")
+                .message(message)
                 .build());
     }
 }

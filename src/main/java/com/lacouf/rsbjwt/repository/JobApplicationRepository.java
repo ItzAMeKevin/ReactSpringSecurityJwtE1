@@ -118,6 +118,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         SELECT DISTINCT ja FROM JobApplication ja
         JOIN FETCH ja.jobOffer jo
         JOIN FETCH jo.employer
+        JOIN FETCH ja.student s
         WHERE ja.status = :status
         """)
     List<JobApplication> findByStatusWithEmployer(@Param("status") Status status);
