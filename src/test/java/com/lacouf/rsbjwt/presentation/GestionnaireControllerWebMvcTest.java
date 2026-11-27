@@ -97,14 +97,14 @@ class GestionnaireControllerWebMvcTest {
     }
 
     @Test
-    void createsContractWithRequestIds() {
-        ContractCreationRequestDto request = new ContractCreationRequestDto(1L, 2L, 3L, 4L);
+    void createsContractWithCandidatureDtoAndManagerId() {
+        CandidatureDto candidatureDto = new CandidatureDto(5L, null, null, null, null, null);
         ContractDto contract = ContractDto.builder().id(10L).build();
-        when(service.createContract(1L, 2L, 3L, 4L)).thenReturn(contract);
+        when(service.createContract(candidatureDto, 3L)).thenReturn(contract);
 
-        var response = controller.createContract(request);
+        var response = controller.createContract(candidatureDto, 3L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertSame(contract, response.getBody());
-        verify(service).createContract(1L, 2L, 3L, 4L);
+        verify(service).createContract(candidatureDto, 3L);
     }
 }

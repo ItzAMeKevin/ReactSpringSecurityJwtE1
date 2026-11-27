@@ -1,5 +1,6 @@
 package com.lacouf.rsbjwt.service;
 
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.mapper.CandidateMapper;
@@ -145,7 +146,7 @@ public class GestionnaireService {
     public ContractDto createContract(CandidatureDto candidatureDto, Long managerId) {
         
         JobApplication jobApplication = jobApplicationRepository.findById(candidatureDto.id())
-                .orElseThrow(() -> new RuntimeException("Candidature not found"));
+                .orElseThrow(ApplicationNotFoundException::new);
 
         Long jobOfferId = jobApplication.getJobOffer().getId();
         Long studentId = jobApplication.getStudent().getId();        

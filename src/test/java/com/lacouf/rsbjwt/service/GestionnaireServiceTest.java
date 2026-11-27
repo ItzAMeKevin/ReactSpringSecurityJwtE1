@@ -7,10 +7,12 @@ import com.lacouf.rsbjwt.mapper.JobOfferMapper;
 import com.lacouf.rsbjwt.model.*;
 import com.lacouf.rsbjwt.model.auth.Credentials;
 import com.lacouf.rsbjwt.repository.*;
+import com.lacouf.rsbjwt.exception.ApplicationNotFoundException;
 import com.lacouf.rsbjwt.exception.InvalidStateTransitionException;
 import com.lacouf.rsbjwt.exception.JobOfferNotFoundException;
 import com.lacouf.rsbjwt.exception.CvException;
 import com.lacouf.rsbjwt.exception.UserNotFoundException;
+import org.springframework.test.util.ReflectionTestUtils;
 import com.lacouf.rsbjwt.service.dto.*;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -123,7 +125,6 @@ class GestionnaireServiceTest {
 
     @Test
     void createsAndPersistsGeneratedContractPdf() throws Exception {
-        JobOffer offer = validOffer();
         Student student = new Student();
         student.setFirstName("Alex");
         student.setLastName("Student");
@@ -132,7 +133,10 @@ class GestionnaireServiceTest {
         Manager manager = new Manager();
         manager.setFirstName("Morgan");
         manager.setLastName("Manager");
+        JobOffer offer = validOffer();
+        offer.setEmployer(employer);
 
+        when(jobApplicationRepository.findById(5L)).thenReturn(Optional.of(makeJobApplication(1L, 2L, 4L)));
         when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(offer));
         when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
         when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
@@ -141,7 +145,7 @@ class GestionnaireServiceTest {
         ContractDto expectedDto = ContractDto.builder().id(10L).build();
         when(contractMapper.toDto(any(Contract.class))).thenReturn(expectedDto);
 
-        ContractDto result = service.createContract(1L, 2L, 3L, 4L);
+        ContractDto result = service.createContract(new CandidatureDto(5L, null, null, null, null, null), 3L);
 
         assertSame(expectedDto, result);
         org.mockito.ArgumentCaptor<Contract> contractCaptor = org.mockito.ArgumentCaptor.forClass(Contract.class);
@@ -174,13 +178,19 @@ class GestionnaireServiceTest {
     }
 
     @Test
-    void createContractRejectsMissingOfferOrRequiredParty() {
+    void createContractRejectsMissingApplicationOrRequiredParty() {
+        CandidatureDto dto = new CandidatureDto(5L, null, null, null, null, null);
+
+        when(jobApplicationRepository.findById(5L)).thenReturn(Optional.empty());
+        assertThrows(ApplicationNotFoundException.class, () -> service.createContract(dto, 3L));
+
+        when(jobApplicationRepository.findById(5L)).thenReturn(Optional.of(makeJobApplication(1L, 2L, 4L)));
         when(jobOfferRepository.findById(4L)).thenReturn(Optional.empty());
-        assertThrows(JobOfferNotFoundException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+        assertThrows(JobOfferNotFoundException.class, () -> service.createContract(dto, 3L));
 
         when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(validOffer()));
         when(studentRepository.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(UserNotFoundException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+        assertThrows(UserNotFoundException.class, () -> service.createContract(dto, 3L));
 
         verifyNoInteractions(contractRepository, employerRepository, managerRepository);
     }
@@ -189,20 +199,17 @@ class GestionnaireServiceTest {
     void createContractDoesNotPersistWhenOfferDataCannotRender() {
         JobOffer offer = validOffer();
         offer.setSalary(null);
-        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(offer));
-        Student student = new Student();
-        student.setFirstName("Alex");
-        student.setLastName("Student");
         Employer employer = new Employer();
         employer.setCompanyName("Example Company");
-        Manager manager = new Manager();
-        manager.setFirstName("Morgan");
-        manager.setLastName("Manager");
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        offer.setEmployer(employer);
+        when(jobApplicationRepository.findById(5L)).thenReturn(Optional.of(makeJobApplication(1L, 2L, 4L)));
+        when(jobOfferRepository.findById(4L)).thenReturn(Optional.of(offer));
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(new Student()));
         when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
-        when(managerRepository.findById(3L)).thenReturn(Optional.of(manager));
+        when(managerRepository.findById(3L)).thenReturn(Optional.of(new Manager()));
 
-        assertThrows(IllegalArgumentException.class, () -> service.createContract(1L, 2L, 3L, 4L));
+        assertThrows(IllegalArgumentException.class, () ->
+                service.createContract(new CandidatureDto(5L, null, null, null, null, null), 3L));
         verifyNoInteractions(contractRepository);
     }
 
@@ -253,6 +260,20 @@ class GestionnaireServiceTest {
 
         when(jobApplicationRepository.findAll()).thenReturn(List.of());
         assertTrue(service.getAllCandidatures().isEmpty());
+    }
+
+    private JobApplication makeJobApplication(long studentId, long employerId, long offerId) {
+        Student student = new Student();
+        ReflectionTestUtils.setField(student, "id", studentId);
+        Employer employer = new Employer();
+        ReflectionTestUtils.setField(employer, "id", employerId);
+        JobOffer offer = new JobOffer();
+        ReflectionTestUtils.setField(offer, "id", offerId);
+        offer.setEmployer(employer);
+        JobApplication application = new JobApplication();
+        application.setStudent(student);
+        application.setJobOffer(offer);
+        return application;
     }
 
     private JobOffer validOffer() {
