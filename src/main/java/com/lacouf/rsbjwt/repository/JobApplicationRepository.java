@@ -114,6 +114,14 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
         """)
     List<JobApplication> findByStatusWithoutEvaluation(@Param("status") Status status);
 
+    @Query("""
+        SELECT DISTINCT ja FROM JobApplication ja
+        JOIN FETCH ja.jobOffer jo
+        JOIN FETCH jo.employer
+        WHERE ja.status = :status
+        """)
+    List<JobApplication> findByStatusWithEmployer(@Param("status") Status status);
+
     @Modifying
     @Query("UPDATE JobApplication ja SET ja.status = :status WHERE ja.id = :applicationId")
     int updateStatus(@Param("applicationId") Long applicationId, @Param("status") Status status);

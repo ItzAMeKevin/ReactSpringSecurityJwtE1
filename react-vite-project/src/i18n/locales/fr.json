@@ -395,7 +395,8 @@
       "CV": "CV",
       "JOB_OFFER": "Offre de stage",
       "INTERVIEW": "Entrevue",
-      "CONTRACT": "Contrat"
+      "CONTRACT": "Contrat",
+      "EVALUATION": "Évaluation"
     },
     "types": {
       "CV_UPLOADED": {
@@ -445,6 +446,10 @@
       "INTERVIEW_SCHEDULED": {
         "title": "Vous êtes convoqué à une entrevue",
         "message": "Un employeur vous a proposé des plages horaires. Choisissez-en une dans Mes convocations."
+      },
+      "EVAL_REQUIRED": {
+        "title": "Évaluation du stagiaire requise",
+        "message": "Votre stagiaire arrive bientôt à la fin de son stage. Veuillez compléter l'évaluation."
       }
     }
   },

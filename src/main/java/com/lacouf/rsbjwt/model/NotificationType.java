@@ -5,4 +5,5 @@ public enum NotificationType {
     JOB_OFFER,
     INTERVIEW,
     CONTRACT,
+    EVALUATION,
 }

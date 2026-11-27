@@ -18,6 +18,7 @@ const EVENT_TARGETS = {
     JOB_OFFER_HIRE_DECLINED: { path: "/employeur/offres/validees", kind: "offer" },
     INTERVIEW_SCHEDULED: { path: "/etudiant/convocations", kind: "interview" },
     JOB_OFFER_CANDIDATE_REJECTED: { path: "/etudiant/offres", kind: "offer" },
+    EVAL_REQUIRED: { path: "/employeur", kind: "evaluation" },
 };
 
 const getTarget = (event, referenceId) => {

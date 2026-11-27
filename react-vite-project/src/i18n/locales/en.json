@@ -392,7 +392,8 @@
       "CV": "CV",
       "JOB_OFFER": "Internship offer",
       "INTERVIEW": "Interview",
-      "CONTRACT": "Contract"
+      "CONTRACT": "Contract",
+      "EVALUATION": "Evaluation"
     },
     "types": {
       "CV_UPLOADED": {
@@ -442,6 +443,10 @@
       "INTERVIEW_SCHEDULED": {
         "title": "You have been invited to an interview",
         "message": "An employer has proposed time slots. Pick one in My Invitations."
+      },
+      "EVAL_REQUIRED": {
+        "title": "Intern evaluation required",
+        "message": "Your intern's internship is ending soon. Please complete the evaluation."
       }
     }
   },
